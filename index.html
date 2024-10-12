@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
     <title>Panel Rzucania Kostkami</title>
 </head>
 <body>
     <div class="container">
+        
         <div class="dice-panel">
-            <h1>Rzucanie Kostkami</h1>
+            <h1>Jaszkin's Dice Roller</h1>
             <input type="text" id="characterName" placeholder="Imię postaci">
             <div class="dice-inputs">
                 <label for="diceType">Typ kostki:</label>
@@ -23,24 +25,26 @@
                     <option value="20">K20</option>
                     <option value="100">K100</option>
                 </select>
-                <label for="diceQuantity">Ilość:</label>
+                <label for="diceQuantity">Ilość kostek:</label>
                 <input type="number" id="diceQuantity" min="1" value="1">
             </div>
+            <input type="text" id="attribute" placeholder="Atrybut (opcjonalny)">
             <input type="text" id="modifier" placeholder="Modyfikator (opcjonalny)">
-            <button id="rollButton">Rzut!</button>
+            <button id="rollButton">RZUT!</button>
             <div id="results"></div>
             <h2>Historia Rzutów:</h2>
             <ul id="rollHistory"></ul>
+            <button id="testFirebaseButton">TESTUJ FIREBASE</button>
+
         </div>
+        <div class="resizer"></div>
         <div class="figma-embed">
             <!-- Tutaj wstaw link do prototypu z Figmy -->
-            <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" src="https://embed.figma.com/proto/vSTjed6QZD0fJTc8kHwGSN/KULT-HH-handouty?page-id=127%3A758&node-id=127-759&node-type=frame&viewport=589%2C173%2C0.03&scaling=scale-down&content-scaling=fixed&embed-host=share"></iframe>
+            <iframe style="background-color: #000; border: 1px solid rgba(0, 0, 0, 0.1);" src="https://embed.figma.com/proto/vSTjed6QZD0fJTc8kHwGSN/KULT-HH-handouty?page-id=127%3A758&node-id=127-759&node-type=frame&viewport=589%2C173%2C0.03&scaling=scale-down&content-scaling=fixed&embed-host=share"></iframe>
         </div>
+        
     </div>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    <script src="script.js"></script>
-    
+    <script type="module" src="script.js"></script>
+    </script>
 </body>
 </html>
-
