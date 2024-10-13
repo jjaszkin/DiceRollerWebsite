@@ -1,0 +1,187 @@
+/* Użyj Montserrat jako czcionki */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.dice-panel {
+    width: 20%;
+    background-color: black;
+    padding: 20px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5px;
+}
+
+input[type="text"],
+select,
+input[type="number"],
+button {
+    height: 40px;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    border: 1px solid white;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+button {
+    cursor: pointer;
+    background-color: #333;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, label {
+    font-size: 18px;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.dice-panel {
+    width: 20%; /* Szerokość panelu do rzucania kostkami */
+    padding: 40px;
+    background-color: #000;
+    color: white;
+    /* border-right: 1px solid #ccc; */
+    resize: horizontal;
+    box-sizing: border-box;
+    overflow-y: auto; /* Dodaj przewijanie dla historii rzutów */
+}
+
+.dice-panel h1,
+.dice-panel label,
+.dice-panel h2 {
+    color: white;
+}
+
+.dice-panel input[type="text"],
+.dice-panel input[type="number"],
+.dice-panel select {
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    padding-left: 10px; /* Padding tylko po lewej stronie */
+    padding-right: 10px; /* Zwiększony odstęp na strzałkę */
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dice-panel button {
+    background-color: white;
+    color: black;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.dice-panel button:hover {
+    background-color: #ccc;
+}
+
+.dice-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#results {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+
+/* Historia rzutów z maksymalną wysokością i wewnętrznym przewijaniem */
+#rollHistory {
+    /* max-height: 200px; Ograniczenie wysokości */
+    overflow-y: auto;  /* Wewnętrzny scroll */
+    border: 1px solid #ccc;
+    padding: 40px;
+    background-color: #1e1e1e;
+    line-height: 24px;
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 0px; /* Zmniejsz margines dolny według potrzeb */
+    
+}
+
+.figma-embed {
+    width: 80%;
+    padding: 20px;
+    overflow: hidden;
+    background-color: #000;
+}
+
+/* Dodanie nakładki na dół iframe */
+.hide-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px; /* Wysokość paska do ukrycia */
+    background-color: black; /* Dopasuj kolor do tła strony */
+    z-index: 2;
+}
+
+
+.resizer {
+    width: 10px;
+    cursor: col-resize;
+    background-color: #1e1e1e;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+}
+
+.resizer:hover {
+    background-color: #888;
+}
+
+.resizer {
+    height: 100vh; /* Wysokość uchwytu na całą stronę */
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+}
+
+input, select, button {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+}
+
+#results {
+    margin-top: 20px;
+}
+
+#testFirebaseButton {
+    display: none;
+}

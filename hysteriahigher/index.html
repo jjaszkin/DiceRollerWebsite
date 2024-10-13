@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <title>Panel Rzucania Kostkami</title>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="dice-panel">
+            <h1>Hysteria Higher</h1>
+            <input type="text" id="characterName" placeholder="Imię postaci">
+            <div class="dice-inputs">
+                <label for="diceType">Typ kostki:</label>
+                <select id="diceType">
+                    <option value="2">K2</option>
+                    <option value="4">K4</option>
+                    <option value="6">K6</option>
+                    <option value="8">K8</option>
+                    <option value="10">K10</option>
+                    <option value="12">K12</option>
+                    <option value="20">K20</option>
+                    <option value="100">K100</option>
+                </select>
+                <label for="diceQuantity">Ilość kostek:</label>
+                <input type="number" id="diceQuantity" min="1" value="1">
+            </div>
+            <input type="text" id="attribute" placeholder="Atrybut (opcjonalny)">
+            <input type="text" id="modifier" placeholder="Modyfikator (opcjonalny)">
+            <button id="rollButton">RZUT!</button>
+            <div id="results"></div>
+            <h2>Historia Rzutów:</h2>
+            <ul id="rollHistory"></ul>
+            <button id="testFirebaseButton">TESTUJ FIREBASE</button>
+
+        </div>
+        <div class="resizer"></div>
+        <div class="figma-embed">
+            <!-- Tutaj wstaw link do prototypu z Figmy -->
+            <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/proto/FUAoVACdDg1w39TjU110U7/KULT-Hysteria-Higher?page-id=407%3A33&node-id=407-214&node-type=frame&viewport=793%2C942%2C0.08&scaling=scale-down&content-scaling=fixed&embed-host=share" allowfullscreen></iframe>
+            <!-- Nakładka na pasek -->
+            <div class="hide-footer"></div>
+        </div>
+        
+    </div>
+    <script type="module" src="script.js"></script>
+    </script>
+</body>
+</html>
