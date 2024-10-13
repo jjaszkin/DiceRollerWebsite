@@ -129,6 +129,7 @@ h1, h2, label {
 }
 
 .figma-embed {
+    position: relative; /* Nakładka będzie ograniczona do kontenera embeda */
     width: 80%;
     padding: 20px;
     overflow: hidden;
@@ -139,11 +140,11 @@ h1, h2, label {
 .hide-footer {
     position: absolute;
     bottom: 0;
-    left: 0;
+    right: 0;
     width: 100%;
     height: 80px; /* Wysokość paska do ukrycia */
     background-color: black; /* Dopasuj kolor do tła strony */
-    z-index: 2;
+    z-index: 10;
 }
 
 
