@@ -12,6 +12,7 @@ const firebaseConfig = {
     appId: "1:117039589628:web:1fc0ffa255db93a878cf79"
 };
 
+
 // Inicjalizacja Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
@@ -49,6 +50,7 @@ function saveRollHistory(entry) {
     const newRollRef = push(ref(database, 'rolls'));
     set(newRollRef, entry);
 }
+
 
 // Funkcja do rzucania kostkami
 document.getElementById('rollButton').addEventListener('click', function() {
