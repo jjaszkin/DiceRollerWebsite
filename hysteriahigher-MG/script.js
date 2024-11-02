@@ -58,6 +58,11 @@ document.getElementById('rollButton').addEventListener('click', function() {
     const modifier = parseInt(document.getElementById('modifier').value) || 0; // Modyfikator
     const attribute = parseInt(document.getElementById('attribute').value) || 0; // Atrybut
 
+    // Zapisz imię do LocalStorage
+    if (characterName) {
+    localStorage.setItem('characterName', characterName);
+    }
+
     let results = [];
     let total = 0;
 
@@ -88,8 +93,19 @@ document.getElementById('rollButton').addEventListener('click', function() {
  saveRollHistory(rollHistoryEntry);
 });
 
-// Załaduj historię rzutów przy ładowaniu strony
-loadRollHistory();
+window.onload = function() {
+    // Pobierz imię z LocalStorage
+    const savedName = localStorage.getItem('characterName');
+    
+    // Jeśli imię istnieje, uzupełnij pole
+    if (savedName) {
+        document.getElementById('characterName').value = savedName;
+    }
+
+    // Załaduj historię rzutów przy ładowaniu strony
+    loadRollHistory();
+    
+};
 
 
 //resizowanie lewego panelu
