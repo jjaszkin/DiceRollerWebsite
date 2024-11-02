@@ -1,8 +1,8 @@
-/* Użyj Montserrat jako czcionki */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+/* Użyj Pirata One jako czcionki */
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
 
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Pirata One', sans-serif;
     color: white;
 }
 
@@ -27,8 +27,8 @@ select,
 input[type="number"],
 button {
     height: 40px;
-    font-size: 16px;
-    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-family: 'Pirata One', sans-serif;
     color: white;
     border: 1px solid white;
     padding: 5px;
@@ -42,13 +42,13 @@ button {
 
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Pirata One', sans-serif;
     margin: 0;
     padding: 0;
 }
 
 h1, h2, label {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .container {
@@ -110,7 +110,7 @@ h1, h2, label {
 
 #results {
     margin-top: 10px;
-    font-size: 18px;
+    font-size: 20px;
 }
 
 
