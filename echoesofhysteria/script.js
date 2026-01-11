@@ -42,8 +42,6 @@ function loadRollHistory() {
 }
 
 
-
-
 // Funkcja do zapisania rzutu w Firebase
 function saveRollHistory(entry) {
     const newRollRef = push(ref(database, 'rollsEchoes'));
