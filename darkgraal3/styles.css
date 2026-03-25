@@ -3,8 +3,6 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100vh;
-    overflow: hidden;
     background: #000;
     color: #fff;
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -12,7 +10,7 @@ html, body {
 
 body {
     display: grid;
-    grid-template-rows: 60vh 40vh;
+    grid-template-rows: 90vh auto;
 }
 
 /* ── Top row — full width Figma embed ────────────────────────────────────────── */
@@ -50,18 +48,16 @@ body {
 .bottom-row {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    overflow: hidden;
 }
 
 /* ── Roller Form (Left) ───────────────────────────────────────────────────────── */
 
 .roller-form {
     background: #171717;
-    padding: 20px 24px;
+    padding: 20px 24px 28px;
     display: flex;
     flex-direction: column;
     gap: 14px;
-    overflow-y: auto;
     border-right: 1px solid #2a2a2a;
 }
 
@@ -139,8 +135,8 @@ body {
 /* ── Audio mini-section (under dice form) ─────────────────────────────────────── */
 
 .audio-mini {
-    margin-top: auto;        /* push to bottom of the flex column */
-    padding-top: 12px;
+    margin-top: 8px;
+    padding-top: 16px;
     border-top: 1px solid #2a2a2a;
     display: flex;
     flex-direction: column;
@@ -195,11 +191,10 @@ body {
 
 .roller-history {
     background: #171717;
-    padding: 20px 24px;
+    padding: 20px 24px 28px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    overflow-y: auto;
 }
 
 .roll-result-box {
@@ -259,7 +254,7 @@ body {
     border: 1px solid #404040;
     border-radius: 6px;
     overflow-y: auto;
-    max-height: calc(40vh - 160px);
+    max-height: 320px;
 }
 
 .roll-history-list li + li {
