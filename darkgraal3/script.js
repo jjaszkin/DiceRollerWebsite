@@ -147,6 +147,8 @@ const RTC_CFG = {
 };
 
 let listenerPc = null;
+let gainNode   = null;
+let audioCtx   = null;
 
 function setAudioStatus(text, isLive) {
     document.getElementById('audioStatusText').textContent = text;
@@ -158,8 +160,9 @@ function initAudioListener() {
     const audio = document.getElementById('remoteAudio');
 
     document.getElementById('volumeSlider').addEventListener('input', e => {
-        audio.volume = parseFloat(e.target.value);
-        // Odblokowuje audio jeśli autoplay był zablokowany przez przeglądarkę
+        const vol = parseFloat(e.target.value);
+        if (gainNode) gainNode.gain.value = vol;
+        else audio.volume = vol; // fallback zanim stream dotrze
         if (audio.srcObject && audio.paused) audio.play().catch(() => {});
     });
 
@@ -196,8 +199,18 @@ async function joinSession(audio) {
 
     // Receive broadcaster's audio track
     pc.ontrack = ({ streams }) => {
+        // Web Audio API GainNode — jedyna pewna metoda kontroli głośności dla WebRTC w Chrome
+        audioCtx = new AudioContext();
+        const source = audioCtx.createMediaStreamSource(streams[0]);
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = parseFloat(document.getElementById('volumeSlider').value);
+        source.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        // HTML audio element tylko jako fallback (wyciszony żeby nie duplikować dźwięku)
         audio.srcObject = streams[0];
-        audio.play().catch(() => {});
+        audio.muted = true;
+
         clearTimeout(watchdog);
         setAudioStatus('🔴 ON AIR', true);
     };
