@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+  ignore = "exit 0"
+
+# Czyste URL-e: /gmpanel zamiast /gmpanel.html
+[[redirects]]
+  from = "/gmpanel"
+  to   = "/gmpanel.html"
+  status = 200
