@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+    <title>KULT Hysteria Highest — Panel GM</title>
+</head>
+<body class="gm-page">
+
+    <div class="gm-container">
+
+        <div class="gm-header">
+            <span class="gm-logo">🔪</span>
+            <h1 class="gm-title">Panel GM — Hysteria Highest</h1>
+            <a href="/hhighest/" class="gm-back-link">← Powrót do sesji</a>
+        </div>
+
+        <div class="gm-card">
+            <h2 class="gm-card-title">🎵 Transmisja Audio</h2>
+
+            <div class="gm-status-row" id="gmStatusRow">
+                <span class="gm-status-dot" id="gmStatusDot"></span>
+                <span class="gm-status-text" id="gmStatusText">Brak transmisji</span>
+            </div>
+
+            <div class="gm-instructions">
+                <p><strong>Jak to działa:</strong></p>
+                <ol>
+                    <li>Ustaw Farrago/Vox jako źródło w <strong>Loopback Music</strong></li>
+                    <li>Wybierz urządzenie poniżej</li>
+                    <li>Kliknij <strong>Nadawaj</strong> — bez okna share screen</li>
+                </ol>
+            </div>
+
+            <div class="gm-device-row">
+                <label for="audioDeviceSelect" class="gm-device-label">Źródło audio</label>
+                <select id="audioDeviceSelect" class="fm-input">
+                    <option value="">⏳ Ładowanie urządzeń…</option>
+                </select>
+                <button id="refreshDevicesBtn" class="btn-refresh" title="Odśwież listę urządzeń">↺</button>
+            </div>
+
+            <button id="broadcastBtn" class="btn-broadcast-gm">▶ Nadawaj</button>
+
+            <div class="gm-listener-count" id="listenerCount" style="display:none;">
+                <span id="listenerCountText">0 graczy połączonych</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="./gmpanel.js"></script>
+</body>
+</html>

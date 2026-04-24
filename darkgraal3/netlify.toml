@@ -1,9 +1,16 @@
 [build]
+  command = "cp -r ../hysteriahighest hhighest"
   publish = "."
-  ignore = "exit 0"
+  ignore  = "exit 0"
 
-# Czyste URL-e: /gmpanel zamiast /gmpanel.html
+# Czyste URL-e — darkgraal3
 [[redirects]]
   from = "/gmpanel"
   to   = "/gmpanel.html"
+  status = 200
+
+# Czyste URL-e — Hysteria Highest
+[[redirects]]
+  from = "/hhighest/gmpanel"
+  to   = "/hhighest/gmpanel.html"
   status = 200
