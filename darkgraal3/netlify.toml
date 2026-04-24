@@ -1,16 +1,30 @@
 [build]
-  command = "cp -r ../hysteriahighest hhighest"
-  publish = "."
+  publish = ".."
   ignore  = "exit 0"
 
-# Czyste URL-e — darkgraal3
+# darkgraal3 serwowane z roota — 301 zachowuje relatywne ścieżki w HTML
+[[redirects]]
+  from = "/"
+  to   = "/darkgraal3/"
+  status = 301
+
 [[redirects]]
   from = "/gmpanel"
-  to   = "/gmpanel.html"
+  to   = "/darkgraal3/gmpanel.html"
+  status = 301
+
+# /hhighest/* → /hysteriahighest/* — 200 rewrite (URL w przeglądarce zostaje /hhighest)
+[[redirects]]
+  from = "/hhighest"
+  to   = "/hysteriahighest/index.html"
   status = 200
 
-# Czyste URL-e — Hysteria Highest
 [[redirects]]
   from = "/hhighest/gmpanel"
-  to   = "/hhighest/gmpanel.html"
+  to   = "/hysteriahighest/gmpanel.html"
+  status = 200
+
+[[redirects]]
+  from = "/hhighest/*"
+  to   = "/hysteriahighest/:splat"
   status = 200
