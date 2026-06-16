@@ -13,6 +13,11 @@
   to   = "/darkgraal3/gmpanel.html"
   status = 301
 
+[[redirects]]
+  from = "/klatwastrahda/gmpanel"
+  to   = "/klatwastrahda/gmpanel.html"
+  status = 200
+
 # /hhighest/* → /hysteriahighest/* — 200 rewrite (URL w przeglądarce zostaje /hhighest)
 [[redirects]]
   from = "/hhighest"
