@@ -122,6 +122,12 @@ document.getElementById('rollButton').addEventListener('click', () => {
 
 document.getElementById('diceType').addEventListener('change', updateDiceInfo);
 
+// ── Drawer toggle ──────────────────────────────────────────────────────────────
+
+document.getElementById('drawerToggle').addEventListener('click', () => {
+    document.getElementById('drawerPanel').classList.toggle('open');
+});
+
 window.addEventListener('load', () => {
     const saved = localStorage.getItem('characterName');
     if (saved) document.getElementById('characterName').value = saved;

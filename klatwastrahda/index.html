@@ -20,8 +20,15 @@
         </div>
     </div>
 
-    <!-- BOTTOM ROW: Dice Roller -->
-    <div class="bottom-row">
+    <!-- BOTTOM DRAWER: Dice Roller + Audio -->
+    <div class="bottom-row" id="drawerPanel">
+
+        <div class="drawer-toggle" id="drawerToggle">
+            <span class="drawer-toggle-label">♬ 🎲 Panel audio i rzuty</span>
+            <span class="drawer-toggle-arrow">▲</span>
+        </div>
+
+        <div class="drawer-content">
 
         <!-- Left Column: Form + Audio status -->
         <div class="roller-form">
@@ -94,7 +101,8 @@
             <p class="firebase-note">Dane są zapisywane w Firebase.</p>
         </div>
 
-    </div>
+        </div><!-- /.drawer-content -->
+    </div><!-- /.bottom-row -->
 
     <script type="module" src="script.js"></script>
 </body>

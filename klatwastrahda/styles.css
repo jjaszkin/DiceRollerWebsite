@@ -9,13 +9,14 @@ html, body {
 }
 
 body {
-    display: grid;
-    grid-template-rows: 90vh auto;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* ── Top row — full width Figma embed ────────────────────────────────────────── */
 
 .top-row {
+    height: 100vh;
     overflow: hidden;
     background: #000;
 }
@@ -43,9 +44,66 @@ body {
     z-index: 10;
 }
 
-/* ── Bottom row ──────────────────────────────────────────────────────────────── */
+/* ── Bottom drawer ───────────────────────────────────────────────────────────── */
 
 .bottom-row {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    overflow: hidden;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    background: #171717;
+    border-top: 1px solid #2a2a2a;
+}
+
+.bottom-row.open {
+    height: 25vh;
+}
+
+/* Toggle bar */
+.drawer-toggle {
+    height: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    color: #9ca3af;
+    font-size: 14px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.drawer-toggle:hover {
+    background: #1f1f1f;
+    color: #d1d5db;
+}
+
+.drawer-toggle-label {
+    letter-spacing: 0.02em;
+}
+
+.drawer-toggle-arrow {
+    font-size: 10px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+}
+
+.bottom-row.open .drawer-toggle-arrow {
+    transform: rotate(180deg);
+}
+
+/* Drawer content area */
+.drawer-content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
     display: grid;
     grid-template-columns: 1fr 2fr;
 }
