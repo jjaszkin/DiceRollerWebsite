@@ -30,8 +30,22 @@
 
         <div class="drawer-content">
 
-        <!-- Left Column: Form + Audio status -->
+        <!-- Left Column: Audio + Form -->
         <div class="roller-form">
+
+            <!-- Audio status — nad formularzem rzutów -->
+            <div class="audio-mini">
+                <div class="audio-mini-status">
+                    <span class="audio-dot" id="audioStatusDot"></span>
+                    <span class="audio-mini-text" id="audioStatusText">Brak transmisji</span>
+                </div>
+                <div class="audio-mini-volume" id="audioVolumeRow" style="display:none;">
+                    <label for="volumeSlider" class="audio-mini-label">Głośność</label>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.8">
+                </div>
+                <audio id="remoteAudio" autoplay></audio>
+            </div>
+
             <h2 class="roller-title">Rzut Kośćmi</h2>
 
             <div class="fm-field">
@@ -69,18 +83,6 @@
                 </div>
             </div>
 
-            <!-- Audio status — minimal, below the form -->
-            <div class="audio-mini">
-                <div class="audio-mini-status">
-                    <span class="audio-dot" id="audioStatusDot"></span>
-                    <span class="audio-mini-text" id="audioStatusText">Brak transmisji</span>
-                </div>
-                <div class="audio-mini-volume" id="audioVolumeRow" style="display:none;">
-                    <label for="volumeSlider" class="audio-mini-label">Głośność</label>
-                    <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.8">
-                </div>
-                <audio id="remoteAudio" autoplay></audio>
-            </div>
         </div>
 
         <!-- Right Column: Result + History -->

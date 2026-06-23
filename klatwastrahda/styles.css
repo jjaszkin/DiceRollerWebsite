@@ -63,6 +63,7 @@ body {
 
 .bottom-row.open {
     height: 25vh;
+    min-height: 600px;
 }
 
 /* Toggle bar */
@@ -193,9 +194,8 @@ body {
 /* ── Audio mini-section (under dice form) ─────────────────────────────────────── */
 
 .audio-mini {
-    margin-top: 8px;
-    padding-top: 16px;
-    border-top: 1px solid #2a2a2a;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #2a2a2a;
     display: flex;
     flex-direction: column;
     gap: 8px;
