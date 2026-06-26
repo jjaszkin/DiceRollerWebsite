@@ -553,3 +553,200 @@ body.gm-page {
     color: #22c55e;
     text-align: center;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LITE PAGE  (/index-lite.html)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+body.lite-page {
+    height: auto;
+    min-height: 100vh;
+    overflow: auto;
+    background: #0a0a0a;
+    display: block;
+}
+
+.lite-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 24px;
+    gap: 20px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Audio bar */
+
+.audio-bar {
+    background: #171717;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.audio-bar-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.audio-bar-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.audio-bar-volume {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 160px;
+}
+
+.audio-bar-volume input[type="range"] {
+    flex: 1;
+    accent-color: #F8D270;
+    cursor: pointer;
+    height: 4px;
+}
+
+/* Main two-column layout */
+
+.lite-main {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    background: #171717;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.lite-main .roller-form {
+    border-right: 1px solid #2a2a2a;
+}
+
+.lite-main .roll-result-box {
+    align-items: flex-start;
+}
+
+/* Multi-dice groups */
+
+.dice-group-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.dg-qty {
+    width: 62px !important;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.dg-sep {
+    color: #6b7280;
+    font-size: 15px;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.dg-type {
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-remove-group {
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #404040;
+    border-radius: 6px;
+    width: 34px;
+    height: 42px;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    padding: 0;
+    line-height: 1;
+    font-family: inherit;
+}
+
+.btn-remove-group:hover {
+    background: #3a0a0a;
+    color: #f87171;
+    border-color: #7f1d1d;
+}
+
+.btn-add-group {
+    background: transparent;
+    color: #6b7280;
+    border: 1px dashed #404040;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.15s;
+}
+
+.btn-add-group:hover {
+    background: #1f1f1f;
+    color: #d1d5db;
+    border-color: #6b7280;
+    border-style: solid;
+}
+
+/* Formula preview */
+
+.dice-formula-preview {
+    font-size: 13px;
+    color: #6b7280;
+    text-align: center;
+    margin: 0;
+    padding: 2px 0 4px;
+    font-family: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
+    letter-spacing: 0.04em;
+}
+
+/* Multi-dice result */
+
+.result-multi {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+}
+
+.result-group-line {
+    font-size: 15px;
+    color: #9ca3af;
+}
+
+.result-group-line strong {
+    color: #e5e7eb;
+}
+
+.result-divider {
+    border: none;
+    border-top: 1px solid #404040;
+    margin: 4px 0;
+}
+
+.result-total {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+}
