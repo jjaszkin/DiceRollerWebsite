@@ -47,7 +47,8 @@ function loadRollHistory() {
                 const val = child.val();
                 if (typeof val === 'string') {
                     const timeMatch = val.match(/\d{2}-\d{2}-\d{2} \d{2}:\d{2}/) || val.match(/\d{2}:\d{2}/);
-                    rolls.push({ id: child.key, fullText: val, time: timeMatch ? timeMatch[0] : '' });
+                    const displayText = timeMatch ? val.replace(timeMatch[0], '').trim() : val;
+                    rolls.push({ id: child.key, fullText: displayText, time: timeMatch ? timeMatch[0] : '' });
                 }
             });
         }
