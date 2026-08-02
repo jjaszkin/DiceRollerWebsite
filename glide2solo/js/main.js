@@ -2,6 +2,8 @@
 
 import { loadGameData } from "./data.js";
 import { initStore, getState, getData, subscribe, onSaveStatusChange, updateState } from "./store.js";
+import { rollD100, findInRangeTable, clamp } from "./utils.js";
+import { logRoll } from "./rollLog.js";
 
 import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
@@ -21,6 +23,9 @@ const bootStatus = document.getElementById("bootStatus");
 const saveIndicator = document.getElementById("saveIndicator");
 const dayValue = document.getElementById("dayValue");
 const campButton = document.getElementById("campButton");
+const campResultBox = document.getElementById("campResultBox");
+
+let lastCampResult = null;
 
 function setBootStatus(text) {
     if (bootStatus) bootStatus.textContent = text;
@@ -32,11 +37,32 @@ function renderAll() {
     if (!state) return;
 
     dayValue.textContent = state.day.current;
+    renderCampResultBox();
 
     for (const [tab, mod] of Object.entries(PANELS)) {
         const root = document.getElementById(`panel-${tab}`);
         if (root && mod.render) mod.render(root, { state, data });
     }
+}
+
+function renderCampResultBox() {
+    if (!lastCampResult) {
+        campResultBox.style.display = "none";
+        campResultBox.innerHTML = "";
+        return;
+    }
+    const { roll, entry, recoveryText } = lastCampResult;
+    campResultBox.style.display = "block";
+    campResultBox.innerHTML = `
+        <h2>Camping Event (d100 = ${roll})</h2>
+        <p>${entry ? entry.effect : "Brak dopasowania w tabeli."}</p>
+        <p class="placeholder">${recoveryText}</p>
+        <button class="btn btn-sm" id="campResultDismiss">Zamknij</button>
+    `;
+    document.getElementById("campResultDismiss").addEventListener("click", () => {
+        lastCampResult = null;
+        renderCampResultBox();
+    });
 }
 
 function setupTabs() {
@@ -68,12 +94,39 @@ function setupSaveIndicator() {
 }
 
 function setupCampButton() {
-    // Pełna logika (Camping Event, regeneracja Staminy) dochodzi w Fazie 6.
-    // Na razie: samo przejście do kolejnego dnia, żeby licznik dni działał od startu.
+    // Akcja Camp: rzuca Camping Event (d100), przywraca bazową Staminę (Seekerowi i towarzyszowi,
+    // jeśli obecny) wg camping_base_recovery z mechanics.json, po czym przechodzi do kolejnego dnia.
     campButton.addEventListener("click", () => {
+        const data = getData();
+        const table = data?.mechanics?.camping_events_table_d100 ?? [];
+        const rec = data?.mechanics?.camping_base_recovery ?? { seeker_stamina: 0, companion_stamina: 0 };
+        const { total: roll } = rollD100();
+        const entry = findInRangeTable(table, roll, "roll");
+
+        const recoveryParts = [];
+
+        updateState((state) => {
+            const stam = state.character.resources.stamina;
+            const before = stam.cur;
+            stam.cur = clamp(stam.cur + (rec.seeker_stamina || 0), 0, stam.max);
+            recoveryParts.push(`Stamina Seekera: ${before} → ${stam.cur}`);
+
+            if (state.character.companion.key) {
+                const cstam = state.character.companion.stamina;
+                const cBefore = cstam.cur;
+                cstam.cur = clamp(cstam.cur + (rec.companion_stamina || 0), 0, cstam.max);
+                recoveryParts.push(`Stamina towarzysza: ${cBefore} → ${cstam.cur}`);
+            }
+        });
+
+        // Zaloguj rzut pod dniem, w którym nastąpił Camp, zanim przejdziemy do kolejnego dnia.
+        logRoll("Camping Event (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
+
         updateState((state) => {
             state.day.current += 1;
         });
+
+        lastCampResult = { roll, entry, recoveryText: recoveryParts.join(" · ") };
         renderAll();
     });
 }
