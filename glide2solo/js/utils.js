@@ -77,10 +77,15 @@ export function getPath(obj, path) {
     return path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), obj);
 }
 
+/** Ustawia wartość pod ścieżką kropkową, tworząc brakujące obiekty pośrednie zamiast rzucać wyjątek
+ *  (np. gdy zapis z Firebase ma niekompletny/starszy kształt niż aktualny schemat stanu). */
 export function setPath(obj, path, value) {
     const keys = path.split(".");
     let o = obj;
-    for (let i = 0; i < keys.length - 1; i++) o = o[keys[i]];
+    for (let i = 0; i < keys.length - 1; i++) {
+        if (o[keys[i]] == null || typeof o[keys[i]] !== "object") o[keys[i]] = {};
+        o = o[keys[i]];
+    }
     o[keys[keys.length - 1]] = value;
 }
 

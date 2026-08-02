@@ -282,6 +282,14 @@ function renderChallengeResult(r) {
 
 function renderExhaustionResult(r) {
     const e = r.entry;
+    if (!e) {
+        return `
+            <div class="entry" style="margin-top:10px;">
+                <div class="entry-meta"><span>d10 = ${r.roll}</span></div>
+                <div class="entry-result"><span class="placeholder">Brak dopasowania w tabeli (luka w druku) — sprawdź podręcznik.</span></div>
+            </div>
+        `;
+    }
     return `
         <div class="entry" style="margin-top:10px;">
             <div class="entry-meta"><span>d10 = ${r.roll}</span></div>
@@ -553,7 +561,7 @@ function rollExhaustion(data) {
     const roll = rollDie(10);
     const entry = findInRangeTable(table, roll, "roll");
     ui.exhaustion.result = { roll, entry, sub: null };
-    logRoll("Exhaustion Table (d10)", `d10=${roll}`, `${entry.name} — ${entry.effect} (odzyskaj Staminę: ${entry.recover_stamina})`);
+    logRoll("Exhaustion Table (d10)", `d10=${roll}`, entry ? `${entry.name} — ${entry.effect} (odzyskaj Staminę: ${entry.recover_stamina})` : "brak dopasowania w tabeli");
     rerender();
 }
 
@@ -569,7 +577,7 @@ function rollExhaustionSub() {
 
 function applyExhaustionRecovery() {
     const r = ui.exhaustion.result;
-    if (!r) return;
+    if (!r || !r.entry) return;
     const state = getState();
     const stam = state.character.resources.stamina;
     if (r.entry.recover_stamina === "all") {
