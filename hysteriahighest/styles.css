@@ -753,6 +753,16 @@ body.lite-page {
     border-color: #7f1d1d;
 }
 
+.move-result-panel.tier-passive {
+    background: #0c1a2e;
+    border-color: #1e3a5f;
+}
+
+.tier-passive .move-result-tier-badge {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
 .move-result-header {
     display: flex;
     align-items: center;

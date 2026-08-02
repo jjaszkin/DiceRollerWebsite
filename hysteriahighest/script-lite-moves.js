@@ -146,6 +146,351 @@ const MOVES = [
     }
 ];
 
+// ── Atuty ──────────────────────────────────────────────────────────────────────
+
+const ATUTY = [
+    {
+        id: 'amator-okultyzmu',
+        name: 'Amator okultyzmu',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy odprawiasz rytuał na podstawie instrukcji.',
+        high: 'Prawidłowo odprawiasz cały rytuał, który działa zgodnie z zamiarem.',
+        mid:  'Robisz drobny błąd. MG wybiera pojawiający się problem:\n◊ Nie posiadasz ochrony przed mocami lub bytami, które rytuał przywołuje.\n◊ Działanie rytuału jest nieco inne niż oczekiwałeś.\n◊ Rytuał przywołuje istoty lub moce, których się nie spodziewałeś.',
+        low:  'Źle zrozumiałeś pisma i przeprowadzasz rytuał bez żadnej kontroli nad jego skutkami. MG wykonuje Ruch.'
+    },
+    {
+        id: 'boski',
+        name: 'Boski',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy spotykasz potwora.',
+        high: 'Istota bierze cię za boga. Wybierz do trzech możliwości i użyj ich w dowolnym momencie tej sceny:\n◊ Uspokój agresywną istotę.\n◊ Rozkazuj istocie i zmuś ją do posłuszeństwa.',
+        mid:  'Fascynujesz istotę. Wybierz jedną z możliwości:\n◊ Uspokój agresywną istotę.\n◊ Rozkazuj istocie i zmuś ją do posłuszeństwa.',
+        low:  'Możesz wybrać jedną z możliwości, ale po jej wykorzystaniu istota pragnie cię posiąść – może usiłować cię pożreć lub schwytać. MG wykonuje Ruch.\n◊ Uspokój agresywną istotę.\n◊ Rozkazuj istocie i zmuś ją do posłuszeństwa.'
+    },
+    {
+        id: 'bron-naturalna',
+        name: 'Broń naturalna',
+        attr: 'Pasywny',
+        intro: 'Kiedy Przystępujesz do walki w zwarciu, wykorzystując swoją naturalną broń, zadajesz 3 punkty Obrażeń.',
+        passive: true
+    },
+    {
+        id: 'charyzmatyczna-aura',
+        name: 'Charyzmatyczna aura',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy twoja aura jest naprawdę zauważalna.',
+        high: 'Wybierz dwie różne możliwości:\n◊ Przyciągnij uwagę obcego. Jest ciebie ciekaw i podchodzi.\n◊ Zmień nastawienie osoby: z agresywnego na podejrzliwe, z podejrzliwego na neutralne lub z neutralnego na pozytywne.\n◊ Spraw, że przeciwnicy będą postrzegać cię jako niegroźnego i zignorują, dopóki pozostajesz z tyłu i nie działasz przeciw nim.',
+        mid:  'Wybierz jedną z możliwości:\n◊ Przyciągnij uwagę obcego. Jest ciebie ciekaw i podchodzi.\n◊ Zmień nastawienie osoby: z agresywnego na podejrzliwe, z podejrzliwego na neutralne lub z neutralnego na pozytywne.\n◊ Spraw, że przeciwnicy będą postrzegać cię jako niegroźnego i zignorują, dopóki pozostajesz z tyłu i nie działasz przeciw nim.',
+        low:  'Wybierz jedną z możliwości; przyciągasz także niepożądaną uwagę. MG wykonuje Ruch.\n◊ Przyciągnij uwagę obcego. Jest ciebie ciekaw i podchodzi.\n◊ Zmień nastawienie osoby: z agresywnego na podejrzliwe, z podejrzliwego na neutralne lub z neutralnego na pozytywne.\n◊ Spraw, że przeciwnicy będą postrzegać cię jako niegroźnego i zignorują, dopóki pozostajesz z tyłu i nie działasz przeciw nim.'
+    },
+    {
+        id: 'cichociemny',
+        name: 'Cichociemny',
+        attr: '+Opanowanie',
+        intro: 'Za każdym razem, gdy ukrywasz się i usiłujesz nie ściągać na siebie uwagi.',
+        high: 'Wybierz dwie możliwości. Możesz wykorzystać je w dowolnym momencie sceny:\n◊ Znajdź miejsce, w którym będziesz mógł się chwilowo bezpiecznie ukryć.\n◊ Znajdź alternatywną drogę, by uniknąć napotykania ludzi.\n◊ Omiń system bezpieczeństwa lub inną przeszkodę tak, aby cię nie zauważono.',
+        mid:  'Wybierz jedną z możliwości. Możesz wykorzystać ją w dowolnym momencie sceny:\n◊ Znajdź miejsce, w którym będziesz mógł się chwilowo bezpiecznie ukryć.\n◊ Znajdź alternatywną drogę, by uniknąć napotykania ludzi.\n◊ Omiń system bezpieczeństwa lub inną przeszkodę tak, aby cię nie zauważono.',
+        low:  'Wybierz jedną z możliwości, ale przyciągasz też czyjąś uwagę. MG wykonuje Ruch.\n◊ Znajdź miejsce, w którym będziesz mógł się chwilowo bezpiecznie ukryć.\n◊ Znajdź alternatywną drogę, by uniknąć napotykania ludzi.\n◊ Omiń system bezpieczeństwa lub inną przeszkodę tak, aby cię nie zauważono.'
+    },
+    {
+        id: 'egzorcysta',
+        name: 'Egzorcysta',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy odprawiasz egzorcyzmy, by wygnać ducha lub istotę z innego wymiaru.',
+        high: 'Istota zostaje odesłana. Wybierz dwie możliwości:\n◊ Nikt nie ucierpiał podczas rytuału.\n◊ Istota nie pojawi się ponownie później.\n◊ Istota nie będzie wobec ciebie wroga.',
+        mid:  'Istota zostaje odesłana. Wybierz jedną z możliwości:\n◊ Nikt nie ucierpiał podczas rytuału.\n◊ Istota nie pojawi się ponownie później.\n◊ Istota nie będzie wobec ciebie wroga.',
+        low:  'Istota opiera się odesłaniu i wydarza się coś okropnego – na przykład opętuje cię. MG wykonuje Ruch.'
+    },
+    {
+        id: 'eteryczny',
+        name: 'Eteryczny',
+        attr: '+Dusza',
+        intro: 'Kiedy przyjmujesz eteryczną postać.',
+        high: 'Wybierz trzy Przewagi. Do dwóch z nich możesz zachować na później:\n◊ Bezcielesny ruch: Przenikaj przez materialne przeszkody, takie jak ludzie, ściany czy drzwi.\n◊ Broń nie czyni mi krzywdy: Całkowicie ignorujesz fizyczne Obrażenia.\n◊ Niemożliwy do pochwycenia: Wyzwól się z uchwytu, więzów lub innych materialnych ograniczeń.',
+        mid:  'Wybierz dwie Przewagi. Jedną z nich możesz zachować na później:\n◊ Bezcielesny ruch: Przenikaj przez materialne przeszkody, takie jak ludzie, ściany czy drzwi.\n◊ Broń nie czyni mi krzywdy: Całkowicie ignorujesz fizyczne Obrażenia.\n◊ Niemożliwy do pochwycenia: Wyzwól się z uchwytu, więzów lub innych materialnych ograniczeń.',
+        low:  'Wybierz jedną Przewagę; zwracasz na siebie uwagę duchów lub innych bezcielesnych istot. MG wykonuje Ruch.\n◊ Bezcielesny ruch: Przenikaj przez materialne przeszkody, takie jak ludzie, ściany czy drzwi.\n◊ Broń nie czyni mi krzywdy: Całkowicie ignorujesz fizyczne Obrażenia.\n◊ Niemożliwy do pochwycenia: Wyzwól się z uchwytu, więzów lub innych materialnych ograniczeń.'
+    },
+    {
+        id: 'lowca',
+        name: 'Łowca',
+        attr: '+Percepcja',
+        intro: 'Za każdym razem, gdy polujesz na coś lub kogoś.',
+        high: 'Wybierz trzy możliwości. Możesz użyć ich w dowolnym momencie tej sceny:\n◊ Zastaw zasadzkę na wroga (zadaj Obrażenia właściwe twojej broni).\n◊ Kamuflaż (+2 do Ruchu Działaj pod presją, gdy się ukrywasz).\n◊ Poruszaj się w cieniu (+2 do Ruchu Uniknij obrażeń zadawanych bronią dystansową).',
+        mid:  'Wybierz dwie możliwości. Możesz użyć ich w dowolnym momencie tej sceny:\n◊ Zastaw zasadzkę na wroga (zadaj Obrażenia właściwe twojej broni).\n◊ Kamuflaż (+2 do Ruchu Działaj pod presją, gdy się ukrywasz).\n◊ Poruszaj się w cieniu (+2 do Ruchu Uniknij obrażeń zadawanych bronią dystansową).',
+        low:  'Wybierz jedną z możliwości, ale teraz to ty jesteś zwierzyną. MG wykonuje Ruch.\n◊ Zastaw zasadzkę na wroga (zadaj Obrażenia właściwe twojej broni).\n◊ Kamuflaż (+2 do Ruchu Działaj pod presją, gdy się ukrywasz).\n◊ Poruszaj się w cieniu (+2 do Ruchu Uniknij obrażeń zadawanych bronią dystansową).'
+    },
+    {
+        id: 'magiczna-intuicja',
+        name: 'Magiczna intuicja',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy korzystasz z magicznej intuicji.',
+        high: 'Wybierz do trzech możliwości. Do dwóch możesz zostawić na później do wykorzystania w tej scenie:\n◊ Dowiedz się czegoś o prawdziwej naturze jakiejś istoty.\n◊ Ustal, czy coś jest magiczne.\n◊ Ustal, gdzie Iluzja dzieląca wymiary jest najsłabsza.',
+        mid:  'Wybierz do dwóch możliwości. Jedną możesz zostawić na później do wykorzystania w tej scenie:\n◊ Dowiedz się czegoś o prawdziwej naturze jakiejś istoty.\n◊ Ustal, czy coś jest magiczne.\n◊ Ustal, gdzie Iluzja dzieląca wymiary jest najsłabsza.',
+        low:  'Wybierz jedną z możliwości. Masz również niespodziewaną wizję lub przyciągasz uwagę. MG wykonuje Ruch.\n◊ Dowiedz się czegoś o prawdziwej naturze jakiejś istoty.\n◊ Ustal, czy coś jest magiczne.\n◊ Ustal, gdzie Iluzja dzieląca wymiary jest najsłabsza.'
+    },
+    {
+        id: 'manipulacja-iluzja',
+        name: 'Manipulacja Iluzją',
+        attr: '+Dusza − poziom magii stworzenia',
+        intro: 'Kiedy manipulujesz Iluzją, by rozproszyć magiczną moc, odepchnąć istotę lub zamknąć portal.',
+        high: 'Pozwalasz przytłaczającej potędze Iluzji rozproszyć magię lub odepchnąć istotę.',
+        mid:  'Pozwalasz przytłaczającej potędze Iluzji rozproszyć magię lub odepchnąć istotę, ale występują nieprzewidziane konsekwencje — magia bądź istota mają czas wpłynąć na ciebie, albo twoje użycie mocy przyciągnęło niechcianą uwagę.',
+        low:  'Iluzja tymczasowo cię odrzuca. Możesz poczuć się przytłoczony, zostać przeniesiony w inne miejsce albo stać się celem dla widzących cię teraz wyraźnie istot. MG wykonuje Ruch.'
+    },
+    {
+        id: 'manipulator-umyslow',
+        name: 'Manipulator umysłów',
+        attr: '+Dusza',
+        intro: 'Kiedy wdzierasz się do czyjejś głowy.',
+        high: 'Wybierz do trzech możliwości:\n◊ Przeglądaj wspomnienia w poszukiwaniu konkretnego wydarzenia. Doświadczasz tego wspomnienia, jakby należało do ciebie.\n◊ Dowiedz się, jakie są w tej chwili powierzchowne myśli celu.\n◊ Szukaj konkretnej informacji, którą cel powinien posiadać.',
+        mid:  'Wybierz do dwóch możliwości:\n◊ Przeglądaj wspomnienia w poszukiwaniu konkretnego wydarzenia. Doświadczasz tego wspomnienia, jakby należało do ciebie.\n◊ Dowiedz się, jakie są w tej chwili powierzchowne myśli celu.\n◊ Szukaj konkretnej informacji, którą cel powinien posiadać.',
+        low:  'Wybierz jedną z możliwości; twój umysł również staje otworem przed osobą, którą próbowałeś manipulować. Wybiera ona jedną z możliwości i wykorzystuje ją przeciwko tobie.\n◊ Przeglądaj wspomnienia w poszukiwaniu konkretnego wydarzenia. Doświadczasz tego wspomnienia, jakby należało do ciebie.\n◊ Dowiedz się, jakie są w tej chwili powierzchowne myśli celu.\n◊ Szukaj konkretnej informacji, którą cel powinien posiadać.'
+    },
+    {
+        id: 'mistrz-przeslucha',
+        name: 'Mistrz przesłuchań',
+        attr: 'Pasywny',
+        intro: 'Za każdym razem, gdy Rozeznajesz intencje i wymienisz nazwę, osobę lub przedmiot, możesz zawsze zapytać: „Czy kłamiesz?". To pytanie nie wlicza się do normalnego limitu.',
+        passive: true
+    },
+    {
+        id: 'nalozenie-rak',
+        name: 'Nałożenie rąk',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy nakładasz ręce na poważnie lub krytycznie ranną osobę i modlisz się.',
+        high: 'Całkowicie leczysz rannego, przenosząc Ranę na siebie lub wybrany cel.',
+        mid:  'Stabilizujesz stan rannego, przenosząc Ranę na siebie lub wybrany cel.',
+        low:  'Możesz ustabilizować stan rannego, ale jeśli to zrobisz, moc wymknie się spod twojej kontroli. MG wykonuje Ruch.'
+    },
+    {
+        id: 'odporny',
+        name: 'Odporny',
+        attr: 'Pasywny',
+        intro: 'Za każdym razem, gdy obniżasz Stabilność, tracisz 1 poziom mniej niż normalnie.',
+        passive: true
+    },
+    {
+        id: 'oko-za-oko',
+        name: 'Oko za oko',
+        attr: 'Pasywny',
+        intro: 'Za każdym razem, gdy otrzymujesz poważne lub krytyczne obrażenia — wskaż odpowiedzialną osobę. Otrzymujesz +2 do wszystkich rzutów bezpośrednio przeciw niej na zawsze.',
+        passive: true
+    },
+    {
+        id: 'podstepny',
+        name: 'Podstępny',
+        attr: '+Intuicja',
+        intro: 'Za każdym razem, gdy manipulujesz BN-em podczas dłuższej rozmowy.',
+        high: 'Wybierz do dwóch możliwości. Jedną możesz zostawić do wykorzystania później w tej scenie:\n◊ Dana osoba staje się podejrzliwa wobec kogoś, kogo wskażesz.\n◊ Dana osoba uznaje cię za sojusznika, dopóki jej nie zdradzisz (+1 do wszystkich rzutów przeciw niej).\n◊ Dana osoba chętnie wyświadczy ci przysługę.',
+        mid:  'Wybierz jedną z możliwości:\n◊ Dana osoba staje się podejrzliwa wobec kogoś, kogo wskażesz.\n◊ Dana osoba uznaje cię za sojusznika, dopóki jej nie zdradzisz (+1 do wszystkich rzutów przeciw niej).\n◊ Dana osoba chętnie wyświadczy ci przysługę.',
+        low:  'Druga strona coś podejrzewa. MG wykonuje Ruch.'
+    },
+    {
+        id: 'przerazajacy',
+        name: 'Przerażający',
+        attr: '+Przemoc',
+        intro: 'Za każdym razem, gdy usiłujesz przestraszyć inną osobę.',
+        high: 'Dana osoba poddaje się strachowi i spełnia twoje żądania.',
+        mid:  'Dana osoba ucieka przed tobą lub poddaje ci się. Wybór należy do MG.',
+        low:  'Dana osoba uznaje cię za główne zagrożenie i działa zgodnie z tym wnioskiem. MG wykonuje Ruch w jej imieniu.'
+    },
+    {
+        id: 'regeneracja',
+        name: 'Regeneracja',
+        attr: 'Pasywny',
+        intro: 'Poważne Rany znikają całkowicie po kilku godzinach. Krytyczne Rany goją się w ciągu jednego dnia.',
+        passive: true
+    },
+    {
+        id: 'rozwinięta-swiadomosc',
+        name: 'Rozwinięta świadomość',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy skupisz się w miejscu, gdzie Iluzja jest słaba.',
+        high: 'Dostrzegasz wyraźne szczegóły dotyczące tego miejsca. Możesz porozmawiać z bytami z nim związanymi.',
+        mid:  'Masz kilka ogólnych wrażeń dotyczących tego miejsca. Możesz porozmawiać z bytami z nim związanymi.',
+        low:  'Iluzja kruszeje. Zasłona tymczasowo się podnosi, ukazując jeden z wymiarów alternatywnych — MG decyduje który. BG może zostać do niego wciągnięty lub coś może przedostać się do naszej rzeczywistości. MG wykonuje Ruch.'
+    },
+    {
+        id: 'ryzykant',
+        name: 'Ryzykant',
+        attr: '+Percepcja',
+        intro: 'Za każdym razem, gdy znajdziesz się w niebezpiecznej sytuacji.',
+        high: 'Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Miej oczy otwarte: Odkryj zagrożenie, zanim ono odkryje ciebie.\n◊ Zejdź z drogi: Uniknij ataku.\n◊ Zaskocz ich: Zadaj Obrażenia, zanim przeciwnicy zdążą zareagować.',
+        mid:  'Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Miej oczy otwarte: Odkryj zagrożenie, zanim ono odkryje ciebie.\n◊ Zejdź z drogi: Uniknij ataku.\n◊ Zaskocz ich: Zadaj Obrażenia, zanim przeciwnicy zdążą zareagować.',
+        low:  'Otrzymujesz jedną Przewagę, ale tym razem przesadziłeś. MG wykonuje Ruch.\n◊ Miej oczy otwarte: Odkryj zagrożenie, zanim ono odkryje ciebie.\n◊ Zejdź z drogi: Uniknij ataku.\n◊ Zaskocz ich: Zadaj Obrażenia, zanim przeciwnicy zdążą zareagować.'
+    },
+    {
+        id: 'sztuka-przetrwania',
+        name: 'Sztuka przetrwania',
+        attr: '+Percepcja',
+        intro: 'Za każdym razem, gdy korzystasz z umiejętności przetrwania.',
+        high: 'Wybierz do trzech możliwości i użyj ich, dopóki trwa dana sytuacja:\n◊ Znajdź wodę i jedzenie.\n◊ Pokonaj naturalną przeszkodę.\n◊ Znajdź bezpieczne miejsce na kryjówkę i odpoczynek.',
+        mid:  'Wybierz do dwóch możliwości i użyj ich, dopóki trwa dana sytuacja:\n◊ Znajdź wodę i jedzenie.\n◊ Pokonaj naturalną przeszkodę.\n◊ Znajdź bezpieczne miejsce na kryjówkę i odpoczynek.',
+        low:  'Wybierz jedną z możliwości i użyj jej, dopóki trwa dana sytuacja. Przeoczyłeś jednak coś ważnego. MG wykonuje Ruch.\n◊ Znajdź wodę i jedzenie.\n◊ Pokonaj naturalną przeszkodę.\n◊ Znajdź bezpieczne miejsce na kryjówkę i odpoczynek.'
+    },
+    {
+        id: 'szosty-zmysl',
+        name: 'Szósty Zmysł',
+        attr: '+Dusza',
+        intro: 'Na początku każdej sesji gry.',
+        high: 'Wybierz do trzech możliwości i użyj ich w dowolnym momencie sesji:\n◊ Działaj pierwszy w groźnej sytuacji (nawet uprzedzając atak z zaskoczenia).\n◊ Wyczuj, czy ktoś życzy ci źle, czy dobrze.\n◊ Odkryj lub wyczuj wskazówkę lub ślad, gdy nie wiesz, co robić.',
+        mid:  'Wybierz do dwóch możliwości i użyj ich w dowolnym momencie sesji:\n◊ Działaj pierwszy w groźnej sytuacji (nawet uprzedzając atak z zaskoczenia).\n◊ Wyczuj, czy ktoś życzy ci źle, czy dobrze.\n◊ Odkryj lub wyczuj wskazówkę lub ślad, gdy nie wiesz, co robić.',
+        low:  'Twój instynkt nie działa w niebezpiecznej sytuacji. MG wykonuje Ruch w którymś momencie sesji.'
+    },
+    {
+        id: 'sledczy',
+        name: 'Śledczy',
+        attr: '+Rozum',
+        intro: 'Za każdym razem, gdy badasz miejsce zbrodni.',
+        high: 'Zadaj dwa pytania:\n◊ Jak przebiegły zdarzenia?\n◊ Co mogę założyć na temat sprawcy?\n◊ Jakie błędy popełnił sprawca?\n◊ Kiedy popełniono przestępstwo?\n◊ Kiedy ktoś tu ostatnio był?\n◊ Czy przestępstwo przypomina mi coś, co już znam, a jeśli tak, to co?\n◊ Kto może wiedzieć więcej o tym przestępstwie?',
+        mid:  'Zadaj jedno pytanie:\n◊ Jak przebiegły zdarzenia?\n◊ Co mogę założyć na temat sprawcy?\n◊ Jakie błędy popełnił sprawca?\n◊ Kiedy popełniono przestępstwo?\n◊ Kiedy ktoś tu ostatnio był?\n◊ Czy przestępstwo przypomina mi coś, co już znam, a jeśli tak, to co?\n◊ Kto może wiedzieć więcej o tym przestępstwie?',
+        low:  'Zadaj jedno pytanie, ale twoje śledztwo wystawia cię na zagrożenie lub tworzy nowe problemy, które pojawią się później:\n◊ Jak przebiegły zdarzenia?\n◊ Co mogę założyć na temat sprawcy?\n◊ Jakie błędy popełnił sprawca?\n◊ Kiedy popełniono przestępstwo?\n◊ Kiedy ktoś tu ostatnio był?\n◊ Czy przestępstwo przypomina mi coś, co już znam, a jeśli tak, to co?\n◊ Kto może wiedzieć więcej o tym przestępstwie?'
+    },
+    {
+        id: 'twardziel',
+        name: 'Twardziel',
+        attr: 'Pasywny',
+        intro: 'Otrzymujesz +1 na stałe do Ruchu Znieś Obrażenia.',
+        passive: true
+    },
+    {
+        id: 'uparty',
+        name: 'Uparty',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy dajesz z siebie wszystko, by pokonać zagrożenie.',
+        high: 'Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Nie poddawaj się: Opóźnij działanie krytycznych obrażeń do momentu, kiedy wymkniesz się zagrożeniu.\n◊ Wola ponad talentem: Rzuć +Siła Woli zamiast zwykłego Atrybutu, gdy unikasz lub walczysz z czymś, co ci zagraża.\n◊ Skup się: Wyzwól się spod działania nadnaturalnego efektu.',
+        mid:  'Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Nie poddawaj się: Opóźnij działanie krytycznych obrażeń do momentu, kiedy wymkniesz się zagrożeniu.\n◊ Wola ponad talentem: Rzuć +Siła Woli zamiast zwykłego Atrybutu, gdy unikasz lub walczysz z czymś, co ci zagraża.\n◊ Skup się: Wyzwól się spod działania nadnaturalnego efektu.',
+        low:  'Otrzymujesz jedną Przewagę, ale przekraczasz granice swojej wytrzymałości. Zmniejsz Stabilność (−2).\n◊ Nie poddawaj się: Opóźnij działanie krytycznych obrażeń do momentu, kiedy wymkniesz się zagrożeniu.\n◊ Wola ponad talentem: Rzuć +Siła Woli zamiast zwykłego Atrybutu, gdy unikasz lub walczysz z czymś, co ci zagraża.\n◊ Skup się: Wyzwól się spod działania nadnaturalnego efektu.'
+    },
+    {
+        id: 'uwazny',
+        name: 'Uważny',
+        attr: 'Pasywny',
+        intro: 'Za każdym razem, gdy Rozeznajesz intencje, możesz dodatkowo zadać jedno z poniższych pytań:\n◊ Jaką osobą jesteś?\n◊ Czy jest w tobie coś dziwnego?',
+        passive: true
+    },
+    {
+        id: 'wewnetrzna-moc',
+        name: 'Wewnętrzna moc',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy wyzwalasz swoją wewnętrzną moc.',
+        high: 'Moc dosięga wszystkich wrogów w pobliżu, zadając 2 punkty Obrażeń.',
+        mid:  'Moc atakuje najbliższego przeciwnika, zadając 2 punkty Obrażeń.',
+        low:  'Moc dosięga wszystkich istot żyjących, w tym ciebie, zadając 2 punkty Obrażeń. MG wykonuje Ruch.'
+    },
+    {
+        id: 'zacisniete-zeby',
+        name: 'Zaciśnięte zęby',
+        attr: 'Pasywny',
+        intro: 'Nie otrzymujesz kar za Rany — ani Poważne, ani Krytyczne.',
+        passive: true
+    },
+    {
+        id: 'zakazana-inspiracja',
+        name: 'Zakazana inspiracja',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy zanurzasz się w swojej sztuce i pozwalasz Prawdzie się inspirować.',
+        high: 'Wybierz dwie możliwości:\n◊ Przywabienie: Nakłoń jakąś istotę, by do ciebie przybyła.\n◊ Wizje: Przejrzyj Iluzję i skieruj wzrok na konkretne, wybrane przez ciebie miejsce.\n◊ Inspiracja: Zapytaj MG, czy w sytuacji, w której się znajdujesz, jest coś dziwnego lub nadnaturalnego. Odpowiedź ujawni się poprzez twoją sztukę.',
+        mid:  'Wybierz jedną z możliwości:\n◊ Przywabienie: Nakłoń jakąś istotę, by do ciebie przybyła.\n◊ Wizje: Przejrzyj Iluzję i skieruj wzrok na konkretne, wybrane przez ciebie miejsce.\n◊ Inspiracja: Zapytaj MG, czy w sytuacji, w której się znajdujesz, jest coś dziwnego lub nadnaturalnego. Odpowiedź ujawni się poprzez twoją sztukę.',
+        low:  'Spojrzałeś zbyt głęboko w otchłań. Wybierz jedną z możliwości, ale doświadczasz również straszliwych wizji lub spotykasz coś strasznego. MG wykonuje Ruch.\n◊ Przywabienie: Nakłoń jakąś istotę, by do ciebie przybyła.\n◊ Wizje: Przejrzyj Iluzję i skieruj wzrok na konkretne, wybrane przez ciebie miejsce.\n◊ Inspiracja: Zapytaj MG, czy w sytuacji, w której się znajdujesz, jest coś dziwnego lub nadnaturalnego. Odpowiedź ujawni się poprzez twoją sztukę.'
+    },
+    {
+        id: 'zarazliwe-szalenstwo',
+        name: 'Zaraźliwe szaleństwo',
+        attr: '+Dusza',
+        intro: 'Za każdym razem, gdy pozwalasz swojemu szaleństwu zarazić kogoś, z kim rozmawiasz.',
+        high: 'Wybierz dwie możliwości:\n◊ Wywołaj u ofiary czasową psychozę, w której nawiedzają ją jej własne lęki (tylko BN-i).\n◊ Wprowadź Komplikację tej osoby do gry (dotyczy tylko BG; należy wykonać rzut na Komplikację).\n◊ Wpłyń na jedną osobę więcej.\n◊ Wezwij istoty związane z Obłędem, by nawiedzały zarażonych.',
+        mid:  'Wybierz jedną z możliwości:\n◊ Wywołaj u ofiary czasową psychozę, w której nawiedzają ją jej własne lęki (tylko BN-i).\n◊ Wprowadź Komplikację tej osoby do gry (dotyczy tylko BG; należy wykonać rzut na Komplikację).\n◊ Wpłyń na jedną osobę więcej.\n◊ Wezwij istoty związane z Obłędem, by nawiedzały zarażonych.',
+        low:  'Zarażają cię lęki i objawiają ci się Mroczne Sekrety twojej niedoszłej ofiary. Musisz Wziąć się w garść.'
+    },
+    {
+        id: 'zimna-krew',
+        name: 'Zimna krew',
+        attr: '+Opanowanie',
+        intro: 'Za każdym razem, gdy uczestniczysz w walce.',
+        high: 'Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem).',
+        mid:  'Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem).',
+        low:  'Otrzymujesz jedną Przewagę, ale przyciągasz uwagę wrogów. MG wykonuje Ruch.\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem).'
+    },
+];
+
+// ── Komplikacje ────────────────────────────────────────────────────────────────
+
+const KOMPLIKACJE = [
+    {
+        id: 'fanatyk',
+        name: 'Fanatyk',
+        attr: '+0',
+        intro: 'Za każdym razem, gdy ktoś podważa wyznawaną przez ciebie ideologię.',
+        high: 'Trzymasz emocje na wodzy.',
+        mid:  'Robisz się zły, zdezorientowany lub sfrustrowany. Otrzymujesz karę −1 do następnego rzutu.',
+        low:  'Musisz wybrać: albo podejmujesz kroki, by wpłynąć na daną osobę lub sytuację tak, aby pozostawały w zgodzie z twoją ideologią, albo obniżasz swoją Stabilność (−2).'
+    },
+    {
+        id: 'narkoman',
+        name: 'Narkoman',
+        attr: '+0',
+        intro: 'Podczas pierwszej sesji gry i za każdym razem, gdy bierzesz lub masz okazję brać narkotyki.',
+        high: 'Na razie panujesz nad uzależnieniem.',
+        mid:  'MG zyskuje 1 punkt Wpływu.',
+        low:  'MG zyskuje 3 punkty Wpływu. MG może wydawać je, by wykonywać Ruchy reprezentujące twoje uzależnienie.'
+    },
+    {
+        id: 'nieudany-eksperyment',
+        name: 'Nieudany eksperyment',
+        attr: '+0',
+        intro: 'Podczas pierwszej sesji gry i za każdym razem, gdy sprawy wydają się pod kontrolą.',
+        high: 'Twój eksperyment zostawia cię w spokoju.',
+        mid:  'Twój eksperyment depcze ci po piętach. MG zyskuje 1 punkt Wpływu.',
+        low:  'Twój eksperyment jest w pobliżu i działa przeciw tobie. MG zyskuje 3 punkty Wpływu.'
+    },
+    {
+        id: 'obsesja',
+        name: 'Obsesja',
+        attr: '+0',
+        intro: 'Podczas pierwszej sesji gry i za każdym razem, gdy napotykasz coś związanego z twoją obsesją.',
+        high: 'Chwilowo opanowujesz swoją obsesję.',
+        mid:  'Twoja obsesja wpływa na twoje zachowanie. MG zyskuje 1 punkt Wpływu.',
+        low:  'Twoja obsesja przejmuje całkowitą kontrolę. MG zyskuje 3 punkty Wpływu.'
+    },
+    {
+        id: 'ofiara-wlasnych-namietnosci',
+        name: 'Ofiara własnych namiętności',
+        attr: '+0',
+        intro: 'Podczas pierwszej sesji gry i za każdym razem, gdy napotykasz przedmiot swojej pasji (lub coś, co go przypomina).',
+        high: 'Utrzymujesz swoją żądzę na wodzy.',
+        mid:  'Rozbudza się w tobie namiętność. MG zyskuje 1 punkt Wpływu.',
+        low:  'Namiętność ma cię całkowicie w swojej mocy. MG zyskuje 3 punkty Wpływu.'
+    },
+    {
+        id: 'poczucie-winy',
+        name: 'Poczucie winy',
+        attr: '+0',
+        intro: 'Podczas pierwszej sesji gry i za każdym razem, gdy sprawy wydają się w porządku.',
+        high: 'Nie myślisz w tej chwili o swojej winie.',
+        mid:  'Coś przypomina ci o twojej winie. MG zyskuje 1 punkt Wpływu.',
+        low:  'Dopada cię poczucie winy. MG zyskuje 3 punkty Wpływu.'
+    },
+    {
+        id: 'przesladowca',
+        name: 'Prześladowca',
+        attr: '+0',
+        intro: 'W czasie pierwszej sesji gry i za każdym razem, gdy ujawniasz miejsce, gdzie aktualnie przebywasz.',
+        high: 'Jesteś na razie bezpieczny.',
+        mid:  'Twoi wrogowie są blisko. MG zyskuje 1 punkt Wpływu.',
+        low:  'Twoi wrogowie namierzyli cię. MG zyskuje 3 punkty Wpływu.'
+    },
+    {
+        id: 'przysiega-zemsty',
+        name: 'Przysięga zemsty',
+        attr: '+0',
+        intro: 'Za każdym razem, gdy w scenie pojawia się cel twojej zemsty (lub ktoś albo coś z nim powiązanego).',
+        high: 'Kontrolujesz swoją mściwość i możesz działać racjonalnie.',
+        mid:  'Nie możesz skupić się na niczym innym niż cel twojej zemsty. Otrzymujesz −1 do wszystkich rzutów, dopóki cel bierze udział w scenie.',
+        low:  'Ogarnia cię obsesja; możesz się jedynie mścić. Zrobienie czegokolwiek innego wymaga Ruchu Weź się w garść.'
+    },
+];
+
 // ── Move helpers ───────────────────────────────────────────────────────────────
 
 function getMoveResult(move, total) {
@@ -186,6 +531,54 @@ function initMoveSelect() {
             introBox.style.display = 'flex';
         } else {
             introBox.style.display = 'none';
+        }
+    });
+}
+
+function initAdvantageSelect() {
+    const sel = document.getElementById('advantageSelect');
+    ATUTY.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = a.name + (a.passive ? ' ★' : '');
+        sel.appendChild(opt);
+    });
+
+    sel.addEventListener('change', () => {
+        const adv = ATUTY.find(a => a.id === sel.value);
+        const box  = document.getElementById('advantageIntroBox');
+        const badge = document.getElementById('advantageAttrBadge');
+        const text  = document.getElementById('advantageIntroText');
+        if (adv) {
+            badge.textContent = adv.attr;
+            text.textContent  = adv.intro;
+            box.style.display = 'flex';
+        } else {
+            box.style.display = 'none';
+        }
+    });
+}
+
+function initComplicationSelect() {
+    const sel = document.getElementById('complicationSelect');
+    KOMPLIKACJE.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        sel.appendChild(opt);
+    });
+
+    sel.addEventListener('change', () => {
+        const comp = KOMPLIKACJE.find(c => c.id === sel.value);
+        const box   = document.getElementById('complicationIntroBox');
+        const badge = document.getElementById('complicationAttrBadge');
+        const text  = document.getElementById('complicationIntroText');
+        if (comp) {
+            badge.textContent = comp.attr;
+            text.textContent  = comp.intro;
+            box.style.display = 'flex';
+        } else {
+            box.style.display = 'none';
         }
     });
 }
@@ -274,6 +667,10 @@ document.getElementById('rollButton').addEventListener('click', () => {
     const mod  = parseInt(document.getElementById('modifier').value) || 0;
     const moveId = document.getElementById('moveSelect').value;
     const move   = MOVES.find(m => m.id === moveId) || null;
+    const advId  = document.getElementById('advantageSelect').value;
+    const adv    = ATUTY.find(a => a.id === advId) || null;
+    const compId = document.getElementById('complicationSelect').value;
+    const comp   = KOMPLIKACJE.find(c => c.id === compId) || null;
 
     if (name) localStorage.setItem('characterName', name);
 
@@ -307,6 +704,51 @@ document.getElementById('rollButton').addEventListener('click', () => {
             movePanel.style.display = 'none';
         }
 
+        // ── Advantage result panel ─────────────────────────────────────────────
+        const advPanel = document.getElementById('advantageResultPanel');
+        if (adv) {
+            if (adv.passive) {
+                advPanel.className = 'move-result-panel tier-passive';
+                advPanel.innerHTML = `
+                    <div class="move-result-header">
+                        <span class="move-result-name">${adv.name}</span>
+                        <span class="move-result-tier-badge">Atut pasywny</span>
+                    </div>
+                    <div class="move-result-body">${renderMoveText(adv.intro)}</div>
+                `;
+            } else {
+                const ar = getMoveResult(adv, grandTotal);
+                advPanel.className = `move-result-panel ${ar.cls}`;
+                advPanel.innerHTML = `
+                    <div class="move-result-header">
+                        <span class="move-result-name">${adv.name}</span>
+                        <span class="move-result-tier-badge">${ar.label}</span>
+                    </div>
+                    <div class="move-result-body">${renderMoveText(ar.text)}</div>
+                `;
+            }
+            advPanel.style.display = 'flex';
+        } else {
+            advPanel.style.display = 'none';
+        }
+
+        // ── Complication result panel ──────────────────────────────────────────
+        const compPanel = document.getElementById('complicationResultPanel');
+        if (comp) {
+            const cr = getMoveResult(comp, grandTotal);
+            compPanel.className = `move-result-panel ${cr.cls}`;
+            compPanel.innerHTML = `
+                <div class="move-result-header">
+                    <span class="move-result-name">${comp.name}</span>
+                    <span class="move-result-tier-badge">${cr.label}</span>
+                </div>
+                <div class="move-result-body">${renderMoveText(cr.text)}</div>
+            `;
+            compPanel.style.display = 'flex';
+        } else {
+            compPanel.style.display = 'none';
+        }
+
         // ── Dice breakdown ─────────────────────────────────────────────────────
         const groupLines = groupResults.map(r => {
             const rollsStr = r.rolls.join(' + ');
@@ -338,7 +780,9 @@ document.getElementById('rollButton').addEventListener('click', () => {
         const expr    = groupResults.map(r => `${r.qty}d${r.sides}[${r.rolls.join(',')}]`).join('+');
         const modStr  = mod !== 0 ? ` mod:${mod > 0 ? '+' : ''}${mod}` : '';
         const moveStr = move ? ` [${move.name}]` : '';
-        saveRoll(`${name} rzucił(a)${moveStr}: ${expr}${modStr} = ${grandTotal} ${timeStr}`);
+        const advStr  = adv  ? ` [Atut: ${adv.name}]` : '';
+        const compStr = comp ? ` [Komp: ${comp.name}]` : '';
+        saveRoll(`${name} rzucił(a)${moveStr}${advStr}${compStr}: ${expr}${modStr} = ${grandTotal} ${timeStr}`);
 
         btn.disabled    = false;
         btn.textContent = 'Rzuć';
@@ -524,6 +968,8 @@ window.addEventListener('load', () => {
     const saved = localStorage.getItem('characterName');
     if (saved) document.getElementById('characterName').value = saved;
     initMoveSelect();
+    initAdvantageSelect();
+    initComplicationSelect();
     renderDiceGroups();
     loadRollHistory();
     initAudioListener();

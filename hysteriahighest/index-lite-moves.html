@@ -52,6 +52,34 @@
                 </div>
 
                 <div class="fm-field">
+                    <label for="advantageSelect" class="fm-label">
+                        Atut<span class="move-optional">(opcjonalnie)</span>
+                    </label>
+                    <select id="advantageSelect" class="fm-input">
+                        <option value="">— wybierz atut —</option>
+                    </select>
+                </div>
+
+                <div id="advantageIntroBox" class="move-intro-box" style="display:none;">
+                    <span id="advantageAttrBadge" class="move-attr-badge"></span>
+                    <p id="advantageIntroText" class="move-intro-text"></p>
+                </div>
+
+                <div class="fm-field">
+                    <label for="complicationSelect" class="fm-label">
+                        Komplikacja<span class="move-optional">(opcjonalnie)</span>
+                    </label>
+                    <select id="complicationSelect" class="fm-input">
+                        <option value="">— wybierz komplikację —</option>
+                    </select>
+                </div>
+
+                <div id="complicationIntroBox" class="move-intro-box" style="display:none;">
+                    <span id="complicationAttrBadge" class="move-attr-badge"></span>
+                    <p id="complicationIntroText" class="move-intro-text"></p>
+                </div>
+
+                <div class="fm-field">
                     <label class="fm-label">Kości</label>
                     <div id="diceGroupsList"></div>
                     <button id="addGroupBtn" class="btn-add-group">+ Dodaj kość</button>
@@ -71,6 +99,8 @@
             <div class="roller-history">
 
                 <div id="moveResultPanel" class="move-result-panel" style="display:none;"></div>
+                <div id="advantageResultPanel" class="move-result-panel" style="display:none;"></div>
+                <div id="complicationResultPanel" class="move-result-panel" style="display:none;"></div>
 
                 <div id="rollResult" class="roll-result-box">
                     <svg class="dice-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M16 8h.01"/><path d="M8 8h.01"/><path d="M8 16h.01"/><path d="M16 16h.01"/><path d="M12 12h.01"/></svg>
