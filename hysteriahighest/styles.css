@@ -195,6 +195,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-width: 0;
 }
 
 .roll-result-box {
@@ -725,6 +726,7 @@ body.lite-page {
     color: #9ca3af;
     margin: 0;
     line-height: 1.55;
+    overflow-wrap: break-word;
 }
 
 /* ── Move result panel ────────────────────────────────────────────────────────── */
@@ -736,6 +738,8 @@ body.lite-page {
     flex-direction: column;
     gap: 8px;
     border: 1px solid transparent;
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 
 .move-result-panel.tier-high {

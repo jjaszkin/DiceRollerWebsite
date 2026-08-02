@@ -529,6 +529,11 @@ function initMoveSelect() {
             attrBadge.textContent = move.attr;
             introText.textContent = move.intro;
             introBox.style.display = 'flex';
+            // clear others
+            document.getElementById('advantageSelect').value = '';
+            document.getElementById('advantageIntroBox').style.display = 'none';
+            document.getElementById('complicationSelect').value = '';
+            document.getElementById('complicationIntroBox').style.display = 'none';
         } else {
             introBox.style.display = 'none';
         }
@@ -553,6 +558,11 @@ function initAdvantageSelect() {
             badge.textContent = adv.attr;
             text.textContent  = adv.intro;
             box.style.display = 'flex';
+            // clear others
+            document.getElementById('moveSelect').value = '';
+            document.getElementById('moveIntroBox').style.display = 'none';
+            document.getElementById('complicationSelect').value = '';
+            document.getElementById('complicationIntroBox').style.display = 'none';
         } else {
             box.style.display = 'none';
         }
@@ -577,6 +587,11 @@ function initComplicationSelect() {
             badge.textContent = comp.attr;
             text.textContent  = comp.intro;
             box.style.display = 'flex';
+            // clear others
+            document.getElementById('moveSelect').value = '';
+            document.getElementById('moveIntroBox').style.display = 'none';
+            document.getElementById('advantageSelect').value = '';
+            document.getElementById('advantageIntroBox').style.display = 'none';
         } else {
             box.style.display = 'none';
         }
