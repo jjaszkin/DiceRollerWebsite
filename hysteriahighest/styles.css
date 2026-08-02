@@ -692,3 +692,120 @@ body.lite-page {
     font-weight: 700;
     color: #fff;
 }
+
+/* ── Move select & intro ──────────────────────────────────────────────────────── */
+
+.move-optional {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 400;
+    margin-left: 4px;
+}
+
+.move-intro-box {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.move-attr-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #c41e3a;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.move-intro-text {
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 0;
+    line-height: 1.55;
+}
+
+/* ── Move result panel ────────────────────────────────────────────────────────── */
+
+.move-result-panel {
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid transparent;
+}
+
+.move-result-panel.tier-high {
+    background: #052e16;
+    border-color: #166534;
+}
+
+.move-result-panel.tier-mid {
+    background: #1a1200;
+    border-color: #92400e;
+}
+
+.move-result-panel.tier-low {
+    background: #2d0a0a;
+    border-color: #7f1d1d;
+}
+
+.move-result-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.move-result-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e5e7eb;
+    flex: 1;
+}
+
+.move-result-tier-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 3px 9px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.tier-high .move-result-tier-badge {
+    background: #166534;
+    color: #86efac;
+}
+
+.tier-mid .move-result-tier-badge {
+    background: #92400e;
+    color: #fde68a;
+}
+
+.tier-low .move-result-tier-badge {
+    background: #7f1d1d;
+    color: #fca5a5;
+}
+
+.move-result-body {
+    font-size: 13.5px;
+    color: #d1d5db;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.move-result-line {
+    margin: 0;
+}
+
+.move-diamond-item {
+    color: #9ca3af;
+    padding-left: 4px;
+    font-size: 13px;
+}
