@@ -600,7 +600,7 @@ function initComplicationSelect() {
 
 // ── Dice groups state ──────────────────────────────────────────────────────────
 
-let diceGroups = [{ qty: 1, sides: 6 }];
+let diceGroups = [{ qty: 2, sides: 10 }];
 
 function renderDiceGroups() {
     const list = document.getElementById('diceGroupsList');
