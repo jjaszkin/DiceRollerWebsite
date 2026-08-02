@@ -1,0 +1,381 @@
+{
+  "_meta": {
+    "title": "GLIDE 2 - Guilds & Odd-Jobs",
+    "source": "GLIDE 2 - Part Two (v1 spreads).pdf (str. 45-64)",
+    "created": "2026-08-02"
+  },
+  "rules": {
+    "rewards": "Wzrost rangi w gildii daje dostęp do umiejętności i unikalnych ofert, nagradzając zaangażowanie. Wszyscy Seekerzy zaczynają na Bond Level 0 z każdą gildią. Nagrody są kumulatywne - Seeker ma dostęp do nagród niższych poziomów w miarę postępu bondu. Bond Level można też stracić, tak jak z towarzyszami - jeśli poziom spadnie, nagrody danego poziomu przestają działać.",
+    "guild_missions": "Seeker może mieć jednocześnie tylko 1 Guild Mission. Jeśli misja jest niemożliwa do ukończenia (brak odpowiednich heksów), wybierz inną. Testy w misji nie wymagają Staminy (chyba że napisano inaczej). Trzeba osiągnąć Major/Minor success lub podaną liczbę sukcesów. Efekty Miss rozwiązuje się na bieżąco. Nagrody są przyznawane przy każdym teście, ale misja jest ukończona dopiero po powrocie. Misje można powtarzać dowolną liczbę razy, ale powtórka tej samej misji możliwa dopiero po ukończeniu (lub co najmniej podjęciu próby) wszystkich pozostałych misji danej gildii."
+  },
+  "guilds": [
+    {
+      "id": "guild_of_sand",
+      "name": "Guild of Sand",
+      "name_pl": "Gildia Piasku",
+      "description": "Zdecentralizowana sieć nomadycznych handlarzy, ekspertów nawigacji i brokerów zasobów. Nie roszczą sobie praw do terytorium, skupiając się na \"Niewidzialnych Drogach\" - najbezpieczniejszych i najbardziej efektywnych trasach przez zmieniające się piaski pustyni. Dla członka tej gildii mapa jest warta więcej niż kredyty, a niezawodny partner handlowy więcej niż batalion żołnierzy Domu. Wiele gildii i Minor Houses polega na Gildii Piasku w kwestii bezpiecznego transportu zapasów między izolowanymi społecznościami Eridooru.",
+      "special_rules": {
+        "guild_caravan": "W odróżnieniu od innych gildii działających z stałych budynków w osadach, Gildia Piasku korzysta z floty mobilnych karawan.",
+        "finding_the_caravan": "Będąc w lokacji typu Desert, wykonaj test K lub R. Przy Major Success odkrywasz Karawanę Gildii Piasku w obecnej lokacji. Można wykonać raz na wizytę w danej lokacji.",
+        "the_caravan_hub": "Karawana działa jak osada, z wyjątkiem że dostępne są tylko akcje Gildii Piasku.",
+        "the_guild_gift": "Przy Bond Level 2 i wyższym, odwiedzenie Karawany automatycznie przywraca 1 Supply za darmo, raz na wizytę, w ramach \"Nomad Hospitality\".",
+        "caravan_friend": "Wysoko postawieni członkowie otrzymują najlepsze ceny przy kupnie nowego sprzętu i sprzedaży starego.",
+        "the_friend": "Zyskujesz Advantage na cenach sprzedaży i kupna we wszystkich lokacjach. Cały Gear i Mody kosztują 2d10 mniej (rzuć za każdym razem, gdy kupujesz)."
+      },
+      "missions": [
+        {
+          "number": 1,
+          "name": "Mapping the Veins",
+          "task": "Podróżuj przez 5 różnych lokacji typu Desert i wróć do dowolnej Karawany Gildii lub osady.",
+          "test": "Focused or Knowledgeable Test przy powrocie",
+          "major": "+15 Credits, +3 BP",
+          "minor": "+5 Credits, +1 BP",
+          "miss": "-1 Supply"
+        },
+        {
+          "number": 2,
+          "name": "The Supply Chain",
+          "task": "Dostarcz paczkę do osady cierpiącej na niedobór (wybierz najdalszą).",
+          "test": "Resourceful or Hardy Test po każdym Travel Encounter",
+          "major": "+5 Credits, +1 BP",
+          "minor": "+2 Credits",
+          "miss": "-1 Momentum, -1 BP"
+        },
+        {
+          "number": 3,
+          "name": "Negotiate a Toll",
+          "task": "Minor House blokuje szlak handlowy. Spotkaj się z ich przedstawicielem i przekonaj do ustąpienia.",
+          "test": "Connected Test w najdalszej osadzie od Twojej lokacji",
+          "major": "+20 Credits, +3 BP",
+          "minor": "+10 Credits, +1 BP",
+          "miss": "+5 Credits, -2 Momentum"
+        },
+        {
+          "number": 4,
+          "name": "Rescue a Broker",
+          "task": "Członek gildii wysłał sygnał SOS z lokacji Desert. Znajdź go i przywieź z powrotem.",
+          "test": "Hardy or Focused w dowolnej lokacji Desert, 3+ heksów, raz na wizytę w ważnym heksie. Powtarzaj aż do Minor lub Major success.",
+          "major": "+2 BP, +1 Supply",
+          "minor": "+1 BP",
+          "miss": "-3 BP; nie znajdujesz go tutaj, szukaj dalej"
+        }
+      ],
+      "bond_level_rewards": {
+        "1": {"name": "Nomad's Compass (Gear)", "effect": "+1 do wszystkich testów Focused w lokacjach Desert."},
+        "2": {"name": "Broker's Discount (Trait)", "effect": "Wszystkie koszty Supply są o 2 Credits niższe przy zakupie z Karawan Gildii."},
+        "3": {"name": "Dune-Sail Chassis (Glider Upgrade)", "effect": "+1 Movement przy podróży przez odkryty heks Desert (max +3 na Move)."},
+        "4": {"name": "Master of the Roads (Trait)", "effect": "Możesz wydać 1 Intel, by przenieść się do dowolnej odkrytej lokacji Desert na mapie."}
+      }
+    },
+    {
+      "id": "guild_of_echoes",
+      "name": "Guild of Echoes",
+      "name_pl": "Gildia Ech",
+      "description": "Kolektyw historyków, pieśniarzy i kryptografów oddanych zachowaniu zanikającego dziedzictwa Eridooru. Gildia działa z cichych, wysoko położonych Archiwów Dźwięku i przerobionych bibliotek, wierząc, że każdy kawałek złomu ma swoją historię, a każdy powiew wiatru może nieść ducha przeszłości. Technologia nie jest ceniona za użyteczność, lecz za dane i wspomnienia, które przechowuje. Dla Historyka Echa działający rdzeń zasilania jest użyteczny, ale zaszyfrowany dziennik uchodźcy z Great House jest bezcenny.",
+      "special_rules": {
+        "sound_archive": "Gildia Ech utrzymuje swoje \"Archiwa Dźwięku\" w najbardziej odosobnionych częściach świata. Umieść lokację unikalną \"The Sound Archive\" w dowolnym rogu mapy (wybierz puste pole lub zastąp heks), gdy osiągniesz Bond Level 2.",
+        "memory_bank": "Przebywając w Archiwum Dźwięku, możesz zdeponować Relikty. Zyskujesz +1 Intel i +3 BP za Relikt, gdy gildia wydobywa historyczne znaczenie.",
+        "echo_training": "Wydaj 2 Intel w Archiwum Dźwięku, by zyskać Advantage na wszystkich testach Knowledgeable aż do następnej wizyty w osadzie.",
+        "the_masterpiece_record": "Członkowie gildii często podejmują się Masterpiece Project - dożywotniego przedsięwzięcia dokumentowania jednego tematu.",
+        "the_chronicle": "Przy Bond Level 4 wybierasz Temat (np. węże piaskowe, Major Houses, ruchy nomadów itd.). Za każdym razem, gdy eksplorujesz heks powiązany z tym tematem, rzuć d10. Na 7+ zyskujesz +1 Intel. Za każde 10 Intel zdobyte w ten sposób, zyskujesz +1 Fame."
+      },
+      "missions": [
+        {
+          "number": 1,
+          "name": "The Oral Traditions",
+          "task": "Odwiedź dowolną Unique Location lub osadę oddaloną o 5+ heksów.",
+          "test": "Connected or Focused Test w lokacji",
+          "major": "+15 Credits, +2 BP, +1 Intel",
+          "minor": "+5 Credits, +1 BP",
+          "miss": "+5 Credits, -1 BP"
+        },
+        {
+          "number": 2,
+          "name": "Recovery of a Silent Slate",
+          "task": "Eksploruj dowolną lokację Ruins, by odzyskać fizyczne urządzenie pamięci masowej. Zwróć je do Archiwum Dźwięku.",
+          "test": "Knowledgeable or Resourceful Test w lokacji",
+          "major": "+25 Credits, +2 BP, +1 Intel",
+          "minor": "+15 Credits, +1 BP",
+          "miss": "-1 Wear (dowolny)"
+        },
+        {
+          "number": 3,
+          "name": "Performance of Remembrance",
+          "task": "Spędź czas w osadzie, prezentując historię Eridooru, by wzmocnić morale i wsparcie.",
+          "test": "Connected or Knowledgeable Test w dowolnej osadzie",
+          "major": "+2 BP, +2 Momentum",
+          "minor": "+1 BP, +1 Intel",
+          "miss": "+1 Momentum"
+        },
+        {
+          "number": 4,
+          "name": "Crypt of the Great Houses",
+          "task": "Znajdź docelową lokację Ruins i przeskanuj obszar w poszukiwaniu inskrypcji i danych historycznych. Ukończ Minor lub wyższy sukces 3+ razy.",
+          "test": "Focused or Knowledgeable Test w dowolnej lokacji Ruins, max raz na wizytę w ważnym heksie",
+          "major": "+1 BP, +1 Intel",
+          "minor": "+1 BP",
+          "miss": "-1 Momentum; nic nie znajdujesz"
+        }
+      ],
+      "bond_level_rewards": {
+        "1": {"name": "Echo-Recorder (Gear)", "effect": "Małe, czułe urządzenie. +1 do testów Focused przy akcji Explore w lokacji Ruins."},
+        "2": {"name": "Historian's Eye (Trait)", "effect": "Możesz wymienić 1 Intel na 20cr w dowolnym Archiwum Dźwięku, ale nie możesz już kupować Intel z Archiwów."},
+        "3": {"name": "Archive Array (Glider Upgrade)", "effect": "Specjalistyczny zestaw sensorów glidera. Przy akcji Explore w lokacji Ruins, przy Major Success, zyskujesz +1 Intel."},
+        "4": {"name": "Living Library (Trait)", "effect": "Możesz wydać 2 Intel, by zamienić dowolny Miss z Knowledgeable lub Connected na Major success."}
+      }
+    },
+    {
+      "id": "guild_of_iron",
+      "name": "Guild of Iron",
+      "name_pl": "Gildia Żelaza",
+      "description": "Zakon wojskowy złożony z obrońców, stróżów pokoju i najemników. Związani surowym kodeksem dyscypliny zwanym \"The Weight\", członkowie wierzą, że ich determinacja jest ich najważniejszym narzędziem. Gildia utrzymuje fortyfikacje w większości osad, oferując ochronę każdemu podróżującemu przez region lub gotowemu zapłacić cenę. Ich hale gildii wahają się od cichych miejsc medytacji po wyczerpujące place treningu fizycznego, produkując członków tak samo ostrych umysłowo, jak i fizycznie odpornych.",
+      "special_rules": {
+        "the_iron_trials": "Seekerzy chcący dołączyć do gildii muszą przejść i ukończyć \"Iron Trials\".",
+        "entering_the_trial": "Odwiedź dowolną halę Gildii Żelaza w osadzie i wydaj 20 Credits i 1 Supply.",
+        "the_challenge": "Musisz wykonać dwa kolejne Major Hardy oraz jeden Major Resourceful test.",
+        "the_reward": "Jeśli się uda, zyskujesz stały +1 Max Stamina (limit raz) i +1 Max Momentum. Jeśli zawiedziesz, spadasz do 0 Staminy i musisz natychmiast rzucić na Exhausted Table (uzdrowiciele gildii wyciągają Cię z podłogi i wyrzucają na zewnątrz).",
+        "the_heavy_load": "Ponieważ Gildia Żelaza ceni siłę, często modyfikuje swoje glidery, by przenosić dodatkowy ciężar jako pokaz mocy.",
+        "iron_freight": "Po osiągnięciu Bond Level 2 z gildią, możesz wydać 100 Credits, by zwiększyć pojemność cargo hold glidera do przechowywania dodatkowego Scrap i Supply o 3 każdy. Max raz na postać."
+      },
+      "missions": [
+        {
+          "number": 1,
+          "name": "Perimeter Patrol",
+          "task": "Patroluj obrzeża obecnej osady lub najbliższej Unique Location. Ukończ trzy razy.",
+          "test": "Hardy or Focused Test",
+          "major": "+5 Credits, +1 BP",
+          "minor": "+1 Credits, +1 BP",
+          "miss": "-1 BP"
+        },
+        {
+          "number": 2,
+          "name": "Apex Hunt",
+          "task": "Zlokalizuj i zneutralizuj niebezpieczną bestię (np. Sand Snake) w dowolnym heksie Desert lub Green Space.",
+          "test": "Hardy or Resourceful Test",
+          "major": "+30 Credits, +2 BP, +1 Relic",
+          "minor": "+20 Credits, +1 BP, +2 Scrap",
+          "miss": "-1 Stamina, -1 BP"
+        },
+        {
+          "number": 3,
+          "name": "High-Stakes Escort",
+          "task": "Eskortuj wysoko postawionego urzędnika lub wrażliwą karawanę do osady oddalonej o co najmniej 4+ heksów.",
+          "test": "Hardy or Connected Test po każdej akcji Move",
+          "major": "+5 Credits, +1 BP",
+          "minor": "+3 Credits",
+          "miss": "-1 BP, -1 Momentum"
+        },
+        {
+          "number": 4,
+          "name": "Trial of the Iron Wrought",
+          "task": "Przejdź rytuał treningowy w Hali Treningowej Gildii.",
+          "test": "Hardy Test w obecnej lokacji",
+          "major": "+4 BP, +3 Momentum, odzyskaj całą Staminę",
+          "minor": "+1 BP, -2 Momentum",
+          "miss": "-2 Stamina, -5 BP"
+        }
+      ],
+      "bond_level_rewards": {
+        "1": {"name": "Iron Vambraces (Gear)", "effect": "Wzmocnione naramienniki, dodatkowa siła i ochrona. +1 do wszystkich rzutów Hardy."},
+        "2": {"name": "Disciplined Resolve (Trait)", "effect": "Raz na akcję możesz wydać 2 Momentum, by zniwelować utratę 1 Staminy."},
+        "3": {"name": "Aegis Plating (Glider Upgrade)", "effect": "Ciężki pancerz zewnętrzny. Twój glider ignoruje pierwszy punkt Wear, gdy przypisywane są 2 lub więcej Wear."},
+        "4": {"name": "Unshakable Will (Trait)", "effect": "Gdy Twoja Stamina osiągnie 0, wykonaj Hardy or Resourceful Challenge Roll. Przy Major Success, wróć do 1 Staminy i kontynuuj obecną akcję. Przy Minor lub Miss, rozwiąż efekt Exhaustion (str. 21) normalnie."}
+      }
+    },
+    {
+      "id": "guild_of_the_glider",
+      "name": "Guild of the Glider",
+      "name_pl": "Gildia Glidera",
+      "description": "Bractwo pilotów, posłańców i kurierów, którzy zamienili prosty akt \"gliderowania\" w wyższą formę sztuki i ekspresji. Członków łatwo rozpoznać po lekkich kombinezonach lotniczych i charakterystycznej niebiesko-srebrnej barwie. Członkowie noszą tajemnicę, którą Major Houses chcą pogrzebać, lekarstwa potrzebne izolowanym placówkom do przetrwania, oraz wiadomości tam, gdzie piasek uniemożliwia komunikację. Jeśli coś musi tam być wczoraj, wynajmujesz Glidera Domowego.",
+      "special_rules": {
+        "the_waystation_network": "Gildia Glidera utrzymuje zautomatyzowane Waystations ukryte na Eridoorze.",
+        "dropping_in": "Będąc w heksie Desert, jeśli gracz ma Bond Level 2 lub wyższy, może wykonać Focused Challenge Roll, by zlokalizować ukrytą Guild Waystation (max 3 razy między wizytami w gildii).",
+        "the_cache": "Major success odkrywa skrytkę. Wybierz jedno: Refuel (+2 Supply), Data-Sync (+1 Intel), Emergency Repair (-1 Glider Wear).",
+        "the_high_speed_repair": "Członkowie tej gildii są ekspertami w naprawie pojazdów w locie.",
+        "mid_drift_patch": "Po osiągnięciu Bond Level 3 możesz wykonać akcję Repair po każdej akcji Move. Naprawa to test Resourceful lub Focused, kosztem 1 Scrap. Major: -2 Glider Wear. Minor: -1 Glider Wear. Miss: +1 Glider Wear."
+      },
+      "missions": [
+        {
+          "number": 1,
+          "name": "The Crimson Dash",
+          "task": "Dostarcz przesyłkę wrażliwą czasowo do osady oddalonej o 6+ heksów.",
+          "test": "Resourceful or Hardy Test przy przybyciu do każdej osady",
+          "major": "+40 Credits, +3 BP, +1 Supply",
+          "minor": "+20 Credits, +1 BP",
+          "miss": "+5 Credits, +1 Glider wear"
+        },
+        {
+          "number": 2,
+          "name": "Black-Box Retrieval",
+          "task": "Kurier gildii rozbił się. Odzyskaj jego zaszyfrowany data-slate.",
+          "test": "Knowledgeable or Focused Test w dowolnej lokacji Ruins 2+ heksów",
+          "major": "+25 Credits, +2 BP, +1 Intel",
+          "minor": "+5 Credits, +1 BP",
+          "miss": "-2 BP"
+        },
+        {
+          "number": 3,
+          "name": "The Storm-Chaser",
+          "task": "Wlecieć w aktywną burzę piaskową i rozmieścić serię sensorów. Burza została zauważona przemieszczająca się o 4+ heksów w lokacji Desert.",
+          "test": "Resourceful or Focused w lokacji burzy",
+          "major": "+5 BP, +3 Momentum",
+          "minor": "+2 BP, +1 Momentum",
+          "miss": "+1 BP, -1 Stamina"
+        },
+        {
+          "number": 4,
+          "name": "Secret Correspondence",
+          "task": "Przenieś tajemnicę wysokiego priorytetu z obecnej osady do innej, 3+ heksów, bez przechwycenia przez patrole Domu.",
+          "test": "Connected or Resourceful test po każdej akcji Move",
+          "major": "+2 BP",
+          "minor": "+1 BP",
+          "miss": "+1 Glider Wear, -1 Momentum"
+        }
+      ],
+      "bond_level_rewards": {
+        "1": {"name": "Slipstream HUD (Gear)", "effect": "Smukły wizjer podświetlający prądy powietrzne. +1 do testów Resourceful przy akcji Explore w lokacjach Desert."},
+        "2": {"name": "Aerial Intuition (Trait)", "effect": "Gdy wydajesz Supply, by dodać Speed, testuj Knowledgeable. Przy Major Success, +2 dodatkowej Speed."},
+        "3": {"name": "Phantom Thrusters (Glider Upgrade)", "effect": "Lekkie, ciche silniki. Zyskujesz Advantage na wszystkich testach, gdzie Wear mogłoby zostać przypisane Twojemu Gliderowi z Miss."},
+        "4": {"name": "Ace of the Wastes (Trait)", "effect": "Raz na akcję Move, jeśli poruszasz się o 4 lub więcej heksów, zyskujesz +1 Momentum."}
+      }
+    },
+    {
+      "id": "guild_of_ecology",
+      "name": "Guild of Ecology",
+      "name_pl": "Gildia Ekologii",
+      "description": "Grupa botaników, zoologów i inżynierów środowiskowych, oddanych badaniu i zachowaniu delikatnych kwitnących biomów Eridooru. Często znajdywani w wysoko-technologicznych laboratoriach lub wędrujący po wydmach w swoich specjalistycznych badawczych gliderach, członkowie wierzą, że sekrety przetrwania planety są ukryte w jej DNA. Członkowie gildii to skrupulatni kronikarze, postrzegający każde odkrycie jako zwycięstwo nad piaskiem. Choć gildia jest z natury pokojowa, jest zaciekle terytorialna wobec zielonych przestrzeni, szybko banując intruzów.",
+      "special_rules": {
+        "documenting_the_wilds": "Członkowie Gildii Ekologii noszą dzienniki polowe, używane do dokumentowania cudów Eridooru.",
+        "documenting_the_wild": "Po osiągnięciu Guild Level 2 i wyższego, przy pierwszej wizycie w Green Space lub Unique Location możesz wykonać Focused Challenge Roll, by udokumentować obszar.",
+        "reward_major": "+2 Intel. Na Bond Level 3, +2 Intel i +1 Supply.",
+        "reward_minor": "+1 Intel. Na Bond Level 3, +1 Intel i +1 Supply.",
+        "reward_miss": "-1 BP",
+        "the_seed_vault_access": "Sekretna wiedza: dla tych, którzy osiągną najwyższe rangi gildii, ukryte Seed Vaults Eridooru stają się dostępne.",
+        "restoration_point": "Raz na wizytę w gildii, jeśli gracz ma Bond Level 4, może wydać 3 Intel, by trwale zmienić heks Desert w Green Space. Poziom lokacji jest ustawiony na 1 (niezależnie od obecnego poziomu)."
+      },
+      "missions": [
+        {
+          "number": 1,
+          "name": "Flora Sample Collection",
+          "task": "Odwiedź Green Space i zbierz próbkę kwitnącego sukulenta.",
+          "test": "Focused or Knowledgeable Test w dowolnym Green Space 3+ heksów",
+          "major": "+15 Credits, +2 BP, +1 Supply",
+          "minor": "+10 Credits, +1 BP",
+          "miss": "+2 Credits, -2 BP"
+        },
+        {
+          "number": 2,
+          "name": "Tagging the Apex",
+          "task": "Zlokalizuj Sand Snake lub inną dużą istotę Eridooru i przypnij beacon śledzący.",
+          "test": "Resourceful or Hardy test w dowolnej lokacji Desert, 5+ heksów",
+          "major": "+30 Credits, +3 BP",
+          "minor": "+20 Credits, +1 BP",
+          "miss": "-2 Momentum, -4 BP"
+        },
+        {
+          "number": 3,
+          "name": "Anomaly Reconnaissance",
+          "task": "Znajdź świecący krater lub chmurę pyłu-przypraw i rozmieść serię modułów sensorowych.",
+          "test": "Knowledgeable or Focused test w lokacji Desert 5+ heksów",
+          "major": "+3 BP, +1 Intel, +2 Scrap",
+          "minor": "+5 Credits, +1 BP",
+          "miss": "-2 BP, -1 Stamina"
+        },
+        {
+          "number": 4,
+          "name": "The Green Restoration",
+          "task": "Dostarcz przesyłkę specjalnych \"Seed-Bombs\" do lokacji Desert i zasadź je z glebą.",
+          "test": "Hardy or Resourceful test w lokacji Desert 5+ heksów od obecnej pozycji",
+          "major": "+25 Credits, +2 BP, lokacja staje się Green Space (ten sam poziom)",
+          "minor": "+5 Credits, +1 BP",
+          "miss": "-3 BP, -1 Momentum"
+        }
+      ],
+      "bond_level_rewards": {
+        "1": {"name": "Botanist's Kit (Gear)", "effect": "+1 do testów Knowledgeable w Green Spaces."},
+        "2": {"name": "Oasis Navigator (Trait)", "effect": "Gdy tracisz Staminę w Green Space z powodu testu, rzuć d10. Na 7+ neguj pierwszy utracony punkt Staminy."},
+        "3": {"name": "Bio-Organic Hull (Glider Upgrade)", "effect": "Eksperymentalna warstwa mchu na kadłubie glidera. Podczas akcji Camp w Green Space usuń 1 Glider Wear."},
+        "4": {"name": "Harmony with Eridoor (Trait)", "effect": "Zyskujesz Advantage na wszystkich testach w Green Spaces. Dodatkowo możesz wydać 1 Intel, by potraktować heks Desert jako Green Space dla pojedynczej akcji."}
+      }
+    },
+    {
+      "id": "guild_of_relics",
+      "name": "Guild of Relics",
+      "name_pl": "Gildia Reliktów",
+      "description": "Mroczna, żądna bogactwa organizacja archeo-inżynierów, łowców skarbów i tech-archeologów. Podczas gdy Gildia Ech chce studiować i uczyć się z przeszłości, Gildia Reliktów chce ją posiadać. Wierzą, że rozwiązaniem upadku Eridooru są \"Ancient Powers\" - zaawansowana technologia niegdyś używana przez Major Houses. Ze wszystkich gildii na Eridoorze, Gildia Reliktów jest najlepiej wyposażona, wykorzystująca starożytne technologie. Dla członka tej gildii historyczna fresk to marnotrawstwo zasobów, chyba że kryje się za nią technologia.",
+      "special_rules": {
+        "the_vault_keys": "Członkom Gildii Reliktów często powierza się Vault Keys, fragmenty starożytnych kodów szyfrujących.",
+        "coding_the_key": "Za każdym razem, gdy zdobywasz Intel w lokacji Ruins, mając Bond Level 2+, możesz zamienić 1 zdobyty Intel na Vault Key Fragment.",
+        "opening_the_un_openable": "Możesz wydać 3 Vault Key Fragments, by zyskać Advantage i +2 na dowolny Challenge Roll w Ruins, osadzie lub Unique Location.",
+        "ancient_overclocking": "Gildia Reliktów doskonale radzi sobie z przekraczaniem zamierzonych możliwości maszyn.",
+        "experimental_boost": "Mając Bond Level 3 lub wyższy, możesz dodać 1 Wear do dowolnego sprzętu lub glidera, by zyskać Advantage i +1 do testu Resourceful lub Knowledgeable. Jeśli uzyskasz Miss na tym teście, przypisz dodatkowe 1 Wear."
+      },
+      "missions": [
+        {
+          "number": 1,
+          "name": "The Deep Delve",
+          "task": "Wejdź do lokacji Ruins i wróć z Reliktem, który wzbudza zainteresowanie.",
+          "test": "Knowledgeable or Resourceful test po Major Success w Ruins",
+          "major": "+30 Credits, +2 BP, +1 Relic",
+          "minor": "+1 BP, +1 Scrap",
+          "miss": "-3 BP"
+        },
+        {
+          "number": 2,
+          "name": "Power Source Stabilization",
+          "task": "Zlokalizuj niestabilny rdzeń energetyczny w ruinach i bezpiecznie wydobądź ogniwa, zanim się roztopi.",
+          "test": "Hardy or Knowledgeable test w lokacji Ruins 3+ heksów",
+          "major": "+15 Credits, +3 BP, +1 Intel",
+          "minor": "+1 BP, +1 Supply",
+          "miss": "-2 BP, -2 Scrap"
+        },
+        {
+          "number": 3,
+          "name": "A Locked Seal",
+          "task": "Użyj swojej wiedzy technicznej, by otworzyć pieczęć zainteresowania gildii.",
+          "test": "Knowledgeable or Focused test w lokacji Ruins lub Desert 5+ heksów",
+          "major": "+50 Credits, +3 BP",
+          "minor": "+10 Credits, +1 BP",
+          "miss": "-2 BP"
+        },
+        {
+          "number": 4,
+          "name": "Artifact Recovery",
+          "task": "Skradziono artefakt gildii. Wytrop złodzieja do pustyni i odzyskaj go dowolnymi środkami.",
+          "test": "Hardy or Connected test w najdalszej lokacji Desert od obecnej pozycji",
+          "major": "+30 Credits, +5 BP",
+          "minor": "+10 Credits, +3 BP",
+          "miss": "-5 BP, -2 Momentum"
+        }
+      ],
+      "bond_level_rewards": {
+        "1": {"name": "Relic Hunter's Info (Gear)", "effect": "Zaawansowany system operacyjny wizjera, dostrojony do sygnatur starożytnego metalu. +1 do wszystkich rzutów Knowledgeable w Ruins."},
+        "2": {"name": "Antiquarian's Insight (Trait)", "effect": "Możesz wymieniać Relikty na 3 Intel i 2 BP każdy, w gildii."},
+        "3": {"name": "Stasis Field Storage (Glider Upgrade)", "effect": "Specjalna komora tłumiąca wibracje i uderzenia, dostrojona do Twojego DNA. Relikty i Scrap nie mogą być utracone z żadnego efektu."},
+        "4": {"name": "Ancient Source (Trait)", "effect": "Nauczyłeś się wysysać energię z artefaktów i reliktów. Raz na akcję możesz wydać 1 Intel, o ile masz 1 lub więcej Reliktów, by zyskać +1 do rzutu. Na Miss Relikt zostaje zniszczony, +1 Scrap."}
+      }
+    }
+  ],
+  "odd_jobs_table_d100": [
+    {"range": "1-5", "name": "Clean Water Run", "location_type": "Green Space", "description": "Lokalny mieszkaniec prosi o świeżą wodę z zielonej przestrzeni.", "task": "Eksploruj dowolny Green Space, raz, z Minor lub Major success, następnie ukończ test tej fuchy z Major success.", "test": "Focused or Resourceful", "reward": "+2 Supply, +15 Credits", "fail": "-2 Momentum; nie znaleziono czystej wody"},
+    {"range": "6-10", "name": "Salvage Request", "location_type": "Ruins", "description": "Mechanik chce rzadkich części z pobliskich ruin.", "task": "Eksploruj dowolne Ruins, raz, z Minor lub Major success, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful", "reward": "Odzyskaj do 3 Wear, +10 Credits", "fail": "Mark 2 Wear, -1 Momentum; Twój sprzęt zostaje uszkodzony"},
+    {"range": "11-15", "name": "Escort the Caravan", "location_type": "Desert", "description": "Handlarze szukają eskorty przez wydmy.", "task": "Przejedź przez 3 heksy Desert i ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy or Connected", "reward": "+2 BP, +30 Credits, +1 Scrap", "fail": "-1 Supply, -1 Momentum; gubisz karawanę"},
+    {"range": "16-20", "name": "Lost Heirloom", "location_type": "Settlement", "description": "Lokalny mieszkaniec zgubił coś ważnego w osadzie.", "task": "Wykonaj test w tej osadzie, raz, z Major success.", "test": "Knowledgeable or Focused", "reward": "+40 Credits, +2 Momentum", "fail": "-2 Momentum; trop ginie"},
+    {"range": "21-25", "name": "Strange Being", "location_type": "Unique", "description": "Zestaw tajemniczych śladów prowadzi z dala od osady.", "task": "Eksploruj dowolną Unique Location, raz, i ukończ test tej fuchy z Major success.", "test": "Focused", "reward": "+1 Intel, +10 Credits, +5 BP", "fail": "Mark 2 Wear, -2 Momentum; zostajesz ranny w pościgu za istotą"},
+    {"range": "26-30", "name": "Herbalist's Aid", "location_type": "Green Space", "description": "Uzdrowiciel prosi o zioła lecznicze z nowo kiełkujących dzikich terenów.", "task": "Eksploruj dowolny Green Space, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Knowledgeable", "reward": "+1 Supply, +10 Credits", "fail": "Mark 1 Wear, -2 Momentum; napotykasz trujące rośliny"},
+    {"range": "31-35", "name": "Relic Prospects", "location_type": "Ruins", "description": "Poszukiwacz wynajmuje Cię do szukania reliktów w zestawie ruin.", "task": "Eksploruj dowolne lokacje Ruins, aż znajdziesz Relikt, następnie ukończ test tej fuchy z Major success.", "test": null, "reward": "+2 BP, +60 Credits", "fail": "-1 Stamina, mark 3 Wear; zawalenie uszkadza Twój sprzęt"},
+    {"range": "36-40", "name": "Desert Beacon", "location_type": "Desert", "description": "Miejscowi proszą o rekonfigurację lub naprawę starego beaconu sygnałowego.", "task": "Eksploruj dowolną lokację Desert oddaloną o co najmniej 3 heksy, raz, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy or Focused", "reward": "+25 Credits, +2 Supply, +1 Scrap", "fail": "-1 Stamina, -1 Supply; jesteś zgubiony i nie możesz znaleźć beaconu"},
+    {"range": "41-45", "name": "Courier Job", "location_type": "Settlement", "description": "Dostarcz listy, drobny ładunek i inne różne towary.", "task": "Podróżuj do dowolnej innej osady i dostarcz towary.", "test": "Brak! (fucha zawodzi, jeśli staniesz się Exhausted [str. 21])", "reward": "+30 Credits", "fail": "-1 Fame, -3 Momentum; tracisz przesyłkę"},
+    {"range": "46-50", "name": "Rescue Party", "location_type": "Unique", "description": "Grupa odkrywców poprosiła o pomoc w unikalnej lokalizacji.", "task": "Eksploruj dowolną Unique Location, raz, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy or Connected", "reward": "+2 BP, +2 Momentum, +10 Credits", "fail": "Mark 3 Wear, -1 Momentum; zostajesz ranny podczas ratunku"},
+    {"range": "51-55", "name": "Desert Hunt", "location_type": "Desert", "description": "Społeczność organizuje polowanie na niebezpiecznego drapieżnika.", "task": "Eksploruj dowolną lokację Desert, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful or Focused", "reward": "+2 Momentum, +1 Supply, +1 Scrap", "fail": "-1 Stamina, -1 Supply; drapieżnik ucieka"},
+    {"range": "56-60", "name": "Broken Device", "location_type": "Ruins", "description": "Lokalny majsterkowicz chce, byś odzyskał urządzenie z pobliskich ruin.", "task": "Eksploruj dowolną lokację Ruins, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Knowledgeable", "reward": "+2 Scrap, +20 Credits", "fail": "-1 Stamina, -2 Momentum; zostajesz ranny podczas odzyskiwania"},
+    {"range": "61-65", "name": "Oasis Watch", "location_type": "Green Space", "description": "Plotki o wytryskującej oazie wzbudzają zainteresowanie mieszkańców. Znajdź jej lokalizację.", "task": "Przenieś się do dowolnej lokacji Green Space i ukończ test tej fuchy z Major success.", "test": "Hardy or Resourceful", "reward": "+2 Stamina, +30 Credits", "fail": "-1 Supply, -2 Momentum; gubisz się w zielonej przestrzeni"},
+    {"range": "66-70", "name": "Relic Custodian", "location_type": "Settlement", "description": "Rzadki relikt musi zostać dostarczony do innej osady.", "task": "Podróżuj do najdalszej osady od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Connected", "reward": "+5 BP, +50 Credits, +2 Momentum", "fail": "-3 Momentum, -1 Relic, -10 BP (dowolny); relikt zostaje skradziony"},
+    {"range": "71-75", "name": "Scout Request", "location_type": "Unique", "description": "Miejscowi boją się, że dzieje się coś dziwnego w unikalnej lokacji.", "task": "Przenieś się do najbliższej Unique Location i ukończ test tej fuchy z Minor lub Major success.", "test": "Focused or Resourceful", "reward": "+2 Intel, +20 Credits", "fail": "-1 Momentum, -1 Intel; nie ma tam nic do zobaczenia"},
+    {"range": "76-80", "name": "Dune Mapping", "location_type": "Desert", "description": "Geodeta wynajmuje Seekerów do mapowania przesuwających się piasków.", "task": "Eksploruj dowolne 2 lokacje Desert (muszą być różne) i ukończ test tej fuchy przy każdej z Minor lub Major success.", "test": "Knowledgeable", "reward": "+1 Intel, +2 Momentum, +1 BP", "fail": "-1 Momentum, Mark 3 Wear; błędnie odczytujesz teren"},
+    {"range": "81-85", "name": "Festival Supplies", "location_type": "Green Space or Ruins", "description": "W miarę zbliżania się festiwalu, osada poszukuje rzadkich składników.", "task": "Eksploruj dowolną lokację Green Space lub Ruins i ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful", "reward": "+2 BP, +2 Supply, +10 Credits", "fail": "-1 Supply; nie możesz znaleźć składników, zastępujesz własnymi"},
+    {"range": "86-90", "name": "Missing Caravan", "location_type": "Desert", "description": "Oczekiwana karawana z towarami zniknęła na pustyni.", "task": "Eksploruj dowolną lokację Desert oddaloną o co najmniej 3 heksy od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Hardy or Focused", "reward": "+2 Stamina, +4 Scrap, +30 Credits", "fail": "-1 Momentum, -1 Stamina; nie możesz znaleźć śladu"},
+    {"range": "91-95", "name": "Old Debts", "location_type": "Settlement", "description": "Mieszkaniec szuka kogoś, kto dostarczy jego spłatę długu.", "task": "Podróżuj do dowolnej innej osady od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Hardy or Connected", "reward": "+3 Momentum, +3 BP", "fail": "-2 Momentum, -4 BP, -100 Credits; zostajesz obrabowany lub tracisz dług"},
+    {"range": "96-100", "name": "Ancient Shrine", "location_type": "Unique or Ruins", "description": "Mieszkańcy pragną, by przy starożytnej świątyni złożono ofiary.", "task": "Podróżuj do dowolnych 2 lokacji Unique lub Ruins i ukończ test tej fuchy, przy każdej, z Minor lub Major success.", "test": "Any", "reward": "+3 Momentum, +1 Fame", "fail": "-5 Momentum, -10 BP, -2 Fame; uszkadzasz świątynię"}
+  ]
+}

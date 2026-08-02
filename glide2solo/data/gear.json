@@ -1,0 +1,113 @@
+{
+  "_meta": {
+    "title": "GLIDE 2 - Common Gear, Advanced Gear, Glider Upgrades",
+    "source": "GLIDE 2 - Part Two (v1 spreads).pdf (str. 81-86)",
+    "created": "2026-08-02"
+  },
+  "common_gear": {
+    "social_and_information_assets": [
+      {"name": "Guild Cipher", "cost": "100cr", "effect": "Advantage na wszystkich testach Connected w osadach i lokacjach Unique (max raz na wizytę)."},
+      {"name": "Translator Matrix", "cost": "65cr", "effect": "+1 Connected w lokacjach Desert i Green Space."},
+      {"name": "House Signet [Fake]", "cost": "150cr", "effect": "Zapłać 5cr za +1 do testu Connected lub Knowledgeable (max +3) w osadzie lub Unique Location."},
+      {"name": "Encryption Deck", "cost": "95cr", "effect": "Wydaj 1 Intel, by zyskać Advantage na dowolnej akcji Trade."},
+      {"name": "Bounty Ledger", "cost": "50cr", "effect": "Zyskaj +10 Credits za każdym razem, gdy ukończysz Quest wymagający testu Hardy lub Focused."},
+      {"name": "Trader's Scales", "cost": "80cr", "effect": "Advantage na wszystkich rzutach kupna i sprzedaży w osadach."}
+    ],
+    "survival_and_exploration_gear": [
+      {"name": "Thermal Cloak", "cost": "40cr", "effect": "Advantage na testach Hardy w lokacjach Desert."},
+      {"name": "Portable Tent", "cost": "65cr", "effect": "Advantage na akcjach Camp (raz na Camp)."},
+      {"name": "Hydration Pack", "cost": "50cr", "effect": "Wymień 1 Supply, by zyskać 2 Stamina."},
+      {"name": "Climbing Picks", "cost": "35cr", "effect": "+1 do testów Hardy w lokacjach Ruins."},
+      {"name": "Filter Mask", "cost": "60cr", "effect": "Dodaj 1 Wear, by zignorować utratę Staminy w Ruins lub Desert."},
+      {"name": "Survival Kit", "cost": "80cr", "effect": "Camp Major Success: +1 Supply."},
+      {"name": "Explorer's Backpack", "cost": "100cr", "effect": "Max Gear +2 (ten Gear nie zajmuje slotu)."}
+    ],
+    "navigation_and_sensory_equipment": [
+      {"name": "Wayfinder Binoculars", "cost": "50cr", "effect": "Możesz przerzucić Reveals i poziomy lokacji, używając dowolnego wyniku (max raz na lokację)."},
+      {"name": "Seismic Sensor", "cost": "70cr", "effect": "Advantage na Challenge Focused, gdzie mogłaby zostać utracona Stamina, w lokacjach Desert lub Ruins."},
+      {"name": "Flare Gun", "cost": "30cr", "effect": "Wydaj 1 Scrap, by odkryć wszystkie sąsiednie heksy (jeśli możliwe) i zyskać Advantage na następnym teście."},
+      {"name": "Echo-Locator", "cost": "85cr", "effect": "+1 do Focused w Desert, Ruins i Green Space."},
+      {"name": "Compass Array", "cost": "40cr", "effect": "Ignoruj Disadvantage w lokacjach Desert."}
+    ],
+    "technical_and_scavenging_tools": [
+      {"name": "Multi-Tool", "cost": "55cr", "effect": "+1 do Resourceful we wszystkich typach lokacji."},
+      {"name": "Multi-Scanner", "cost": "90cr", "effect": "+1 do Knowledgeable we wszystkich typach lokacji."},
+      {"name": "Scrap Magnet", "cost": "75cr", "effect": "Gdy zdobywasz Scrap z Explore, +1 dodatkowy Scrap."},
+      {"name": "Diagnostic HUD", "cost": "110cr", "effect": "Advantage na testach Knowledge, gdy można zdobyć Intel, w lokacjach Ruins lub Desert."},
+      {"name": "Welding Torch", "cost": "45cr", "effect": "Wydaj 1 Scrap, by usunąć 2 Wear z glidera."}
+    ],
+    "consumables_and_supplies": [
+      {"name": "Ration Pack", "cost": "10cr", "effect": "Jednorazowy. +2 Supply."},
+      {"name": "Stim-Patch", "cost": "20cr", "effect": "Jednorazowy. +3 Stamina."},
+      {"name": "Fuel Canister", "cost": "15cr", "effect": "Jednorazowy. +1 Supply, lub +5 bonusu Move na pojedynczą akcję Move."},
+      {"name": "Repair Putty", "cost": "30cr", "effect": "Jednorazowy. Usuń do 5 Wear z dowolnej kombinacji Gear lub Glider."},
+      {"name": "Bypass Chip", "cost": "15cr", "effect": "Jednorazowy. Automatycznie osiągnij Major success dla dowolnego testu Resourceful w lokacji Ruins."}
+    ]
+  },
+  "advanced_gear": {
+    "social_and_information_assets": [
+      {"name": "House Diplomat Seal", "cost": "230cr", "effect": "Advantage na wszystkich Challenge Connected w osadach i przy kontaktach z innymi postaciami. Wydaj 1 Intel, by zyskać +2 do dowolnego testu Connected."},
+      {"name": "Subliminal Voice Unit", "cost": "135cr", "effect": "Możesz traktować dowolny sprzedany handel Scrap jakby był wart +5 Credits, za jednostkę (max 3)."},
+      {"name": "Guild Master's Signet Ring", "cost": "300cr", "effect": "Za każdym razem, gdy zdobywasz Bond Points z Gildią, zyskujesz +1 bonus (max +3 na nagrodę)."},
+      {"name": "Neural Persuasion Node", "cost": "195cr", "effect": "Nagrody Credits z testów Connected lub Wits w osadach zwiększają się o +10."},
+      {"name": "Black-Market Relay", "cost": "150cr", "effect": "Możesz wziąć 2 Questy zamiast 1. Nie możesz brać tego samego Questu jednocześnie."},
+      {"name": "Encrypted Ledger", "cost": "125cr", "effect": "Twoja maksymalna pojemność Intel zwiększa się do 8. Zyskujesz 5 Credits za każdym razem, gdy zdobywasz Intel."}
+    ],
+    "navigation_and_sensory_equipment": [
+      {"name": "Orbital Navigation", "cost": "250cr", "effect": "Wydaj 1 Intel, by odkryć d5 lokacji na mapie, niezależnie od odległości. Zyskaj Advantage na pierwszym Challenge w każdej odkrytej lokacji (możesz też \"odkryć\" istniejące lokacje dla tego bonusu)."},
+      {"name": "Seismic Imagery Array", "cost": "175cr", "effect": "Wydaj 1 Intel, by trwale zmniejszyć poziom trudności dowolnego heksa (minimum 1)."},
+      {"name": "Chrono Compass", "cost": "130cr", "effect": "Możesz przerzucić Travel Encounters, wybierając dowolny wynik."},
+      {"name": "Thermal Lenses", "cost": "120cr", "effect": "+1 Focused. Advantage na Challenge Focused w Green Spaces i Deserts."},
+      {"name": "Gravity Anchor", "cost": "90cr", "effect": "Możesz poruszać się przez Difficult Terrain, ale nie możesz na nim zakończyć ruchu."}
+    ],
+    "survival_and_exploration_gear": [
+      {"name": "Exo-Skeleton", "cost": "180cr", "effect": "+1 Hardy, +1 max Gear."},
+      {"name": "Cryosuit", "cost": "150cr", "effect": "Gdy tracisz Supply lub Staminę w lokacji Desert, rzuć d10; na 7+ strata jest zniwelowana."},
+      {"name": "Neural Stim", "cost": "160cr", "effect": "Wydaj 1 Intel, by zyskać +3 do dowolnego Stat Challenge; rzuć d10, na 7+ trać 1 Staminę."},
+      {"name": "Environmental Purifier", "cost": "140cr", "effect": "Ignoruj Disadvantage z lokacji Green Space, Desert i Ruin."},
+      {"name": "Kinetic Dampeners", "cost": "120cr", "effect": "Ignoruj pierwszy utracony punkt Staminy z wyników w lokacjach Ruin, Settlement i Unique."},
+      {"name": "Auto Med-bay", "cost": "200cr", "effect": "Przy akcji Camp rzuć d10. Na 7+ zarówno Ty, jak i Twój towarzysz zyskujecie +1 Stamina."}
+    ],
+    "technical_and_scavenging_tools": [
+      {"name": "Nano Repair Swarm", "cost": "220cr", "effect": "Wydaj 1 Scrap, by usunąć cały Wear z dowolnego jednego Gear."},
+      {"name": "Omni-tool", "cost": "190cr", "effect": "+1 do wszystkich Challenge Resourceful i Knowledgeable w Ruins i Unique locations."},
+      {"name": "High-Gain Pulse Scrubber", "cost": "165cr", "effect": "Gdy eksplorujesz lokację Ruins, zyskujesz bonus +1 Intel przy każdym Major Success."},
+      {"name": "Molecular Sifter", "cost": "300cr", "effect": "Gdy zdobywasz Scrap, zyskujesz +1 dodatkowy Scrap na Poziom Lokacji (np. +2 Scrap w heksie Poziomu 2)."},
+      {"name": "Master Decrypter Key", "cost": "210cr", "effect": "Advantage na wszystkich testach Knowledgeable w Ruins. Możesz wydać 1 Intel, by potraktować Miss jako Minor success."},
+      {"name": "Fusion Cutter", "cost": "145cr", "effect": "Advantage na testach Resourceful. Możesz wydać 1 Scrap, by dodać +1 do dowolnego Challenge Resourceful (max +3)."}
+    ]
+  },
+  "glider_upgrades": {
+    "rules": "Ulepszenia magazynowania Scrap, Supply i Reliktów na gliderze są tierowane - trzeba kupić tier 1 przed 2, a 2 przed 3. Ulepszenia można sprzedać za połowę (zaokrągloną w górę) ich wartości w Credits.",
+    "engine_and_mobility": [
+      {"name": "Overcharged Thrusters", "cost": "80cr", "effect": "Wydaj 1 Scrap, by zyskać +2 Speed na następną akcję Move."},
+      {"name": "Vector Nozzles", "cost": "55cr", "effect": "+1 do testów Resourceful w lokacjach Desert."},
+      {"name": "Sand-Skimmers", "cost": "45cr", "effect": "+1 Speed przy rozpoczęciu akcji Move w Desert."}
+    ],
+    "sensors_and_tech": [
+      {"name": "Extended HUD", "cost": "70cr", "effect": "+1 do Challenge Focused w Ruins i Green Spaces."},
+      {"name": "Signal Repeater", "cost": "60cr", "effect": "Wydaj 1 Intel, by zyskać +1 Connected i Advantage na dowolnym teście Connected."},
+      {"name": "Terrain Mapper", "cost": "90cr", "effect": "+1 do Knowledgeable w lokacjach Desert i Ruins."}
+    ],
+    "frame_and_survival": [
+      {"name": "Reinforced Saddle", "cost": "100cr", "effect": "Zwiększ max Staminę o 1 (zyskaj tę Staminę natychmiast przy zakupie ulepszenia)."},
+      {"name": "Thermal Shielding", "cost": "65cr", "effect": "+1 do Hardy w lokacjach Desert."},
+      {"name": "Automated Repair Arm", "cost": "85cr", "effect": "Wydaj 1 Scrap, by usunąć 1 Wear z glidera."}
+    ],
+    "scrap_processing_tiers": [
+      {"tier": 1, "name": "External Cargo Hooks", "cost": "25cr + 2 Scrap", "effect": "Max Scrap +4."},
+      {"tier": 2, "name": "Magnetic Sorter", "cost": "60cr + 4 Scrap", "effect": "+1 Scrap za każdym razem, gdy Scrap jest przyznawany z Major success w lokacjach Desert, Ruins i Green Space."},
+      {"tier": 3, "name": "Compactor", "cost": "120cr + 6 Scrap", "effect": "Możesz w dowolnym momencie zamienić 2 Scrap na 1 Supply."}
+    ],
+    "supply_management_tiers": [
+      {"tier": 1, "name": "Auxiliary Flasks", "cost": "30cr + 1 Scrap", "effect": "Max Supply +2."},
+      {"tier": 2, "name": "Vapor-Capture Mesh", "cost": "75cr + 3 Scrap", "effect": "Przy akcji Camp rzuć d10. Na 7+ zyskaj +1 Supply."},
+      {"tier": 3, "name": "Heavy Duty Storage Compartments", "cost": "150cr + 5 Scrap", "effect": "Max Cargo +3."}
+    ],
+    "relic_preservation_tiers": [
+      {"tier": 1, "name": "Padded Stasis Case", "cost": "120cr + 2 Scrap", "effect": "Przy sprzedaży, wymianie lub handlu Reliktem za inną nagrodę, rzuć d10. Na 10 zyskaj +1 Fame oprócz innych nagród."},
+      {"tier": 2, "name": "Deep-Scan Radar", "cost": "150cr + 4 Scrap", "effect": "Advantage na pierwszym Challenge Knowledgeable lub Focused, gdy nagrodą byłby Relikt."},
+      {"tier": 3, "name": "Vault of Ancients", "cost": "260cr + 1 Relic", "effect": "Raz na Event, jeśli nie udałoby Ci się osiągnąć Major success o 1, możesz przerzucić kość i użyć nowego wyniku. Nie można użyć, jeśli masz 2+ Reliktów."}
+    ]
+  }
+}

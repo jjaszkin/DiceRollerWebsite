@@ -1,0 +1,174 @@
+{
+  "_meta": {
+    "title": "GLIDE 2 - Companions",
+    "source": "GLIDE 2 - Part Two (v1 spreads).pdf (str. 37-42)",
+    "created": "2026-08-02"
+  },
+  "rules": {
+    "finding_companions": "Gracz rzuca dwa razy w tabeli Companions (d100). Hire Cost wskazuje wymagania do pierwszego zatrudnienia. Zamiast rzucać, gracz może szukać wcześniej poznanego towarzysza: rzut d10, wynik 7+ oznacza odnalezienie poprzedniego towarzysza.",
+    "roles": "Każdy towarzysz oferuje ekspertyzę reprezentowaną przez Passive Ability oraz Key Stats. Towarzysze mają pulę Staminy, używaną podobnie jak u gracza. Przy Challenge Roll, jeśli towarzysz ma Key Stat pasujący do wykonywanego testu, gracz może wydać 1 Stamina towarzysza, by zyskać +1 do rzutu (max raz). Inne bonusy z Passive Abilities są zawsze aktywne, gdy odblokowane przez Bond.",
+    "restrictions_and_control": "Gracz może mieć tylko 1 towarzysza naraz. Akcjami towarzysza zarządza gracz. Umiejętności towarzysza wymagające zasobów zawsze opłaca gracz. Towarzysz nie musi uczestniczyć i nie może działać samodzielnie. Jeśli towarzysz ma 0 Staminy, jego Passive Abilities przestają działać."
+  },
+  "companions_table_d100": [
+    {
+      "range": "1-7",
+      "name": "Jax, the Grease-Monkey",
+      "description": "Nerwowy, ale genialny mechanik, potrafiący usłyszeć włos-pęknięcie w przewodzie paliwowym glidera z mili odległości. Żyje z wydmy na wydmę.",
+      "key_stats": ["Knowledgeable", "Resourceful"],
+      "passive_name": "Field Repair",
+      "passive_text": "Jax przywraca 1 Wear gliderowi gracza raz na akcję Camp.",
+      "stamina": 5,
+      "hire_cost": "50 Credits i 1 Scrap"
+    },
+    {
+      "range": "8-13",
+      "name": "Mara, the Ex-Guilder",
+      "description": "Była średniego szczebla biurokratka gildii, która odeszła po kradzieży klucza szyfrującego w odwecie za starą urazę wobec Domu.",
+      "key_stats": ["Connected", "Focused"],
+      "passive_name": "Inside Track",
+      "passive_text": "Mara umie \"mówić po gildyjsku\". Przy pierwszej interakcji z gildią w osadzie podczas wizyty, wydaj 1 Stamina Mary, by rzucić d10. Na 7+ zyskujesz +1 Intel.",
+      "stamina": 4,
+      "hire_cost": "100 Credits"
+    },
+    {
+      "range": "14-19",
+      "name": "Unit-04, \"The Iron Guardian\"",
+      "description": "Ciężki przemysłowy droid ze wzmocnionym pancerzem i zaskakująco łagodną osobowością - jak na robota.",
+      "key_stats": ["Hardy", "Focused"],
+      "passive_name": "Chassis Shield",
+      "passive_text": "Raz na akcję możesz użyć 1 Staminy Unit-04 zamiast przyjąć do 1 Wear na sprzęt lub glider z dowolnego źródła. Unit-04 odzyskuje Staminę tylko poprzez naprawę, kosztem 1 Scrap za 1 punkt Staminy.",
+      "stamina": 10,
+      "hire_cost": "100 Credits i 1 Supply"
+    },
+    {
+      "range": "20-25",
+      "name": "Aris, the Bio-Grafter",
+      "description": "Specjalistka od flory Eridooru, wierząca że pustynia to po prostu jeden wielki ogród czekający na odpowiednie składniki odżywcze.",
+      "key_stats": ["Knowledgeable", "Focused"],
+      "passive_name": "Nutrient Synthesis",
+      "passive_text": "Raz na akcję Camp w Green Space możesz wydać 1 Staminę (gracza lub towarzysza), by zyskać +2 Supply.",
+      "stamina": 3,
+      "hire_cost": "65 Credits i 1 Supply"
+    },
+    {
+      "range": "26-30",
+      "name": "Nym, the Wayfinder",
+      "description": "Nomadka, która nawiguje wg zmieniających się kolorów i zapachów wydm, zamiast polegać na mapie.",
+      "key_stats": ["Knowledgeable", "Resourceful", "Focused"],
+      "passive_name": "Predictive Scan",
+      "passive_text": "Podczas akcji Reveal możesz wydać 1 Staminę Nym, by zwiększyć lub zmniejszyć wynik rzutu o 1, np. 7 można traktować jako 6 lub 8.",
+      "stamina": 5,
+      "hire_cost": "40 Credits"
+    },
+    {
+      "range": "31-37",
+      "name": "Talon, the Dune Hunter",
+      "description": "Survivalistka postrzegająca Eridoor jako żywą bestię, którą trzeba szanować, a nie oswajać.",
+      "key_stats": ["Hardy", "Resourceful"],
+      "passive_name": "Weather-Worn",
+      "passive_text": "Możesz wydać 1 Staminę Talon, by zyskać Advantage na dowolnym Evencie w lokacji typu Desert.",
+      "stamina": 5,
+      "hire_cost": "80 Credits i min. H2"
+    },
+    {
+      "range": "38-43",
+      "name": "Soli, the Archivist",
+      "description": "Cichy uczony, zafiksowany na \"Green Era\". Nosi torbę pełną cyfrowych tabletów do notowania i rejestrowania nowych znalezisk.",
+      "key_stats": ["Knowledgeable", "Connected"],
+      "passive_name": "Pattern Recognition",
+      "passive_text": "Za każdym razem, gdy osiągniesz Major Success na akcji Explore z użyciem Knowledgeable, Soli daje +1 dodatkowy Intel.",
+      "stamina": 4,
+      "hire_cost": "90 Credits i min. C2 lub K2"
+    },
+    {
+      "range": "44-50",
+      "name": "Kael, the Lost Heir",
+      "description": "Były następca tronu Minor House, zna kody wysokiego towarzystwa i gorzki smak wygnania.",
+      "key_stats": ["Resourceful", "Connected"],
+      "passive_name": "Noble Lineage",
+      "passive_text": "Możesz wydać 1 Staminę Kaela, by zyskać Advantage na dowolnym teście Connected.",
+      "stamina": 4,
+      "hire_cost": "80 Credits"
+    },
+    {
+      "range": "51-57",
+      "name": "B-99, \"Boop\"",
+      "description": "Przerobiony droid nawigacyjny z wgniecionym kadłubem i niezwykle optymistycznym procesorem.",
+      "key_stats": ["Hardy", "Resourceful"],
+      "passive_name": "Extended Signal",
+      "passive_text": "Ignorujesz Disadvantage we wszystkich lokacjach typu Ruins i Desert.",
+      "stamina": 5,
+      "hire_cost": "3 Scrap"
+    },
+    {
+      "range": "58-63",
+      "name": "Vesper, the Scavenger",
+      "description": "Ekspertka od zbieractwa, traktująca ruiny jak własny plac zabaw i potrafiąca znaleźć wartość nawet w zardzewiałej śrubie.",
+      "key_stats": ["Knowledgeable", "Resourceful", "Focused"],
+      "passive_name": "Heavy Lifter",
+      "passive_text": "Pojemność Cargo Hold Twojego glidera zwiększa się o +5 slotów, dopóki Vesper jest Twoim towarzyszem.",
+      "stamina": 6,
+      "hire_cost": "70 Credits i min. R2"
+    },
+    {
+      "range": "64-69",
+      "name": "Silas, the Chronicler",
+      "description": "Członek Gildii Ech, spisujący każde Twoje słowo dla \"przyszłych pokoleń\".",
+      "key_stats": ["Knowledgeable", "Connected"],
+      "passive_name": "Historical Context",
+      "passive_text": "Silas daje Ci 1 Intel za każdym razem, gdy test Knowledgeable kończy się sukcesem Major.",
+      "stamina": 3,
+      "hire_cost": "130 Credits i min. K3 lub C2"
+    },
+    {
+      "range": "70-75",
+      "name": "Duncan, the Desert Duelist",
+      "description": "Onieśmielająca, lecz milcząca obecność, wystarczająca by rozwiązać każdy spór.",
+      "key_stats": ["Hardy", "Resourceful", "Focused"],
+      "passive_name": "Intimidating Aura",
+      "passive_text": "Gdy uzyskasz Miss na teście Connected lub Hardy w osadzie, możesz wydać 1 Staminę Duncana, by spróbować ponownie (max raz).",
+      "stamina": 5,
+      "hire_cost": "110 Credits"
+    },
+    {
+      "range": "76-81",
+      "name": "Fenn, the Wind Reader",
+      "description": "Nomadyczny Seeker, który spędził 10 000 godzin w powietrzu nad wydmami.",
+      "key_stats": ["Resourceful", "Focused"],
+      "passive_name": "Wind Rider",
+      "passive_text": "Podczas akcji Move rzuć d10: 1-4 brak efektu, 5-7 +1 Move, 8+ +2 Move.",
+      "stamina": 5,
+      "hire_cost": "40 Credits, 2 Scrap"
+    },
+    {
+      "range": "82-87",
+      "name": "Echo, the Synthetic Artist",
+      "description": "Droid używający projekcji świetlnych do odtwarzania dzieł sztuki reprezentujących \"Green Era\" Eridooru.",
+      "key_stats": ["Connected", "Focused"],
+      "passive_name": "Vivid Imagery",
+      "passive_text": "Podczas akcji Camp zyskujesz bonus +1 Momentum za każdą lokację typu Green Space, przez którą przejechałeś od ostatniej akcji Camp (maksymalnie +3).",
+      "stamina": 4,
+      "hire_cost": "60 Credits i min. K4 lub C3"
+    },
+    {
+      "range": "88-93",
+      "name": "Garrick, the Old Guard",
+      "description": "Emerytowany egzekutor gildii, zbyt uparty, by przestać wędrować po wydmach.",
+      "key_stats": ["Hardy", "Focused"],
+      "passive_name": "Steady Hands",
+      "passive_text": "Raz na Challenge możesz wydać 1 Staminę Garricka, by potraktować wynik rzutu jako o 1 większy lub mniejszy.",
+      "stamina": 6,
+      "hire_cost": "130 Credits i min. Bond Level 2+ z dowolną gildią"
+    },
+    {
+      "range": "94-100",
+      "name": "Rook, the Fixed-Gear Pilot",
+      "description": "Entuzjasta gliderów, preferujący starsze, manualne maszyny i uważający nowoczesną technologię za \"zmiękczającą\" pilotów.",
+      "key_stats": ["Knowledgeable", "Resourceful"],
+      "passive_name": "Veteran Blackthumb",
+      "passive_text": "Wszystkie naprawy Twojego glidera są darmowe.",
+      "stamina": 4,
+      "hire_cost": "80 Credits i min. 2 ulepszenia glidera"
+    }
+  ]
+}

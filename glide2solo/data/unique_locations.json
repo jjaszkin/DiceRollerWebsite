@@ -1,0 +1,195 @@
+{
+  "_meta": {
+    "title": "GLIDE 2 - Unique Locations",
+    "source": "GLIDE 2 - Part Two (v1 spreads).pdf (str. 129-138)",
+    "created": "2026-08-02"
+  },
+  "rules": {
+    "reveal": "Kiedy zostaje odkryta Unikalna Lokacja, rzuć d100 w Tabeli Unikalnych Lokacji, by określić, co zostało znalezione. Odkryty heks zawsze będzie zawierał wylosowaną lokację.",
+    "actions": "Każda Unikalna Lokacja oferuje zestaw Akcji, które Seeker może wykonać maksymalnie raz podczas wizyty w niej. Rozwiąż każdą wybraną Akcję, zanim przejdziesz do kolejnej.",
+    "uniqueness": "Na mapie może istnieć jednocześnie tylko jedna kopia każdej Unikalnej Lokacji, więc przerzucaj duplikaty wyników. Jeśli wszystkie Unikalne Lokacje zostały już odkryte, heks staje się zamiast tego lokacją Desert poziomu 3 (str. 89), a Ty zyskujesz +1 Fame."
+  },
+  "unique_locations_table_d100": [
+    {
+      "range": "1-5",
+      "name": "Sundial Spire",
+      "description": "Iglicowata wieża ze szkła rzucająca cień na słonej równinie. Niegdyś używana jako narzędzie kalibracyjne dla orbitalnych układów.",
+      "actions": [
+        {"name": "Sync Data", "test": "Knowledge Test", "major": "+2 Intel", "minor": "+1 Intel", "miss": "-2 Momentum; iglica zakłóca Twój sprzęt", "effect": null},
+        {"name": "Rest in the Shadow", "test": null, "major": null, "minor": null, "miss": null, "effect": "Recover +3 Stamina podczas Camp w tej lokacji."}
+      ]
+    },
+    {
+      "range": "6-10",
+      "name": "Iron-Root Grove",
+      "description": "Fragment zielonej przestrzeni, w którym drzewa zaczęły wchłaniać metaliczny pył z piasku, tworząc zimną, żelazną korę.",
+      "actions": [
+        {"name": "Harvest Iron-Bark", "test": "Hardy Test", "major": "+2 Scrap, +1 Supply", "minor": "+1 Scrap", "miss": "-1 Stamina; poszarpana kora okazuje się zbyt trudna do zebrania", "effect": null},
+        {"name": "Research the Trees", "test": null, "major": null, "minor": null, "miss": null, "effect": "Jeśli masz Bond Level 2+ z Gildią Ekologii, możesz wydać 1 Intel, by zyskać 1d6 Supply."}
+      ]
+    },
+    {
+      "range": "11-15",
+      "name": "Smuggler's Dead Drop",
+      "description": "Nijaka jaskinia oznaczona blaknącym niebieskim symbolem. To neutralne miejsce, w którym różne frakcje zostawiają swoje \"darowizny\".",
+      "actions": [
+        {"name": "Check the Cache", "test": "Connected Test", "major": "+25 Credits, +1 Relic", "minor": "+10 Credits", "miss": "-10 Credits; uruchamiasz pułapkę i musisz zostawić darowiznę, by ją rozbroić", "effect": null},
+        {"name": "Leave a Lead", "test": null, "major": null, "minor": null, "miss": null, "effect": "Wydaj 1 Intel, by zyskać +2 BP z Gildią Piasku."}
+      ]
+    },
+    {
+      "range": "16-20",
+      "name": "Serpent's Mouth",
+      "description": "Wejście do jaskini w kształcie głowy ogromnego węża - a może niegdyś nim było. Wnętrze wypełnione jest bioluminescencyjnymi grzybami.",
+      "actions": [
+        {"name": "Harvest Spores", "test": "Focused Test", "major": "+2 Supply, +1 Momentum", "minor": "+1 Supply", "miss": "-2 Stamina; wdychasz obłok toksycznych zarodników", "effect": null},
+        {"name": "Restful Aroma", "test": null, "major": null, "minor": null, "miss": null, "effect": "Możesz tu wykonać Camp. Jeśli to zrobisz, zyskujesz Advantage na kolejnych 2 Challenge'ach i odzyskujesz dodatkowo +1 Stamina."}
+      ]
+    },
+    {
+      "range": "21-25",
+      "name": "Rust-Sea Ferry",
+      "description": "Ogromna, płaskodenna barka utknęła na szczycie wydmy. Została przekształcona w stały punkt handlowy dla wszystkich.",
+      "notes": "Możesz tu wykonywać Settlement Actions.",
+      "actions": [
+        {"name": "Barter", "test": "Connected Test", "major": "Wszystkie ceny obniżone o 5 (minimalny koszt 2)", "minor": "Wszystkie ceny obniżone o 3 (minimalny koszt 3)", "miss": "Wszystkie ceny obniżone o 1 (minimalny koszt 5)", "effect": null}
+      ]
+    },
+    {
+      "range": "26-30",
+      "name": "Desert Well",
+      "description": "Działająca studnia z ręczną pompą głębinową, utrzymywana przez liczną grupę robotników i przedstawicieli różnych Gildii. Woda jest darmowa, jeśli pomożesz ją pompować.",
+      "actions": [
+        {"name": "Pump Water", "test": "Hardy Test", "major": "+2 Supply", "minor": "+1 Supply", "miss": "-1 Stamina; dźwignia odbija się i uderza Cię w twarz", "effect": null},
+        {"name": "Contribute to the Cause", "test": null, "major": null, "minor": null, "miss": null, "effect": "-20 Credits, -3 Scrap lub -2 Supply, by zyskać +2 BP z dowolną Gildią."}
+      ]
+    },
+    {
+      "range": "31-35",
+      "name": "Great Wind Arch",
+      "description": "Naturalny kamienny most rozpięty nad wietrznym kanionem, który bez ustanku wytwarza silne prądy wznoszące.",
+      "actions": [
+        {"name": "Ride the Thermal", "test": "Focused Test", "major": "Natychmiastowy Move do dowolnego heksu", "minor": "Natychmiastowy Move do 4 heksów", "miss": "-2 Stamina, Mark 3 Glider Wear; wiatry rzucają Cię na ścianę kanionu", "effect": null},
+        {"name": "Salvage Gliders", "test": "Resourceful Test", "major": "+2 Scrap, +1 Supply", "minor": "+1 Scrap, +5 Credits", "miss": "Mark 2 Wear; uszkadzasz swój sprzęt, próbując odzyskać wraki", "effect": null}
+      ]
+    },
+    {
+      "range": "36-40",
+      "name": "Radar Spine Array",
+      "description": "Rząd sześciu kolosalnych anten satelitarnych rozciągający się wzdłuż górskiego grzbietu. Zardzewiałe konstrukcje wciąż śledzą sygnały z głębokiego kosmosu.",
+      "actions": [
+        {"name": "Intercept a Ghost Feed", "test": null, "major": null, "minor": null, "miss": null, "effect": "Odsłoń dowolne 2 heksy na mapie po wejściu do tej lokacji."},
+        {"name": "Perform Repairs", "test": null, "major": null, "minor": null, "miss": null, "effect": "Wydaj 1 Staminę i 2 Scrap, by zyskać 1 Intel, maksymalnie 2 Intel na wizytę w tej lokacji."}
+      ]
+    },
+    {
+      "range": "41-45",
+      "name": "The House Observation Post",
+      "description": "Zapomniana wieża wysokiej technologii, wciąż obsadzona przez wysłużonego, glitchującego droida z dawno minionego Minor House.",
+      "actions": [
+        {"name": "Socialize the Droid", "test": "Connected Test", "major": "+3 Intel", "minor": "+1 Intel", "miss": "-2 Stamina, i nie możesz tu wrócić; droid na stałe oznacza Cię jako wrogą jednostkę", "effect": null},
+        {"name": "Update Map Routes", "test": null, "major": null, "minor": null, "miss": null, "effect": "-10 x Y Credits, by odsłonić (str. 18) dowolny heks jako wybrany przez siebie typ. Y odpowiada aktualnej liczbie heksów pasujących do wybranego typu na Twojej mapie. Można to zrobić, aż Y osiągnie 10."}
+      ]
+    },
+    {
+      "range": "46-50",
+      "name": "Gilded Graveyard",
+      "description": "Pozornie nieskończona kolekcja luksusowych statków kosmicznych sprzed Upadku, których szkielety odbijają złocisty blask na piaskach.",
+      "actions": [
+        {"name": "Prestige Salvage", "test": "Resourceful Test", "major": "+3 Scrap, +1 Relic", "minor": "+2 Scrap, +5 Credits", "miss": "+1 Scrap, -3 Momentum; udaje Ci się znaleźć coś wartościowego, ale dużo później, niż oczekiwałeś", "effect": null},
+        {"name": "Hire Help", "test": null, "major": null, "minor": null, "miss": null, "effect": "-20 Credits, by wynająć jednego z licznych szabrowników w okolicy. Zyskaj Advantage na następnym Teście w tej lokacji, dającym dodatkowe +2 Scrap przy sukcesie Minor lub Major."}
+      ]
+    },
+    {
+      "range": "51-55",
+      "name": "Frozen Waterfall",
+      "description": "Starożytny wyciek chemiczny głęboko pod ziemią stworzył kaskadę zastygłego, niebieskiego, półprzezroczystego \"lodu\", który nigdy się nie topi ani nie porusza.",
+      "actions": [
+        {"name": "Analyze the Catalyst", "test": "Knowledge Test", "major": "+2 Intel i +1 Supply", "minor": "+1 Supply", "miss": "Mark 2 Wear; kwas niszczy Twój sprzęt", "effect": null},
+        {"name": "Chisel Shards", "test": "Resourceful Test", "major": "+1 Relic (Blue Catalyst)", "minor": "+1 Supply", "miss": "-1 Stamina; otwierasz bańkę gazu, która dusi Twoje płuca", "effect": null}
+      ]
+    },
+    {
+      "range": "56-60",
+      "name": "Iron Grip Foundry",
+      "description": "Zautomatyzowany zakład hutniczy z okresu Wojen Domów. Ogromne kubły z żużlem zwisają z nadwieszonych szyn dźwigowych, kołysząc się złowieszczo.",
+      "actions": [
+        {"name": "Purge a Furnace", "test": "Resourceful Test", "major": "+4 Scrap, +2 Supply", "minor": "+1 Scrap, +1 Supply", "miss": "Mark 2 Wear; stary zawór pęka, oblewając Cię parą", "effect": null},
+        {"name": "Salvage Scrap", "test": null, "major": null, "minor": null, "miss": null, "effect": "-2 Stamina, +2 Scrap"}
+      ]
+    },
+    {
+      "range": "61-65",
+      "name": "Echoing Hangar",
+      "description": "Podziemny hangar używany dawno temu przez Gildię Glidera. Wiatr gwiżdże w tubach startowych, tworząc niesamowitą melodię.",
+      "actions": [
+        {"name": "Speed Calibration", "test": "Resourceful Test", "major": "+2 do Twojego następnego Move", "minor": "+1 do Twojego następnego Move", "miss": "Mark 1 Glider Wear; niepoprawnie ustawiasz obudowę silnika w swoim gliderze", "effect": null},
+        {"name": "Repair Lift", "test": null, "major": null, "minor": null, "miss": null, "effect": "Wydaj do 3 Scrap, odzyskaj 2 Glider Wear za każdy wydany Scrap."}
+      ]
+    },
+    {
+      "range": "66-70",
+      "name": "Salt-King's Grave",
+      "description": "Ogromny kopiec czerwonych kamieni pośrodku białej słonej równiny. To miejsce poświęcone legendarnemu nomadzkiemu przywódcy Seekerów sprzed lat.",
+      "actions": [
+        {"name": "Leave an Offering", "test": null, "major": null, "minor": null, "miss": null, "effect": null, "options": ["-10 Credits: +1 BP (dowolny)", "-20 Credits: +1 BP (dowolny) i +1 Supply", "-50 Credits: +1 Fame"]},
+        {"name": "Build the Cairn", "test": null, "major": null, "minor": null, "miss": null, "effect": null, "options": ["-1 Stamina: +2 Momentum", "-2 Stamina: +3 Momentum, +2 BP (dowolny)"]}
+      ]
+    },
+    {
+      "range": "71-75",
+      "name": "Bone-Picker Ridge",
+      "description": "Poszarpane, wyrzeźbione przez wiatr klify zamieszkane przez tysiące pustynnych padlinożerców. U podnóża klifów znajduje się cmentarzysko bestii i zaginionych.",
+      "actions": [
+        {"name": "Pick the Bones", "test": "Resourceful Test", "major": "+25 Credits, +2 Scrap", "minor": "+1 Scrap", "miss": "-1 Stamina; ptaki atakują Cię z agresją", "effect": null}
+      ]
+    },
+    {
+      "range": "76-82",
+      "name": "Sunken Amphitheater",
+      "description": "Wielki, okrągły amfiteatr wypełniony skrzącym się piaskiem przyprawowym. Nawet najcichszy szept słychać w każdym zakątku sali. Pielgrzymi, podróżnicy i Seekerzy zatrzymują się tu, by odpocząć i wymienić się opowieściami.",
+      "actions": [
+        {"name": "Recite a Ballad", "test": "Connected Test", "major": "+1 Fame (maksymalnie raz), +3 BP z dowolną gildią", "minor": "+2 BP (dowolny)", "miss": "-1 Momentum; tłum ignoruje Twoje nieścisłości", "effect": null},
+        {"name": "Eavesdrop", "test": "Focused Test", "major": "+2 Intel, +1 Momentum", "minor": "+1 Intel", "miss": "-2 Momentum; mówcy szybko się od Ciebie oddalają", "effect": null}
+      ]
+    },
+    {
+      "range": "83-86",
+      "name": "Hydroponic Dome",
+      "description": "Roztrzaskana biokopuła z automatycznym awaryjnym systemem zraszaczy, który podlewa niezliczone, zmodyfikowane gatunki traw ozdobnych.",
+      "actions": [
+        {"name": "Vapour Enrichment", "test": null, "major": null, "minor": null, "miss": null, "effect": "Otaczająca wilgoć w kopule przywraca 1 Staminę Tobie i Twojemu Towarzyszowi po wejściu."},
+        {"name": "Sprinkler Tinker", "test": "Resourceful Test", "major": "+3 Supply", "minor": "+1 Supply", "miss": "Mark 1 Wear: w Twoim pobliżu eksploduje zawór wysokiego ciśnienia", "effect": null}
+      ]
+    },
+    {
+      "range": "87-93",
+      "name": "Slag-Heap Outpost",
+      "description": "Górnicza osada zbudowana wokół ogromnego stosu przemysłowych odpadów maszynowych sprzed Upadku, zamieszkana przez niezależnych górników.",
+      "notes": "Scrap Rich: cały Scrap kosztuje tu 2cr. Nie możesz tu sprzedawać Scrap. Lacking: nie możesz tu kupić Supply. Supply można sprzedać za 20cr za sztukę.",
+      "actions": [
+        {"name": "Mine", "test": "Hardy Test", "major": "+3 Scrap, +2 BP (dowolny)", "minor": "+2 Scrap, +1 BP (dowolny)", "miss": "+1 BP (dowolny), -1 Stamina; jesteś zmęczony pracą i wracasz z pustymi rękami", "effect": null}
+      ]
+    },
+    {
+      "range": "94-99",
+      "name": "Void Engine Crater",
+      "description": "Nisko-radioaktywny krater po dawnej katastrofie silnika statku kosmicznego. Piasek mieni się fioletowym kolorem, nawet w słońcu.",
+      "actions": [
+        {"name": "Extract Void-Source", "test": "Knowledgeable Test", "major": "+2 Relics (Void Essence), +1 Intel", "minor": "+1 Relic (Void Essence)", "miss": "-3 Stamina; wywołujesz małą eksplozję podczas zbierania paliwa", "effect": null},
+        {"name": "Jury-rig the Core", "test": null, "major": null, "minor": null, "miss": null, "effect": "Wydaj 2 Scrap, by zyskać 2 Supply; przekierowujesz część paliwa do użytku w swoim gliderze."}
+      ]
+    },
+    {
+      "range": "100",
+      "name": "The Heart of Eridoor (Seed Vault)",
+      "description": "Legendarna lokacja, której niezliczeni Seekerzy poszukiwali przez całe życie. Silnie ekranowany, podziemny kompleks bunkrowy z Ery Zieleni. Zawiera niezliczone uśpione bio-nasiona i dzienniki terraformacji potrzebne do odbudowy planety.",
+      "notes": "Przy odkryciu zyskujesz +5 Fame. Ta lokacja jest dostępna wyłącznie z Vault Key (str. 57).",
+      "actions": [
+        {"name": "Consult the Prime Archive", "test": "Knowledgeable Test", "major": "+3 Intel, +2 Momentum", "minor": "+2 Intel, +1 Momentum", "miss": "Tracisz cały Momentum; AI uznaje Cię za nieprzygotowanego i blokuje dostęp do banków danych", "effect": null},
+        {"name": "Prepare the Systems", "test": "Resourceful or Hardy Test", "major": "+1 Relic, +1 Supply", "minor": "+1 Relic", "miss": "-1 Stamina; system się zacina i musisz spędzić czas na sprzątaniu bałaganu", "effect": null},
+        {"name": "Terraforming Burst", "test": null, "major": null, "minor": null, "miss": null, "effect": "Wydaj 1 Relic i 3 Intel przy głównej konsoli, by wywołać zlokalizowany atmosferyczny wybuch materiałów terraformujących i nasion. Efekt: wybierz dowolny heks na mapie. Wybrany heks i wszystkie bezpośrednio sąsiadujące heksy stają się Green Space poziomu 1 (Unikalne Lokacje i Osady nie zmieniają się w wyniku tego efektu)."}
+      ]
+    }
+  ]
+}

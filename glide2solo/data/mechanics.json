@@ -1,0 +1,183 @@
+{
+  "_meta": {
+    "title": "GLIDE 2 - Core Mechanics",
+    "source": "GLIDE 2 - Part Two (v1 spreads).pdf, pages 7-26",
+    "extracted": "2026-08-02",
+    "notes": "Faza 1 ekstrakcji. Tabele losowe (desert/ruins/green space/unique/oracles) i gildie/companions/gear w osobnych plikach (faza 2 i 3)."
+  },
+  "dice_notation": {
+    "d10": "roll a single ten-sided die",
+    "2d10": "roll two ten-sided dice and add their total together",
+    "d100": "roll 2d10, one die = 10s, other = 1s (0 and 0 = 100, e.g. 0 and 1 = 11)",
+    "d2": "roll d10: 1-5 = 1, 6-10 = 2",
+    "d5": "roll d10: 1-2=1, 3-4=2, 5-6=3, 7-8=4, 9-10=5"
+  },
+  "stats": [
+    {"key": "H", "name": "Hardy", "represents": "courage, strength, endurance, physical feats"},
+    {"key": "K", "name": "Knowledgeable", "represents": "insight, information, deduction, repairing"},
+    {"key": "R", "name": "Resourceful", "represents": "dexterity, speed, precision, salvaging"},
+    {"key": "C", "name": "Connected", "represents": "charisma, influence, empathy, negotiation"},
+    {"key": "F", "name": "Focused", "represents": "observation, wisdom, navigation, intuition"}
+  ],
+  "stat_limits": {"min": 0, "max": 5},
+  "resources": {
+    "stamina": {"abbr": "S", "start": 5, "max": 5, "min": 0, "on_zero": "roll on exhaustion_table"},
+    "momentum": {"abbr": "MM", "start": 1, "max": 3, "spend_1_for": ["re-roll any die or dice result", "use instead of Stamina or Supply"]},
+    "intel": {"abbr": "IN", "start": 1, "max": 3, "spend_1_for": ["gain Advantage (roll twice, take either)", "re-roll one Challenge Die", "decrease Difficulty Level of a location by 1 (min 1)", "trade for rewards in a settlement"]},
+    "credits": {"abbr": "cr", "start": 50, "max": null, "min": 0},
+    "fame": {"start": 0, "end_game_threshold": 10},
+    "gear": {"max_carried": 3, "wear_per_item": 3, "note": "at 0 wear, gear unusable; using gear marks 1 wear unless it has an ongoing effect"}
+  },
+  "glider": {
+    "wear": {"start": 5, "max": 5, "on_zero": "max Speed becomes 1, no Mods usable"},
+    "supply": {"start": 6, "max": 6, "on_empty": "mark 1 Wear on glider instead of spending Supply"},
+    "speed": {"start": 2, "max": 5, "min": 1, "note": "max can increase further via Gear/Traits/other effects"},
+    "cargo_slots": 3,
+    "scrap_max_in_glider": 5,
+    "relics_max_in_glider": 3,
+    "mods_max": 3,
+    "mod_categories": ["Engine and Mobility", "Sensors and Tech", "Frame and Durability"]
+  },
+  "seeker_roles": [
+    {
+      "role": "Soldier",
+      "starting_stats": {"H": 3, "K": 1, "R": 2, "C": 1, "F": 1},
+      "starting_bonus_trait": "Peak Condition: +1 Max Stamina",
+      "goal": "Complete 6 total Settlement Events with Major Successes",
+      "reward_trait": "Survival Training: +1 Hardy, +1 Resourceful, +1 Max Stamina"
+    },
+    {
+      "role": "Merchant",
+      "starting_stats": {"H": 1, "K": 2, "R": 1, "C": 3, "F": 1},
+      "starting_bonus_trait": "Haggler: Advantage on Connected and Knowledgeable tests in Settlements",
+      "goal": "Trade 30 total Scrap",
+      "reward_trait": "Hard Bargain: Scrap sold worth +d5 additional Credits (max 3x/settlement visit), Supplies discounted 1cr (max 3x/visit), +1 Knowledgeable or Resourceful"
+    },
+    {
+      "role": "Explorer",
+      "starting_stats": {"H": 2, "K": 1, "R": 2, "C": 1, "F": 2},
+      "starting_bonus_trait": "Experienced Delver: re-roll Challenge die (1x per Explore)",
+      "goal": "Camp in 10 different locations",
+      "reward_trait": "Survival Knowledge: Camp action always restores +1 Supply, may re-roll Camp Event (1x per Camp), +1 Hardy/Resourceful/Focused"
+    },
+    {
+      "role": "Freelancer",
+      "starting_stats": {"H": 2, "K": 2, "R": 2, "C": 1, "F": 1},
+      "starting_bonus_trait": "Work-for-Hire: always find +1 Scrap from Major successes when Exploring",
+      "goal": "Complete 6 total Guild Quests",
+      "reward_trait": "Well-Travelled: +1 to two different Stats of choice; if a Bond Point reward would be less than +3, add +1 to it (0 and negatives don't count)"
+    },
+    {
+      "role": "Navigator",
+      "starting_stats": {"H": 1, "K": 3, "R": 1, "C": 1, "F": 2},
+      "starting_bonus_trait": "Sightseer: start with Wayfinder Binoculars Gear (p. 81) and max Intel",
+      "goal": "Reveal a total of 40 hexes (all location types count)",
+      "reward_trait": "Pathfinder: move through Non-traversable locations, minimum 2 Speed, +1 Resourceful or Focused"
+    },
+    {
+      "role": "Scoundrel",
+      "starting_stats": {"H": 1, "K": 1, "R": 2, "C": 2, "F": 2},
+      "starting_bonus_trait": "Off-World Contacts: all Relics sold worth +25cr",
+      "goal": "Sell 6 Relics total",
+      "reward_trait": "The Highest Bidders: +1 Resourceful, +1 Knowledgeable, Relics sold worth an additional +50 Credits"
+    }
+  ],
+  "challenge_resolution": {
+    "roll": "2 separate d10: Player Die (+ chosen/listed stat + bonuses, max +5) and Challenge Die (+ Difficulty Level of location)",
+    "outcomes": [
+      {"result": "major_success", "condition": "Player Die total >= 2x Challenge Die total"},
+      {"result": "minor_success", "condition": "Player Die total >= Challenge Die total"},
+      {"result": "miss", "condition": "Player Die total < Challenge Die total"}
+    ],
+    "gear_use": "may use matching equipped Gear on a Challenge Roll; mark 1 Wear per item used; unusable at 0 Wear",
+    "companion_aid": "spend 1 companion Stamina for +1 to the roll if companion has the Key Stat listed; companion needs >=1 Stamina"
+  },
+  "location_type_table_d10": [
+    {"roll": "1-2", "result": "Impassible Terrain", "tiles": "d2"},
+    {"roll": "3", "result": "Settlement", "tiles": 1},
+    {"roll": "4-7", "result": "Desert", "tiles": "d5"},
+    {"roll": "8", "result": "Ruin", "tiles": "d2"},
+    {"roll": "9", "result": "Green Space", "tiles": 1},
+    {"roll": "10", "result": "Unique Location", "tiles": 1}
+  ],
+  "location_level_table_d10": [
+    {"roll": "1-2", "level": 0},
+    {"roll": "3-6", "level": 1},
+    {"roll": "7-8", "level": 2},
+    {"roll": "9", "level": null, "note": "brak wpisu w oryginale - możliwa luka w druku, zweryfikować przy okazji"},
+    {"roll": "10", "level": 3}
+  ],
+  "location_level_special_cases": {
+    "unique_location": "always Level 3, do not roll",
+    "impassible_terrain": "no Difficulty Level (treat as 0), cannot be Explored"
+  },
+  "exploration_table_by_location_type": {
+    "desert": "Desert Exploration table",
+    "ruins": "Ruins Exploration table",
+    "green_space": "Green Space Exploration table",
+    "settlement": "Settlement Event table",
+    "unique": "own unique rules per location",
+    "impassible_terrain": null
+  },
+  "exhaustion_table_d10": [
+    {"roll": 1, "name": "Collapsed in the Sand", "effect": "lose 1 piece of gear", "recover_stamina": 2},
+    {"roll": 2, "name": "Barely Holding On", "effect": "mark 1 Wear on glider and any gear; move to closest revealed hex outside closest settlement", "recover_stamina": 2},
+    {"roll": 3, "name": "The Desert Takes Its Due", "effect": "move to a random hex (roll on map), then to nearest revealed hex; lose 1 Supply", "recover_stamina": 3},
+    {"roll": 4, "name": "Scavenged While Down", "effect": "lose half Credits (rounded up) and 3 Scrap", "recover_stamina": 2},
+    {"roll": 5, "name": "Wanting Rescue", "effect": "lose 1 Relic or 3 Scrap; if unable to pay, -3 Bond Points with any Guild", "recover_stamina": 2},
+    {"roll": 6, "name": "Harmful Recovery", "effect": "mark d5 Wear on gear and/or glider (any combination)", "recover_stamina": 2},
+    {"roll": 7, "name": "Hard Lessons Learned", "effect": "-3 Momentum, +1 Intel", "recover_stamina": 2},
+    {"roll": 8, "name": "Badly Bandaged", "effect": "wake at nearest settlement; -1 Supply, -d100 Credits", "recover_stamina": "all"},
+    {"roll": 9, "name": "Lost Time", "effect": "wake at nearest settlement; -2 Supply, -1 Intel, -1 Fame", "recover_stamina": 3},
+    {"roll": 10, "name": "Brush with Death", "effect": "roll d10 sub-table: 1-4 lose 2 gear and 3 Supply / 5-8 -2 Bond Points x3 (any combination) and -2 Intel / 9-10 mark 1 Wear on all gear and glider, lose all Relics and Scrap", "recover_stamina": 2, "bonus": "+1 Fame for surviving"}
+  ],
+  "camping_events_table_d100": [
+    {"roll": "1-4", "effect": "A soft wind keeps the night cool and restful (+1 Stamina)"},
+    {"roll": "5-8", "effect": "A strange pattern is seen in the stars above (+1 Momentum)"},
+    {"roll": "9-12", "effect": "A caravan passes by, sharing rumours (+1 Supply and Momentum)"},
+    {"roll": "13-16", "effect": "An acquaintance reaches out, checking in on you (+1 Momentum)"},
+    {"roll": "17-20", "effect": "A clear night sky guides your thoughts (+1 Momentum)"},
+    {"roll": "21-24", "effect": "A fellow Seeker stops to share food and drink (+1 Momentum and Stamina)"},
+    {"roll": "25-28", "effect": "A sudden sand squall buries your campsite (-1 Supply and Stamina)"},
+    {"roll": "29-36", "effect": "A warm night makes rest easy (+1 Stamina)"},
+    {"roll": "37-40", "effect": "A strange dream wakes you suddenly (-1 Stamina)"},
+    {"roll": "41-44", "effect": "A guiding dream reveals a safe path forward (+3 Momentum)"},
+    {"roll": "45-48", "effect": "A stash of supplies is found near your campsite (+1 Supply)"},
+    {"roll": "49-52", "effect": "A relic storm flickers to life across the horizon (-1 Momentum)"},
+    {"roll": "53-56", "effect": "A strange marking is left in the sand (-1 Momentum)"},
+    {"roll": "57-60", "effect": "A gift is left by the entrance to your tent (+1 Relic)"},
+    {"roll": "61-64", "effect": "A strange hum distracts your sleep for the night (-1 Stamina)"},
+    {"roll": "65-68", "effect": "A sandstorm makes rest impossible (-1 Momentum and Stamina)"},
+    {"roll": "69-72", "effect": "A hidden oasis beneath your campsite is found (+1 Stamina)"},
+    {"roll": "73-76", "effect": "A small patch of greenery grows beneath your tent (+1 Momentum)"},
+    {"roll": "77-80", "effect": "A collection of your supplies spoil (-1 Supply)"},
+    {"roll": "81-84", "effect": "A sandquake shakes your campsite (-1 Momentum)"},
+    {"roll": "85-88", "effect": "A sudden shift in temperature chills you (-1 Stamina)"},
+    {"roll": "89-92", "effect": "A meal that turns out better than you expected (+1 Stamina)"},
+    {"roll": "93-96", "effect": "A restful night with no interruptions (+1 Stamina)"},
+    {"roll": "97-100", "effect": "Roll twice (max once per Camp action)"}
+  ],
+  "camping_base_recovery": {"seeker_stamina": 3, "companion_stamina": 2},
+  "end_game": {
+    "retire_condition": "10+ Fame, spend an action while in any Settlement",
+    "legacy_score_formula": "Current Fame + number of Level 4 Guild Bonds + number of Level 4 Companion Bonds",
+    "path_a_living_legend": [
+      {"name": "The Faction Patron", "effect": "next character starts with Bond Level 3 automatically with one chosen Guild"},
+      {"name": "The Masterwork Inheritance", "effect": "next character starts with one Level 2 Glider Upgrade and any one Advanced Gear"},
+      {"name": "The Veteran's Teachings", "effect": "next character permanently increases two chosen Stats by +1 during character creation"},
+      {"name": "Hidden Caches", "effect": "next character starts with max Supply, Scrap, Intel, Relics, and +100 Credits"}
+    ],
+    "path_b_trade_in": {
+      "clean_slate": "Fame resets to 0",
+      "new_identity": "choose a brand-new Seeker Background, keeping all benefits thus far",
+      "severed_bonds": "all Guild and Companion Bond Levels reset to Level 0; remove all Bond Rewards gained",
+      "choose_2_rewards": [
+        {"name": "Black-Market Forgery", "effect": "+200cr"},
+        {"name": "Stripped Tech", "effect": "+3 Scrap, +1 Relic"},
+        {"name": "Amnesia Log", "effect": "+2 Intel"},
+        {"name": "Ghost Thrusters", "effect": "permanent +1 Speed, does not occupy a mod slot"}
+      ]
+    },
+    "map_blueprint": "regardless of path: roll d100 on Unique Location table (p. 132/131), place as new Unique Location on empty hex (or replace existing Desert location); name after retired Seeker; treat as Level 0"
+  }
+}

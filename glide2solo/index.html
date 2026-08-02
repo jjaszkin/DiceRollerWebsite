@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    <title>GLIDE: Part Two — Dashboard Solo</title>
+</head>
+<body>
+    <div class="app" id="app">
+
+        <header class="app-header">
+            <h1>GLIDE // PART TWO</h1>
+            <div class="header-status">
+                <div class="day-counter">
+                    <span class="day-label">DAY</span>
+                    <span class="day-value" id="dayValue">1</span>
+                </div>
+                <button id="campButton" class="btn btn-secondary">Camp / Nowy dzień</button>
+                <span class="save-indicator" id="saveIndicator" title="Stan zapisu">●</span>
+            </div>
+        </header>
+
+        <nav class="tabs" id="mainTabs">
+            <button class="tab-btn active" data-tab="character">Postać</button>
+            <button class="tab-btn" data-tab="roller">Roller</button>
+            <button class="tab-btn" data-tab="quests">Questy</button>
+            <button class="tab-btn" data-tab="history">Historia</button>
+            <button class="tab-btn" data-tab="journal">Dziennik</button>
+        </nav>
+
+        <main class="tab-panels">
+            <section id="panel-character" class="tab-panel active">
+                <p class="placeholder">Ładowanie karty postaci…</p>
+            </section>
+
+            <section id="panel-roller" class="tab-panel">
+                <p class="placeholder">Ładowanie rollera…</p>
+            </section>
+
+            <section id="panel-quests" class="tab-panel">
+                <p class="placeholder">Ładowanie questów…</p>
+            </section>
+
+            <section id="panel-history" class="tab-panel">
+                <p class="placeholder">Ładowanie historii…</p>
+            </section>
+
+            <section id="panel-journal" class="tab-panel">
+                <p class="placeholder">Ładowanie dziennika…</p>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <span id="bootStatus">Inicjalizacja…</span>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
