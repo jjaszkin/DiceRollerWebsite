@@ -55,13 +55,22 @@ const MOVES = [
         low:  'Twój atak nie kończy się tak, jak zakładałeś. Może masz pecha, może pudłujesz lub ponosisz wysoką cenę. MG wykonuje Ruch.'
     },
     {
-        id: 'wplyw-na-innych',
-        name: 'Wpłyń na innych',
+        id: 'wplyw-na-innych-npc',
+        name: 'Wpłyń na innych (NPC)',
         attr: '+Charyzma',
-        intro: 'Gdy wpływasz na BN przez negocjacje, argumentację lub wyższą pozycję — albo gdy wpływasz na innego BG.',
-        high: 'Postać robi to, o co prosisz.\n(BG: Wybierz obie poniższe możliwości.)',
-        mid:  'Postać robi to, o co prosisz, ale MG wybiera jedną z możliwości:\n◊ Postać żąda lepszego wynagrodzenia.\n◊ W przyszłości sprawy się zagmatwają.\n◊ Postać teraz się zgadza, ale później zmieni zdanie.\n(BG: Wybierz jedną możliwość.)',
+        intro: 'Gdy wpływasz na BN-a przez negocjacje, argumentację lub wykorzystując swoją wyższą pozycję.',
+        high: 'Postać robi to, o co prosisz.',
+        mid:  'Postać robi to, o co prosisz, ale MG wybiera jedną z możliwości:\n◊ Postać żąda lepszego wynagrodzenia.\n◊ W przyszłości sprawy się zagmatwają.\n◊ Postać teraz się zgadza, ale później zmieni zdanie i będzie żałować.',
         low:  'Twoje działanie ma niezamierzone następstwa. MG wykonuje Ruch.'
+    },
+    {
+        id: 'wplyw-na-innych-bg',
+        name: 'Wpłyń na innych (BG)',
+        attr: '+Charyzma',
+        intro: 'Gdy wpływasz na innego gracza (BG).',
+        high: 'Wybierz obie poniższe możliwości:\n◊ Postać czuje się zachęcona, by zrobić to, o co prosisz; otrzymuje +1 do swojego następnego rzutu, jeśli to zrobi.\n◊ Postać przejmuje się konsekwencjami, jeśli nie zrobi tego, o co prosisz, i zmniejsza Stabilność o −1, jeśli odmówi.',
+        mid:  'Wybierz jedną z poniższych możliwości:\n◊ Postać czuje się zachęcona, by zrobić to, o co prosisz; otrzymuje +1 do swojego następnego rzutu, jeśli to zrobi.\n◊ Postać przejmuje się konsekwencjami, jeśli nie zrobi tego, o co prosisz, i zmniejsza Stabilność o −1, jeśli odmówi.',
+        low:  'Postać, na którą usiłowałeś wpłynąć, otrzymuje +1 do następnego rzutu przeciw tobie. MG wykonuje Ruch.'
     },
     {
         id: 'analizuj-sytuacje',
@@ -69,7 +78,7 @@ const MOVES = [
         attr: '+Percepcja',
         intro: 'Za każdym razem, gdy analizujesz sytuację. Działając z uzyskanych odpowiedzi, otrzymujesz +1 do rzutów.',
         high: 'Zadaj dwa pytania MG:\n◊ Co w tej sytuacji zadziała najlepiej?\n◊ Co w tym momencie stanowi największe zagrożenie?\n◊ Czego mogę użyć na swoją korzyść?\n◊ Na co powinienem uważać?\n◊ Czy czegoś nie dostrzegam?\n◊ Co się tu wydaje dziwne?',
-        mid:  'Zadaj jedno pytanie MG (wybierz z listy powyżej).',
+        mid:  'Zadaj jedno pytanie MG:\n◊ Co w tej sytuacji zadziała najlepiej?\n◊ Co w tym momencie stanowi największe zagrożenie?\n◊ Czego mogę użyć na swoją korzyść?\n◊ Na co powinienem uważać?\n◊ Czy czegoś nie dostrzegam?\n◊ Co się tu wydaje dziwne?',
         low:  'Możesz zadać jedno pytanie, ale nie otrzymujesz premii do rzutów. Czegoś nie zauważasz, przyciągasz niepożądaną uwagę lub wystawiasz się na zagrożenie. MG wykonuje Ruch.'
     },
     {
@@ -123,7 +132,7 @@ const MOVES = [
         attr: '+Intuicja',
         intro: 'Za każdym razem, gdy rozeznajesz intencje jakiejś osoby. W przypadku sukcesu możesz zadać pytania w dowolnym momencie sceny.',
         high: 'Możesz zadać dwa pytania:\n◊ Czy kłamiesz?\n◊ Jak się teraz czujesz?\n◊ Co zamierzasz teraz zrobić?\n◊ Co chcesz, żebym ja zrobił?\n◊ Jak mogę sprawić, żebyś (…)?',
-        mid:  'Możesz zadać jedno pytanie (wybierz z listy powyżej).',
+        mid:  'Możesz zadać jedno pytanie:\n◊ Czy kłamiesz?\n◊ Jak się teraz czujesz?\n◊ Co zamierzasz teraz zrobić?\n◊ Co chcesz, żebym ja zrobił?\n◊ Jak mogę sprawić, żebyś (…)?',
         low:  'Przypadkowo odsłaniasz swoje własne motywy osobie, której intencje usiłujesz rozeznać. Powiedz MG lub graczowi, jakie masz intencje. MG wykonuje Ruch.'
     },
     {
@@ -132,7 +141,7 @@ const MOVES = [
         attr: '+Rozum',
         intro: 'Kiedy coś badasz. W przypadku sukcesu odkrywasz wszystkie bezpośrednie wskazówki i możesz zadać pytania.',
         high: 'Możesz zadać dwa pytania:\n◊ Jak mogę dowiedzieć się więcej o tym, co badam?\n◊ Co moja intuicja mówi o tym, co badam?\n◊ Czy jest coś dziwnego w tym, co badam?',
-        mid:  'Możesz zadać jedno pytanie (wybierz z listy powyżej). MG ustala, jak wiele kosztuje cię zdobycie tej informacji.',
+        mid:  'Możesz zadać jedno pytanie:\n◊ Jak mogę dowiedzieć się więcej o tym, co badam?\n◊ Co moja intuicja mówi o tym, co badam?\n◊ Czy jest coś dziwnego w tym, co badam?\nMG ustala, jak wiele kosztuje cię zdobycie tej informacji.',
         low:  'Możesz otrzymać nieco informacji, ale nie za darmo. Możesz narazić się na niebezpieczeństwo lub koszty. MG wykonuje Ruch.'
     }
 ];
