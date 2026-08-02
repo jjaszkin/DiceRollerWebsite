@@ -79,7 +79,7 @@ const MOVES = [
         intro: 'Za każdym razem, gdy analizujesz sytuację. Działając z uzyskanych odpowiedzi, otrzymujesz +1 do rzutów.',
         high: 'Zadaj dwa pytania MG:\n◊ Co w tej sytuacji zadziała najlepiej?\n◊ Co w tym momencie stanowi największe zagrożenie?\n◊ Czego mogę użyć na swoją korzyść?\n◊ Na co powinienem uważać?\n◊ Czy czegoś nie dostrzegam?\n◊ Co się tu wydaje dziwne?',
         mid:  'Zadaj jedno pytanie MG:\n◊ Co w tej sytuacji zadziała najlepiej?\n◊ Co w tym momencie stanowi największe zagrożenie?\n◊ Czego mogę użyć na swoją korzyść?\n◊ Na co powinienem uważać?\n◊ Czy czegoś nie dostrzegam?\n◊ Co się tu wydaje dziwne?',
-        low:  'Możesz zadać jedno pytanie, ale nie otrzymujesz premii do rzutów. Czegoś nie zauważasz, przyciągasz niepożądaną uwagę lub wystawiasz się na zagrożenie. MG wykonuje Ruch.'
+        low:  'Możesz zadać jedno pytanie (bez premii do rzutów):\n◊ Co w tej sytuacji zadziała najlepiej?\n◊ Co w tym momencie stanowi największe zagrożenie?\n◊ Czego mogę użyć na swoją korzyść?\n◊ Na co powinienem uważać?\n◊ Czy czegoś nie dostrzegam?\n◊ Co się tu wydaje dziwne?\nCzegoś nie zauważasz, przyciągasz niepożądaną uwagę lub wystawiasz się na zagrożenie. MG wykonuje Ruch.'
     },
     {
         id: 'uniknij-obrazen',
