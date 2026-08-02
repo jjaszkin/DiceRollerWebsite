@@ -1,8 +1,8 @@
 // Panel: Uniwersalny roller. Faza 3: Challenge Roll, Location Type/Level Table, Exhaustion Table.
 // Faza 4: Desert/Ruins/Green Space (landmarks+events), Unique Locations, Settlement tables, Travel/Carousing Events.
-// Faza 5 (Companions/Odd-Jobs/Oracles) dochodzi później.
+// Faza 5: Companions Table, Odd-Jobs Table, Oracle Tools (Glide + 4 biomowe).
 import { getState, touch } from "../store.js";
-import { rollDie, rollD2, rollD5, rollD100, findInRangeTable, parseRange, clamp } from "../utils.js";
+import { rollDie, rollD2, rollD5, rollD100, findInRangeTable, parseRange, clamp, uid } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
@@ -12,6 +12,13 @@ const BIOME_TABLES = {
     desert: { label: "Desert", key: "desert" },
     ruins: { label: "Ruins", key: "ruins" },
     green_space: { label: "Green Space", key: "green_space" }
+};
+
+const ORACLE_WORD_TABLES = {
+    desert: { label: "Desert", key: "desert_oracle" },
+    ruins: { label: "Ruins", key: "ruins_oracle" },
+    green_space: { label: "Green Space", key: "green_space_oracle" },
+    settlement: { label: "Settlement", key: "settlement_oracle" }
 };
 
 // Klucze wspólne dla tabel eventów, obsługiwane w renderEventOutcomes() nazwami własnymi —
@@ -29,7 +36,10 @@ const ui = {
     uniqueLoc: { result: null },
     settlement: { name: null, focus: null, trait: null, event: null },
     travel: { result: null },
-    carousing: { result: null }
+    carousing: { result: null },
+    companions: { candidates: null, seek: null, hiredKey: null },
+    oddJobs: { candidates: null, blockedMsg: null },
+    oracle: { yesNo: null, wordBiome: "desert", word: null }
 };
 
 let currentRoot = null;
@@ -186,6 +196,70 @@ function renderSettlementActionsReference(actions) {
             ${Object.entries(cat).map(([k, v]) => `<p><strong>${humanizeKey(k)}:</strong> ${v}</p>`).join("")}
         </div>
     `).join("");
+}
+
+/** Render kandydata z Companions Table — z przyciskiem naboru (chyba że to już aktualny towarzysz). */
+function renderCompanionCandidate(r, idx, currentKey) {
+    const e = r.entry;
+    if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
+    const isCurrent = currentKey && currentKey === e.name;
+    return `
+        <div class="entry" style="margin-top:10px;">
+            <div class="entry-meta"><span>d100 = ${r.roll}</span></div>
+            <div class="entry-result"><strong>${e.name}</strong></div>
+            <p>${e.description}</p>
+            ${Array.isArray(e.key_stats) ? `<p class="placeholder">Kluczowe statystyki: ${e.key_stats.join(", ")}</p>` : ""}
+            ${e.passive_name ? `<p><strong>${e.passive_name}:</strong> ${e.passive_text || ""}</p>` : ""}
+            <p class="placeholder">Stamina: ${e.stamina} · Koszt naboru: ${e.hire_cost}</p>
+            ${r.gapFallback ? `<p class="placeholder">Uwaga: luka w druku — użyto najbliższego niższego wyniku.</p>` : ""}
+            <button class="btn btn-sm" data-action="hire-companion" data-idx="${idx}" ${isCurrent ? "disabled" : ""}>
+                ${isCurrent ? "Już zwerbowany" : "Zwerbuj tego towarzysza"}
+            </button>
+        </div>
+    `;
+}
+
+/** Render kandydata z Odd-Jobs Table — z przyciskiem przyjęcia (limit 2 aktywnych naraz). */
+function renderOddJobCandidate(r, idx) {
+    const e = r.entry;
+    if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
+    return `
+        <div class="entry" style="margin-top:10px;">
+            <div class="entry-meta"><span>d100 = ${r.roll}</span></div>
+            <div class="entry-result"><strong>${e.name}</strong></div>
+            <p class="placeholder">${e.location_type || ""}</p>
+            <p>${e.description || ""}</p>
+            ${e.task ? `<p><strong>Zadanie:</strong> ${e.task}</p>` : ""}
+            ${e.test ? `<p class="placeholder"><strong>Test:</strong> ${e.test}</p>` : ""}
+            ${e.reward ? `<p><strong>Nagroda:</strong> ${e.reward}</p>` : ""}
+            ${e.fail ? `<p><strong>Porażka:</strong> ${e.fail}</p>` : ""}
+            ${r.gapFallback ? `<p class="placeholder">Uwaga: luka w druku — użyto najbliższego niższego wyniku.</p>` : ""}
+            <button class="btn btn-sm" data-action="accept-odd-job" data-idx="${idx}">Przyjmij zlecenie</button>
+        </div>
+    `;
+}
+
+function renderOracleYesNoResult(r) {
+    return `
+        <div class="entry" style="margin-top:10px;">
+            <div class="entry-meta"><span>d10 = ${r.baseRoll}</span></div>
+            <div class="entry-result"><strong>${r.base.result_pl || r.base.result}</strong></div>
+            <div class="entry-meta" style="margin-top:6px;"><span>Subtabela „${r.sub.name}” — d10 = ${r.subRoll}</span></div>
+            <p>${r.subEntry ? r.subEntry.text : "brak dopasowania"}</p>
+        </div>
+    `;
+}
+
+function renderOracleWordResult(r) {
+    const e = r.entry;
+    if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
+    return `
+        <div class="entry" style="margin-top:10px;">
+            <div class="entry-meta"><span>d100 = ${r.roll}</span></div>
+            <div class="entry-result"><strong>${e.word_pl || e.word}</strong> <span class="placeholder">(${e.word})</span></div>
+            ${r.gapFallback ? `<p class="placeholder">Uwaga: luka w druku — użyto najbliższego niższego wyniku.</p>` : ""}
+        </div>
+    `;
 }
 
 function brushWithDeathSub(roll) {
@@ -357,6 +431,61 @@ export function render(root, { state, data }) {
             <h2>Settlement Actions — Referencja</h2>
             ${renderSettlementActionsReference(data.economy.settlement_actions)}
         </div>
+
+        <div class="card" style="margin-top:12px;">
+            <h2>Companions Table (d100)</h2>
+            <p class="placeholder">${data.companions.rules.finding_companions}</p>
+            <div class="counter-controls" style="gap:8px;">
+                <button class="btn btn-primary" data-action="roll-companions">Rzuć 2x d100 (nowi kandydaci)</button>
+                <button class="btn" data-action="seek-known-companion">Szukaj wcześniej poznanego (d10)</button>
+            </div>
+            ${ui.companions.seek ? `
+                <p class="placeholder" style="margin-top:8px;">Szukanie znanego towarzysza: d10=${ui.companions.seek.roll} — ${ui.companions.seek.success ? "sukces, towarzysz jest dostępny." : "porażka, nie udało się go odnaleźć."}</p>
+            ` : ""}
+            ${ui.companions.candidates ? `
+                <div class="grid grid-2">
+                    ${ui.companions.candidates.map((r, i) => renderCompanionCandidate(r, i, ch.companion.key)).join("")}
+                </div>
+            ` : ""}
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+            <h2>Odd-Jobs Table (d100)</h2>
+            <p class="placeholder">Max. 2 aktywne zlecenia naraz. Aktualnie aktywne: ${state.quests.oddJobs.filter(j => j.status === "active").length}/2.</p>
+            <button class="btn btn-primary" data-action="roll-odd-jobs">Rzuć 2x d100 (przerzuca duplikaty)</button>
+            ${ui.oddJobs.blockedMsg ? `<p class="placeholder">${ui.oddJobs.blockedMsg}</p>` : ""}
+            ${ui.oddJobs.candidates ? `
+                <div class="grid grid-2">
+                    ${ui.oddJobs.candidates.map((r, i) => renderOddJobCandidate(r, i)).join("")}
+                </div>
+            ` : ""}
+        </div>
+
+        <div class="grid grid-2" style="margin-top:12px;">
+            <div class="card">
+                <h2>Glide Oracle — Yes/No (d10)</h2>
+                <p class="placeholder">${data.oracles.glide_oracle.yes_no_questions.rule}</p>
+                <button class="btn btn-primary" data-action="roll-oracle-yesno">Rzuć d10</button>
+                ${ui.oracle.yesNo ? renderOracleYesNoResult(ui.oracle.yesNo) : ""}
+            </div>
+            <div class="card">
+                <h2>Word Oracle (d100)</h2>
+                <p class="placeholder">${data.oracles.glide_oracle.open_ended_questions.rule}</p>
+                <div class="counter-row">
+                    <div class="counter-label">Biom</div>
+                    <select data-action="oracle-biome-select">
+                        ${Object.entries(ORACLE_WORD_TABLES).map(([k, v]) => `<option value="${k}" ${ui.oracle.wordBiome === k ? "selected" : ""}>${v.label}</option>`).join("")}
+                    </select>
+                </div>
+                <button class="btn" data-action="roll-oracle-word" style="margin-top:8px;">Rzuć d100</button>
+                ${ui.oracle.word ? renderOracleWordResult(ui.oracle.word) : ""}
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+            <h2>Interpretacja wyroczni — Referencja</h2>
+            <p>${data.oracles.glide_oracle.interpreting_results.rule}</p>
+        </div>
     `;
 
     if (!root.dataset.wired) {
@@ -525,12 +654,121 @@ function rollCarousingEvent(data) {
     rerender();
 }
 
+function rollCompanions(data) {
+    const table = data.companions.companions_table_d100;
+    const r1 = rollD100Table(table);
+    const r2 = rollD100Table(table);
+    ui.companions.candidates = [r1, r2];
+    logRoll(
+        "Companions Table (d100 x2)",
+        `d100=${r1.roll}, d100=${r2.roll}`,
+        `${r1.entry ? r1.entry.name : "?"} / ${r2.entry ? r2.entry.name : "?"}`
+    );
+    rerender();
+}
+
+function seekKnownCompanion() {
+    const roll = rollDie(10);
+    const success = roll >= 7;
+    ui.companions.seek = { roll, success };
+    logRoll("Szukanie znanego towarzysza (d10)", `d10=${roll}`, success ? "Sukces — towarzysz jest dostępny." : "Porażka.");
+    rerender();
+}
+
+function hireCompanion(idx) {
+    const cand = ui.companions.candidates ? ui.companions.candidates[idx] : null;
+    if (!cand || !cand.entry) return;
+    const c = cand.entry;
+    const state = getState();
+    state.character.companion = {
+        key: c.name,
+        stamina: { cur: c.stamina, max: c.stamina },
+        bondPoints: 0
+    };
+    touch();
+    rerender();
+}
+
+function rollOddJobs(data) {
+    const table = data.guilds.odd_jobs_table_d100;
+    const results = [];
+    const seenNames = new Set();
+    for (let i = 0; i < 2; i++) {
+        let r = rollD100Table(table);
+        let guard = 0;
+        while (r.entry && seenNames.has(r.entry.name) && guard < 20) {
+            r = rollD100Table(table);
+            guard++;
+        }
+        if (r.entry) seenNames.add(r.entry.name);
+        results.push(r);
+    }
+    ui.oddJobs.candidates = results;
+    ui.oddJobs.blockedMsg = null;
+    logRoll(
+        "Odd-Jobs Table (d100 x2)",
+        `d100=${results[0].roll}, d100=${results[1].roll}`,
+        `${results[0].entry ? results[0].entry.name : "?"} / ${results[1].entry ? results[1].entry.name : "?"}`
+    );
+    rerender();
+}
+
+function acceptOddJob(idx) {
+    const cand = ui.oddJobs.candidates ? ui.oddJobs.candidates[idx] : null;
+    if (!cand || !cand.entry) return;
+    const state = getState();
+    const activeCount = state.quests.oddJobs.filter(j => j.status === "active").length;
+    if (activeCount >= 2) {
+        ui.oddJobs.blockedMsg = "Nie można przyjąć — już 2 aktywne zlecenia (limit).";
+        rerender();
+        return;
+    }
+    state.quests.oddJobs.push({
+        id: uid(),
+        range: cand.entry.range,
+        name: cand.entry.name,
+        status: "active"
+    });
+    ui.oddJobs.blockedMsg = null;
+    touch();
+    rerender();
+}
+
+function rollOracleYesNo(data) {
+    const oracle = data.oracles.glide_oracle.yes_no_questions;
+    const baseRoll = rollDie(10);
+    const base = findInRangeTable(oracle.table_d10, baseRoll, "range");
+    if (!base) return;
+    const baseIdx = oracle.table_d10.indexOf(base);
+    const subKey = Object.keys(oracle.sub_tables)[baseIdx];
+    const sub = oracle.sub_tables[subKey];
+    const subRoll = rollDie(10);
+    const subEntry = findInRangeTable(sub.table_d10, subRoll, "range");
+    ui.oracle.yesNo = { baseRoll, base, sub, subRoll, subEntry };
+    logRoll(
+        "Glide Oracle — Yes/No (d10+d10)",
+        `d10=${baseRoll} (${base.result_pl || base.result}), subtabela d10=${subRoll}`,
+        subEntry ? subEntry.text : "brak dopasowania"
+    );
+    rerender();
+}
+
+function rollOracleWord(data) {
+    const cfg = ORACLE_WORD_TABLES[ui.oracle.wordBiome];
+    const table = data.oracles[cfg.key];
+    const r = rollD100Table(table, { valueField: "word" });
+    ui.oracle.word = r;
+    logRoll(`Word Oracle — ${cfg.label} (d100)`, `d100=${r.roll}`, r.entry ? (r.entry.word_pl || r.entry.word) : "brak dopasowania");
+    rerender();
+}
+
 function wireEvents(root) {
     root.addEventListener("change", (e) => {
         const el = e.target;
         const action = el.dataset.action;
         if (action === "challenge-stat") ui.challenge.statKey = el.value;
         else if (action === "biome-select") { ui.biome.key = el.value; rerender(); }
+        else if (action === "oracle-biome-select") { ui.oracle.wordBiome = el.value; rerender(); }
     });
 
     root.addEventListener("input", (e) => {
@@ -561,5 +799,12 @@ function wireEvents(root) {
         else if (action === "roll-settlement-event") rollSettlementEvent(currentData);
         else if (action === "roll-travel-event") rollTravelEvent(currentData);
         else if (action === "roll-carousing-event") rollCarousingEvent(currentData);
+        else if (action === "roll-companions") rollCompanions(currentData);
+        else if (action === "seek-known-companion") seekKnownCompanion();
+        else if (action === "hire-companion") hireCompanion(parseInt(btn.dataset.idx, 10));
+        else if (action === "roll-odd-jobs") rollOddJobs(currentData);
+        else if (action === "accept-odd-job") acceptOddJob(parseInt(btn.dataset.idx, 10));
+        else if (action === "roll-oracle-yesno") rollOracleYesNo(currentData);
+        else if (action === "roll-oracle-word") rollOracleWord(currentData);
     });
 }
