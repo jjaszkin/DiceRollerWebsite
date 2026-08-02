@@ -67,6 +67,23 @@ export function findInRangeTable(table, rollValue, field = "range") {
     return best;
 }
 
+export function clamp(value, min, max) {
+    if (typeof min === "number") value = Math.max(min, value);
+    if (typeof max === "number") value = Math.min(max, value);
+    return value;
+}
+
+export function getPath(obj, path) {
+    return path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), obj);
+}
+
+export function setPath(obj, path, value) {
+    const keys = path.split(".");
+    let o = obj;
+    for (let i = 0; i < keys.length - 1; i++) o = o[keys[i]];
+    o[keys[keys.length - 1]] = value;
+}
+
 export function formatTimestamp(date = new Date()) {
     const pad = n => String(n).padStart(2, "0");
     return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${String(date.getFullYear()).slice(-2)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;

@@ -260,6 +260,21 @@ body {
     font-size: 0.9rem;
 }
 
+.max-edit {
+    background: none;
+    border: none;
+    color: var(--fg-dim);
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline dotted;
+}
+.max-edit:hover { color: var(--fg-0); }
+
+.card select { width: 100%; }
+.card p { font-size: 0.85rem; color: var(--fg-1); line-height: 1.5; margin: 6px 0; }
+
 /* ── Forms ──────────────────────────────────────────────────────────── */
 
 select, input[type="text"], input[type="number"], textarea {

@@ -24,6 +24,7 @@ export function createDefaultState(gameData) {
             proficientStats: [],
             startingBonusTrait: "",
             goal: "",
+            goalProgress: 0,
             goalDone: false,
             rewardTrait: "",
             rewardClaimed: false,
@@ -45,7 +46,7 @@ export function createDefaultState(gameData) {
                 cargoSlots: 3,
                 scrap: { cur: 0, max: 5 },
                 relics: { cur: 0, max: 3 },
-                mods: [] // do 3 wpisów tekstowych
+                mods: [null, null, null] // do 3 zamontowanych modów, każdy { name, category, effect } | null
             },
 
             companion: {

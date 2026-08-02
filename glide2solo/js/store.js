@@ -76,6 +76,12 @@ export function updateState(updater) {
     } else {
         state = updater;
     }
+    touch();
+}
+
+/** Do użycia, gdy state został już zmutowany bezpośrednio (np. przez setPath) —
+ *  oznacza zmianę, odświeża UI i planuje zapis, bez ponownego przechodzenia po stanie. */
+export function touch() {
     state.meta.updatedAt = Date.now();
     notify();
     scheduleSave();
