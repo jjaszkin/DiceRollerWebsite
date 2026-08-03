@@ -44,6 +44,26 @@ export const TIERED_UPGRADE_CATEGORIES = [
     { key: "relic_preservation_tiers", label: "Konserwacja Reliktów" }
 ];
 
+/** Explorer's Backpack ma specjalny efekt (patrz gear.json): "Max Gear +2 (ten Gear nie
+ *  zajmuje slotu)" — założony podnosi efektywny limit noszonego sprzętu o 2 i sam się do
+ *  tego limitu nie liczy. Slug wyliczony tym samym sanityzatorem co pozostałe klucze stanu. */
+export const EXPLORERS_BACKPACK_SLUG = gearSlug("Explorer's Backpack");
+export const EXPLORERS_BACKPACK_GEAR_BONUS = 2;
+
+/** Efektywny limit noszonego Gear (bazowy max_carried z mechanics.json + bonus z założonego
+ *  Explorer's Backpacka) oraz liczba faktycznie zajętych slotów (Backpack, mimo że założony,
+ *  slotu nie zajmuje — patrz jego efekt). Współdzielone przez panels/gear.js i panels/character.js,
+ *  żeby limit i licznik zawsze się zgadzały. */
+export function gearCapacity(state, baseMaxCarried) {
+    const gearState = state.character.gear || {};
+    const backpackEquipped = !!gearState[EXPLORERS_BACKPACK_SLUG]?.equipped;
+    const maxCarried = baseMaxCarried + (backpackEquipped ? EXPLORERS_BACKPACK_GEAR_BONUS : 0);
+    const equippedCount = Object.entries(gearState)
+        .filter(([slug, s]) => s.equipped && slug !== EXPLORERS_BACKPACK_SLUG)
+        .length;
+    return { maxCarried, equippedCount, backpackEquipped };
+}
+
 /** Lista aktualnie założonego sprzętu (do skrótu na dashboardzie), z dociągniętymi
  *  danymi z katalogu (nazwa/efekt) — pomija sloty, których nazwa zniknęła z katalogu. */
 export function equippedGearEntries(state, data) {

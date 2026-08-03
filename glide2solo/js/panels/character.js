@@ -3,7 +3,7 @@ import { getState, touch } from "../store.js";
 import { getPath, setPath, clamp, escapeHtml } from "../utils.js";
 import { bondLevelFromPoints } from "../state.js";
 import { showGate } from "../gate.js";
-import { equippedGearEntries, installedModEntries } from "../gearData.js";
+import { equippedGearEntries, installedModEntries, gearCapacity } from "../gearData.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
 
@@ -38,9 +38,10 @@ export function render(root, { state, data }) {
     const mechanics = data.mechanics;
     const ch = state.character;
 
-    const maxCarried = mechanics?.resources?.gear?.max_carried ?? 3;
+    const baseMaxCarried = mechanics?.resources?.gear?.max_carried ?? 3;
     const wearPerItem = mechanics?.resources?.gear?.wear_per_item ?? 3;
     const modsMax = mechanics?.glider?.mods_max ?? 3;
+    const { maxCarried, equippedCount: equippedGearCount } = gearCapacity(state, baseMaxCarried);
     const equippedGear = equippedGearEntries(state, data);
     const installedMods = installedModEntries(state, data);
     const companions = data.companions?.companions_table_d100 || [];
@@ -115,7 +116,7 @@ export function render(root, { state, data }) {
 
             <div class="card">
                 <h2>Sprzęt (Gear)</h2>
-                <p class="cap-indicator ${equippedGear.length >= maxCarried ? "full" : ""}">Założone: ${equippedGear.length} / ${maxCarried}</p>
+                <p class="cap-indicator ${equippedGearCount >= maxCarried ? "full" : ""}">Założone: ${equippedGearCount} / ${maxCarried}</p>
                 ${equippedGear.length ? `
                     <ul class="summary-list">
                         ${equippedGear.map(g => `

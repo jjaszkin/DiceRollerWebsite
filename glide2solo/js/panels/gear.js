@@ -3,7 +3,7 @@
 // a założony przedmiot dostaje licznik Wear (max = mechanics.resources.gear.wear_per_item).
 import { getState, getData, touch } from "../store.js";
 import { escapeHtml } from "../utils.js";
-import { flattenGear, humanizeCategory } from "../gearData.js";
+import { flattenGear, humanizeCategory, gearCapacity, EXPLORERS_BACKPACK_SLUG } from "../gearData.js";
 
 function groupByCategory(flat) {
     const groups = new Map();
@@ -18,7 +18,10 @@ function groupByCategory(flat) {
 function renderCard(item, itemState, canEquipMore, wearPerItem) {
     const owned = !!itemState.owned;
     const equipped = !!itemState.equipped;
-    const disabledEquip = !owned || (!equipped && !canEquipMore);
+    // Explorer's Backpack sam nie zajmuje slotu (patrz jego efekt) — zawsze można go założyć,
+    // niezależnie od tego, czy limit Gear jest już wyczerpany.
+    const isBackpack = item.slug === EXPLORERS_BACKPACK_SLUG;
+    const disabledEquip = !owned || (!equipped && !canEquipMore && !isBackpack);
     const wear = itemState.wear ?? wearPerItem;
     return `
         <div class="item-card tt ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}" data-tip="${escapeHtml(item.effect || "")}">
@@ -53,11 +56,11 @@ function renderCard(item, itemState, canEquipMore, wearPerItem) {
 
 export function render(root, { state, data }) {
     const mechanics = data.mechanics;
-    const maxCarried = mechanics?.resources?.gear?.max_carried ?? 3;
+    const baseMaxCarried = mechanics?.resources?.gear?.max_carried ?? 3;
     const wearPerItem = mechanics?.resources?.gear?.wear_per_item ?? 3;
     const flat = flattenGear(data.gear);
     const gearState = state.character.gear || {};
-    const equippedCount = Object.values(gearState).filter(s => s.equipped).length;
+    const { maxCarried, equippedCount, backpackEquipped } = gearCapacity(state, baseMaxCarried);
     const groups = groupByCategory(flat);
     const canEquipMore = equippedCount < maxCarried;
 
@@ -65,7 +68,7 @@ export function render(root, { state, data }) {
         <div class="card">
             <h2>Sprzęt — Katalog</h2>
             <p class="cap-indicator ${equippedCount >= maxCarried ? "full" : ""}">Założone: ${equippedCount} / ${maxCarried}</p>
-            <p class="placeholder">Najedź na kartę, żeby zobaczyć efekt. "Kupione" oznacza posiadanie w ekwipunku; "Założone" liczy się do limitu noszonego sprzętu i odsłania licznik Wear.</p>
+            <p class="placeholder">Najedź na kartę, żeby zobaczyć efekt. "Kupione" oznacza posiadanie w ekwipunku; "Założone" liczy się do limitu noszonego sprzętu i odsłania licznik Wear.${backpackEquipped ? " Explorer's Backpack podnosi limit o 2 i sam nie zajmuje slotu." : ""}</p>
         </div>
         ${Array.from(groups.entries()).map(([label, items]) => `
             <div class="card catalog-group" style="margin-top:12px;">
