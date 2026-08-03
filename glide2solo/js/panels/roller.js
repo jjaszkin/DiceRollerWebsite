@@ -2,7 +2,7 @@
 // Faza 4: Pustynia/Ruiny/Zieleń (punkty orientacyjne+wydarzenia), Unikalne Lokacje, tabele osady, Wydarzenia Podróży/Hulanki.
 // Faza 5: Tabela Towarzyszy, Tabela Fuch, narzędzia Wyroczni (Glide + 4 biomowe).
 import { getState, touch } from "../store.js";
-import { rollDie, rollD2, rollD5, rollD100, findInRangeTable, parseRange, clamp, uid } from "../utils.js";
+import { rollDie, rollD2, rollD5, rollD100, findInRangeTable, parseRange, clamp, uid, escapeHtml } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
 
@@ -22,6 +22,19 @@ const ORACLE_WORD_TABLES = {
     settlement: { label: "Osada", key: "settlement_oracle" }
 };
 
+// Pomocnicza checklista kroków typowego dnia gry (nie ma osobnej sekcji reguł w podręczniku —
+// to złożenie istniejących mechanik rollera w kolejność, w jakiej zwykle są rozgrywane).
+// Stan zaznaczeń trzymany lokalnie w ui.daySeq (patrz niżej) — resetuje się automatycznie,
+// gdy state.day.current się zmieni (czyli po akcji Camp w nagłówku).
+const DAY_SEQUENCE_STEPS = [
+    { id: "move", label: "Ruch", desc: "Przesuń się o jeden heks w wybranym kierunku." },
+    { id: "loctype", label: "Typ i Poziom Lokacji", desc: "Jeśli to nowy heks, rzuć Typ Lokacji, a jeśli trzeba — także Poziom Lokacji." },
+    { id: "action", label: "Akcja w Lokacji", desc: "Wykonaj Eksplorację/Test właściwy dla biomu (Pustynia/Ruiny/Zieleń/Unikalna Lokacja) albo Akcje Osady." },
+    { id: "travel", label: "Wydarzenie Podróży", desc: "Opcjonalnie: rzuć Wydarzenie Podróży, jeśli scenariusz tego wymaga." },
+    { id: "journal", label: "Dziennik", desc: "Zapisz przebieg i wynik w karcie Dziennik." },
+    { id: "camp", label: "Obóz (Camp)", desc: "Gdy kończysz dzień, rozbij obóz przyciskiem Camp w nagłówku — ta checklista zresetuje się automatycznie na kolejny dzień." }
+];
+
 // Klucze wspólne dla tabel eventów, obsługiwane w renderEventOutcomes() nazwami własnymi —
 // wszystkie inne pola encji są renderowane generycznie (patrz humanizeKey), bo tabele w economy.json
 // (zwł. settlement_events_table_d100) mają wiele niestandardowych pól wynikowych (give_5, sell_1, bet, free, ...).
@@ -40,7 +53,8 @@ const ui = {
     carousing: { result: null },
     companions: { candidates: null, seek: null, hiredKey: null },
     oddJobs: { candidates: null, blockedMsg: null },
-    oracle: { yesNo: null, wordBiome: "desert", word: null }
+    oracle: { yesNo: null, wordBiome: "desert", word: null },
+    daySeq: { day: null, checked: {} }
 };
 
 let currentRoot = null;
@@ -337,6 +351,29 @@ function renderChallengeResult(r) {
     `;
 }
 
+/** Sekwencja Dnia — checklista pomocnicza (patrz DAY_SEQUENCE_STEPS). Resetuje zaznaczenia,
+ *  gdy wykryje zmianę state.day.current (czyli po Camp), więc nie trzeba jej czyścić ręcznie. */
+function renderDaySequence(state) {
+    if (ui.daySeq.day !== state.day.current) {
+        ui.daySeq.day = state.day.current;
+        ui.daySeq.checked = {};
+    }
+    const doneCount = DAY_SEQUENCE_STEPS.filter(s => ui.daySeq.checked[s.id]).length;
+    return `
+        <div class="card">
+            <h2>Sekwencja Dnia</h2>
+            <p class="placeholder">Dzień ${state.day.current} · ${doneCount}/${DAY_SEQUENCE_STEPS.length} kroków. Checklista pomocnicza (najedź na krok po opis) — nie zapisuje się w Firebase, resetuje się sama po Camp.</p>
+            ${DAY_SEQUENCE_STEPS.map(s => `
+                <label class="tt" data-tip="${escapeHtml(s.desc)}" style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:pointer;">
+                    <input type="checkbox" data-action="toggle-day-step" data-step="${s.id}" ${ui.daySeq.checked[s.id] ? "checked" : ""}>
+                    <span>${escapeHtml(s.label)}</span>
+                </label>
+            `).join("")}
+            <button class="btn btn-sm btn-secondary" data-action="reset-day-sequence" style="margin-top:10px;">Resetuj checklistę</button>
+        </div>
+    `;
+}
+
 function renderExhaustionResult(r) {
     const e = r.entry;
     if (!e) {
@@ -424,11 +461,14 @@ export function render(root, { state, data }) {
 
         </div>
 
-        <div class="card" style="margin-top:12px;">
-            <h2>Tabela Wyczerpania (d10)</h2>
-            <p class="placeholder">Rzuć, gdy Wytrzymałość spadnie do 0.</p>
-            <button class="btn btn-primary" data-action="roll-exhaustion">Rzuć d10</button>
-            ${ui.exhaustion.result ? renderExhaustionResult(ui.exhaustion.result) : ""}
+        <div class="grid grid-2" style="margin-top:12px;">
+            ${renderDaySequence(state)}
+            <div class="card">
+                <h2>Tabela Wyczerpania (d10)</h2>
+                <p class="placeholder">Rzuć, gdy Wytrzymałość spadnie do 0.</p>
+                <button class="btn btn-primary" data-action="roll-exhaustion">Rzuć d10</button>
+                ${ui.exhaustion.result ? renderExhaustionResult(ui.exhaustion.result) : ""}
+            </div>
         </div>
 
         <div class="card" style="margin-top:12px;">
@@ -835,6 +875,7 @@ function wireEvents(root) {
         if (action === "challenge-stat") ui.challenge.statKey = el.value;
         else if (action === "biome-select") { ui.biome.key = el.value; rerender(); }
         else if (action === "oracle-biome-select") { ui.oracle.wordBiome = el.value; rerender(); }
+        else if (action === "toggle-day-step") { ui.daySeq.checked[el.dataset.step] = el.checked; rerender(); }
     });
 
     root.addEventListener("input", (e) => {
@@ -872,5 +913,6 @@ function wireEvents(root) {
         else if (action === "accept-odd-job") acceptOddJob(parseInt(btn.dataset.idx, 10));
         else if (action === "roll-oracle-yesno") rollOracleYesNo(currentData);
         else if (action === "roll-oracle-word") rollOracleWord(currentData);
+        else if (action === "reset-day-sequence") { ui.daySeq.checked = {}; rerender(); }
     });
 }

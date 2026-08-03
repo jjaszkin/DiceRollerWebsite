@@ -63,7 +63,7 @@ function renderCampResultBox() {
     const { roll, entry, recoveryText } = lastCampResult;
     campResultBox.style.display = "block";
     campResultBox.innerHTML = `
-        <h2>Camping Event (d100 = ${roll})</h2>
+        <h2>Wydarzenie Obozowe (d100 = ${roll})</h2>
         <p>${entry ? entry.effect : "Brak dopasowania w tabeli."}</p>
         <p class="placeholder">${recoveryText}</p>
         <button class="btn btn-sm" id="campResultDismiss">Zamknij</button>
@@ -103,7 +103,7 @@ function setupSaveIndicator() {
 }
 
 function setupCampButton() {
-    // Akcja Camp: rzuca Camping Event (d100), przywraca bazową Staminę (Poszukiwaczowi i towarzyszowi,
+    // Akcja Camp: rzuca Wydarzenie Obozowe (d100), przywraca bazową Staminę (Poszukiwaczowi i towarzyszowi,
     // jeśli obecny) wg camping_base_recovery z mechanics.json, po czym przechodzi do kolejnego dnia.
     campButton.addEventListener("click", () => {
         const data = getData();
@@ -129,7 +129,7 @@ function setupCampButton() {
         });
 
         // Zaloguj rzut pod dniem, w którym nastąpił Camp, zanim przejdziemy do kolejnego dnia.
-        logRoll("Camping Event (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
+        logRoll("Wydarzenie Obozowe (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
 
         updateState((state) => {
             // Inkrementacja PRZED zalogowaniem podsumowania, żeby wpis otagował się nowym
