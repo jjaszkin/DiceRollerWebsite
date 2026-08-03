@@ -10,7 +10,7 @@
 // na inną postać („Zmień postać” → inne imię).
 
 import { watchState, persistState } from "./firebase.js";
-import { createDefaultState, mergeWithDefaults } from "./state.js";
+import { createDefaultState, mergeWithDefaults, migrateLoadedState } from "./state.js";
 
 let state = null;
 let gameData = null;
@@ -61,13 +61,13 @@ export function connectSave(saveKey) {
 
             if (!resolved) {
                 const defaults = createDefaultState(gameData);
-                state = remoteState ? mergeWithDefaults(defaults, remoteState) : defaults;
+                state = remoteState ? mergeWithDefaults(defaults, migrateLoadedState(remoteState)) : defaults;
                 resolved = true;
                 resolve(state);
             } else {
                 // Zmiana przyszła z zewnątrz (np. inna karta przeglądarki) — zaktualizuj lokalnie bez re-zapisu.
                 const defaults = createDefaultState(gameData);
-                state = remoteState ? mergeWithDefaults(defaults, remoteState) : defaults;
+                state = remoteState ? mergeWithDefaults(defaults, migrateLoadedState(remoteState)) : defaults;
                 notify();
             }
         });

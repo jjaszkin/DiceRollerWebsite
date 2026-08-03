@@ -7,12 +7,16 @@ import { logRoll } from "./rollLog.js";
 import { showGate } from "./gate.js";
 
 import * as characterPanel from "./panels/character.js";
+import * as gearPanel from "./panels/gear.js";
+import * as gliderPanel from "./panels/glider.js";
 import * as rollerPanel from "./panels/roller.js";
 import * as questsPanel from "./panels/quests.js";
 import * as journalPanel from "./panels/journal.js";
 
 const PANELS = {
     character: characterPanel,
+    gear: gearPanel,
+    glider: gliderPanel,
     roller: rollerPanel,
     quests: questsPanel,
     journal: journalPanel

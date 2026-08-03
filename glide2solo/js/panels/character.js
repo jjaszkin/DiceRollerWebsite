@@ -3,44 +3,9 @@ import { getState, touch } from "../store.js";
 import { getPath, setPath, clamp, escapeHtml } from "../utils.js";
 import { bondLevelFromPoints } from "../state.js";
 import { showGate } from "../gate.js";
+import { equippedGearEntries, installedModEntries } from "../gearData.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
-
-function humanize(key) {
-    return String(key).replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-}
-
-function flattenGear(gearData) {
-    const flat = [];
-    for (const [tierKey, tierLabel] of [["common_gear", "Common"], ["advanced_gear", "Advanced"]]) {
-        const cats = gearData?.[tierKey] || {};
-        for (const [catKey, items] of Object.entries(cats)) {
-            for (const item of items) flat.push({ ...item, tier: tierLabel, category: catKey });
-        }
-    }
-    return flat;
-}
-
-function flattenMods(gliderUpgrades) {
-    const flat = [];
-    for (const catKey of ["engine_and_mobility", "sensors_and_tech", "frame_and_survival"]) {
-        for (const item of gliderUpgrades?.[catKey] || []) flat.push({ ...item, category: catKey });
-    }
-    return flat;
-}
-
-function optionsWithGroups(flatList, selectedName) {
-    const groups = {};
-    flatList.forEach((item, idx) => {
-        const key = `${item.category}${item.tier ? " — " + item.tier : ""}`;
-        (groups[key] = groups[key] || []).push({ ...item, idx });
-    });
-    return Object.entries(groups).map(([groupLabel, items]) => `
-        <optgroup label="${humanize(groupLabel)}">
-            ${items.map(item => `<option value="${item.idx}" ${item.name === selectedName ? "selected" : ""}>${item.name}${item.cost ? ` (${item.cost})` : ""}</option>`).join("")}
-        </optgroup>
-    `).join("");
-}
 
 function counterRow({ label, abbr, curPath, curVal, maxPath, maxVal, min = 0, editableMax = false }) {
     const hasMax = maxVal !== undefined && maxVal !== null;
@@ -73,8 +38,11 @@ export function render(root, { state, data }) {
     const mechanics = data.mechanics;
     const ch = state.character;
 
-    const flatGear = flattenGear(data.gear);
-    const flatMods = flattenMods(data.gear?.glider_upgrades);
+    const maxCarried = mechanics?.resources?.gear?.max_carried ?? 3;
+    const wearPerItem = mechanics?.resources?.gear?.wear_per_item ?? 3;
+    const modsMax = mechanics?.glider?.mods_max ?? 3;
+    const equippedGear = equippedGearEntries(state, data);
+    const installedMods = installedModEntries(state, data);
     const companions = data.companions?.companions_table_d100 || [];
     const guilds = data.guilds?.guilds || [];
     const bondScale = data.economy?.connections_and_bonds?.bond_scale || [];
@@ -147,25 +115,18 @@ export function render(root, { state, data }) {
 
             <div class="card">
                 <h2>Sprzęt (Gear)</h2>
-                ${ch.gear.map((slot, i) => `
-                    <div class="counter-row" style="flex-direction:column; align-items:stretch; gap:6px;">
-                        <select data-action="gear-select" data-slot="${i}">
-                            <option value="-1">— pusty slot —</option>
-                            ${optionsWithGroups(flatGear, slot?.name)}
-                        </select>
-                        ${slot ? `
-                            <div class="counter-row">
-                                <div class="counter-label">Wear</div>
-                                <div class="counter-controls">
-                                    <button class="btn btn-sm btn-icon" data-action="adjust" data-path="character.gear.${i}.wear" data-delta="-1" data-min="0" data-max="${slot.maxWear}">−</button>
-                                    <span class="counter-value ${slot.wear === 0 ? "max" : ""}">${slot.wear} <span class="max">/ ${slot.maxWear}</span></span>
-                                    <button class="btn btn-sm btn-icon" data-action="adjust" data-path="character.gear.${i}.wear" data-delta="1" data-min="0" data-max="${slot.maxWear}">+</button>
-                                </div>
-                            </div>
-                            <p class="placeholder">${slot.effect || ""}${slot.wear === 0 ? " — NIEUŻYWALNY (0 Wear)" : ""}</p>
-                        ` : ""}
-                    </div>
-                `).join("")}
+                <p class="cap-indicator ${equippedGear.length >= maxCarried ? "full" : ""}">Założone: ${equippedGear.length} / ${maxCarried}</p>
+                ${equippedGear.length ? `
+                    <ul class="summary-list">
+                        ${equippedGear.map(g => `
+                            <li class="tt" data-tip="${escapeHtml(g.effect || "")}">
+                                <span>${escapeHtml(g.name)}</span>
+                                <span class="abbr">${g.state.wear !== undefined ? `Wear ${g.state.wear}/${wearPerItem}` : ""}</span>
+                            </li>
+                        `).join("")}
+                    </ul>
+                ` : `<p class="summary-empty">Brak założonego sprzętu.</p>`}
+                <button class="btn btn-sm" data-action="goto-tab" data-tab="gear" style="margin-top:10px;">Zarządzaj sprzętem →</button>
             </div>
 
             <div class="card">
@@ -176,16 +137,18 @@ export function render(root, { state, data }) {
                 ${counterRow({ label: "Scrap", curPath: "character.glider.scrap.cur", curVal: ch.glider.scrap.cur, maxPath: "character.glider.scrap.max", maxVal: ch.glider.scrap.max, editableMax: true })}
                 ${counterRow({ label: "Relics", curPath: "character.glider.relics.cur", curVal: ch.glider.relics.cur, maxPath: "character.glider.relics.max", maxVal: ch.glider.relics.max, editableMax: true })}
                 <div class="counter-row"><div class="counter-label">Cargo slots</div><div class="counter-value">${ch.glider.cargoSlots}</div></div>
-                <h3 style="margin-top:12px;">Mody (do 3)</h3>
-                ${ch.glider.mods.map((mod, i) => `
-                    <div class="counter-row" style="flex-direction:column; align-items:stretch; gap:6px;">
-                        <select data-action="mod-select" data-slot="${i}">
-                            <option value="-1">— pusty slot —</option>
-                            ${optionsWithGroups(flatMods, mod?.name)}
-                        </select>
-                        ${mod ? `<p class="placeholder">${mod.effect || ""}</p>` : ""}
-                    </div>
-                `).join("")}
+                <h3 style="margin-top:12px;">Zainstalowane mody</h3>
+                <p class="cap-indicator ${installedMods.length >= modsMax ? "full" : ""}">Zainstalowane: ${installedMods.length} / ${modsMax}</p>
+                ${installedMods.length ? `
+                    <ul class="summary-list">
+                        ${installedMods.map(m => `
+                            <li class="tt" data-tip="${escapeHtml(m.effect || "")}">
+                                <span>${escapeHtml(m.name)}</span>
+                            </li>
+                        `).join("")}
+                    </ul>
+                ` : `<p class="summary-empty">Brak zainstalowanych modów.</p>`}
+                <button class="btn btn-sm" data-action="goto-tab" data-tab="glider" style="margin-top:10px;">Zarządzaj gliderem →</button>
             </div>
 
             <div class="card">
@@ -252,12 +215,12 @@ export function render(root, { state, data }) {
     `;
 
     if (!root.dataset.wired) {
-        wireEvents(root, { data, flatGear, flatMods, companions });
+        wireEvents(root, { data, companions });
         root.dataset.wired = "1";
     }
 }
 
-function wireEvents(root, { data, flatGear, flatMods, companions }) {
+function wireEvents(root, { data, companions }) {
     root.addEventListener("click", (e) => {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
@@ -295,6 +258,9 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
                 initialName: state.character.name,
                 allowCancel: true
             });
+
+        } else if (action === "goto-tab") {
+            document.querySelector(`.tab-btn[data-tab="${btn.dataset.tab}"]`)?.click();
         }
     });
 
@@ -324,27 +290,6 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
             const val = Number.isFinite(raw) ? Math.max(min, raw) : cur;
             setPath(state, path, val);
             el.value = val;
-            touch();
-
-        } else if (action === "gear-select") {
-            const slot = parseInt(el.dataset.slot, 10);
-            const idx = parseInt(el.value, 10);
-            state.character.gear[slot] = idx < 0 ? null : {
-                name: flatGear[idx].name,
-                effect: flatGear[idx].effect,
-                wear: 3,
-                maxWear: 3
-            };
-            touch();
-
-        } else if (action === "mod-select") {
-            const slot = parseInt(el.dataset.slot, 10);
-            const idx = parseInt(el.value, 10);
-            state.character.glider.mods[slot] = idx < 0 ? null : {
-                name: flatMods[idx].name,
-                category: flatMods[idx].category,
-                effect: flatMods[idx].effect
-            };
             touch();
 
         } else if (action === "select-companion") {
