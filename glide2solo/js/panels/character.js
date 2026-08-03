@@ -1,7 +1,7 @@
 // Panel: Karta postaci (Seeker) + tracker zasobów.
 import { getState, touch } from "../store.js";
 import { getPath, setPath, clamp, escapeHtml } from "../utils.js";
-import { bondLevelFromPoints, applyRole } from "../state.js";
+import { bondLevelFromPoints } from "../state.js";
 import { showGate } from "../gate.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
@@ -48,9 +48,22 @@ function counterRow({ label, abbr, curPath, curVal, maxPath, maxVal, min = 0, ed
         <div class="counter-row">
             <div class="counter-label">${label}${abbr ? ` <span class="abbr">${abbr}</span>` : ""}</div>
             <div class="counter-controls">
-                <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="-1" data-min="${min}" ${maxPath ? `data-maxpath="${maxPath}"` : ""}>−</button>
-                <span class="counter-value">${curVal}${hasMax ? ` <span class="max">${editableMax ? `/ <button class="max-edit" data-action="edit-max" data-path="${maxPath}" data-curpath="${curPath}" title="Zmień maksimum">${maxVal}</button>` : `/ ${maxVal}`}</span>` : ""}</span>
-                <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="1" data-min="${min}" ${maxPath ? `data-maxpath="${maxPath}"` : ""}>+</button>
+                <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="-1" data-min="${min}">−</button>
+                <span class="counter-value">${curVal}${hasMax ? ` <span class="max">${editableMax ? `/ <button class="max-edit" data-action="edit-max" data-path="${maxPath}" title="Zmień maksimum">${maxVal}</button>` : `/ ${maxVal}`}</span>` : ""}</span>
+                <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="1" data-min="${min}">+</button>
+            </div>
+        </div>
+    `;
+}
+
+/** Wiersz z licznikiem wpisywanym bezpośrednio (input number) zamiast +/- klikanych po jednym —
+ *  wygodniejsze dla wartości, które często zmieniają się o więcej niż 1 (np. Credits). */
+function numberInputRow({ label, abbr, path, value, min = 0 }) {
+    return `
+        <div class="counter-row">
+            <div class="counter-label">${label}${abbr ? ` <span class="abbr">${abbr}</span>` : ""}</div>
+            <div class="counter-controls">
+                <input type="number" class="counter-input" data-action="set-number" data-path="${path}" data-min="${min}" value="${value}" step="1">
             </div>
         </div>
     `;
@@ -127,7 +140,7 @@ export function render(root, { state, data }) {
                 ${counterRow({ label: "Stamina", abbr: "S", curPath: "character.resources.stamina.cur", curVal: ch.resources.stamina.cur, maxPath: "character.resources.stamina.max", maxVal: ch.resources.stamina.max, editableMax: true })}
                 ${counterRow({ label: "Momentum", abbr: "MM", curPath: "character.resources.momentum.cur", curVal: ch.resources.momentum.cur, maxPath: "character.resources.momentum.max", maxVal: ch.resources.momentum.max, editableMax: true })}
                 ${counterRow({ label: "Intel", abbr: "IN", curPath: "character.resources.intel.cur", curVal: ch.resources.intel.cur, maxPath: "character.resources.intel.max", maxVal: ch.resources.intel.max, editableMax: true })}
-                ${counterRow({ label: "Credits", abbr: "cr", curPath: "character.resources.credits", curVal: ch.resources.credits })}
+                ${numberInputRow({ label: "Credits", abbr: "cr", path: "character.resources.credits", value: ch.resources.credits, min: 0 })}
                 ${counterRow({ label: "Fame", curPath: "character.resources.fame", curVal: ch.resources.fame })}
                 <p class="placeholder">Koniec gry dostępny przy Fame ${mechanics.resources.fame.end_game_threshold}+.</p>
             </div>
@@ -223,11 +236,9 @@ export function render(root, { state, data }) {
                                 <div class="counter-row">
                                     <div class="counter-label">BP <span class="abbr">Lvl ${level} — ${bondScale[level]?.name || ""}</span></div>
                                     <div class="counter-controls">
-                                        <button class="btn btn-sm" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="-5" data-min="0">−5</button>
                                         <button class="btn btn-sm btn-icon" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="-1" data-min="0">−</button>
-                                        <span class="counter-value">${points}</span>
+                                        <input type="number" class="counter-input" data-action="set-number" data-path="guildBonds.${g.id}.points" data-min="0" value="${points}" step="1">
                                         <button class="btn btn-sm btn-icon" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="1" data-min="0">+</button>
-                                        <button class="btn btn-sm" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="5" data-min="0">+5</button>
                                     </div>
                                 </div>
                                 <p class="placeholder">${rewardsSoFar.length ? rewardsSoFar.join(" · ") : "Brak odblokowanych nagród."}</p>
@@ -257,40 +268,32 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
             const path = btn.dataset.path;
             const delta = parseFloat(btn.dataset.delta);
             const min = btn.dataset.min !== undefined ? parseFloat(btn.dataset.min) : -Infinity;
-            const maxPath = btn.dataset.maxpath;
             const maxAttr = btn.dataset.max;
-            const max = maxPath ? getPath(state, maxPath) : (maxAttr !== undefined ? parseFloat(maxAttr) : Infinity);
+            // Górny limit egzekwujemy tylko tam, gdzie max jest sztywno zakodowany w atrybucie
+            // przycisku (staty H/K/R/C/F 0-5, Wear sprzętu). Liczniki zasobów z osobnym, edytowalnym
+            // maksimum (Stamina, Momentum, Intel, Glider…) mogą je świadomie przekroczyć (np. 6/5
+            // po tymczasowym wzmocnieniu) — patrz też numberInputRow/set-number poniżej.
+            const max = maxAttr !== undefined ? parseFloat(maxAttr) : Infinity;
             const cur = getPath(state, path) || 0;
             setPath(state, path, clamp(cur + delta, min, max));
             touch();
         } else if (action === "edit-max") {
             const path = btn.dataset.path;
-            const curPath = btn.dataset.curpath;
             const cur = getPath(state, path);
             const input = prompt("Nowa wartość maksymalna:", cur);
             if (input === null) return;
             const val = parseInt(input, 10);
             if (!Number.isFinite(val) || val < 0) return;
             setPath(state, path, val);
-            if (curPath) {
-                const c = getPath(state, curPath);
-                if (c > val) setPath(state, curPath, val);
-            }
             touch();
 
         } else if (action === "reopen-gate") {
-            if (!confirm("Otworzyć ekran startowy, żeby zmienić imię lub rolę? Zmiana roli nadpisze obecne statystyki, cel i cechy postaci.")) {
+            if (!confirm("Otworzyć ekran startowy? Możesz tam wpisać inne imię, żeby przełączyć się na inną (albo nową) grę solo, albo zostawić to samo imię i zmienić rolę — co nadpisze statystyki, cel i cechy obecnej postaci.")) {
                 return;
             }
-            showGate(data, (name, role) => {
-                const s = getState();
-                s.character.name = name;
-                applyRole(s.character, role);
-                touch();
-            }, {
-                current: { name: state.character.name, role: state.character.role },
-                allowCancel: true,
-                submitLabel: "Zapisz zmiany"
+            showGate(data, {
+                initialName: state.character.name,
+                allowCancel: true
             });
         }
     });
@@ -309,6 +312,18 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
 
         } else if (action === "toggle-reward-claimed") {
             state.character.rewardClaimed = el.checked;
+            touch();
+
+        } else if (action === "set-number") {
+            // Input wpisywany bezpośrednio (Credits, BP gildii…) — bez górnego ograniczenia,
+            // tylko dolne (domyślnie 0). Nieprawidłowy/pusty wpis cofa się do poprzedniej wartości.
+            const path = el.dataset.path;
+            const min = el.dataset.min !== undefined ? parseFloat(el.dataset.min) : -Infinity;
+            const raw = parseFloat(el.value);
+            const cur = getPath(state, path) || 0;
+            const val = Number.isFinite(raw) ? Math.max(min, raw) : cur;
+            setPath(state, path, val);
+            el.value = val;
             touch();
 
         } else if (action === "gear-select") {

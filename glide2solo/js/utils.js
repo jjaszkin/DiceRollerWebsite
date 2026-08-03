@@ -97,6 +97,18 @@ export function escapeHtml(str) {
     }[c]));
 }
 
+/** Zamienia wpisane imię postaci na bezpieczny klucz Firebase RTDB (GlidePartTwoSolo/{klucz}):
+ *  usuwa polskie/inne znaki diakrytyczne, spacje oraz znaki niedozwolone w kluczach RTDB
+ *  (. # $ [ ] /). Wyświetlane imię (character.name) zostaje bez zmian, dokładnie takie,
+ *  jak wpisane — sanityzacja dotyczy wyłącznie ścieżki zapisu w bazie. */
+export function sanitizeNameToKey(name) {
+    return String(name)
+        .normalize("NFD").replace(/[̀-ͯ]/g, "") // rozbij znaki diakrytyczne i odrzuć
+        .replace(/[.#$[\]/]/g, "")                          // znaki niedozwolone jako klucz RTDB
+        .replace(/\s+/g, "")                                // spacje
+        .trim();
+}
+
 export function formatTimestamp(date = new Date()) {
     const pad = n => String(n).padStart(2, "0");
     return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${String(date.getFullYear()).slice(-2)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;

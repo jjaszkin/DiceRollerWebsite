@@ -1,24 +1,54 @@
-// GLIDE: Part Two — Ekran startowy: kreator postaci (imię Seekera + wybór roli).
+// GLIDE: Part Two — Ekran startowy: wybór/utworzenie zapisu (imię Seekera) + kreator roli.
+//
+// Dwuetapowy przepływ:
+//   Krok 1 (imię) — użytkownik wpisuje imię Seekera. Zsanityzowana wersja imienia
+//   (patrz utils.js#sanitizeNameToKey) staje się kluczem zapisu w Firebase, pod
+//   GlidePartTwoSolo/{klucz} — patrz store.js#connectSave. Istniejące imię wczytuje
+//   istniejący zapis (kontynuacja tej samej postaci), nowe imię tworzy nową, pustą
+//   równoległą grę solo.
+//   Krok 2 (rola) — pokazywany tylko, gdy wczytany zapis nie ma jeszcze ustawionej
+//   roli (nowa postać), albo gdy użytkownik edytuje AKTUALNIE aktywną postać (np.
+//   przez „Zmień postać” na tej samej postaci, żeby świadomie zmienić rolę). Przy
+//   przełączeniu się na inną, już skonfigurowaną postać krok roli jest pomijany —
+//   dashboard od razu pokazuje wczytany stan.
+//
+// Uwaga: kliknięcie „Dalej” na kroku imienia natychmiast łączy store z wybranym
+// zapisem (connectSave) — od tego momentu store „patrzy” już na nowy zapis. Przycisk
+// „Anuluj” na kroku imienia po prostu zamyka ekran bez cofania tego połączenia (nie ma
+// osobnego stanu do przywrócenia poza kolejnym wywołaniem showGate) — w praktyce nie
+// stanowi to problemu, bo Anuluj jest dostępny tylko, zanim jakiekolwiek połączenie
+// zostanie w ogóle nawiązane w ramach danego otwarcia ekranu.
 //
 // Pokazywany:
-//   1) przy starcie aplikacji, dopóki postać nie ma ustawionego imienia i roli,
+//   1) przy starcie aplikacji (main.js#bootstrap) — zawsze zaczyna od kroku imienia,
 //   2) później na żądanie, przez przycisk „Zmień postać” w karcie Seeker (panel character.js).
-//
-// To jedyne miejsce w aplikacji, w którym rolę można ustawić/zmienić — na dashboardzie
-// (karta Seeker) imię i rola są już tylko wyświetlane, bez możliwości edycji.
+
+import { connectSave, getSaveKey, notifyNow, updateState } from "./store.js";
+import { sanitizeNameToKey } from "./utils.js";
+import { applyRole } from "./state.js";
 
 const gateEl = document.getElementById("characterGate");
 const appEl = document.getElementById("app");
+
+const stepNameEl = document.getElementById("gateStepName");
+const stepRoleEl = document.getElementById("gateStepRole");
+
 const nameInput = document.getElementById("gateName");
+const nameErrorEl = document.getElementById("gateNameError");
+const nameNextBtn = document.getElementById("gateNameNext");
+const cancelBtn = document.getElementById("gateCancel");
+
+const subRoleEl = document.getElementById("gateSubRole");
 const roleSelect = document.getElementById("gateRole");
 const previewEl = document.getElementById("gateRolePreview");
-const errorEl = document.getElementById("gateError");
+const roleErrorEl = document.getElementById("gateRoleError");
+const backBtn = document.getElementById("gateBack");
 const submitBtn = document.getElementById("gateSubmit");
-const cancelBtn = document.getElementById("gateCancel");
 
 let wired = false;
 let currentData = null;
-let currentOnConfirm = null;
+let currentOnDone = null;
+let pendingDisplayName = "";
 
 function renderPreview(role) {
     if (!role) { previewEl.innerHTML = ""; return; }
@@ -33,16 +63,99 @@ function renderPreview(role) {
     `;
 }
 
+function updateNameNextState() {
+    nameErrorEl.style.display = "none";
+    nameNextBtn.disabled = nameInput.value.trim().length === 0;
+}
+
 function updateSubmitState() {
-    errorEl.style.display = "none";
-    const nameOk = nameInput.value.trim().length > 0;
-    const roleOk = parseInt(roleSelect.value, 10) >= 0;
-    submitBtn.disabled = !(nameOk && roleOk);
+    roleErrorEl.style.display = "none";
+    submitBtn.disabled = !(parseInt(roleSelect.value, 10) >= 0);
+}
+
+function showNameStep() {
+    stepRoleEl.style.display = "none";
+    stepNameEl.style.display = "block";
+    nameInput.focus();
+}
+
+function showRoleStep() {
+    stepNameEl.style.display = "none";
+    stepRoleEl.style.display = "block";
+}
+
+function finish() {
+    // notifyNow (a nie touch) — sam wybór/wczytanie zapisu nie jest jeszcze „zmianą” do
+    // zapisania, jedynie odświeżeniem UI; ewentualny zapis roli poszedł już przez
+    // updateState (patrz submitBtn handler), który sam zaplanuje zapis.
+    notifyNow();
+    hideGate();
+    if (currentOnDone) currentOnDone();
+}
+
+async function goToRoleOrFinish() {
+    const name = nameInput.value.trim();
+    if (!name) {
+        nameErrorEl.textContent = "Podaj imię Seekera, żeby kontynuować.";
+        nameErrorEl.style.display = "block";
+        return;
+    }
+    const saveKey = sanitizeNameToKey(name);
+    if (!saveKey) {
+        nameErrorEl.textContent = "To imię nie zawiera żadnych znaków, które da się zapisać jako identyfikator — spróbuj innego.";
+        nameErrorEl.style.display = "block";
+        return;
+    }
+
+    const previousSaveKey = getSaveKey();
+    pendingDisplayName = name;
+
+    nameNextBtn.disabled = true;
+    nameNextBtn.textContent = "Wczytywanie…";
+    let loadedState;
+    try {
+        loadedState = await connectSave(saveKey);
+    } finally {
+        nameNextBtn.disabled = false;
+        nameNextBtn.textContent = "Dalej";
+    }
+
+    const isSelfEdit = previousSaveKey !== null && previousSaveKey === saveKey;
+    const roles = currentData.mechanics.seeker_roles;
+
+    if (loadedState.character.role && !isSelfEdit) {
+        // Postać już istnieje i ma ustawioną rolę — wczytaj ją bez pokazywania kroku roli.
+        finish();
+        return;
+    }
+
+    const currentIdx = isSelfEdit && loadedState.character.role
+        ? roles.findIndex(r => r.role === loadedState.character.role)
+        : -1;
+
+    roleSelect.innerHTML = `<option value="-1">— wybierz rolę —</option>` +
+        roles.map((r, i) => `<option value="${i}" ${i === currentIdx ? "selected" : ""}>${r.role}</option>`).join("");
+
+    renderPreview(currentIdx >= 0 ? roles[currentIdx] : null);
+    subRoleEl.textContent = `Wybierz rolę dla: ${name}`;
+    updateSubmitState();
+    showRoleStep();
 }
 
 function wireOnce() {
     if (wired) return;
     wired = true;
+
+    nameInput.addEventListener("input", updateNameNextState);
+    nameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !nameNextBtn.disabled) goToRoleOrFinish();
+    });
+    nameNextBtn.addEventListener("click", goToRoleOrFinish);
+
+    cancelBtn.addEventListener("click", () => {
+        currentOnDone = null;
+        hideGate();
+    });
 
     roleSelect.addEventListener("change", () => {
         const idx = parseInt(roleSelect.value, 10);
@@ -50,57 +163,45 @@ function wireOnce() {
         updateSubmitState();
     });
 
-    nameInput.addEventListener("input", updateSubmitState);
+    backBtn.addEventListener("click", () => {
+        showNameStep();
+    });
 
     submitBtn.addEventListener("click", () => {
-        const name = nameInput.value.trim();
         const idx = parseInt(roleSelect.value, 10);
-        if (!name || idx < 0) {
-            errorEl.textContent = "Podaj imię i wybierz rolę, żeby kontynuować.";
-            errorEl.style.display = "block";
+        if (idx < 0) {
+            roleErrorEl.textContent = "Wybierz rolę, żeby kontynuować.";
+            roleErrorEl.style.display = "block";
             return;
         }
         const role = currentData.mechanics.seeker_roles[idx];
-        const onConfirm = currentOnConfirm;
-        currentOnConfirm = null;
-        hideGate();
-        onConfirm(name, role);
-    });
-
-    cancelBtn.addEventListener("click", () => {
-        currentOnConfirm = null;
-        hideGate();
+        updateState((s) => {
+            s.character.name = pendingDisplayName;
+            applyRole(s.character, role);
+        });
+        finish();
     });
 }
 
 /**
- * Pokazuje ekran startowy kreatora postaci.
+ * Pokazuje ekran startowy (wybór/utworzenie zapisu + ewentualny kreator roli).
  * @param {object} data - wczytane dane gry (potrzebna lista ról z mechanics.json)
- * @param {(name: string, role: object) => void} onConfirm - wywoływane po zatwierdzeniu formularza
  * @param {object} [opts]
- * @param {{name?: string, role?: string}|null} [opts.current] - obecne imię/rola do wstępnego
- *        wypełnienia formularza (używane tylko przy „Zmień postać” — przy pierwszym uruchomieniu
- *        ekran zawsze startuje pusty, nawet jeśli w danych jest już zapisana rola)
- * @param {boolean} [opts.allowCancel] - czy pokazać przycisk Anuluj (tylko gdy postać już istnieje)
- * @param {string} [opts.submitLabel] - etykieta przycisku zatwierdzającego
+ * @param {string} [opts.initialName] - imię do wstępnego wypełnienia pola (np. ostatnio używane)
+ * @param {boolean} [opts.allowCancel] - czy pokazać przycisk Anuluj na kroku imienia
+ *        (tylko gdy jakaś postać jest już aktywna — czyli wywołanie przez „Zmień postać”)
+ * @param {() => void} [opts.onDone] - wywoływane po zakończeniu (wczytaniu zapisu / zapisaniu roli)
  */
-export function showGate(data, onConfirm, { current = null, allowCancel = false, submitLabel = "Rozpocznij grę" } = {}) {
+export function showGate(data, { initialName = "", allowCancel = false, onDone = null } = {}) {
     currentData = data;
-    currentOnConfirm = onConfirm;
+    currentOnDone = onDone;
     wireOnce();
 
-    const roles = data.mechanics.seeker_roles;
-    const currentIdx = current?.role ? roles.findIndex(r => r.role === current.role) : -1;
-
-    roleSelect.innerHTML = `<option value="-1">— wybierz rolę —</option>` +
-        roles.map((r, i) => `<option value="${i}" ${i === currentIdx ? "selected" : ""}>${r.role}</option>`).join("");
-
-    nameInput.value = current?.name || "";
-    renderPreview(currentIdx >= 0 ? roles[currentIdx] : null);
-    errorEl.style.display = "none";
+    nameInput.value = initialName;
+    nameErrorEl.style.display = "none";
     cancelBtn.style.display = allowCancel ? "inline-block" : "none";
-    submitBtn.textContent = submitLabel;
-    updateSubmitState();
+    updateNameNextState();
+    showNameStep();
 
     gateEl.classList.add("active");
     appEl.classList.add("hidden");

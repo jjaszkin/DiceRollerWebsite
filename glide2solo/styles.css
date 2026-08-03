@@ -277,6 +277,15 @@ body {
 }
 .max-edit:hover { color: var(--fg-0); }
 
+.counter-input {
+    width: 4.5em;
+    text-align: center;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 4px 6px;
+}
+
 .card select { width: 100%; }
 .card p { font-size: 0.85rem; color: var(--fg-1); line-height: 1.5; margin: 6px 0; }
 
