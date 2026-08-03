@@ -4,6 +4,8 @@ import { loadGameData } from "./data.js";
 import { initStore, getState, getData, subscribe, onSaveStatusChange, updateState } from "./store.js";
 import { rollD100, findInRangeTable, clamp } from "./utils.js";
 import { logRoll } from "./rollLog.js";
+import { showGate, hideGate } from "./gate.js";
+import { applyRole } from "./state.js";
 
 import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
@@ -137,13 +139,28 @@ async function bootstrap() {
         const gameData = await loadGameData();
 
         setBootStatus("Łączenie z Firebase…");
-        await initStore(gameData);
+        const state = await initStore(gameData);
 
         subscribe(renderAll);
         setupTabs();
         setupSaveIndicator();
         setupCampButton();
-        renderAll();
+
+        // Ekran startowy (kreator postaci) jest jedynym miejscem, w którym można ustawić/zmienić
+        // imię i rolę Seekera. Jeśli którekolwiek z nich brakuje (nowa postać albo stary zapis
+        // sprzed dodania pola „imię”), wymuś pełne przejście przez ten ekran od zera, zanim
+        // dashboard się pokaże.
+        if (!state.character.name || !state.character.role) {
+            showGate(gameData, (name, role) => {
+                updateState((s) => {
+                    s.character.name = name;
+                    applyRole(s.character, role);
+                });
+            });
+        } else {
+            hideGate();
+            renderAll();
+        }
 
         setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/10 plików.`);
     } catch (err) {

@@ -89,6 +89,14 @@ export function setPath(obj, path, value) {
     o[keys[keys.length - 1]] = value;
 }
 
+/** Ucieka znaki specjalne HTML — do bezpiecznego wstawiania tekstu wpisanego przez
+ *  użytkownika (np. imię postaci) do szablonów budowanych przez innerHTML. */
+export function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+    }[c]));
+}
+
 export function formatTimestamp(date = new Date()) {
     const pad = n => String(n).padStart(2, "0");
     return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${String(date.getFullYear()).slice(-2)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;

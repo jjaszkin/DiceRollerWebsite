@@ -334,6 +334,86 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 .entry-result { color: var(--fg-0); }
 .entry-result strong { color: var(--fg-0); }
 
+/* ── Character gate (ekran startowy: kreator postaci) ─────────────── */
+
+.hidden { display: none !important; }
+
+.gate {
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+}
+
+.gate.active { display: flex; }
+
+.gate-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px 24px 28px;
+}
+
+.gate-card h1 {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    letter-spacing: 0.18em;
+    margin: 0 0 4px;
+    color: var(--fg-0);
+    font-weight: 600;
+    text-align: center;
+}
+
+.gate-sub {
+    text-align: center;
+    color: var(--fg-dim);
+    font-style: italic;
+    font-size: 0.85rem;
+    margin: 0 0 20px;
+}
+
+.gate-field { display: block; margin-bottom: 14px; }
+
+.gate-field span {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    color: var(--fg-2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.gate-field input, .gate-field select { width: 100%; }
+
+.gate-role-preview {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-bottom: 16px;
+}
+
+.gate-role-preview p { font-size: 0.82rem; margin: 4px 0; }
+
+.gate-error {
+    color: var(--fg-0);
+    background: var(--bg-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+}
+
+.gate-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
 /* ── Footer ─────────────────────────────────────────────────────────── */
 
 .app-footer {

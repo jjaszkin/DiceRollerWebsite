@@ -19,6 +19,7 @@ export function createDefaultState(gameData) {
         meta: { version: 1, updatedAt: null },
 
         character: {
+            name: "",
             role: null,
             stats: { H: 0, K: 0, R: 0, C: 0, F: 0 },
             proficientStats: [],
@@ -93,4 +94,18 @@ export function mergeWithDefaults(defaults, loaded) {
 /** Bond Level = floor(points / 10), przycięty do [0, 4]. */
 export function bondLevelFromPoints(points) {
     return Math.max(0, Math.min(4, Math.floor((points || 0) / 10)));
+}
+
+/** Ustawia rolę Seekera na obiekcie character (mutuje bezpośrednio): nazwę roli,
+ *  statystyki startowe, cechę startową, cel i nagrodę. Resetuje postęp celu i status
+ *  odebrania nagrody. Używane przez ekran startowy (kreator postaci) — jedyne miejsce,
+ *  w którym rolę można ustawić lub zmienić. */
+export function applyRole(character, role) {
+    character.role = role.role;
+    character.stats = { ...role.starting_stats };
+    character.startingBonusTrait = role.starting_bonus_trait;
+    character.goal = role.goal;
+    character.rewardTrait = role.reward_trait;
+    character.goalProgress = 0;
+    character.rewardClaimed = false;
 }

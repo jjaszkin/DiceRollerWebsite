@@ -1,7 +1,8 @@
 // Panel: Karta postaci (Seeker) + tracker zasobów.
 import { getState, touch } from "../store.js";
-import { getPath, setPath, clamp } from "../utils.js";
-import { bondLevelFromPoints } from "../state.js";
+import { getPath, setPath, clamp, escapeHtml } from "../utils.js";
+import { bondLevelFromPoints, applyRole } from "../state.js";
+import { showGate } from "../gate.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
 
@@ -66,10 +67,6 @@ export function render(root, { state, data }) {
     const bondScale = data.economy?.connections_and_bonds?.bond_scale || [];
     const companionRewards = data.economy?.connections_and_bonds?.companion_bond_rewards || {};
 
-    const roleOptions = mechanics.seeker_roles.map((r, i) =>
-        `<option value="${i}" ${ch.role === r.role ? "selected" : ""}>${r.role}</option>`
-    ).join("");
-
     const roleInfo = ch.role
         ? mechanics.seeker_roles.find(r => r.role === ch.role)
         : null;
@@ -78,13 +75,10 @@ export function render(root, { state, data }) {
         <div class="grid grid-2">
 
             <div class="card">
-                <h2>Seeker</h2>
+                <h2>${ch.name ? escapeHtml(ch.name) : "Seeker"}</h2>
                 <div class="counter-row">
                     <div class="counter-label">Rola</div>
-                    <select data-action="select-role">
-                        <option value="-1">— wybierz rolę —</option>
-                        ${roleOptions}
-                    </select>
+                    <div class="counter-value">${ch.role || "—"}</div>
                 </div>
                 ${roleInfo ? `
                     <p><strong>Cecha startowa:</strong> ${roleInfo.starting_bonus_trait}</p>
@@ -102,7 +96,8 @@ export function render(root, { state, data }) {
                         <span class="counter-label">Nagroda odebrana</span>
                         <input type="checkbox" data-action="toggle-reward-claimed" ${ch.rewardClaimed ? "checked" : ""}>
                     </label>
-                ` : `<p class="placeholder">Wybierz rolę, żeby ustawić startowe statystyki i cel.</p>`}
+                ` : `<p class="placeholder">Brak wybranej roli.</p>`}
+                <button class="btn btn-sm" data-action="reopen-gate" style="margin-top:10px;">Zmień postać</button>
             </div>
 
             <div class="card">
@@ -251,18 +246,6 @@ export function render(root, { state, data }) {
     }
 }
 
-function applyRole(role) {
-    const state = getState();
-    state.character.role = role.role;
-    state.character.stats = { ...role.starting_stats };
-    state.character.startingBonusTrait = role.starting_bonus_trait;
-    state.character.goal = role.goal;
-    state.character.rewardTrait = role.reward_trait;
-    state.character.goalProgress = 0;
-    state.character.rewardClaimed = false;
-    touch();
-}
-
 function wireEvents(root, { data, flatGear, flatMods, companions }) {
     root.addEventListener("click", (e) => {
         const btn = e.target.closest("[data-action]");
@@ -294,6 +277,21 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
                 if (c > val) setPath(state, curPath, val);
             }
             touch();
+
+        } else if (action === "reopen-gate") {
+            if (!confirm("Otworzyć ekran startowy, żeby zmienić imię lub rolę? Zmiana roli nadpisze obecne statystyki, cel i cechy postaci.")) {
+                return;
+            }
+            showGate(data, (name, role) => {
+                const s = getState();
+                s.character.name = name;
+                applyRole(s.character, role);
+                touch();
+            }, {
+                current: { name: state.character.name, role: state.character.role },
+                allowCancel: true,
+                submitLabel: "Zapisz zmiany"
+            });
         }
     });
 
@@ -302,19 +300,7 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
         const state = getState();
         const action = el.dataset.action;
 
-        if (action === "select-role") {
-            const idx = parseInt(el.value, 10);
-            if (idx < 0) return;
-            const role = data.mechanics.seeker_roles[idx];
-            if (state.character.role && state.character.role !== role.role) {
-                if (!confirm(`Zmienić rolę na ${role.role}? To nadpisze startowe statystyki, cel i cechy.`)) {
-                    render(root, { state, data }); // przywróć poprzednią wartość selecta
-                    return;
-                }
-            }
-            applyRole(role);
-
-        } else if (action === "toggle-proficient") {
+        if (action === "toggle-proficient") {
             const stat = el.dataset.stat;
             const list = state.character.proficientStats;
             const idx = list.indexOf(stat);
