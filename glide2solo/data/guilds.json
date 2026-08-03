@@ -25,25 +25,25 @@
       "missions": [
         {
           "number": 1,
-          "name": "Mapping the Veins",
+          "name": "Mapowanie Żył",
           "task": "Podróżuj przez 5 różnych lokacji typu Desert i wróć do dowolnej Karawany Gildii lub osady.",
-          "test": "Focused or Knowledgeable Test przy powrocie",
+          "test": "Focused lub Knowledgeable Test przy powrocie",
           "major": "+15 Credits, +3 BP",
           "minor": "+5 Credits, +1 BP",
           "miss": "-1 Supply"
         },
         {
           "number": 2,
-          "name": "The Supply Chain",
+          "name": "Łańcuch Dostaw",
           "task": "Dostarcz paczkę do osady cierpiącej na niedobór (wybierz najdalszą).",
-          "test": "Resourceful or Hardy Test po każdym Travel Encounter",
+          "test": "Resourceful lub Hardy Test po każdym Travel Encounter",
           "major": "+5 Credits, +1 BP",
           "minor": "+2 Credits",
           "miss": "-1 Momentum, -1 BP"
         },
         {
           "number": 3,
-          "name": "Negotiate a Toll",
+          "name": "Negocjacje Myta",
           "task": "Minor House blokuje szlak handlowy. Spotkaj się z ich przedstawicielem i przekonaj do ustąpienia.",
           "test": "Connected Test w najdalszej osadzie od Twojej lokacji",
           "major": "+20 Credits, +3 BP",
@@ -52,19 +52,19 @@
         },
         {
           "number": 4,
-          "name": "Rescue a Broker",
+          "name": "Ratunek dla Pośrednika",
           "task": "Członek gildii wysłał sygnał SOS z lokacji Desert. Znajdź go i przywieź z powrotem.",
-          "test": "Hardy or Focused w dowolnej lokacji Desert, 3+ heksów, raz na wizytę w ważnym heksie. Powtarzaj aż do Minor lub Major success.",
+          "test": "Hardy lub Focused w dowolnej lokacji Desert, 3+ heksów, raz na wizytę w ważnym heksie. Powtarzaj aż do Minor lub Major success.",
           "major": "+2 BP, +1 Supply",
           "minor": "+1 BP",
           "miss": "-3 BP; nie znajdujesz go tutaj, szukaj dalej"
         }
       ],
       "bond_level_rewards": {
-        "1": {"name": "Nomad's Compass (Gear)", "effect": "+1 do wszystkich testów Focused w lokacjach Desert."},
-        "2": {"name": "Broker's Discount (Trait)", "effect": "Wszystkie koszty Supply są o 2 Credits niższe przy zakupie z Karawan Gildii."},
-        "3": {"name": "Dune-Sail Chassis (Glider Upgrade)", "effect": "+1 Movement przy podróży przez odkryty heks Desert (max +3 na Move)."},
-        "4": {"name": "Master of the Roads (Trait)", "effect": "Możesz wydać 1 Intel, by przenieść się do dowolnej odkrytej lokacji Desert na mapie."}
+        "1": {"name": "Kompas Nomady (Gear)", "effect": "+1 do wszystkich testów Focused w lokacjach Desert."},
+        "2": {"name": "Rabat Pośrednika (Trait)", "effect": "Wszystkie koszty Supply są o 2 Credits niższe przy zakupie z Karawan Gildii."},
+        "3": {"name": "Podwozie Wydmowego Żagla (Glider Upgrade)", "effect": "+1 Movement przy podróży przez odkryty heks Desert (max +3 na Move)."},
+        "4": {"name": "Mistrz Dróg (Trait)", "effect": "Możesz wydać 1 Intel, by przenieść się do dowolnej odkrytej lokacji Desert na mapie."}
       }
     },
     {
@@ -82,46 +82,46 @@
       "missions": [
         {
           "number": 1,
-          "name": "The Oral Traditions",
+          "name": "Tradycje Ustne",
           "task": "Odwiedź dowolną Unique Location lub osadę oddaloną o 5+ heksów.",
-          "test": "Connected or Focused Test w lokacji",
+          "test": "Connected lub Focused Test w lokacji",
           "major": "+15 Credits, +2 BP, +1 Intel",
           "minor": "+5 Credits, +1 BP",
           "miss": "+5 Credits, -1 BP"
         },
         {
           "number": 2,
-          "name": "Recovery of a Silent Slate",
+          "name": "Odzyskanie Cichej Tabliczki",
           "task": "Eksploruj dowolną lokację Ruins, by odzyskać fizyczne urządzenie pamięci masowej. Zwróć je do Archiwum Dźwięku.",
-          "test": "Knowledgeable or Resourceful Test w lokacji",
+          "test": "Knowledgeable lub Resourceful Test w lokacji",
           "major": "+25 Credits, +2 BP, +1 Intel",
           "minor": "+15 Credits, +1 BP",
           "miss": "-1 Wear (dowolny)"
         },
         {
           "number": 3,
-          "name": "Performance of Remembrance",
+          "name": "Przedstawienie Wspomnień",
           "task": "Spędź czas w osadzie, prezentując historię Eridooru, by wzmocnić morale i wsparcie.",
-          "test": "Connected or Knowledgeable Test w dowolnej osadzie",
+          "test": "Connected lub Knowledgeable Test w dowolnej osadzie",
           "major": "+2 BP, +2 Momentum",
           "minor": "+1 BP, +1 Intel",
           "miss": "+1 Momentum"
         },
         {
           "number": 4,
-          "name": "Crypt of the Great Houses",
+          "name": "Krypta Wielkich Domów",
           "task": "Znajdź docelową lokację Ruins i przeskanuj obszar w poszukiwaniu inskrypcji i danych historycznych. Ukończ Minor lub wyższy sukces 3+ razy.",
-          "test": "Focused or Knowledgeable Test w dowolnej lokacji Ruins, max raz na wizytę w ważnym heksie",
+          "test": "Focused lub Knowledgeable Test w dowolnej lokacji Ruins, max raz na wizytę w ważnym heksie",
           "major": "+1 BP, +1 Intel",
           "minor": "+1 BP",
           "miss": "-1 Momentum; nic nie znajdujesz"
         }
       ],
       "bond_level_rewards": {
-        "1": {"name": "Echo-Recorder (Gear)", "effect": "Małe, czułe urządzenie. +1 do testów Focused przy akcji Explore w lokacji Ruins."},
-        "2": {"name": "Historian's Eye (Trait)", "effect": "Możesz wymienić 1 Intel na 20cr w dowolnym Archiwum Dźwięku, ale nie możesz już kupować Intel z Archiwów."},
-        "3": {"name": "Archive Array (Glider Upgrade)", "effect": "Specjalistyczny zestaw sensorów glidera. Przy akcji Explore w lokacji Ruins, przy Major Success, zyskujesz +1 Intel."},
-        "4": {"name": "Living Library (Trait)", "effect": "Możesz wydać 2 Intel, by zamienić dowolny Miss z Knowledgeable lub Connected na Major success."}
+        "1": {"name": "Rejestrator Echa (Gear)", "effect": "Małe, czułe urządzenie. +1 do testów Focused przy akcji Explore w lokacji Ruins."},
+        "2": {"name": "Oko Historyka (Trait)", "effect": "Możesz wymienić 1 Intel na 20cr w dowolnym Archiwum Dźwięku, ale nie możesz już kupować Intel z Archiwów."},
+        "3": {"name": "Macierz Archiwalna (Glider Upgrade)", "effect": "Specjalistyczny zestaw sensorów glidera. Przy akcji Explore w lokacji Ruins, przy Major Success, zyskujesz +1 Intel."},
+        "4": {"name": "Żywa Biblioteka (Trait)", "effect": "Możesz wydać 2 Intel, by zamienić dowolny Miss z Knowledgeable lub Connected na Major success."}
       }
     },
     {
@@ -140,34 +140,34 @@
       "missions": [
         {
           "number": 1,
-          "name": "Perimeter Patrol",
+          "name": "Patrol Obwodowy",
           "task": "Patroluj obrzeża obecnej osady lub najbliższej Unique Location. Ukończ trzy razy.",
-          "test": "Hardy or Focused Test",
+          "test": "Hardy lub Focused Test",
           "major": "+5 Credits, +1 BP",
           "minor": "+1 Credits, +1 BP",
           "miss": "-1 BP"
         },
         {
           "number": 2,
-          "name": "Apex Hunt",
+          "name": "Łowy na Alfę",
           "task": "Zlokalizuj i zneutralizuj niebezpieczną bestię (np. Sand Snake) w dowolnym heksie Desert lub Green Space.",
-          "test": "Hardy or Resourceful Test",
+          "test": "Hardy lub Resourceful Test",
           "major": "+30 Credits, +2 BP, +1 Relic",
           "minor": "+20 Credits, +1 BP, +2 Scrap",
           "miss": "-1 Stamina, -1 BP"
         },
         {
           "number": 3,
-          "name": "High-Stakes Escort",
+          "name": "Eskorta Wysokiego Ryzyka",
           "task": "Eskortuj wysoko postawionego urzędnika lub wrażliwą karawanę do osady oddalonej o co najmniej 4+ heksów.",
-          "test": "Hardy or Connected Test po każdej akcji Move",
+          "test": "Hardy lub Connected Test po każdej akcji Move",
           "major": "+5 Credits, +1 BP",
           "minor": "+3 Credits",
           "miss": "-1 BP, -1 Momentum"
         },
         {
           "number": 4,
-          "name": "Trial of the Iron Wrought",
+          "name": "Próba Kutego Żelaza",
           "task": "Przejdź rytuał treningowy w Hali Treningowej Gildii.",
           "test": "Hardy Test w obecnej lokacji",
           "major": "+4 BP, +3 Momentum, odzyskaj całą Staminę",
@@ -176,10 +176,10 @@
         }
       ],
       "bond_level_rewards": {
-        "1": {"name": "Iron Vambraces (Gear)", "effect": "Wzmocnione naramienniki, dodatkowa siła i ochrona. +1 do wszystkich rzutów Hardy."},
-        "2": {"name": "Disciplined Resolve (Trait)", "effect": "Raz na akcję możesz wydać 2 Momentum, by zniwelować utratę 1 Staminy."},
-        "3": {"name": "Aegis Plating (Glider Upgrade)", "effect": "Ciężki pancerz zewnętrzny. Twój glider ignoruje pierwszy punkt Wear, gdy przypisywane są 2 lub więcej Wear."},
-        "4": {"name": "Unshakable Will (Trait)", "effect": "Gdy Twoja Stamina osiągnie 0, wykonaj Hardy or Resourceful Challenge Roll. Przy Major Success, wróć do 1 Staminy i kontynuuj obecną akcję. Przy Minor lub Miss, rozwiąż efekt Exhaustion (str. 21) normalnie."}
+        "1": {"name": "Żelazne Naramienniki (Gear)", "effect": "Wzmocnione naramienniki, dodatkowa siła i ochrona. +1 do wszystkich rzutów Hardy."},
+        "2": {"name": "Zdyscyplinowana Determinacja (Trait)", "effect": "Raz na akcję możesz wydać 2 Momentum, by zniwelować utratę 1 Staminy."},
+        "3": {"name": "Poszycie Aegis (Glider Upgrade)", "effect": "Ciężki pancerz zewnętrzny. Twój glider ignoruje pierwszy punkt Wear, gdy przypisywane są 2 lub więcej Wear."},
+        "4": {"name": "Niezłomna Wola (Trait)", "effect": "Gdy Twoja Stamina osiągnie 0, wykonaj Hardy lub Resourceful Challenge Roll. Przy Major Success, wróć do 1 Staminy i kontynuuj obecną akcję. Przy Minor lub Miss, rozwiąż efekt Exhaustion (str. 21) normalnie."}
       }
     },
     {
@@ -197,46 +197,46 @@
       "missions": [
         {
           "number": 1,
-          "name": "The Crimson Dash",
+          "name": "Szkarłatny Pęd",
           "task": "Dostarcz przesyłkę wrażliwą czasowo do osady oddalonej o 6+ heksów.",
-          "test": "Resourceful or Hardy Test przy przybyciu do każdej osady",
+          "test": "Resourceful lub Hardy Test przy przybyciu do każdej osady",
           "major": "+40 Credits, +3 BP, +1 Supply",
           "minor": "+20 Credits, +1 BP",
           "miss": "+5 Credits, +1 Glider wear"
         },
         {
           "number": 2,
-          "name": "Black-Box Retrieval",
+          "name": "Odzyskanie Czarnej Skrzynki",
           "task": "Kurier gildii rozbił się. Odzyskaj jego zaszyfrowany data-slate.",
-          "test": "Knowledgeable or Focused Test w dowolnej lokacji Ruins 2+ heksów",
+          "test": "Knowledgeable lub Focused Test w dowolnej lokacji Ruins 2+ heksów",
           "major": "+25 Credits, +2 BP, +1 Intel",
           "minor": "+5 Credits, +1 BP",
           "miss": "-2 BP"
         },
         {
           "number": 3,
-          "name": "The Storm-Chaser",
+          "name": "Pogromca Burz",
           "task": "Wlecieć w aktywną burzę piaskową i rozmieścić serię sensorów. Burza została zauważona przemieszczająca się o 4+ heksów w lokacji Desert.",
-          "test": "Resourceful or Focused w lokacji burzy",
+          "test": "Resourceful lub Focused w lokacji burzy",
           "major": "+5 BP, +3 Momentum",
           "minor": "+2 BP, +1 Momentum",
           "miss": "+1 BP, -1 Stamina"
         },
         {
           "number": 4,
-          "name": "Secret Correspondence",
+          "name": "Tajna Korespondencja",
           "task": "Przenieś tajemnicę wysokiego priorytetu z obecnej osady do innej, 3+ heksów, bez przechwycenia przez patrole Domu.",
-          "test": "Connected or Resourceful test po każdej akcji Move",
+          "test": "Connected lub Resourceful test po każdej akcji Move",
           "major": "+2 BP",
           "minor": "+1 BP",
           "miss": "+1 Glider Wear, -1 Momentum"
         }
       ],
       "bond_level_rewards": {
-        "1": {"name": "Slipstream HUD (Gear)", "effect": "Smukły wizjer podświetlający prądy powietrzne. +1 do testów Resourceful przy akcji Explore w lokacjach Desert."},
-        "2": {"name": "Aerial Intuition (Trait)", "effect": "Gdy wydajesz Supply, by dodać Speed, testuj Knowledgeable. Przy Major Success, +2 dodatkowej Speed."},
-        "3": {"name": "Phantom Thrusters (Glider Upgrade)", "effect": "Lekkie, ciche silniki. Zyskujesz Advantage na wszystkich testach, gdzie Wear mogłoby zostać przypisane Twojemu Gliderowi z Miss."},
-        "4": {"name": "Ace of the Wastes (Trait)", "effect": "Raz na akcję Move, jeśli poruszasz się o 4 lub więcej heksów, zyskujesz +1 Momentum."}
+        "1": {"name": "HUD Smugi Powietrznej (Gear)", "effect": "Smukły wizjer podświetlający prądy powietrzne. +1 do testów Resourceful przy akcji Explore w lokacjach Desert."},
+        "2": {"name": "Powietrzna Intuicja (Trait)", "effect": "Gdy wydajesz Supply, by dodać Speed, testuj Knowledgeable. Przy Major Success, +2 dodatkowej Speed."},
+        "3": {"name": "Widmowe Silniki (Glider Upgrade)", "effect": "Lekkie, ciche silniki. Zyskujesz Advantage na wszystkich testach, gdzie Wear mogłoby zostać przypisane Twojemu Gliderowi z Miss."},
+        "4": {"name": "As Pustkowi (Trait)", "effect": "Raz na akcję Move, jeśli poruszasz się o 4 lub więcej heksów, zyskujesz +1 Momentum."}
       }
     },
     {
@@ -256,46 +256,46 @@
       "missions": [
         {
           "number": 1,
-          "name": "Flora Sample Collection",
+          "name": "Zbiór Próbek Flory",
           "task": "Odwiedź Green Space i zbierz próbkę kwitnącego sukulenta.",
-          "test": "Focused or Knowledgeable Test w dowolnym Green Space 3+ heksów",
+          "test": "Focused lub Knowledgeable Test w dowolnym Green Space 3+ heksów",
           "major": "+15 Credits, +2 BP, +1 Supply",
           "minor": "+10 Credits, +1 BP",
           "miss": "+2 Credits, -2 BP"
         },
         {
           "number": 2,
-          "name": "Tagging the Apex",
+          "name": "Znakowanie Alfy",
           "task": "Zlokalizuj Sand Snake lub inną dużą istotę Eridooru i przypnij beacon śledzący.",
-          "test": "Resourceful or Hardy test w dowolnej lokacji Desert, 5+ heksów",
+          "test": "Resourceful lub Hardy test w dowolnej lokacji Desert, 5+ heksów",
           "major": "+30 Credits, +3 BP",
           "minor": "+20 Credits, +1 BP",
           "miss": "-2 Momentum, -4 BP"
         },
         {
           "number": 3,
-          "name": "Anomaly Reconnaissance",
+          "name": "Rozpoznanie Anomalii",
           "task": "Znajdź świecący krater lub chmurę pyłu-przypraw i rozmieść serię modułów sensorowych.",
-          "test": "Knowledgeable or Focused test w lokacji Desert 5+ heksów",
+          "test": "Knowledgeable lub Focused test w lokacji Desert 5+ heksów",
           "major": "+3 BP, +1 Intel, +2 Scrap",
           "minor": "+5 Credits, +1 BP",
           "miss": "-2 BP, -1 Stamina"
         },
         {
           "number": 4,
-          "name": "The Green Restoration",
+          "name": "Zielona Odbudowa",
           "task": "Dostarcz przesyłkę specjalnych \"Seed-Bombs\" do lokacji Desert i zasadź je z glebą.",
-          "test": "Hardy or Resourceful test w lokacji Desert 5+ heksów od obecnej pozycji",
+          "test": "Hardy lub Resourceful test w lokacji Desert 5+ heksów od obecnej pozycji",
           "major": "+25 Credits, +2 BP, lokacja staje się Green Space (ten sam poziom)",
           "minor": "+5 Credits, +1 BP",
           "miss": "-3 BP, -1 Momentum"
         }
       ],
       "bond_level_rewards": {
-        "1": {"name": "Botanist's Kit (Gear)", "effect": "+1 do testów Knowledgeable w Green Spaces."},
-        "2": {"name": "Oasis Navigator (Trait)", "effect": "Gdy tracisz Staminę w Green Space z powodu testu, rzuć d10. Na 7+ neguj pierwszy utracony punkt Staminy."},
-        "3": {"name": "Bio-Organic Hull (Glider Upgrade)", "effect": "Eksperymentalna warstwa mchu na kadłubie glidera. Podczas akcji Camp w Green Space usuń 1 Glider Wear."},
-        "4": {"name": "Harmony with Eridoor (Trait)", "effect": "Zyskujesz Advantage na wszystkich testach w Green Spaces. Dodatkowo możesz wydać 1 Intel, by potraktować heks Desert jako Green Space dla pojedynczej akcji."}
+        "1": {"name": "Zestaw Botanika (Gear)", "effect": "+1 do testów Knowledgeable w Green Spaces."},
+        "2": {"name": "Nawigator Oazy (Trait)", "effect": "Gdy tracisz Staminę w Green Space z powodu testu, rzuć d10. Na 7+ neguj pierwszy utracony punkt Staminy."},
+        "3": {"name": "Bio-Organiczny Kadłub (Glider Upgrade)", "effect": "Eksperymentalna warstwa mchu na kadłubie glidera. Podczas akcji Camp w Green Space usuń 1 Glider Wear."},
+        "4": {"name": "Harmonia z Eridoorem (Trait)", "effect": "Zyskujesz Advantage na wszystkich testach w Green Spaces. Dodatkowo możesz wydać 1 Intel, by potraktować heks Desert jako Green Space dla pojedynczej akcji."}
       }
     },
     {
@@ -313,69 +313,69 @@
       "missions": [
         {
           "number": 1,
-          "name": "The Deep Delve",
+          "name": "Głębokie Zejście",
           "task": "Wejdź do lokacji Ruins i wróć z Reliktem, który wzbudza zainteresowanie.",
-          "test": "Knowledgeable or Resourceful test po Major Success w Ruins",
+          "test": "Knowledgeable lub Resourceful test po Major Success w Ruins",
           "major": "+30 Credits, +2 BP, +1 Relic",
           "minor": "+1 BP, +1 Scrap",
           "miss": "-3 BP"
         },
         {
           "number": 2,
-          "name": "Power Source Stabilization",
+          "name": "Stabilizacja Źródła Zasilania",
           "task": "Zlokalizuj niestabilny rdzeń energetyczny w ruinach i bezpiecznie wydobądź ogniwa, zanim się roztopi.",
-          "test": "Hardy or Knowledgeable test w lokacji Ruins 3+ heksów",
+          "test": "Hardy lub Knowledgeable test w lokacji Ruins 3+ heksów",
           "major": "+15 Credits, +3 BP, +1 Intel",
           "minor": "+1 BP, +1 Supply",
           "miss": "-2 BP, -2 Scrap"
         },
         {
           "number": 3,
-          "name": "A Locked Seal",
+          "name": "Zamknięta Pieczęć",
           "task": "Użyj swojej wiedzy technicznej, by otworzyć pieczęć zainteresowania gildii.",
-          "test": "Knowledgeable or Focused test w lokacji Ruins lub Desert 5+ heksów",
+          "test": "Knowledgeable lub Focused test w lokacji Ruins lub Desert 5+ heksów",
           "major": "+50 Credits, +3 BP",
           "minor": "+10 Credits, +1 BP",
           "miss": "-2 BP"
         },
         {
           "number": 4,
-          "name": "Artifact Recovery",
+          "name": "Odzyskanie Artefaktu",
           "task": "Skradziono artefakt gildii. Wytrop złodzieja do pustyni i odzyskaj go dowolnymi środkami.",
-          "test": "Hardy or Connected test w najdalszej lokacji Desert od obecnej pozycji",
+          "test": "Hardy lub Connected test w najdalszej lokacji Desert od obecnej pozycji",
           "major": "+30 Credits, +5 BP",
           "minor": "+10 Credits, +3 BP",
           "miss": "-5 BP, -2 Momentum"
         }
       ],
       "bond_level_rewards": {
-        "1": {"name": "Relic Hunter's Info (Gear)", "effect": "Zaawansowany system operacyjny wizjera, dostrojony do sygnatur starożytnego metalu. +1 do wszystkich rzutów Knowledgeable w Ruins."},
-        "2": {"name": "Antiquarian's Insight (Trait)", "effect": "Możesz wymieniać Relikty na 3 Intel i 2 BP każdy, w gildii."},
-        "3": {"name": "Stasis Field Storage (Glider Upgrade)", "effect": "Specjalna komora tłumiąca wibracje i uderzenia, dostrojona do Twojego DNA. Relikty i Scrap nie mogą być utracone z żadnego efektu."},
-        "4": {"name": "Ancient Source (Trait)", "effect": "Nauczyłeś się wysysać energię z artefaktów i reliktów. Raz na akcję możesz wydać 1 Intel, o ile masz 1 lub więcej Reliktów, by zyskać +1 do rzutu. Na Miss Relikt zostaje zniszczony, +1 Scrap."}
+        "1": {"name": "Wgląd Łowcy Reliktów (Gear)", "effect": "Zaawansowany system operacyjny wizjera, dostrojony do sygnatur starożytnego metalu. +1 do wszystkich rzutów Knowledgeable w Ruins."},
+        "2": {"name": "Wgląd Antykwariusza (Trait)", "effect": "Możesz wymieniać Relikty na 3 Intel i 2 BP każdy, w gildii."},
+        "3": {"name": "Schowek Pola Stazy (Glider Upgrade)", "effect": "Specjalna komora tłumiąca wibracje i uderzenia, dostrojona do Twojego DNA. Relikty i Scrap nie mogą być utracone z żadnego efektu."},
+        "4": {"name": "Starożytne Źródło (Trait)", "effect": "Nauczyłeś się wysysać energię z artefaktów i reliktów. Raz na akcję możesz wydać 1 Intel, o ile masz 1 lub więcej Reliktów, by zyskać +1 do rzutu. Na Miss Relikt zostaje zniszczony, +1 Scrap."}
       }
     }
   ],
   "odd_jobs_table_d100": [
-    {"range": "1-5", "name": "Clean Water Run", "location_type": "Green Space", "description": "Lokalny mieszkaniec prosi o świeżą wodę z zielonej przestrzeni.", "task": "Eksploruj dowolny Green Space, raz, z Minor lub Major success, następnie ukończ test tej fuchy z Major success.", "test": "Focused or Resourceful", "reward": "+2 Supply, +15 Credits", "fail": "-2 Momentum; nie znaleziono czystej wody"},
-    {"range": "6-10", "name": "Salvage Request", "location_type": "Ruins", "description": "Mechanik chce rzadkich części z pobliskich ruin.", "task": "Eksploruj dowolne Ruins, raz, z Minor lub Major success, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful", "reward": "Odzyskaj do 3 Wear, +10 Credits", "fail": "Mark 2 Wear, -1 Momentum; Twój sprzęt zostaje uszkodzony"},
-    {"range": "11-15", "name": "Escort the Caravan", "location_type": "Desert", "description": "Handlarze szukają eskorty przez wydmy.", "task": "Przejedź przez 3 heksy Desert i ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy or Connected", "reward": "+2 BP, +30 Credits, +1 Scrap", "fail": "-1 Supply, -1 Momentum; gubisz karawanę"},
-    {"range": "16-20", "name": "Lost Heirloom", "location_type": "Settlement", "description": "Lokalny mieszkaniec zgubił coś ważnego w osadzie.", "task": "Wykonaj test w tej osadzie, raz, z Major success.", "test": "Knowledgeable or Focused", "reward": "+40 Credits, +2 Momentum", "fail": "-2 Momentum; trop ginie"},
-    {"range": "21-25", "name": "Strange Being", "location_type": "Unique", "description": "Zestaw tajemniczych śladów prowadzi z dala od osady.", "task": "Eksploruj dowolną Unique Location, raz, i ukończ test tej fuchy z Major success.", "test": "Focused", "reward": "+1 Intel, +10 Credits, +5 BP", "fail": "Mark 2 Wear, -2 Momentum; zostajesz ranny w pościgu za istotą"},
-    {"range": "26-30", "name": "Herbalist's Aid", "location_type": "Green Space", "description": "Uzdrowiciel prosi o zioła lecznicze z nowo kiełkujących dzikich terenów.", "task": "Eksploruj dowolny Green Space, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Knowledgeable", "reward": "+1 Supply, +10 Credits", "fail": "Mark 1 Wear, -2 Momentum; napotykasz trujące rośliny"},
-    {"range": "31-35", "name": "Relic Prospects", "location_type": "Ruins", "description": "Poszukiwacz wynajmuje Cię do szukania reliktów w zestawie ruin.", "task": "Eksploruj dowolne lokacje Ruins, aż znajdziesz Relikt, następnie ukończ test tej fuchy z Major success.", "test": null, "reward": "+2 BP, +60 Credits", "fail": "-1 Stamina, mark 3 Wear; zawalenie uszkadza Twój sprzęt"},
-    {"range": "36-40", "name": "Desert Beacon", "location_type": "Desert", "description": "Miejscowi proszą o rekonfigurację lub naprawę starego beaconu sygnałowego.", "task": "Eksploruj dowolną lokację Desert oddaloną o co najmniej 3 heksy, raz, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy or Focused", "reward": "+25 Credits, +2 Supply, +1 Scrap", "fail": "-1 Stamina, -1 Supply; jesteś zgubiony i nie możesz znaleźć beaconu"},
-    {"range": "41-45", "name": "Courier Job", "location_type": "Settlement", "description": "Dostarcz listy, drobny ładunek i inne różne towary.", "task": "Podróżuj do dowolnej innej osady i dostarcz towary.", "test": "Brak! (fucha zawodzi, jeśli staniesz się Exhausted [str. 21])", "reward": "+30 Credits", "fail": "-1 Fame, -3 Momentum; tracisz przesyłkę"},
-    {"range": "46-50", "name": "Rescue Party", "location_type": "Unique", "description": "Grupa odkrywców poprosiła o pomoc w unikalnej lokalizacji.", "task": "Eksploruj dowolną Unique Location, raz, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy or Connected", "reward": "+2 BP, +2 Momentum, +10 Credits", "fail": "Mark 3 Wear, -1 Momentum; zostajesz ranny podczas ratunku"},
-    {"range": "51-55", "name": "Desert Hunt", "location_type": "Desert", "description": "Społeczność organizuje polowanie na niebezpiecznego drapieżnika.", "task": "Eksploruj dowolną lokację Desert, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful or Focused", "reward": "+2 Momentum, +1 Supply, +1 Scrap", "fail": "-1 Stamina, -1 Supply; drapieżnik ucieka"},
-    {"range": "56-60", "name": "Broken Device", "location_type": "Ruins", "description": "Lokalny majsterkowicz chce, byś odzyskał urządzenie z pobliskich ruin.", "task": "Eksploruj dowolną lokację Ruins, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Knowledgeable", "reward": "+2 Scrap, +20 Credits", "fail": "-1 Stamina, -2 Momentum; zostajesz ranny podczas odzyskiwania"},
-    {"range": "61-65", "name": "Oasis Watch", "location_type": "Green Space", "description": "Plotki o wytryskującej oazie wzbudzają zainteresowanie mieszkańców. Znajdź jej lokalizację.", "task": "Przenieś się do dowolnej lokacji Green Space i ukończ test tej fuchy z Major success.", "test": "Hardy or Resourceful", "reward": "+2 Stamina, +30 Credits", "fail": "-1 Supply, -2 Momentum; gubisz się w zielonej przestrzeni"},
-    {"range": "66-70", "name": "Relic Custodian", "location_type": "Settlement", "description": "Rzadki relikt musi zostać dostarczony do innej osady.", "task": "Podróżuj do najdalszej osady od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Connected", "reward": "+5 BP, +50 Credits, +2 Momentum", "fail": "-3 Momentum, -1 Relic, -10 BP (dowolny); relikt zostaje skradziony"},
-    {"range": "71-75", "name": "Scout Request", "location_type": "Unique", "description": "Miejscowi boją się, że dzieje się coś dziwnego w unikalnej lokacji.", "task": "Przenieś się do najbliższej Unique Location i ukończ test tej fuchy z Minor lub Major success.", "test": "Focused or Resourceful", "reward": "+2 Intel, +20 Credits", "fail": "-1 Momentum, -1 Intel; nie ma tam nic do zobaczenia"},
-    {"range": "76-80", "name": "Dune Mapping", "location_type": "Desert", "description": "Geodeta wynajmuje Seekerów do mapowania przesuwających się piasków.", "task": "Eksploruj dowolne 2 lokacje Desert (muszą być różne) i ukończ test tej fuchy przy każdej z Minor lub Major success.", "test": "Knowledgeable", "reward": "+1 Intel, +2 Momentum, +1 BP", "fail": "-1 Momentum, Mark 3 Wear; błędnie odczytujesz teren"},
-    {"range": "81-85", "name": "Festival Supplies", "location_type": "Green Space or Ruins", "description": "W miarę zbliżania się festiwalu, osada poszukuje rzadkich składników.", "task": "Eksploruj dowolną lokację Green Space lub Ruins i ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful", "reward": "+2 BP, +2 Supply, +10 Credits", "fail": "-1 Supply; nie możesz znaleźć składników, zastępujesz własnymi"},
-    {"range": "86-90", "name": "Missing Caravan", "location_type": "Desert", "description": "Oczekiwana karawana z towarami zniknęła na pustyni.", "task": "Eksploruj dowolną lokację Desert oddaloną o co najmniej 3 heksy od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Hardy or Focused", "reward": "+2 Stamina, +4 Scrap, +30 Credits", "fail": "-1 Momentum, -1 Stamina; nie możesz znaleźć śladu"},
-    {"range": "91-95", "name": "Old Debts", "location_type": "Settlement", "description": "Mieszkaniec szuka kogoś, kto dostarczy jego spłatę długu.", "task": "Podróżuj do dowolnej innej osady od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Hardy or Connected", "reward": "+3 Momentum, +3 BP", "fail": "-2 Momentum, -4 BP, -100 Credits; zostajesz obrabowany lub tracisz dług"},
-    {"range": "96-100", "name": "Ancient Shrine", "location_type": "Unique or Ruins", "description": "Mieszkańcy pragną, by przy starożytnej świątyni złożono ofiary.", "task": "Podróżuj do dowolnych 2 lokacji Unique lub Ruins i ukończ test tej fuchy, przy każdej, z Minor lub Major success.", "test": "Any", "reward": "+3 Momentum, +1 Fame", "fail": "-5 Momentum, -10 BP, -2 Fame; uszkadzasz świątynię"}
+    {"range": "1-5", "name": "Kurs po Czystą Wodę", "location_type": "Green Space", "description": "Lokalny mieszkaniec prosi o świeżą wodę z zielonej przestrzeni.", "task": "Eksploruj dowolny Green Space, raz, z Minor lub Major success, następnie ukończ test tej fuchy z Major success.", "test": "Focused lub Resourceful", "reward": "+2 Supply, +15 Credits", "fail": "-2 Momentum; nie znaleziono czystej wody"},
+    {"range": "6-10", "name": "Prośba o Odzysk", "location_type": "Ruins", "description": "Mechanik chce rzadkich części z pobliskich ruin.", "task": "Eksploruj dowolne Ruins, raz, z Minor lub Major success, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful", "reward": "Odzyskaj do 3 Wear, +10 Credits", "fail": "Mark 2 Wear, -1 Momentum; Twój sprzęt zostaje uszkodzony"},
+    {"range": "11-15", "name": "Eskorta Karawany", "location_type": "Desert", "description": "Handlarze szukają eskorty przez wydmy.", "task": "Przejedź przez 3 heksy Desert i ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy lub Connected", "reward": "+2 BP, +30 Credits, +1 Scrap", "fail": "-1 Supply, -1 Momentum; gubisz karawanę"},
+    {"range": "16-20", "name": "Zagubiona Pamiątka Rodowa", "location_type": "Settlement", "description": "Lokalny mieszkaniec zgubił coś ważnego w osadzie.", "task": "Wykonaj test w tej osadzie, raz, z Major success.", "test": "Knowledgeable lub Focused", "reward": "+40 Credits, +2 Momentum", "fail": "-2 Momentum; trop ginie"},
+    {"range": "21-25", "name": "Dziwna Istota", "location_type": "Unique", "description": "Zestaw tajemniczych śladów prowadzi z dala od osady.", "task": "Eksploruj dowolną Unique Location, raz, i ukończ test tej fuchy z Major success.", "test": "Focused", "reward": "+1 Intel, +10 Credits, +5 BP", "fail": "Mark 2 Wear, -2 Momentum; zostajesz ranny w pościgu za istotą"},
+    {"range": "26-30", "name": "Pomoc dla Zielarza", "location_type": "Green Space", "description": "Uzdrowiciel prosi o zioła lecznicze z nowo kiełkujących dzikich terenów.", "task": "Eksploruj dowolny Green Space, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Knowledgeable", "reward": "+1 Supply, +10 Credits", "fail": "Mark 1 Wear, -2 Momentum; napotykasz trujące rośliny"},
+    {"range": "31-35", "name": "Poszukiwania Reliktów", "location_type": "Ruins", "description": "Poszukiwacz wynajmuje Cię do szukania reliktów w zestawie ruin.", "task": "Eksploruj dowolne lokacje Ruins, aż znajdziesz Relikt, następnie ukończ test tej fuchy z Major success.", "test": null, "reward": "+2 BP, +60 Credits", "fail": "-1 Stamina, mark 3 Wear; zawalenie uszkadza Twój sprzęt"},
+    {"range": "36-40", "name": "Pustynny Beacon", "location_type": "Desert", "description": "Miejscowi proszą o rekonfigurację lub naprawę starego beaconu sygnałowego.", "task": "Eksploruj dowolną lokację Desert oddaloną o co najmniej 3 heksy, raz, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy lub Focused", "reward": "+25 Credits, +2 Supply, +1 Scrap", "fail": "-1 Stamina, -1 Supply; jesteś zgubiony i nie możesz znaleźć beaconu"},
+    {"range": "41-45", "name": "Praca Kuriera", "location_type": "Settlement", "description": "Dostarcz listy, drobny ładunek i inne różne towary.", "task": "Podróżuj do dowolnej innej osady i dostarcz towary.", "test": "Brak! (fucha zawodzi, jeśli staniesz się Exhausted [str. 21])", "reward": "+30 Credits", "fail": "-1 Fame, -3 Momentum; tracisz przesyłkę"},
+    {"range": "46-50", "name": "Ekipa Ratunkowa", "location_type": "Unique", "description": "Grupa odkrywców poprosiła o pomoc w unikalnej lokalizacji.", "task": "Eksploruj dowolną Unique Location, raz, następnie ukończ test tej fuchy z Minor lub Major success.", "test": "Hardy lub Connected", "reward": "+2 BP, +2 Momentum, +10 Credits", "fail": "Mark 3 Wear, -1 Momentum; zostajesz ranny podczas ratunku"},
+    {"range": "51-55", "name": "Pustynne Łowy", "location_type": "Desert", "description": "Społeczność organizuje polowanie na niebezpiecznego drapieżnika.", "task": "Eksploruj dowolną lokację Desert, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful lub Focused", "reward": "+2 Momentum, +1 Supply, +1 Scrap", "fail": "-1 Stamina, -1 Supply; drapieżnik ucieka"},
+    {"range": "56-60", "name": "Zepsute Urządzenie", "location_type": "Ruins", "description": "Lokalny majsterkowicz chce, byś odzyskał urządzenie z pobliskich ruin.", "task": "Eksploruj dowolną lokację Ruins, raz, i ukończ test tej fuchy z Minor lub Major success.", "test": "Knowledgeable", "reward": "+2 Scrap, +20 Credits", "fail": "-1 Stamina, -2 Momentum; zostajesz ranny podczas odzyskiwania"},
+    {"range": "61-65", "name": "Warta przy Oazie", "location_type": "Green Space", "description": "Plotki o wytryskującej oazie wzbudzają zainteresowanie mieszkańców. Znajdź jej lokalizację.", "task": "Przenieś się do dowolnej lokacji Green Space i ukończ test tej fuchy z Major success.", "test": "Hardy lub Resourceful", "reward": "+2 Stamina, +30 Credits", "fail": "-1 Supply, -2 Momentum; gubisz się w zielonej przestrzeni"},
+    {"range": "66-70", "name": "Opiekun Reliktu", "location_type": "Settlement", "description": "Rzadki relikt musi zostać dostarczony do innej osady.", "task": "Podróżuj do najdalszej osady od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Connected", "reward": "+5 BP, +50 Credits, +2 Momentum", "fail": "-3 Momentum, -1 Relic, -10 BP (dowolny); relikt zostaje skradziony"},
+    {"range": "71-75", "name": "Prośba o Zwiad", "location_type": "Unique", "description": "Miejscowi boją się, że dzieje się coś dziwnego w unikalnej lokacji.", "task": "Przenieś się do najbliższej Unique Location i ukończ test tej fuchy z Minor lub Major success.", "test": "Focused lub Resourceful", "reward": "+2 Intel, +20 Credits", "fail": "-1 Momentum, -1 Intel; nie ma tam nic do zobaczenia"},
+    {"range": "76-80", "name": "Mapowanie Wydm", "location_type": "Desert", "description": "Geodeta wynajmuje Seekerów do mapowania przesuwających się piasków.", "task": "Eksploruj dowolne 2 lokacje Desert (muszą być różne) i ukończ test tej fuchy przy każdej z Minor lub Major success.", "test": "Knowledgeable", "reward": "+1 Intel, +2 Momentum, +1 BP", "fail": "-1 Momentum, Mark 3 Wear; błędnie odczytujesz teren"},
+    {"range": "81-85", "name": "Zapasy na Festiwal", "location_type": "Green Space lub Ruins", "description": "W miarę zbliżania się festiwalu, osada poszukuje rzadkich składników.", "task": "Eksploruj dowolną lokację Green Space lub Ruins i ukończ test tej fuchy z Minor lub Major success.", "test": "Resourceful", "reward": "+2 BP, +2 Supply, +10 Credits", "fail": "-1 Supply; nie możesz znaleźć składników, zastępujesz własnymi"},
+    {"range": "86-90", "name": "Zaginiona Karawana", "location_type": "Desert", "description": "Oczekiwana karawana z towarami zniknęła na pustyni.", "task": "Eksploruj dowolną lokację Desert oddaloną o co najmniej 3 heksy od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Hardy lub Focused", "reward": "+2 Stamina, +4 Scrap, +30 Credits", "fail": "-1 Momentum, -1 Stamina; nie możesz znaleźć śladu"},
+    {"range": "91-95", "name": "Stare Długi", "location_type": "Settlement", "description": "Mieszkaniec szuka kogoś, kto dostarczy jego spłatę długu.", "task": "Podróżuj do dowolnej innej osady od obecnej lokacji i ukończ test tej fuchy z Major success.", "test": "Hardy lub Connected", "reward": "+3 Momentum, +3 BP", "fail": "-2 Momentum, -4 BP, -100 Credits; zostajesz obrabowany lub tracisz dług"},
+    {"range": "96-100", "name": "Starożytna Świątynia", "location_type": "Unique lub Ruins", "description": "Mieszkańcy pragną, by przy starożytnej świątyni złożono ofiary.", "task": "Podróżuj do dowolnych 2 lokacji Unique lub Ruins i ukończ test tej fuchy, przy każdej, z Minor lub Major success.", "test": "Dowolny", "reward": "+3 Momentum, +1 Fame", "fail": "-5 Momentum, -10 BP, -2 Fame; uszkadzasz świątynię"}
   ]
 }
