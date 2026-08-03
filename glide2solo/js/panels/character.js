@@ -1,4 +1,4 @@
-// Panel: Karta postaci (Seeker) + tracker zasobów.
+// Panel: Karta postaci (Poszukiwacz) + tracker zasobów.
 import { getState, touch } from "../store.js";
 import { getPath, setPath, clamp, escapeHtml } from "../utils.js";
 import { bondLevelFromPoints } from "../state.js";
@@ -24,7 +24,7 @@ function counterRow({ label, abbr, curPath, curVal, maxPath, maxVal, min = 0, ed
 }
 
 /** Wiersz z licznikiem wpisywanym bezpośrednio (input number) zamiast +/- klikanych po jednym —
- *  wygodniejsze dla wartości, które często zmieniają się o więcej niż 1 (np. Credits). */
+ *  wygodniejsze dla wartości, które często zmieniają się o więcej niż 1 (np. Kredyty). */
 function numberInputRow({ label, abbr, path, value, min = 0 }) {
     return `
         <div class="counter-row">
@@ -55,9 +55,9 @@ export function render(root, { state, data }) {
         ? mechanics.seeker_roles.find(r => r.role === ch.role)
         : null;
 
-    // Nagrody i Traity — zebrane w jednym miejscu z dwóch źródeł: Bond Level gildii (wszystkie
-    // kategorie: Gear/Trait/Glider Upgrade) i roli postaci (cecha startowa + nagroda za cel).
-    // Gear/Glider Upgrade auto-oznaczają się jako posiadane w odpowiednim tabie (patrz gearData.js/
+    // Nagrody i Traity — zebrane w jednym miejscu z dwóch źródeł: Poziom Więzi gildii (wszystkie
+    // kategorie: Sprzęt/Cecha/Ulepszenie Glidera) i roli postaci (cecha startowa + nagroda za cel).
+    // Sprzęt/Ulepszenie Glidera auto-oznaczają się jako posiadane w odpowiednim tabie (patrz gearData.js/
     // panels/gear.js/panels/glider.js) — tu tylko informujemy o tym w opisie karty.
     const allRewards = [
         ...unlockedGuildRewards(state, data).map(r => ({
@@ -76,7 +76,7 @@ export function render(root, { state, data }) {
         <div class="grid grid-2">
 
             <div class="card">
-                <h2>${ch.name ? escapeHtml(ch.name) : "Seeker"}</h2>
+                <h2>${ch.name ? escapeHtml(ch.name) : "Poszukiwacz"}</h2>
                 <div class="counter-row">
                     <div class="counter-label">Rola</div>
                     <div class="counter-value">${ch.role || "—"}</div>
@@ -125,23 +125,23 @@ export function render(root, { state, data }) {
 
             <div class="card">
                 <h2>Zasoby</h2>
-                ${counterRow({ label: "Stamina", abbr: "S", curPath: "character.resources.stamina.cur", curVal: ch.resources.stamina.cur, maxPath: "character.resources.stamina.max", maxVal: ch.resources.stamina.max, editableMax: true })}
-                ${counterRow({ label: "Momentum", abbr: "MM", curPath: "character.resources.momentum.cur", curVal: ch.resources.momentum.cur, maxPath: "character.resources.momentum.max", maxVal: ch.resources.momentum.max, editableMax: true })}
-                ${counterRow({ label: "Intel", abbr: "IN", curPath: "character.resources.intel.cur", curVal: ch.resources.intel.cur, maxPath: "character.resources.intel.max", maxVal: ch.resources.intel.max, editableMax: true })}
-                ${numberInputRow({ label: "Credits", abbr: "cr", path: "character.resources.credits", value: ch.resources.credits, min: 0 })}
-                ${counterRow({ label: "Fame", curPath: "character.resources.fame", curVal: ch.resources.fame })}
-                <p class="placeholder">Koniec gry dostępny przy Fame ${mechanics.resources.fame.end_game_threshold}+.</p>
+                ${counterRow({ label: "Wytrzymałość", abbr: "S", curPath: "character.resources.stamina.cur", curVal: ch.resources.stamina.cur, maxPath: "character.resources.stamina.max", maxVal: ch.resources.stamina.max, editableMax: true })}
+                ${counterRow({ label: "Rozpęd", abbr: "MM", curPath: "character.resources.momentum.cur", curVal: ch.resources.momentum.cur, maxPath: "character.resources.momentum.max", maxVal: ch.resources.momentum.max, editableMax: true })}
+                ${counterRow({ label: "Informacje", abbr: "IN", curPath: "character.resources.intel.cur", curVal: ch.resources.intel.cur, maxPath: "character.resources.intel.max", maxVal: ch.resources.intel.max, editableMax: true })}
+                ${numberInputRow({ label: "Kredyty", abbr: "cr", path: "character.resources.credits", value: ch.resources.credits, min: 0 })}
+                ${counterRow({ label: "Sława", curPath: "character.resources.fame", curVal: ch.resources.fame })}
+                <p class="placeholder">Koniec gry dostępny przy Sława ${mechanics.resources.fame.end_game_threshold}+.</p>
             </div>
 
             <div class="card">
-                <h2>Sprzęt (Gear)</h2>
+                <h2>Sprzęt (Sprzęt)</h2>
                 <p class="cap-indicator ${equippedGearCount >= maxCarried ? "full" : ""}">Założone: ${equippedGearCount} / ${maxCarried}</p>
                 ${equippedGear.length ? `
                     <ul class="summary-list">
                         ${equippedGear.map(g => `
                             <li class="tt" data-tip="${escapeHtml(g.effect || "")}">
                                 <span>${escapeHtml(g.name)}</span>
-                                <span class="abbr">${g.state.wear !== undefined ? `Wear ${g.state.wear}/${wearPerItem}` : ""}</span>
+                                <span class="abbr">${g.state.wear !== undefined ? `Zużycie ${g.state.wear}/${wearPerItem}` : ""}</span>
                             </li>
                         `).join("")}
                     </ul>
@@ -151,11 +151,11 @@ export function render(root, { state, data }) {
 
             <div class="card">
                 <h2>Glider</h2>
-                ${counterRow({ label: "Wear", curPath: "character.glider.wear.cur", curVal: ch.glider.wear.cur, maxPath: "character.glider.wear.max", maxVal: ch.glider.wear.max, editableMax: true })}
-                ${counterRow({ label: "Supply", curPath: "character.glider.supply.cur", curVal: ch.glider.supply.cur, maxPath: "character.glider.supply.max", maxVal: ch.glider.supply.max, editableMax: true })}
-                ${counterRow({ label: "Speed", curPath: "character.glider.speed.cur", curVal: ch.glider.speed.cur, maxPath: "character.glider.speed.max", maxVal: ch.glider.speed.max, editableMax: true })}
-                ${counterRow({ label: "Scrap", curPath: "character.glider.scrap.cur", curVal: ch.glider.scrap.cur, maxPath: "character.glider.scrap.max", maxVal: ch.glider.scrap.max, editableMax: true })}
-                ${counterRow({ label: "Relics", curPath: "character.glider.relics.cur", curVal: ch.glider.relics.cur, maxPath: "character.glider.relics.max", maxVal: ch.glider.relics.max, editableMax: true })}
+                ${counterRow({ label: "Zużycie", curPath: "character.glider.wear.cur", curVal: ch.glider.wear.cur, maxPath: "character.glider.wear.max", maxVal: ch.glider.wear.max, editableMax: true })}
+                ${counterRow({ label: "Zasoby", curPath: "character.glider.supply.cur", curVal: ch.glider.supply.cur, maxPath: "character.glider.supply.max", maxVal: ch.glider.supply.max, editableMax: true })}
+                ${counterRow({ label: "Prędkość", curPath: "character.glider.speed.cur", curVal: ch.glider.speed.cur, maxPath: "character.glider.speed.max", maxVal: ch.glider.speed.max, editableMax: true })}
+                ${counterRow({ label: "Złom", curPath: "character.glider.scrap.cur", curVal: ch.glider.scrap.cur, maxPath: "character.glider.scrap.max", maxVal: ch.glider.scrap.max, editableMax: true })}
+                ${counterRow({ label: "Relikty", curPath: "character.glider.relics.cur", curVal: ch.glider.relics.cur, maxPath: "character.glider.relics.max", maxVal: ch.glider.relics.max, editableMax: true })}
                 <div class="counter-row"><div class="counter-label">Cargo slots</div><div class="counter-value">${ch.glider.cargoSlots}</div></div>
                 <h3 style="margin-top:12px;">Zainstalowane mody</h3>
                 <p class="cap-indicator ${installedMods.length >= modsMax ? "full" : ""}">Zainstalowane: ${installedMods.length} / ${modsMax}</p>
@@ -186,9 +186,9 @@ export function render(root, { state, data }) {
                     return `
                         <p>${c ? c.description : ""}</p>
                         ${c ? `<p><strong>Key Stats:</strong> ${c.key_stats.join(", ")} — <strong>${c.passive_name}:</strong> ${c.passive_text}</p>` : ""}
-                        ${counterRow({ label: "Stamina towarzysza", curPath: "character.companion.stamina.cur", curVal: ch.companion.stamina.cur, maxPath: "character.companion.stamina.max", maxVal: ch.companion.stamina.max, editableMax: true })}
+                        ${counterRow({ label: "Wytrzymałość towarzysza", curPath: "character.companion.stamina.cur", curVal: ch.companion.stamina.cur, maxPath: "character.companion.stamina.max", maxVal: ch.companion.stamina.max, editableMax: true })}
                         <div class="counter-row">
-                            <div class="counter-label">Bond Points <span class="abbr">Lvl ${level} — ${bondScale[level]?.name || ""}</span></div>
+                            <div class="counter-label">Punkty Więzi <span class="abbr">Poz. ${level} — ${bondScale[level]?.name || ""}</span></div>
                             <div class="counter-controls">
                                 <button class="btn btn-sm" data-action="adjust" data-path="character.companion.bondPoints" data-delta="-5" data-min="0">−5</button>
                                 <button class="btn btn-sm btn-icon" data-action="adjust" data-path="character.companion.bondPoints" data-delta="-1" data-min="0">−</button>
@@ -203,7 +203,7 @@ export function render(root, { state, data }) {
             </div>
 
             <div class="card" style="grid-column: 1 / -1;">
-                <h2>Bond Level — Gildie</h2>
+                <h2>Poziom Więzi — Gildie</h2>
                 <div class="grid grid-3">
                     ${guilds.map(g => {
                         const points = state.guildBonds[g.id]?.points || 0;
@@ -217,7 +217,7 @@ export function render(root, { state, data }) {
                             <div class="card" style="margin-top:0;">
                                 <h3 style="border:none; padding:0; margin-bottom:6px;">${g.name_pl}</h3>
                                 <div class="counter-row">
-                                    <div class="counter-label">BP <span class="abbr">Lvl ${level} — ${bondScale[level]?.name || ""}</span></div>
+                                    <div class="counter-label">PW <span class="abbr">Poz. ${level} — ${bondScale[level]?.name || ""}</span></div>
                                     <div class="counter-controls">
                                         <button class="btn btn-sm btn-icon" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="-1" data-min="0">−</button>
                                         <input type="number" class="counter-input" data-action="set-number" data-path="guildBonds.${g.id}.points" data-min="0" value="${points}" step="1">
@@ -233,7 +233,7 @@ export function render(root, { state, data }) {
 
             <div class="card" style="grid-column: 1 / -1;">
                 <h2>Nagrody i Traity</h2>
-                <p class="placeholder">Najedź na pozycję, żeby zobaczyć jej efekt. Nagrody Gear/Glider Upgrade pojawiają się automatycznie jako posiadane w tabach Sprzęt/Glider — wystarczy je tam założyć/zainstalować.</p>
+                <p class="placeholder">Najedź na pozycję, żeby zobaczyć jej efekt. Nagrody Sprzęt/Ulepszenie Glidera pojawiają się automatycznie jako posiadane w tabach Sprzęt/Glider — wystarczy je tam założyć/zainstalować.</p>
                 ${allRewards.length ? `
                     <ul class="summary-list">
                         ${allRewards.map(r => `
@@ -268,15 +268,15 @@ function wireEvents(root, { data, companions }) {
             const min = btn.dataset.min !== undefined ? parseFloat(btn.dataset.min) : -Infinity;
             const maxAttr = btn.dataset.max;
             // Górny limit egzekwujemy tylko tam, gdzie max jest sztywno zakodowany w atrybucie
-            // przycisku (staty H/K/R/C/F 0-5, Wear sprzętu). Liczniki zasobów z osobnym, edytowalnym
-            // maksimum (Stamina, Momentum, Intel, Glider…) mogą je świadomie przekroczyć (np. 6/5
+            // przycisku (staty H/K/R/C/F 0-5, Zużycie sprzętu). Liczniki zasobów z osobnym, edytowalnym
+            // maksimum (Wytrzymałość, Rozpęd, Informacje, Glider…) mogą je świadomie przekroczyć (np. 6/5
             // po tymczasowym wzmocnieniu) — patrz też numberInputRow/set-number poniżej.
             const max = maxAttr !== undefined ? parseFloat(maxAttr) : Infinity;
             const cur = getPath(state, path) || 0;
             const next = clamp(cur + delta, min, max);
             setPath(state, path, next);
-            // Logujemy tylko realne zmiany statystyk H/K/R/C/F (nie zasoby typu Stamina/Momentum/
-            // Credits/BP itd., które i tak dostają swoje podsumowanie na starcie nowego dnia).
+            // Logujemy tylko realne zmiany statystyk H/K/R/C/F (nie zasoby typu Wytrzymałość/Rozpęd/
+            // Kredyty/PW itd., które i tak dostają swoje podsumowanie na starcie nowego dnia).
             const statMatch = /^character\.stats\.([A-Z])$/.exec(path);
             if (statMatch && next !== cur) {
                 const key = statMatch[1];
@@ -333,7 +333,7 @@ function wireEvents(root, { data, companions }) {
             touch();
 
         } else if (action === "set-number") {
-            // Input wpisywany bezpośrednio (Credits, BP gildii…) — bez górnego ograniczenia,
+            // Input wpisywany bezpośrednio (Kredyty, PW gildii…) — bez górnego ograniczenia,
             // tylko dolne (domyślnie 0). Nieprawidłowy/pusty wpis cofa się do poprzedniej wartości.
             const path = el.dataset.path;
             const min = el.dataset.min !== undefined ? parseFloat(el.dataset.min) : -Infinity;

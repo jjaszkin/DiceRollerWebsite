@@ -1,4 +1,4 @@
-// GLIDE: Part Two — nagrody Bond Level gildii oraz nagrody roli (klasy postaci) w jednym
+// GLIDE: Part Two — nagrody Poziom Więzi gildii oraz nagrody roli (klasy postaci) w jednym
 // wspólnym kształcie, do modułu "Nagrody i Traity" na dashboardzie oraz do automatycznego
 // oznaczania przedmiotów-nagród jako posiadane w tabach Sprzęt/Glider.
 //
@@ -9,9 +9,9 @@
 import { sanitizeNameToKey } from "./utils.js";
 import { bondLevelFromPoints } from "./state.js";
 
-/** Nazwy nagród Bond Level w guilds.json mają ujednolicony sufiks w nawiasie —
- *  "(Gear)", "(Trait)" albo "(Glider Upgrade)" — konsekwentnie we wszystkich 6 gildiach
- *  (tier 1 = Gear, tier 2 = Trait, tier 3 = Glider Upgrade, tier 4 = Trait). Rozbija pełną
+/** Nazwy nagród Poziom Więzi w guilds.json mają ujednolicony sufiks w nawiasie —
+ *  "(Sprzęt)", "(Cecha)" albo "(Ulepszenie Glidera)" — konsekwentnie we wszystkich 6 gildiach
+ *  (tier 1 = Sprzęt, tier 2 = Cecha, tier 3 = Ulepszenie Glidera, tier 4 = Cecha). Rozbija pełną
  *  nazwę na czystą nazwę bazową (do wyświetlenia/sluga) i kategorię (do routingu do
  *  właściwego taba oraz auto-ownership). Brak nawiasu (nie powinno się zdarzyć w danych) —
  *  traktowane jako brak kategorii, tylko do wyświetlenia. */
@@ -21,7 +21,7 @@ export function parseRewardName(fullName) {
     return { baseName: m[1], category: m[2] };
 }
 
-/** Wszystkie odblokowane nagrody Bond Level (dla obecnego poziomu każdej gildii, tiery 1..level),
+/** Wszystkie odblokowane nagrody Poziom Więzi (dla obecnego poziomu każdej gildii, tiery 1..level),
  *  ze sparsowaną kategorią i slugiem (do kluczowania w character.gear / character.glider.mods). */
 export function unlockedGuildRewards(state, data) {
     const guilds = data?.guilds?.guilds || [];
@@ -48,7 +48,7 @@ export function unlockedGuildRewards(state, data) {
     return out;
 }
 
-/** Podzbiór unlockedGuildRewards ograniczony do jednej kategorii ("Gear" albo "Glider Upgrade") —
+/** Podzbiór unlockedGuildRewards ograniczony do jednej kategorii ("Sprzęt" albo "Ulepszenie Glidera") —
  *  używane przez panels/gear.js i panels/glider.js do dobudowania katalogowej grupy "Nagrody Gildii". */
 export function unlockedGuildItemRewards(state, data, category) {
     return unlockedGuildRewards(state, data).filter(r => r.category === category);
@@ -57,7 +57,7 @@ export function unlockedGuildItemRewards(state, data, category) {
 /** Nagrody/traity związane z wybraną rolą (klasą) postaci — zawsze czysty tekst, bez kategorii
  *  przedmiotowej (patrz uwaga w state.js/planowaniu: Nawigator ma w tekście nazwę realnego
  *  przedmiotu z katalogu, ale to zbyt kruche do generycznego parsowania — celowo pomijane,
- *  traktujemy obie nagrody roli jako Trait-only). `claimed` dla cechy startowej jest zawsze
+ *  traktujemy obie nagrody roli jako Cecha-only). `claimed` dla cechy startowej jest zawsze
  *  true (dostaje się ją od razu przy wyborze roli); dla nagrody za cel odzwierciedla checkbox
  *  "Nagroda odebrana" z panelu Postać. */
 export function roleRewardEntries(state, data) {
@@ -67,10 +67,10 @@ export function roleRewardEntries(state, data) {
     if (!roleInfo) return [];
     const out = [];
     if (roleInfo.starting_bonus_trait) {
-        out.push({ source: "Cecha startowa", name: roleInfo.starting_bonus_trait, category: "Trait", claimed: true });
+        out.push({ source: "Cecha startowa", name: roleInfo.starting_bonus_trait, category: "Cecha", claimed: true });
     }
     if (roleInfo.reward_trait) {
-        out.push({ source: "Nagroda za cel", name: roleInfo.reward_trait, category: "Trait", claimed: !!ch.rewardClaimed });
+        out.push({ source: "Nagroda za cel", name: roleInfo.reward_trait, category: "Cecha", claimed: !!ch.rewardClaimed });
     }
     return out;
 }

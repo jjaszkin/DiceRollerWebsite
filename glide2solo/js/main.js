@@ -103,7 +103,7 @@ function setupSaveIndicator() {
 }
 
 function setupCampButton() {
-    // Akcja Camp: rzuca Camping Event (d100), przywraca bazową Staminę (Seekerowi i towarzyszowi,
+    // Akcja Camp: rzuca Camping Event (d100), przywraca bazową Staminę (Poszukiwaczowi i towarzyszowi,
     // jeśli obecny) wg camping_base_recovery z mechanics.json, po czym przechodzi do kolejnego dnia.
     campButton.addEventListener("click", () => {
         const data = getData();
@@ -118,13 +118,13 @@ function setupCampButton() {
             const stam = state.character.resources.stamina;
             const before = stam.cur;
             stam.cur = clamp(stam.cur + (rec.seeker_stamina || 0), 0, stam.max);
-            recoveryParts.push(`Stamina Seekera: ${before} → ${stam.cur}`);
+            recoveryParts.push(`Wytrzymałość Poszukiwacza: ${before} → ${stam.cur}`);
 
             if (state.character.companion.key) {
                 const cstam = state.character.companion.stamina;
                 const cBefore = cstam.cur;
                 cstam.cur = clamp(cstam.cur + (rec.companion_stamina || 0), 0, cstam.max);
-                recoveryParts.push(`Stamina towarzysza: ${cBefore} → ${cstam.cur}`);
+                recoveryParts.push(`Wytrzymałość towarzysza: ${cBefore} → ${cstam.cur}`);
             }
         });
 

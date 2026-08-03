@@ -1,5 +1,5 @@
 // GLIDE: Part Two — dopisywanie zdarzeń fabularnych/mechanicznych do dziennika (state.events):
-// branie/kończenie questów (Guild Mission + Odd-Job), zdobywanie przedmiotów (Gear/Mody) i
+// branie/kończenie questów (Misja Gildii + Fucha), zdobywanie przedmiotów (Sprzęt/Mody) i
 // ulepszeń glidera, zdobywanie traitów (nagroda za cel) oraz zmiany statystyk postaci (H/K/R/C/F).
 // Do tego dochodzi jednorazowe podsumowanie stanu postaci/glidera na początku nowego dnia
 // (wołane przez main.js#setupCampButton). Odpowiednik rollLog.js, ale dla zdarzeń niebędących
@@ -40,7 +40,7 @@ export function buildDaySummaryText(state) {
     const r = state.character.resources;
     const g = state.character.glider;
     return [
-        `Postać — Stamina ${r.stamina.cur}/${r.stamina.max}, Momentum ${r.momentum.cur}/${r.momentum.max}, Intel ${r.intel.cur}/${r.intel.max}, Credits ${r.credits}, Fame ${r.fame}.`,
-        `Glider — Wear ${g.wear.cur}/${g.wear.max}, Supply ${g.supply.cur}/${g.supply.max}, Speed ${g.speed.cur}/${g.speed.max}, Scrap ${g.scrap.cur}/${g.scrap.max}, Relics ${g.relics.cur}/${g.relics.max}.`
+        `Postać — Wytrzymałość ${r.stamina.cur}/${r.stamina.max}, Rozpęd ${r.momentum.cur}/${r.momentum.max}, Informacje ${r.intel.cur}/${r.intel.max}, Kredyty ${r.credits}, Sława ${r.fame}.`,
+        `Glider — Zużycie ${g.wear.cur}/${g.wear.max}, Zasoby ${g.supply.cur}/${g.supply.max}, Prędkość ${g.speed.cur}/${g.speed.max}, Złom ${g.scrap.cur}/${g.scrap.max}, Relikty ${g.relics.cur}/${g.relics.max}.`
     ].join("\n");
 }

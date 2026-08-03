@@ -1,7 +1,7 @@
 // Panel: Glider — katalog Modów do zamontowania (do limitu mechanics.glider.mods_max) oraz
-// tierowanych ulepszeń magazynowania Scrap/Supply/Reliktów (kupowane po kolei, tier po tierze,
+// tierowanych ulepszeń magazynowania Złom/Zasoby/Reliktów (kupowane po kolei, tier po tierze,
 // bez limitu montażu — to trwałe ulepszenia gliderа, nie mody w slotach). Podstawowe statystyki
-// glidera (Wear/Supply/Speed/Scrap/Relics) zostają na dashboardzie (panel Postać).
+// glidera (Zużycie/Zasoby/Prędkość/Złom/Relikty) zostają na dashboardzie (panel Postać).
 import { getState, getData, touch } from "../store.js";
 import { escapeHtml, clamp } from "../utils.js";
 import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES } from "../gearData.js";
@@ -32,7 +32,7 @@ function renderModCard(item, itemState, canInstallMore) {
     `;
 }
 
-/** Karta dla nagrody Bond Level gildii kategorii "Glider Upgrade" — zawsze posiadana
+/** Karta dla nagrody Poziom Więzi gildii kategorii "Ulepszenie Glidera" — zawsze posiadana
  *  ("Kupione" zastąpione stałą etykietą źródła), ale Zainstalowane liczy się normalnie
  *  do mods_max, tak jak zwykłe mody. */
 function renderRewardModCard(item, itemState, canInstallMore) {
@@ -63,7 +63,7 @@ function renderTierCard(item, level) {
     return `
         <div class="item-card tt ${owned ? "owned equipped" : ""}" data-tip="${escapeHtml(item.effect || "")}">
             <div class="item-card-head">
-                <span class="item-card-name">Tier ${item.tier}: ${escapeHtml(item.name)}</span>
+                <span class="item-card-name">Poziom ${item.tier}: ${escapeHtml(item.name)}</span>
                 <span class="item-card-cost">${escapeHtml(item.cost || "")}</span>
             </div>
             <p class="placeholder" style="margin:0;">${owned ? "Posiadane" : "Niekupione"}</p>
@@ -87,7 +87,7 @@ export function render(root, { state, data }) {
     }
 
     const upgrades = state.character.glider.upgrades || {};
-    const guildModRewards = unlockedGuildItemRewards(state, data, "Glider Upgrade");
+    const guildModRewards = unlockedGuildItemRewards(state, data, "Ulepszenie Glidera");
 
     root.innerHTML = `
         <div class="card">
@@ -105,8 +105,8 @@ export function render(root, { state, data }) {
         `).join("")}
         ${guildModRewards.length ? `
             <div class="card catalog-group" style="margin-top:12px;">
-                <h4>Nagrody Gildii (Glider Upgrade)</h4>
-                <p class="placeholder">Odblokowane przez Bond Level — posiadane automatycznie, można je normalnie zainstalować/odinstalować.</p>
+                <h4>Nagrody Gildii (Ulepszenie Glidera)</h4>
+                <p class="placeholder">Odblokowane przez Poziom Więzi — posiadane automatycznie, można je normalnie zainstalować/odinstalować.</p>
                 <div class="catalog-grid">
                     ${guildModRewards.map(r => renderRewardModCard(
                         { slug: r.slug, name: r.baseName, effect: r.effect, badge: `${r.guildName} · Lv${r.tier}` },
@@ -173,7 +173,7 @@ function wireEvents(root) {
             }
             touch();
         } else if (action === "toggle-mod-installed") {
-            // Auto-vivify: nagrody gildii (Glider Upgrade) nie mają wpisu w mods[] dopóki
+            // Auto-vivify: nagrody gildii (Ulepszenie Glidera) nie mają wpisu w mods[] dopóki
             // gracz sam czegoś tu nie przełączy — patrz renderRewardModCard/toggle-gear-equipped.
             if (!mods[slug]) mods[slug] = { owned: true, installed: false };
             mods[slug].installed = el.checked;

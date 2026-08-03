@@ -1,25 +1,25 @@
-// Panel: Uniwersalny roller. Faza 3: Challenge Roll, Location Type/Level Table, Exhaustion Table.
-// Faza 4: Desert/Ruins/Green Space (landmarks+events), Unique Locations, Settlement tables, Travel/Carousing Events.
-// Faza 5: Companions Table, Odd-Jobs Table, Oracle Tools (Glide + 4 biomowe).
+// Panel: Uniwersalny roller. Faza 3: Rzut Wyzwania, Tabela Typu/Poziomu Lokacji, Tabela Wyczerpania.
+// Faza 4: Pustynia/Ruiny/Zieleń (punkty orientacyjne+wydarzenia), Unikalne Lokacje, tabele osady, Wydarzenia Podróży/Hulanki.
+// Faza 5: Tabela Towarzyszy, Tabela Fuch, narzędzia Wyroczni (Glide + 4 biomowe).
 import { getState, touch } from "../store.js";
 import { rollDie, rollD2, rollD5, rollD100, findInRangeTable, parseRange, clamp, uid } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
-const STAT_NAMES = { H: "Hardy", K: "Knowledgeable", R: "Resourceful", C: "Connected", F: "Focused" };
+const STAT_NAMES = { H: "Hardy", K: "Kumaty", R: "Rzutki", C: "Cwany", F: "Fachowy" };
 
 const BIOME_TABLES = {
-    desert: { label: "Desert", key: "desert" },
-    ruins: { label: "Ruins", key: "ruins" },
-    green_space: { label: "Green Space", key: "green_space" }
+    desert: { label: "Pustynia", key: "desert" },
+    ruins: { label: "Ruiny", key: "ruins" },
+    green_space: { label: "Zieleń", key: "green_space" }
 };
 
 const ORACLE_WORD_TABLES = {
-    desert: { label: "Desert", key: "desert_oracle" },
-    ruins: { label: "Ruins", key: "ruins_oracle" },
-    green_space: { label: "Green Space", key: "green_space_oracle" },
-    settlement: { label: "Settlement", key: "settlement_oracle" }
+    desert: { label: "Pustynia", key: "desert_oracle" },
+    ruins: { label: "Ruiny", key: "ruins_oracle" },
+    green_space: { label: "Zieleń", key: "green_space_oracle" },
+    settlement: { label: "Osada", key: "settlement_oracle" }
 };
 
 // Klucze wspólne dla tabel eventów, obsługiwane w renderEventOutcomes() nazwami własnymi —
@@ -60,7 +60,7 @@ function needsTileRoll(tiles) {
     return typeof tiles === "string";
 }
 
-/** Location Level Table ma udokumentowaną lukę w druku dla rzutu 9 (level: null).
+/** Tabela Poziomu Lokacji ma udokumentowaną lukę w druku dla rzutu 9 (level: null).
  *  Defensywnie: użyj najbliższego niższego wpisu z poprawnym poziomem. */
 function resolveLocationLevel(table, roll) {
     const entry = findInRangeTable(table, roll, "roll");
@@ -109,7 +109,63 @@ function rollD100Table(table, opts) {
     return { roll: total, entry, gapFallback };
 }
 
+// Etykiety PL dla niestandardowych kluczy pól wynikowych (settlement_events_table_d100) oraz
+// kluczy kategorii/akcji w economy.json#settlement_actions — inaczej humanizeKey() wypisałby
+// je po angielsku (np. "Give 5", "Repair Buy Upgrade Trade").
+const KEY_LABELS = {
+    // settlement_events_table_d100
+    bet: "Zakład",
+    buy_1: "Kup",
+    free: "Za darmo",
+    give_4: "Daj 4",
+    give_5: "Daj 5",
+    give_10: "Daj 10",
+    give_20: "Daj 20",
+    give_60: "Daj 60",
+    give_relic: "Oddaj",
+    join_the_crowd: "Dołącz do tłumu",
+    sell_1: "Sprzedaj 1",
+    sell_2: "Sprzedaj 2",
+    sell_3: "Sprzedaj 3",
+    sell_scrap: "Sprzedaj Złom",
+    spend_1_intel: "Wydaj Informacje",
+    spend_1_momentum: "Wydaj Rozpęd",
+    spend_1_stamina: "Wydaj Wytrzymałość",
+    spend_5: "Wydaj 5",
+    spend_20: "Wydaj 20",
+    // settlement_actions — kategorie
+    scrap: "Złom",
+    repair_buy_upgrade_trade: "Naprawa / Zakupy / Ulepszenia / Handel",
+    supply: "Zasoby",
+    carousing: "Hulanka",
+    rest_and_recovery: "Odpoczynek i Regeneracja",
+    relics: "Relikty",
+    intel: "Informacje",
+    companions_action: "Towarzysze",
+    contracts_odd_jobs: "Zlecenia i Fuchy",
+    settlement_events_action: "Wydarzenia Osady",
+    // settlement_actions — pola akcji
+    sell: "Sprzedaż",
+    buy: "Zakup",
+    repair_gear: "Naprawa Sprzętu",
+    repair_glider: "Naprawa Glidera",
+    upgrade_glider: "Ulepszenie Glidera",
+    trade_gear: "Handel Sprzętem",
+    cost: "Koszt",
+    donate: "Darowizna",
+    donate_for_fame: "Darowizna za Sławę",
+    trade_for_scrap: "Wymiana za Złom",
+    limit: "Limit",
+    hire: "Rekrutacja",
+    improve_relations: "Poprawa Relacji",
+    take_job: "Przyjęcie Zlecenia",
+    guild_work: "Praca dla Gildii",
+    get_paid: "Wypłata",
+    rule: "Zasada"
+};
+
 function humanizeKey(key) {
+    if (Object.prototype.hasOwnProperty.call(KEY_LABELS, key)) return KEY_LABELS[key];
     return key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
 
@@ -118,10 +174,10 @@ function humanizeKey(key) {
 function renderEventOutcomes(entry) {
     const parts = [];
     if (entry.test) parts.push(`<p><strong>Test:</strong> ${entry.test}</p>`);
-    if (entry.major) parts.push(`<p><strong>Major:</strong> ${entry.major}</p>`);
-    if (entry.minor) parts.push(`<p><strong>Minor:</strong> ${entry.minor}</p>`);
-    if (entry.miss) parts.push(`<p><strong>Miss:</strong> ${entry.miss}</p>`);
-    if (entry.spend) parts.push(`<p class="placeholder"><strong>Spend:</strong> ${entry.spend}</p>`);
+    if (entry.major) parts.push(`<p><strong>Duży Sukces:</strong> ${entry.major}</p>`);
+    if (entry.minor) parts.push(`<p><strong>Mały Sukces:</strong> ${entry.minor}</p>`);
+    if (entry.miss) parts.push(`<p><strong>Porażka:</strong> ${entry.miss}</p>`);
+    if (entry.spend) parts.push(`<p class="placeholder"><strong>Wydatek:</strong> ${entry.spend}</p>`);
     if (Array.isArray(entry.options)) {
         parts.push(`<p><strong>Opcje:</strong></p><ul>${entry.options.map(o => `<li>${o}</li>`).join("")}</ul>`);
     }
@@ -150,7 +206,7 @@ function renderGenericEntry(r, rangeLabel = "d100") {
     `;
 }
 
-/** Render dla tabel eventów (Desert/Ruins/Green Space events + Settlement Events). */
+/** Render dla tabel eventów (Pustynia/Ruiny/Zieleń events + Wydarzenia Osady). */
 function renderEventEntry(r, rangeLabel = "d100") {
     const e = r.entry;
     if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
@@ -168,9 +224,9 @@ function renderEventEntry(r, rangeLabel = "d100") {
 function renderUniqueAction(a) {
     const parts = [`<div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--line);"><strong>${a.name}</strong></div>`];
     if (a.test) parts.push(`<p class="placeholder">${a.test}</p>`);
-    if (a.major) parts.push(`<p><strong>Major:</strong> ${a.major}</p>`);
-    if (a.minor) parts.push(`<p><strong>Minor:</strong> ${a.minor}</p>`);
-    if (a.miss) parts.push(`<p><strong>Miss:</strong> ${a.miss}</p>`);
+    if (a.major) parts.push(`<p><strong>Duży Sukces:</strong> ${a.major}</p>`);
+    if (a.minor) parts.push(`<p><strong>Mały Sukces:</strong> ${a.minor}</p>`);
+    if (a.miss) parts.push(`<p><strong>Porażka:</strong> ${a.miss}</p>`);
     if (a.effect) parts.push(`<p>${a.effect}</p>`);
     if (Array.isArray(a.options)) parts.push(`<ul>${a.options.map(o => `<li>${o}</li>`).join("")}</ul>`);
     return parts.join("");
@@ -199,7 +255,7 @@ function renderSettlementActionsReference(actions) {
     `).join("");
 }
 
-/** Render kandydata z Companions Table — z przyciskiem naboru (chyba że to już aktualny towarzysz). */
+/** Render kandydata z Tabeli Towarzyszy — z przyciskiem naboru (chyba że to już aktualny towarzysz). */
 function renderCompanionCandidate(r, idx, currentKey) {
     const e = r.entry;
     if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
@@ -211,7 +267,7 @@ function renderCompanionCandidate(r, idx, currentKey) {
             <p>${e.description}</p>
             ${Array.isArray(e.key_stats) ? `<p class="placeholder">Kluczowe statystyki: ${e.key_stats.join(", ")}</p>` : ""}
             ${e.passive_name ? `<p><strong>${e.passive_name}:</strong> ${e.passive_text || ""}</p>` : ""}
-            <p class="placeholder">Stamina: ${e.stamina} · Koszt naboru: ${e.hire_cost}</p>
+            <p class="placeholder">Wytrzymałość: ${e.stamina} · Koszt naboru: ${e.hire_cost}</p>
             ${r.gapFallback ? `<p class="placeholder">Uwaga: luka w druku — użyto najbliższego niższego wyniku.</p>` : ""}
             <button class="btn btn-sm" data-action="hire-companion" data-idx="${idx}" ${isCurrent ? "disabled" : ""}>
                 ${isCurrent ? "Już zwerbowany" : "Zwerbuj tego towarzysza"}
@@ -220,7 +276,7 @@ function renderCompanionCandidate(r, idx, currentKey) {
     `;
 }
 
-/** Render kandydata z Odd-Jobs Table — z przyciskiem przyjęcia (limit 2 aktywnych naraz). */
+/** Render kandydata z Tabeli Fuch — z przyciskiem przyjęcia (limit 2 aktywnych naraz). */
 function renderOddJobCandidate(r, idx) {
     const e = r.entry;
     if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
@@ -264,9 +320,9 @@ function renderOracleWordResult(r) {
 }
 
 function brushWithDeathSub(roll) {
-    if (roll >= 1 && roll <= 4) return "Tracisz 2 sztuki sprzętu i 3 Supply.";
-    if (roll >= 5 && roll <= 8) return "-2 Bond Points x3 (dowolna kombinacja) i -2 Intel.";
-    return "Zaznacz 1 Wear na całym sprzęcie i gliderze; tracisz wszystkie Relics i Scrap.";
+    if (roll >= 1 && roll <= 4) return "Tracisz 2 sztuki sprzętu i 3 Zasoby.";
+    if (roll >= 5 && roll <= 8) return "-2 Punkty Więzi x3 (dowolna kombinacja) i -2 Informacje.";
+    return "Zaznacz 1 Zużycie na całym sprzęcie i gliderze; tracisz wszystkie Relikty i Złom.";
 }
 
 function renderChallengeResult(r) {
@@ -300,8 +356,8 @@ function renderExhaustionResult(r) {
             <button class="btn btn-sm" data-action="apply-exhaustion-recovery">Zastosuj odzyskanie Staminy postaci</button>
             ${r.roll === 10 ? `
                 <div style="margin-top:8px;">
-                    <button class="btn btn-sm" data-action="roll-exhaustion-sub">Rzuć subtabelę „Brush with Death” (d10)</button>
-                    ${r.sub ? `<p class="placeholder">Subtabela d10=${r.sub.roll}: ${r.sub.text} (+1 Fame za przeżycie)</p>` : ""}
+                    <button class="btn btn-sm" data-action="roll-exhaustion-sub">Rzuć subtabelę „Otarcie się o Śmierć” (d10)</button>
+                    ${r.sub ? `<p class="placeholder">Subtabela d10=${r.sub.roll}: ${r.sub.text} (+1 Sława za przeżycie)</p>` : ""}
                 </div>
             ` : ""}
         </div>
@@ -319,7 +375,7 @@ export function render(root, { state, data }) {
         <div class="grid grid-2">
 
             <div class="card">
-                <h2>Challenge Roll</h2>
+                <h2>Rzut Wyzwania</h2>
                 <div class="counter-row">
                     <div class="counter-label">Statystyka</div>
                     <select data-action="challenge-stat">
@@ -334,12 +390,12 @@ export function render(root, { state, data }) {
                     <div class="counter-label">Poziom trudności lokacji (DL)</div>
                     <input type="number" data-action="challenge-difficulty" value="${ui.challenge.difficulty}" min="0" style="width:70px;">
                 </div>
-                <button class="btn btn-primary" data-action="roll-challenge">Rzuć Challenge Roll</button>
+                <button class="btn btn-primary" data-action="roll-challenge">Rzuć Rzut Wyzwania</button>
                 ${ui.challenge.result ? renderChallengeResult(ui.challenge.result) : ""}
             </div>
 
             <div class="card">
-                <h2>Location Type (d10)</h2>
+                <h2>Typ Lokacji (d10)</h2>
                 <button class="btn" data-action="roll-loctype">Rzuć d10</button>
                 ${ui.locType.result ? `
                     <div class="entry" style="margin-top:10px;">
@@ -354,8 +410,8 @@ export function render(root, { state, data }) {
             </div>
 
             <div class="card">
-                <h2>Location Level (d10)</h2>
-                <p class="placeholder">Unique Location: zawsze Poziom 3 (nie rzucaj). Impassible Terrain: brak poziomu (traktuj jako 0).</p>
+                <h2>Poziom Lokacji (d10)</h2>
+                <p class="placeholder">Unikalna Lokacja: zawsze Poziom 3 (nie rzucaj). Teren Nieprzejezdny: brak poziomu (traktuj jako 0).</p>
                 <button class="btn" data-action="roll-loclevel">Rzuć d10</button>
                 ${ui.locLevel.result ? `
                     <div class="entry" style="margin-top:10px;">
@@ -369,14 +425,14 @@ export function render(root, { state, data }) {
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Exhaustion Table (d10)</h2>
-            <p class="placeholder">Rzuć, gdy Stamina spadnie do 0.</p>
+            <h2>Tabela Wyczerpania (d10)</h2>
+            <p class="placeholder">Rzuć, gdy Wytrzymałość spadnie do 0.</p>
             <button class="btn btn-primary" data-action="roll-exhaustion">Rzuć d10</button>
             ${ui.exhaustion.result ? renderExhaustionResult(ui.exhaustion.result) : ""}
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Desert / Ruins / Green Space</h2>
+            <h2>Pustynia / Ruiny / Zieleń</h2>
             <div class="counter-row">
                 <div class="counter-label">Biom</div>
                 <select data-action="biome-select">
@@ -384,29 +440,29 @@ export function render(root, { state, data }) {
                 </select>
             </div>
             <div class="counter-controls" style="gap:8px; margin-top:8px;">
-                <button class="btn" data-action="roll-biome-landmark">Rzuć Landmark (d100)</button>
-                <button class="btn" data-action="roll-biome-event">Rzuć Event (d100)</button>
+                <button class="btn" data-action="roll-biome-landmark">Rzuć Punkt Orientacyjny (d100)</button>
+                <button class="btn" data-action="roll-biome-event">Rzuć Wydarzenie (d100)</button>
             </div>
-            ${ui.biome.landmark ? renderGenericEntry(ui.biome.landmark, "Landmark d100") : ""}
-            ${ui.biome.event ? renderEventEntry(ui.biome.event, "Event d100") : ""}
+            ${ui.biome.landmark ? renderGenericEntry(ui.biome.landmark, "Punkt Orientacyjny d100") : ""}
+            ${ui.biome.event ? renderEventEntry(ui.biome.event, "Wydarzenie d100") : ""}
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Unique Location (d100)</h2>
+            <h2>Unikalna Lokacja (d100)</h2>
             <p class="placeholder">${data.unique_locations.rules.reveal}</p>
             <button class="btn btn-primary" data-action="roll-unique-location">Rzuć d100</button>
             ${ui.uniqueLoc.result ? renderUniqueLocationResult(ui.uniqueLoc.result) : ""}
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Settlement — Nazwa / Focus / Cecha (d100)</h2>
+            <h2>Osada — Nazwa / Profil / Cecha (d100)</h2>
             <div class="grid grid-3">
                 <div>
                     <button class="btn btn-sm" data-action="roll-settlement-name">Nazwa</button>
                     ${ui.settlement.name ? renderGenericEntry(ui.settlement.name, "d100") : ""}
                 </div>
                 <div>
-                    <button class="btn btn-sm" data-action="roll-settlement-focus">Focus</button>
+                    <button class="btn btn-sm" data-action="roll-settlement-focus">Profil</button>
                     ${ui.settlement.focus ? renderGenericEntry(ui.settlement.focus, "d100") : ""}
                 </div>
                 <div>
@@ -417,19 +473,19 @@ export function render(root, { state, data }) {
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Settlement Event (d100)</h2>
+            <h2>Wydarzenie Osady (d100)</h2>
             <button class="btn btn-primary" data-action="roll-settlement-event">Rzuć d100</button>
             ${ui.settlement.event ? renderEventEntry(ui.settlement.event, "d100") : ""}
         </div>
 
         <div class="grid grid-2" style="margin-top:12px;">
             <div class="card">
-                <h2>Travel Event (d100)</h2>
+                <h2>Wydarzenie Podróży (d100)</h2>
                 <button class="btn" data-action="roll-travel-event">Rzuć d100</button>
                 ${ui.travel.result ? renderGenericEntry(ui.travel.result, "d100") : ""}
             </div>
             <div class="card">
-                <h2>Carousing Event (d100)</h2>
+                <h2>Wydarzenie Hulanki (d100)</h2>
                 <p class="placeholder">Koszt: ${data.economy.settlement_actions.carousing.cost}</p>
                 <button class="btn" data-action="roll-carousing-event">Rzuć d100</button>
                 ${ui.carousing.result ? renderGenericEntry(ui.carousing.result, "d100") : ""}
@@ -437,12 +493,12 @@ export function render(root, { state, data }) {
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Settlement Actions — Referencja</h2>
+            <h2>Akcje Osady — Referencja</h2>
             ${renderSettlementActionsReference(data.economy.settlement_actions)}
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Companions Table (d100)</h2>
+            <h2>Tabela Towarzyszy (d100)</h2>
             <p class="placeholder">${data.companions.rules.finding_companions}</p>
             <div class="counter-controls" style="gap:8px;">
                 <button class="btn btn-primary" data-action="roll-companions">Rzuć 2x d100 (nowi kandydaci)</button>
@@ -459,7 +515,7 @@ export function render(root, { state, data }) {
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Odd-Jobs Table (d100)</h2>
+            <h2>Tabela Fuch (d100)</h2>
             <p class="placeholder">Max. 2 aktywne zlecenia naraz. Aktualnie aktywne: ${state.quests.oddJobs.filter(j => j.status === "active").length}/2.</p>
             <button class="btn btn-primary" data-action="roll-odd-jobs">Rzuć 2x d100 (przerzuca duplikaty)</button>
             ${ui.oddJobs.blockedMsg ? `<p class="placeholder">${ui.oddJobs.blockedMsg}</p>` : ""}
@@ -472,13 +528,13 @@ export function render(root, { state, data }) {
 
         <div class="grid grid-2" style="margin-top:12px;">
             <div class="card">
-                <h2>Glide Oracle — Yes/No (d10)</h2>
+                <h2>Glide Wyrocznia — Tak/Nie (d10)</h2>
                 <p class="placeholder">${data.oracles.glide_oracle.yes_no_questions.rule}</p>
                 <button class="btn btn-primary" data-action="roll-oracle-yesno">Rzuć d10</button>
                 ${ui.oracle.yesNo ? renderOracleYesNoResult(ui.oracle.yesNo) : ""}
             </div>
             <div class="card">
-                <h2>Word Oracle (d100)</h2>
+                <h2>Wyrocznia Słowna (d100)</h2>
                 <p class="placeholder">${data.oracles.glide_oracle.open_ended_questions.rule}</p>
                 <div class="counter-row">
                     <div class="counter-label">Biom</div>
@@ -516,14 +572,14 @@ function rollChallenge() {
     const challengeTotal = challengeDie + difficulty;
 
     let outcomeLabel;
-    if (playerTotal >= 2 * challengeTotal) outcomeLabel = "Major Success";
-    else if (playerTotal >= challengeTotal) outcomeLabel = "Minor Success";
-    else outcomeLabel = "Miss";
+    if (playerTotal >= 2 * challengeTotal) outcomeLabel = "Duży Sukces";
+    else if (playerTotal >= challengeTotal) outcomeLabel = "Mały Sukces";
+    else outcomeLabel = "Porażka";
 
     ui.challenge.result = { statKey, statVal, bonus, difficulty, playerDie, challengeDie, playerTotal, challengeTotal, outcomeLabel };
 
     logRoll(
-        "Challenge Roll",
+        "Rzut Wyzwania",
         `Gracz: d10=${playerDie} + ${statKey}(${statVal}) + bonus(${bonus}) = ${playerTotal}  |  Wyzwanie: d10=${challengeDie} + DL(${difficulty}) = ${challengeTotal}`,
         outcomeLabel
     );
@@ -535,7 +591,7 @@ function rollLocationType(data) {
     const roll = rollDie(10);
     const entry = findInRangeTable(table, roll, "roll");
     ui.locType.result = { roll, entry, tilesRolled: undefined };
-    logRoll("Location Type (d10)", `d10=${roll}`, `${entry.result} (pola: ${entry.tiles})`);
+    logRoll("Typ Lokacji (d10)", `d10=${roll}`, `${entry.result} (pola: ${entry.tiles})`);
     rerender();
 }
 
@@ -544,7 +600,7 @@ function rollLocationTypeTiles() {
     if (!r) return;
     const tiles = rollTiles(r.entry.tiles);
     r.tilesRolled = tiles;
-    logRoll("Location Type — liczba pól", `${r.entry.tiles}`, `${tiles}`);
+    logRoll("Typ Lokacji — liczba pól", `${r.entry.tiles}`, `${tiles}`);
     rerender();
 }
 
@@ -553,7 +609,7 @@ function rollLocationLevel(data) {
     const roll = rollDie(10);
     const { level, gapFallback } = resolveLocationLevel(table, roll);
     ui.locLevel.result = { roll, level, gapFallback };
-    logRoll("Location Level (d10)", `d10=${roll}`, `Poziom ${level}${gapFallback ? " (fallback za lukę w druku)" : ""}`);
+    logRoll("Poziom Lokacji (d10)", `d10=${roll}`, `Poziom ${level}${gapFallback ? " (fallback za lukę w druku)" : ""}`);
     rerender();
 }
 
@@ -562,7 +618,7 @@ function rollExhaustion(data) {
     const roll = rollDie(10);
     const entry = findInRangeTable(table, roll, "roll");
     ui.exhaustion.result = { roll, entry, sub: null };
-    logRoll("Exhaustion Table (d10)", `d10=${roll}`, entry ? `${entry.name} — ${entry.effect} (odzyskaj Staminę: ${entry.recover_stamina})` : "brak dopasowania w tabeli");
+    logRoll("Tabela Wyczerpania (d10)", `d10=${roll}`, entry ? `${entry.name} — ${entry.effect} (odzyskaj Staminę: ${entry.recover_stamina})` : "brak dopasowania w tabeli");
     rerender();
 }
 
@@ -572,7 +628,7 @@ function rollExhaustionSub() {
     const subRoll = rollDie(10);
     const text = brushWithDeathSub(subRoll);
     r.sub = { roll: subRoll, text };
-    logRoll("Exhaustion — Brush with Death (subtabela)", `d10=${subRoll}`, `${text} (+1 Fame za przeżycie)`);
+    logRoll("Wyczerpanie — Otarcie się o Śmierć (subtabela)", `d10=${subRoll}`, `${text} (+1 Sława za przeżycie)`);
     rerender();
 }
 
@@ -594,7 +650,7 @@ function rollBiomeLandmark(data) {
     const table = data[biome.key].landmarks_table_d100;
     const r = rollD100Table(table, { valueField: "text" });
     ui.biome.landmark = r;
-    logRoll(`${biome.label} — Landmark (d100)`, `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
+    logRoll(`${biome.label} — Punkt Orientacyjny (d100)`, `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
     rerender();
 }
 
@@ -603,7 +659,7 @@ function rollBiomeEvent(data) {
     const table = data[biome.key].events_table_d100;
     const r = rollD100Table(table);
     ui.biome.event = r;
-    logRoll(`${biome.label} — Event (d100)`, `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
+    logRoll(`${biome.label} — Wydarzenie (d100)`, `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
     rerender();
 }
 
@@ -611,7 +667,7 @@ function rollUniqueLocation(data) {
     const table = data.unique_locations.unique_locations_table_d100;
     const r = rollD100Table(table);
     ui.uniqueLoc.result = r;
-    logRoll("Unique Location (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
+    logRoll("Unikalna Lokacja (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
     rerender();
 }
 
@@ -619,7 +675,7 @@ function rollSettlementName(data) {
     const table = data.economy.settlement_names_table_d100;
     const r = rollD100Table(table);
     ui.settlement.name = r;
-    logRoll("Settlement — Nazwa (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
+    logRoll("Osada — Nazwa (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
     rerender();
 }
 
@@ -627,7 +683,7 @@ function rollSettlementFocus(data) {
     const table = data.economy.settlement_focus_table_d100;
     const r = rollD100Table(table);
     ui.settlement.focus = r;
-    logRoll("Settlement — Focus (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
+    logRoll("Osada — Profil (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
     rerender();
 }
 
@@ -635,7 +691,7 @@ function rollSettlementTrait(data) {
     const table = data.economy.settlement_traits_table_d100;
     const r = rollD100Table(table);
     ui.settlement.trait = r;
-    logRoll("Settlement — Cecha (d100)", `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
+    logRoll("Osada — Cecha (d100)", `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
     rerender();
 }
 
@@ -643,7 +699,7 @@ function rollSettlementEvent(data) {
     const table = data.economy.settlement_events_table_d100;
     const r = rollD100Table(table);
     ui.settlement.event = r;
-    logRoll("Settlement Event (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
+    logRoll("Wydarzenie Osady (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
     rerender();
 }
 
@@ -651,7 +707,7 @@ function rollTravelEvent(data) {
     const table = data.economy.travel_events_table_d100;
     const r = rollD100Table(table);
     ui.travel.result = r;
-    logRoll("Travel Event (d100)", `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
+    logRoll("Wydarzenie Podróży (d100)", `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
     rerender();
 }
 
@@ -659,7 +715,7 @@ function rollCarousingEvent(data) {
     const table = data.economy.carousing_events_table_d100;
     const r = rollD100Table(table);
     ui.carousing.result = r;
-    logRoll("Carousing Event (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
+    logRoll("Wydarzenie Hulanki (d100)", `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
     rerender();
 }
 
@@ -669,7 +725,7 @@ function rollCompanions(data) {
     const r2 = rollD100Table(table);
     ui.companions.candidates = [r1, r2];
     logRoll(
-        "Companions Table (d100 x2)",
+        "Tabela Towarzyszy (d100 x2)",
         `d100=${r1.roll}, d100=${r2.roll}`,
         `${r1.entry ? r1.entry.name : "?"} / ${r2.entry ? r2.entry.name : "?"}`
     );
@@ -715,7 +771,7 @@ function rollOddJobs(data) {
     ui.oddJobs.candidates = results;
     ui.oddJobs.blockedMsg = null;
     logRoll(
-        "Odd-Jobs Table (d100 x2)",
+        "Tabela Fuch (d100 x2)",
         `d100=${results[0].roll}, d100=${results[1].roll}`,
         `${results[0].entry ? results[0].entry.name : "?"} / ${results[1].entry ? results[1].entry.name : "?"}`
     );
@@ -756,7 +812,7 @@ function rollOracleYesNo(data) {
     const subEntry = findInRangeTable(sub.table_d10, subRoll, "range");
     ui.oracle.yesNo = { baseRoll, base, sub, subRoll, subEntry };
     logRoll(
-        "Glide Oracle — Yes/No (d10+d10)",
+        "Glide Wyrocznia — Tak/Nie (d10+d10)",
         `d10=${baseRoll} (${base.result_pl || base.result}), subtabela d10=${subRoll}`,
         subEntry ? subEntry.text : "brak dopasowania"
     );
@@ -768,7 +824,7 @@ function rollOracleWord(data) {
     const table = data.oracles[cfg.key];
     const r = rollD100Table(table, { valueField: "word" });
     ui.oracle.word = r;
-    logRoll(`Word Oracle — ${cfg.label} (d100)`, `d100=${r.roll}`, r.entry ? (r.entry.word_pl || r.entry.word) : "brak dopasowania");
+    logRoll(`Word Wyrocznia — ${cfg.label} (d100)`, `d100=${r.roll}`, r.entry ? (r.entry.word_pl || r.entry.word) : "brak dopasowania");
     rerender();
 }
 

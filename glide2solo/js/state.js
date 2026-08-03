@@ -78,7 +78,7 @@ export function createDefaultState(gameData) {
     };
 }
 
-/** Migruje starszy kształt zapisu — Gear i Mody glidera jako sztywne tablice slotów
+/** Migruje starszy kształt zapisu — Sprzęt i Mody glidera jako sztywne tablice slotów
  *  ([null,null,null] z { name, wear, maxWear }/{ name, category, effect }) — do nowego kształtu:
  *  mapy kluczowane slugiem nazwy przedmiotu, z osobnymi flagami owned/equipped(/installed).
  *  Wywoływane PRZED mergeWithDefaults (który same tablice zostawiłby bez zmian, bo scalanie
@@ -138,12 +138,12 @@ export function mergeWithDefaults(defaults, loaded) {
     return out;
 }
 
-/** Bond Level = floor(points / 10), przycięty do [0, 4]. */
+/** Poziom Więzi = floor(points / 10), przycięty do [0, 4]. */
 export function bondLevelFromPoints(points) {
     return Math.max(0, Math.min(4, Math.floor((points || 0) / 10)));
 }
 
-/** Ustawia rolę Seekera na obiekcie character (mutuje bezpośrednio): nazwę roli,
+/** Ustawia rolę Poszukiwacza na obiekcie character (mutuje bezpośrednio): nazwę roli,
  *  statystyki startowe, cechę startową, cel i nagrodę. Resetuje postęp celu i status
  *  odebrania nagrody. Używane przez ekran startowy (kreator postaci) — jedyne miejsce,
  *  w którym rolę można ustawić lub zmienić. */
