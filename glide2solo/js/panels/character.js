@@ -1,45 +1,11 @@
 // Panel: Karta postaci (Seeker) + tracker zasobów.
 import { getState, touch } from "../store.js";
-import { getPath, setPath, clamp } from "../utils.js";
+import { getPath, setPath, clamp, escapeHtml } from "../utils.js";
 import { bondLevelFromPoints } from "../state.js";
+import { showGate } from "../gate.js";
+import { equippedGearEntries, installedModEntries, gearCapacity } from "../gearData.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
-
-function humanize(key) {
-    return String(key).replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
-}
-
-function flattenGear(gearData) {
-    const flat = [];
-    for (const [tierKey, tierLabel] of [["common_gear", "Common"], ["advanced_gear", "Advanced"]]) {
-        const cats = gearData?.[tierKey] || {};
-        for (const [catKey, items] of Object.entries(cats)) {
-            for (const item of items) flat.push({ ...item, tier: tierLabel, category: catKey });
-        }
-    }
-    return flat;
-}
-
-function flattenMods(gliderUpgrades) {
-    const flat = [];
-    for (const catKey of ["engine_and_mobility", "sensors_and_tech", "frame_and_survival"]) {
-        for (const item of gliderUpgrades?.[catKey] || []) flat.push({ ...item, category: catKey });
-    }
-    return flat;
-}
-
-function optionsWithGroups(flatList, selectedName) {
-    const groups = {};
-    flatList.forEach((item, idx) => {
-        const key = `${item.category}${item.tier ? " — " + item.tier : ""}`;
-        (groups[key] = groups[key] || []).push({ ...item, idx });
-    });
-    return Object.entries(groups).map(([groupLabel, items]) => `
-        <optgroup label="${humanize(groupLabel)}">
-            ${items.map(item => `<option value="${item.idx}" ${item.name === selectedName ? "selected" : ""}>${item.name}${item.cost ? ` (${item.cost})` : ""}</option>`).join("")}
-        </optgroup>
-    `).join("");
-}
 
 function counterRow({ label, abbr, curPath, curVal, maxPath, maxVal, min = 0, editableMax = false }) {
     const hasMax = maxVal !== undefined && maxVal !== null;
@@ -47,9 +13,22 @@ function counterRow({ label, abbr, curPath, curVal, maxPath, maxVal, min = 0, ed
         <div class="counter-row">
             <div class="counter-label">${label}${abbr ? ` <span class="abbr">${abbr}</span>` : ""}</div>
             <div class="counter-controls">
-                <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="-1" data-min="${min}" ${maxPath ? `data-maxpath="${maxPath}"` : ""}>−</button>
-                <span class="counter-value">${curVal}${hasMax ? ` <span class="max">${editableMax ? `/ <button class="max-edit" data-action="edit-max" data-path="${maxPath}" data-curpath="${curPath}" title="Zmień maksimum">${maxVal}</button>` : `/ ${maxVal}`}</span>` : ""}</span>
-                <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="1" data-min="${min}" ${maxPath ? `data-maxpath="${maxPath}"` : ""}>+</button>
+                <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="-1" data-min="${min}">−</button>
+                <span class="counter-value">${curVal}${hasMax ? ` <span class="max">${editableMax ? `/ <button class="max-edit" data-action="edit-max" data-path="${maxPath}" title="Zmień maksimum">${maxVal}</button>` : `/ ${maxVal}`}</span>` : ""}</span>
+                <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="1" data-min="${min}">+</button>
+            </div>
+        </div>
+    `;
+}
+
+/** Wiersz z licznikiem wpisywanym bezpośrednio (input number) zamiast +/- klikanych po jednym —
+ *  wygodniejsze dla wartości, które często zmieniają się o więcej niż 1 (np. Credits). */
+function numberInputRow({ label, abbr, path, value, min = 0 }) {
+    return `
+        <div class="counter-row">
+            <div class="counter-label">${label}${abbr ? ` <span class="abbr">${abbr}</span>` : ""}</div>
+            <div class="counter-controls">
+                <input type="number" class="counter-input" data-action="set-number" data-path="${path}" data-min="${min}" value="${value}" step="1">
             </div>
         </div>
     `;
@@ -59,16 +38,16 @@ export function render(root, { state, data }) {
     const mechanics = data.mechanics;
     const ch = state.character;
 
-    const flatGear = flattenGear(data.gear);
-    const flatMods = flattenMods(data.gear?.glider_upgrades);
+    const baseMaxCarried = mechanics?.resources?.gear?.max_carried ?? 3;
+    const wearPerItem = mechanics?.resources?.gear?.wear_per_item ?? 3;
+    const modsMax = mechanics?.glider?.mods_max ?? 3;
+    const { maxCarried, equippedCount: equippedGearCount } = gearCapacity(state, baseMaxCarried);
+    const equippedGear = equippedGearEntries(state, data);
+    const installedMods = installedModEntries(state, data);
     const companions = data.companions?.companions_table_d100 || [];
     const guilds = data.guilds?.guilds || [];
     const bondScale = data.economy?.connections_and_bonds?.bond_scale || [];
     const companionRewards = data.economy?.connections_and_bonds?.companion_bond_rewards || {};
-
-    const roleOptions = mechanics.seeker_roles.map((r, i) =>
-        `<option value="${i}" ${ch.role === r.role ? "selected" : ""}>${r.role}</option>`
-    ).join("");
 
     const roleInfo = ch.role
         ? mechanics.seeker_roles.find(r => r.role === ch.role)
@@ -78,13 +57,10 @@ export function render(root, { state, data }) {
         <div class="grid grid-2">
 
             <div class="card">
-                <h2>Seeker</h2>
+                <h2>${ch.name ? escapeHtml(ch.name) : "Seeker"}</h2>
                 <div class="counter-row">
                     <div class="counter-label">Rola</div>
-                    <select data-action="select-role">
-                        <option value="-1">— wybierz rolę —</option>
-                        ${roleOptions}
-                    </select>
+                    <div class="counter-value">${ch.role || "—"}</div>
                 </div>
                 ${roleInfo ? `
                     <p><strong>Cecha startowa:</strong> ${roleInfo.starting_bonus_trait}</p>
@@ -102,7 +78,8 @@ export function render(root, { state, data }) {
                         <span class="counter-label">Nagroda odebrana</span>
                         <input type="checkbox" data-action="toggle-reward-claimed" ${ch.rewardClaimed ? "checked" : ""}>
                     </label>
-                ` : `<p class="placeholder">Wybierz rolę, żeby ustawić startowe statystyki i cel.</p>`}
+                ` : `<p class="placeholder">Brak wybranej roli.</p>`}
+                <button class="btn btn-sm" data-action="reopen-gate" style="margin-top:10px;">Zmień postać</button>
             </div>
 
             <div class="card">
@@ -132,32 +109,25 @@ export function render(root, { state, data }) {
                 ${counterRow({ label: "Stamina", abbr: "S", curPath: "character.resources.stamina.cur", curVal: ch.resources.stamina.cur, maxPath: "character.resources.stamina.max", maxVal: ch.resources.stamina.max, editableMax: true })}
                 ${counterRow({ label: "Momentum", abbr: "MM", curPath: "character.resources.momentum.cur", curVal: ch.resources.momentum.cur, maxPath: "character.resources.momentum.max", maxVal: ch.resources.momentum.max, editableMax: true })}
                 ${counterRow({ label: "Intel", abbr: "IN", curPath: "character.resources.intel.cur", curVal: ch.resources.intel.cur, maxPath: "character.resources.intel.max", maxVal: ch.resources.intel.max, editableMax: true })}
-                ${counterRow({ label: "Credits", abbr: "cr", curPath: "character.resources.credits", curVal: ch.resources.credits })}
+                ${numberInputRow({ label: "Credits", abbr: "cr", path: "character.resources.credits", value: ch.resources.credits, min: 0 })}
                 ${counterRow({ label: "Fame", curPath: "character.resources.fame", curVal: ch.resources.fame })}
                 <p class="placeholder">Koniec gry dostępny przy Fame ${mechanics.resources.fame.end_game_threshold}+.</p>
             </div>
 
             <div class="card">
                 <h2>Sprzęt (Gear)</h2>
-                ${ch.gear.map((slot, i) => `
-                    <div class="counter-row" style="flex-direction:column; align-items:stretch; gap:6px;">
-                        <select data-action="gear-select" data-slot="${i}">
-                            <option value="-1">— pusty slot —</option>
-                            ${optionsWithGroups(flatGear, slot?.name)}
-                        </select>
-                        ${slot ? `
-                            <div class="counter-row">
-                                <div class="counter-label">Wear</div>
-                                <div class="counter-controls">
-                                    <button class="btn btn-sm btn-icon" data-action="adjust" data-path="character.gear.${i}.wear" data-delta="-1" data-min="0" data-max="${slot.maxWear}">−</button>
-                                    <span class="counter-value ${slot.wear === 0 ? "max" : ""}">${slot.wear} <span class="max">/ ${slot.maxWear}</span></span>
-                                    <button class="btn btn-sm btn-icon" data-action="adjust" data-path="character.gear.${i}.wear" data-delta="1" data-min="0" data-max="${slot.maxWear}">+</button>
-                                </div>
-                            </div>
-                            <p class="placeholder">${slot.effect || ""}${slot.wear === 0 ? " — NIEUŻYWALNY (0 Wear)" : ""}</p>
-                        ` : ""}
-                    </div>
-                `).join("")}
+                <p class="cap-indicator ${equippedGearCount >= maxCarried ? "full" : ""}">Założone: ${equippedGearCount} / ${maxCarried}</p>
+                ${equippedGear.length ? `
+                    <ul class="summary-list">
+                        ${equippedGear.map(g => `
+                            <li class="tt" data-tip="${escapeHtml(g.effect || "")}">
+                                <span>${escapeHtml(g.name)}</span>
+                                <span class="abbr">${g.state.wear !== undefined ? `Wear ${g.state.wear}/${wearPerItem}` : ""}</span>
+                            </li>
+                        `).join("")}
+                    </ul>
+                ` : `<p class="summary-empty">Brak założonego sprzętu.</p>`}
+                <button class="btn btn-sm" data-action="goto-tab" data-tab="gear" style="margin-top:10px;">Zarządzaj sprzętem →</button>
             </div>
 
             <div class="card">
@@ -168,16 +138,18 @@ export function render(root, { state, data }) {
                 ${counterRow({ label: "Scrap", curPath: "character.glider.scrap.cur", curVal: ch.glider.scrap.cur, maxPath: "character.glider.scrap.max", maxVal: ch.glider.scrap.max, editableMax: true })}
                 ${counterRow({ label: "Relics", curPath: "character.glider.relics.cur", curVal: ch.glider.relics.cur, maxPath: "character.glider.relics.max", maxVal: ch.glider.relics.max, editableMax: true })}
                 <div class="counter-row"><div class="counter-label">Cargo slots</div><div class="counter-value">${ch.glider.cargoSlots}</div></div>
-                <h3 style="margin-top:12px;">Mody (do 3)</h3>
-                ${ch.glider.mods.map((mod, i) => `
-                    <div class="counter-row" style="flex-direction:column; align-items:stretch; gap:6px;">
-                        <select data-action="mod-select" data-slot="${i}">
-                            <option value="-1">— pusty slot —</option>
-                            ${optionsWithGroups(flatMods, mod?.name)}
-                        </select>
-                        ${mod ? `<p class="placeholder">${mod.effect || ""}</p>` : ""}
-                    </div>
-                `).join("")}
+                <h3 style="margin-top:12px;">Zainstalowane mody</h3>
+                <p class="cap-indicator ${installedMods.length >= modsMax ? "full" : ""}">Zainstalowane: ${installedMods.length} / ${modsMax}</p>
+                ${installedMods.length ? `
+                    <ul class="summary-list">
+                        ${installedMods.map(m => `
+                            <li class="tt" data-tip="${escapeHtml(m.effect || "")}">
+                                <span>${escapeHtml(m.name)}</span>
+                            </li>
+                        `).join("")}
+                    </ul>
+                ` : `<p class="summary-empty">Brak zainstalowanych modów.</p>`}
+                <button class="btn btn-sm" data-action="goto-tab" data-tab="glider" style="margin-top:10px;">Zarządzaj gliderem →</button>
             </div>
 
             <div class="card">
@@ -228,11 +200,9 @@ export function render(root, { state, data }) {
                                 <div class="counter-row">
                                     <div class="counter-label">BP <span class="abbr">Lvl ${level} — ${bondScale[level]?.name || ""}</span></div>
                                     <div class="counter-controls">
-                                        <button class="btn btn-sm" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="-5" data-min="0">−5</button>
                                         <button class="btn btn-sm btn-icon" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="-1" data-min="0">−</button>
-                                        <span class="counter-value">${points}</span>
+                                        <input type="number" class="counter-input" data-action="set-number" data-path="guildBonds.${g.id}.points" data-min="0" value="${points}" step="1">
                                         <button class="btn btn-sm btn-icon" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="1" data-min="0">+</button>
-                                        <button class="btn btn-sm" data-action="adjust" data-path="guildBonds.${g.id}.points" data-delta="5" data-min="0">+5</button>
                                     </div>
                                 </div>
                                 <p class="placeholder">${rewardsSoFar.length ? rewardsSoFar.join(" · ") : "Brak odblokowanych nagród."}</p>
@@ -246,24 +216,12 @@ export function render(root, { state, data }) {
     `;
 
     if (!root.dataset.wired) {
-        wireEvents(root, { data, flatGear, flatMods, companions });
+        wireEvents(root, { data, companions });
         root.dataset.wired = "1";
     }
 }
 
-function applyRole(role) {
-    const state = getState();
-    state.character.role = role.role;
-    state.character.stats = { ...role.starting_stats };
-    state.character.startingBonusTrait = role.starting_bonus_trait;
-    state.character.goal = role.goal;
-    state.character.rewardTrait = role.reward_trait;
-    state.character.goalProgress = 0;
-    state.character.rewardClaimed = false;
-    touch();
-}
-
-function wireEvents(root, { data, flatGear, flatMods, companions }) {
+function wireEvents(root, { data, companions }) {
     root.addEventListener("click", (e) => {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
@@ -274,26 +232,36 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
             const path = btn.dataset.path;
             const delta = parseFloat(btn.dataset.delta);
             const min = btn.dataset.min !== undefined ? parseFloat(btn.dataset.min) : -Infinity;
-            const maxPath = btn.dataset.maxpath;
             const maxAttr = btn.dataset.max;
-            const max = maxPath ? getPath(state, maxPath) : (maxAttr !== undefined ? parseFloat(maxAttr) : Infinity);
+            // Górny limit egzekwujemy tylko tam, gdzie max jest sztywno zakodowany w atrybucie
+            // przycisku (staty H/K/R/C/F 0-5, Wear sprzętu). Liczniki zasobów z osobnym, edytowalnym
+            // maksimum (Stamina, Momentum, Intel, Glider…) mogą je świadomie przekroczyć (np. 6/5
+            // po tymczasowym wzmocnieniu) — patrz też numberInputRow/set-number poniżej.
+            const max = maxAttr !== undefined ? parseFloat(maxAttr) : Infinity;
             const cur = getPath(state, path) || 0;
             setPath(state, path, clamp(cur + delta, min, max));
             touch();
         } else if (action === "edit-max") {
             const path = btn.dataset.path;
-            const curPath = btn.dataset.curpath;
             const cur = getPath(state, path);
             const input = prompt("Nowa wartość maksymalna:", cur);
             if (input === null) return;
             const val = parseInt(input, 10);
             if (!Number.isFinite(val) || val < 0) return;
             setPath(state, path, val);
-            if (curPath) {
-                const c = getPath(state, curPath);
-                if (c > val) setPath(state, curPath, val);
-            }
             touch();
+
+        } else if (action === "reopen-gate") {
+            if (!confirm("Otworzyć ekran startowy? Możesz tam wpisać inne imię, żeby przełączyć się na inną (albo nową) grę solo, albo zostawić to samo imię i zmienić rolę — co nadpisze statystyki, cel i cechy obecnej postaci.")) {
+                return;
+            }
+            showGate(data, {
+                initialName: state.character.name,
+                allowCancel: true
+            });
+
+        } else if (action === "goto-tab") {
+            document.querySelector(`.tab-btn[data-tab="${btn.dataset.tab}"]`)?.click();
         }
     });
 
@@ -302,19 +270,7 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
         const state = getState();
         const action = el.dataset.action;
 
-        if (action === "select-role") {
-            const idx = parseInt(el.value, 10);
-            if (idx < 0) return;
-            const role = data.mechanics.seeker_roles[idx];
-            if (state.character.role && state.character.role !== role.role) {
-                if (!confirm(`Zmienić rolę na ${role.role}? To nadpisze startowe statystyki, cel i cechy.`)) {
-                    render(root, { state, data }); // przywróć poprzednią wartość selecta
-                    return;
-                }
-            }
-            applyRole(role);
-
-        } else if (action === "toggle-proficient") {
+        if (action === "toggle-proficient") {
             const stat = el.dataset.stat;
             const list = state.character.proficientStats;
             const idx = list.indexOf(stat);
@@ -325,25 +281,16 @@ function wireEvents(root, { data, flatGear, flatMods, companions }) {
             state.character.rewardClaimed = el.checked;
             touch();
 
-        } else if (action === "gear-select") {
-            const slot = parseInt(el.dataset.slot, 10);
-            const idx = parseInt(el.value, 10);
-            state.character.gear[slot] = idx < 0 ? null : {
-                name: flatGear[idx].name,
-                effect: flatGear[idx].effect,
-                wear: 3,
-                maxWear: 3
-            };
-            touch();
-
-        } else if (action === "mod-select") {
-            const slot = parseInt(el.dataset.slot, 10);
-            const idx = parseInt(el.value, 10);
-            state.character.glider.mods[slot] = idx < 0 ? null : {
-                name: flatMods[idx].name,
-                category: flatMods[idx].category,
-                effect: flatMods[idx].effect
-            };
+        } else if (action === "set-number") {
+            // Input wpisywany bezpośrednio (Credits, BP gildii…) — bez górnego ograniczenia,
+            // tylko dolne (domyślnie 0). Nieprawidłowy/pusty wpis cofa się do poprzedniej wartości.
+            const path = el.dataset.path;
+            const min = el.dataset.min !== undefined ? parseFloat(el.dataset.min) : -Infinity;
+            const raw = parseFloat(el.value);
+            const cur = getPath(state, path) || 0;
+            const val = Number.isFinite(raw) ? Math.max(min, raw) : cur;
+            setPath(state, path, val);
+            el.value = val;
             touch();
 
         } else if (action === "select-companion") {

@@ -1,7 +1,11 @@
 // GLIDE: Part Two — Firebase wiring
 // Ten sam projekt Firebase co reszta DiceRollerWebsite (Realtime Database),
-// ale własna ścieżka `GlidePartTwoSolo`, żeby nie mieszać się z innymi kampaniami.
-// To gra solo — jeden zapis, jedna postać, cały stan gry jako pojedynczy obiekt.
+// ale własna gałąź `GlidePartTwoSolo`, żeby nie mieszać się z innymi kampaniami.
+// Pod nią, żeby trzymać kilka równoległych gier solo obok siebie, każda postać
+// (identyfikowana przez zsanityzowane imię z ekranu startowego) ma swój własny
+// węzeł: GlidePartTwoSolo/{saveKey}. Reguły .read/.write ustawione na węźle
+// GlidePartTwoSolo obejmują też wszystkie jego dzieci, więc nie trzeba nic
+// zmieniać w konsoli Firebase, żeby to zadziałało.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import {
@@ -21,21 +25,36 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-export const DB_PATH = "GlidePartTwoSolo";
+export const DB_ROOT = "GlidePartTwoSolo";
+
+function pathFor(saveKey) {
+    return `${DB_ROOT}/${saveKey}`;
+}
+
+// Odłącznik nasłuchu poprzedniego zapisu — trzymany na module, żeby przy przełączeniu
+// się na inną postać (inny saveKey) nie zostać podpiętym pod dwie ścieżki naraz.
+let detachCurrent = null;
 
 /**
- * Subskrybuje stan gry pod DB_PATH. Callback woła się od razu po podłączeniu
- * (z `null`, jeśli w bazie jeszcze nic nie ma) i przy każdej zmianie z zewnątrz.
+ * Subskrybuje stan gry pod GlidePartTwoSolo/{saveKey}. Callback woła się od razu po
+ * podłączeniu (z `null`, jeśli ten zapis jeszcze nie istnieje — nowa postać) i przy
+ * każdej zmianie z zewnątrz. Jeśli był już podłączony nasłuch pod innym saveKey,
+ * zostaje najpierw odłączony.
  */
-export function watchState(callback) {
-    onValue(
-        ref(database, DB_PATH),
+export function watchState(saveKey, callback) {
+    if (detachCurrent) {
+        detachCurrent();
+        detachCurrent = null;
+    }
+    detachCurrent = onValue(
+        ref(database, pathFor(saveKey)),
         (snapshot) => callback(snapshot.exists() ? snapshot.val() : null, null),
         (error) => callback(null, error)
     );
+    return detachCurrent;
 }
 
-/** Zapisuje cały obiekt stanu gry (nadpisuje całość pod DB_PATH). */
-export function persistState(state) {
-    return set(ref(database, DB_PATH), state);
+/** Zapisuje cały obiekt stanu gry (nadpisuje całość pod GlidePartTwoSolo/{saveKey}). */
+export function persistState(saveKey, state) {
+    return set(ref(database, pathFor(saveKey)), state);
 }

@@ -8,7 +8,49 @@
     <title>GLIDE: Part Two — Dashboard Solo</title>
 </head>
 <body>
-    <div class="app" id="app">
+    <div class="gate" id="characterGate">
+        <div class="gate-card">
+            <h1>GLIDE // PART TWO</h1>
+
+            <div id="gateStepName">
+                <p class="gate-sub" id="gateSubName">Wpisz imię Seekera, żeby rozpocząć nową grę albo wczytać istniejący zapis</p>
+
+                <label class="gate-field">
+                    <span>Imię</span>
+                    <input type="text" id="gateName" maxlength="40" placeholder="Imię Twojej postaci" autocomplete="off">
+                </label>
+
+                <p class="gate-error" id="gateNameError" style="display:none;"></p>
+
+                <div class="gate-actions">
+                    <button class="btn btn-secondary" id="gateCancel" style="display:none;">Anuluj</button>
+                    <button class="btn btn-primary" id="gateNameNext" disabled>Dalej</button>
+                </div>
+            </div>
+
+            <div id="gateStepRole" style="display:none;">
+                <p class="gate-sub" id="gateSubRole">Wybierz rolę</p>
+
+                <label class="gate-field">
+                    <span>Rola</span>
+                    <select id="gateRole">
+                        <option value="-1">— wybierz rolę —</option>
+                    </select>
+                </label>
+
+                <div id="gateRolePreview"></div>
+
+                <p class="gate-error" id="gateRoleError" style="display:none;"></p>
+
+                <div class="gate-actions">
+                    <button class="btn btn-secondary" id="gateBack">Wstecz</button>
+                    <button class="btn btn-primary" id="gateSubmit" disabled>Rozpocznij grę</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app hidden" id="app">
 
         <header class="app-header">
             <h1>GLIDE // PART TWO</h1>
@@ -26,9 +68,10 @@
 
         <nav class="tabs" id="mainTabs">
             <button class="tab-btn active" data-tab="character">Postać</button>
+            <button class="tab-btn" data-tab="gear">Sprzęt</button>
+            <button class="tab-btn" data-tab="glider">Glider</button>
             <button class="tab-btn" data-tab="roller">Roller</button>
             <button class="tab-btn" data-tab="quests">Questy</button>
-            <button class="tab-btn" data-tab="history">Historia</button>
             <button class="tab-btn" data-tab="journal">Dziennik</button>
         </nav>
 
@@ -37,16 +80,20 @@
                 <p class="placeholder">Ładowanie karty postaci…</p>
             </section>
 
+            <section id="panel-gear" class="tab-panel">
+                <p class="placeholder">Ładowanie katalogu sprzętu…</p>
+            </section>
+
+            <section id="panel-glider" class="tab-panel">
+                <p class="placeholder">Ładowanie katalogu glidera…</p>
+            </section>
+
             <section id="panel-roller" class="tab-panel">
                 <p class="placeholder">Ładowanie rollera…</p>
             </section>
 
             <section id="panel-quests" class="tab-panel">
                 <p class="placeholder">Ładowanie questów…</p>
-            </section>
-
-            <section id="panel-history" class="tab-panel">
-                <p class="placeholder">Ładowanie historii…</p>
             </section>
 
             <section id="panel-journal" class="tab-panel">

@@ -16,7 +16,8 @@ export function logRoll(table, rollText, resultText) {
             table,
             rollText,
             resultText,
-            ts: formatTimestamp()
+            ts: formatTimestamp(),
+            at: Date.now()
         });
     });
 }

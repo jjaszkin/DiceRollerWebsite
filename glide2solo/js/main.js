@@ -4,20 +4,28 @@ import { loadGameData } from "./data.js";
 import { initStore, getState, getData, subscribe, onSaveStatusChange, updateState } from "./store.js";
 import { rollD100, findInRangeTable, clamp } from "./utils.js";
 import { logRoll } from "./rollLog.js";
+import { showGate } from "./gate.js";
 
 import * as characterPanel from "./panels/character.js";
+import * as gearPanel from "./panels/gear.js";
+import * as gliderPanel from "./panels/glider.js";
 import * as rollerPanel from "./panels/roller.js";
 import * as questsPanel from "./panels/quests.js";
-import * as historyPanel from "./panels/history.js";
 import * as journalPanel from "./panels/journal.js";
 
 const PANELS = {
     character: characterPanel,
+    gear: gearPanel,
+    glider: gliderPanel,
     roller: rollerPanel,
     quests: questsPanel,
-    history: historyPanel,
     journal: journalPanel
 };
+
+// Klucz pod którym w localStorage zapamiętujemy ostatnio używane imię postaci — czysta
+// wygoda UX (wstępne wypełnienie pola imienia przy starcie), nie ma wpływu na to, który
+// zapis faktycznie się wczyta (to zależy wyłącznie od tego, co użytkownik zatwierdzi).
+const LAST_NAME_KEY = "glidePartTwoSolo.lastCharacterName";
 
 const bootStatus = document.getElementById("bootStatus");
 const saveIndicator = document.getElementById("saveIndicator");
@@ -136,16 +144,28 @@ async function bootstrap() {
         setBootStatus("Wczytywanie danych podręcznika…");
         const gameData = await loadGameData();
 
-        setBootStatus("Łączenie z Firebase…");
-        await initStore(gameData);
+        // initStore jest teraz synchroniczne — samo w sobie NIE łączy się z Firebase.
+        // Połączenie z konkretnym zapisem (wybranym/utworzonym na ekranie startowym)
+        // nawiązuje dopiero gate.js, przez store.js#connectSave.
+        initStore(gameData);
 
         subscribe(renderAll);
         setupTabs();
         setupSaveIndicator();
         setupCampButton();
-        renderAll();
 
-        setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/10 plików.`);
+        setBootStatus("Wybierz postać, żeby połączyć się z zapisem…");
+
+        const lastName = localStorage.getItem(LAST_NAME_KEY) || "";
+        showGate(gameData, {
+            initialName: lastName,
+            allowCancel: false,
+            onDone: () => {
+                const name = getState()?.character?.name;
+                if (name) localStorage.setItem(LAST_NAME_KEY, name);
+                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/10 plików.`);
+            }
+        });
     } catch (err) {
         console.error("[GLIDE] Błąd inicjalizacji:", err);
         setBootStatus(`Błąd inicjalizacji: ${err.message}`);

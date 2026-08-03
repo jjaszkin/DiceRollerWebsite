@@ -1,6 +1,7 @@
 // GLIDE: Part Two — domyślny kształt stanu gry solo.
 // Budowany na bazie danych z JSON-ów (lista gildii do guildBonds/guildJobs),
 // żeby nie duplikować nazw gildii na sztywno w kodzie.
+import { sanitizeNameToKey } from "./utils.js";
 
 export function createDefaultState(gameData) {
     const guilds = gameData?.guilds?.guilds ?? [];
@@ -19,6 +20,7 @@ export function createDefaultState(gameData) {
         meta: { version: 1, updatedAt: null },
 
         character: {
+            name: "",
             role: null,
             stats: { H: 0, K: 0, R: 0, C: 0, F: 0 },
             proficientStats: [],
@@ -37,7 +39,8 @@ export function createDefaultState(gameData) {
                 fame: 0
             },
 
-            gear: [null, null, null], // { name, wear, maxWear } | null
+            gear: {}, // { [slug]: { owned, equipped, wear } } — katalog kart w data/gear.json,
+                       // slug = sanitizeNameToKey(nazwa); wear domyślne/max liczone z mechanics.resources.gear.wear_per_item
 
             glider: {
                 wear: { cur: 5, max: 5 },
@@ -46,7 +49,8 @@ export function createDefaultState(gameData) {
                 cargoSlots: 3,
                 scrap: { cur: 0, max: 5 },
                 relics: { cur: 0, max: 3 },
-                mods: [null, null, null] // do 3 zamontowanych modów, każdy { name, category, effect } | null
+                mods: {}, // { [slug]: { owned, installed } } — do mechanics.glider.mods_max zainstalowanych naraz
+                upgrades: { scrap_processing_tiers: 0, supply_management_tiers: 0, relic_preservation_tiers: 0 } // najwyższy zakupiony tier (0 = brak) tierowanych ulepszeń magazynowania
             },
 
             companion: {
@@ -71,12 +75,53 @@ export function createDefaultState(gameData) {
     };
 }
 
+/** Migruje starszy kształt zapisu — Gear i Mody glidera jako sztywne tablice slotów
+ *  ([null,null,null] z { name, wear, maxWear }/{ name, category, effect }) — do nowego kształtu:
+ *  mapy kluczowane slugiem nazwy przedmiotu, z osobnymi flagami owned/equipped(/installed).
+ *  Wywoływane PRZED mergeWithDefaults (który same tablice zostawiłby bez zmian, bo scalanie
+ *  głębokie dotyczy tylko obiektów, nie tablic). Nowe zapisy (już w formie mapy, albo bez
+ *  danych) przechodzą przez tę funkcję bez zmian. Mutuje i zwraca ten sam obiekt `loaded`. */
+export function migrateLoadedState(loaded) {
+    if (!loaded || typeof loaded !== "object") return loaded;
+    const ch = loaded.character;
+    if (!ch) return loaded;
+
+    if (Array.isArray(ch.gear)) {
+        const map = {};
+        for (const slot of ch.gear) {
+            if (!slot || !slot.name) continue;
+            map[sanitizeNameToKey(slot.name)] = {
+                owned: true,
+                equipped: true,
+                wear: typeof slot.wear === "number" ? slot.wear : (slot.maxWear ?? 3)
+            };
+        }
+        ch.gear = map;
+    }
+
+    if (ch.glider && Array.isArray(ch.glider.mods)) {
+        const map = {};
+        for (const slot of ch.glider.mods) {
+            if (!slot || !slot.name) continue;
+            map[sanitizeNameToKey(slot.name)] = { owned: true, installed: true };
+        }
+        ch.glider.mods = map;
+    }
+
+    return loaded;
+}
+
 /** Głębokie scalenie wczytanego stanu z domyślnym, żeby nowe pola dodane w kolejnych fazach
- *  nie wywalały się na starych zapisach z Firebase. */
+ *  nie wywalały się na starych zapisach z Firebase.
+ *  WAŻNE: iterujemy po sumie kluczy defaults ORAZ loaded (nie tylko defaults) — niektóre gałęzie
+ *  (np. character.gear, character.glider.mods) mają domyślnie pusty kształt `{}` i przechowują
+ *  dynamiczne klucze (slugi przedmiotów) nieznane z góry. Iterowanie wyłącznie po Object.keys(defaults)
+ *  ucinałoby wtedy każdy taki wpis przy każdym scaleniu (czyli przy każdym echu z Firebase). */
 export function mergeWithDefaults(defaults, loaded) {
     if (!loaded || typeof loaded !== "object") return defaults;
     const out = Array.isArray(defaults) ? [...defaults] : { ...defaults };
-    for (const key of Object.keys(defaults)) {
+    const keys = new Set([...Object.keys(defaults), ...Object.keys(loaded)]);
+    for (const key of keys) {
         const defVal = defaults[key];
         const loadedVal = loaded[key];
         if (loadedVal === undefined) continue;
@@ -93,4 +138,18 @@ export function mergeWithDefaults(defaults, loaded) {
 /** Bond Level = floor(points / 10), przycięty do [0, 4]. */
 export function bondLevelFromPoints(points) {
     return Math.max(0, Math.min(4, Math.floor((points || 0) / 10)));
+}
+
+/** Ustawia rolę Seekera na obiekcie character (mutuje bezpośrednio): nazwę roli,
+ *  statystyki startowe, cechę startową, cel i nagrodę. Resetuje postęp celu i status
+ *  odebrania nagrody. Używane przez ekran startowy (kreator postaci) — jedyne miejsce,
+ *  w którym rolę można ustawić lub zmienić. */
+export function applyRole(character, role) {
+    character.role = role.role;
+    character.stats = { ...role.starting_stats };
+    character.startingBonusTrait = role.starting_bonus_trait;
+    character.goal = role.goal;
+    character.rewardTrait = role.reward_trait;
+    character.goalProgress = 0;
+    character.rewardClaimed = false;
 }
