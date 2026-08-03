@@ -35,14 +35,27 @@ function renderMission(g, mission, jobState, blockActivate) {
     `;
 }
 
-function renderOddJob(job) {
+/** Stan fuchy (state.quests.oddJobs) trzyma tylko { id, range, name, status } — pełny opis
+ *  (lokacja, opis fabularny, zadanie, test, nagroda, porażka) jest w katalogu
+ *  data.guilds.odd_jobs_table_d100 i dociągany tu po nazwie (unikalna w tabeli 20 wpisów,
+ *  patrz roller.js rollOddJobs/acceptOddJob). Bez tego po wzięciu fuchy nie było widać,
+ *  na czym w ogóle polega — tylko nazwa i status. */
+function renderOddJob(job, oddJobsTable) {
+    const entry = oddJobsTable.find(e => e.name === job.name);
     return `
         <div class="entry" style="margin-top:8px;">
             <div class="entry-meta">
-                <span>d100 ${job.range}</span>
+                <span>d100 ${job.range}${entry?.location_type ? ` — ${entry.location_type}` : ""}</span>
                 <span>${STATUS_LABELS[job.status] || job.status}</span>
             </div>
             <div class="entry-result"><strong>${job.name}</strong></div>
+            ${entry ? `
+                ${entry.description ? `<p>${entry.description}</p>` : ""}
+                ${entry.task ? `<p><strong>Zadanie:</strong> ${entry.task}</p>` : ""}
+                ${entry.test ? `<p class="placeholder"><strong>Test:</strong> ${entry.test}</p>` : ""}
+                ${entry.reward ? `<p><strong>Nagroda:</strong> ${entry.reward}</p>` : ""}
+                ${entry.fail ? `<p><strong>Porażka:</strong> ${entry.fail}</p>` : ""}
+            ` : `<p class="placeholder">Brak opisu w katalogu (nazwa fuchy nie została odnaleziona).</p>`}
             <div class="counter-controls">
                 ${job.status === "active" ? `<button class="btn btn-sm" data-action="oddjob-complete" data-id="${job.id}">Ukończ</button>` : ""}
                 <button class="btn btn-sm btn-secondary" data-action="oddjob-remove" data-id="${job.id}">Usuń</button>
@@ -53,6 +66,7 @@ function renderOddJob(job) {
 
 export function render(root, { state, data }) {
     const guilds = data.guilds?.guilds ?? [];
+    const oddJobsTable = data.guilds?.odd_jobs_table_d100 ?? [];
     const blockActivate = anyGuildMissionActive(state);
     const activeOddJobs = state.quests.oddJobs.filter(j => j.status === "active");
     const completedOddJobs = state.quests.oddJobs.filter(j => j.status === "completed");
@@ -74,13 +88,13 @@ export function render(root, { state, data }) {
 
         <div class="card" style="margin-top:12px;">
             <h2>Odd-Jobs — Aktywne (${activeOddJobs.length}/2)</h2>
-            ${activeOddJobs.length ? activeOddJobs.map(renderOddJob).join("") : `<p class="placeholder">Brak aktywnych zleceń. Rzuć w karcie Roller → Odd-Jobs Table.</p>`}
+            ${activeOddJobs.length ? activeOddJobs.map(j => renderOddJob(j, oddJobsTable)).join("") : `<p class="placeholder">Brak aktywnych zleceń. Rzuć w karcie Roller → Odd-Jobs Table.</p>`}
         </div>
 
         ${completedOddJobs.length ? `
             <div class="card" style="margin-top:12px;">
                 <h2>Odd-Jobs — Ukończone</h2>
-                ${completedOddJobs.map(renderOddJob).join("")}
+                ${completedOddJobs.map(j => renderOddJob(j, oddJobsTable)).join("")}
             </div>
         ` : ""}
     `;
