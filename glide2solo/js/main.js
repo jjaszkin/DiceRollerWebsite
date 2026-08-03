@@ -9,14 +9,12 @@ import { showGate } from "./gate.js";
 import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
 import * as questsPanel from "./panels/quests.js";
-import * as historyPanel from "./panels/history.js";
 import * as journalPanel from "./panels/journal.js";
 
 const PANELS = {
     character: characterPanel,
     roller: rollerPanel,
     quests: questsPanel,
-    history: historyPanel,
     journal: journalPanel
 };
 

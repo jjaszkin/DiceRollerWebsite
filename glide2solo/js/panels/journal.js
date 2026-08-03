@@ -1,19 +1,42 @@
-// Panel: Dziennik przygody — swobodne notatki narracyjne gracza, tagowane dniem gry (state.journal).
+// Panel: Dziennik — połączony log przygody: swobodne notatki narracyjne gracza (state.journal)
+// oraz automatyczny log rzutów kośćmi (state.rollHistory), tagowane dniem gry i wyświetlane
+// razem w jednej chronologicznej liście (najnowsze na górze).
 import { getState, touch } from "../store.js";
 import { uid, formatTimestamp } from "../utils.js";
 
-function groupByDay(entries) {
+function mergeAndGroupByDay(journalEntries, rollEntries) {
+    const tagged = [
+        ...journalEntries.map(e => ({ ...e, kind: "journal" })),
+        ...rollEntries.map(e => ({ ...e, kind: "roll" }))
+    ];
+
     const groups = new Map();
-    for (const e of entries) {
+    for (const e of tagged) {
         if (!groups.has(e.day)) groups.set(e.day, []);
         groups.get(e.day).push(e);
     }
+
+    // Najnowszy dzień na górze; w obrębie dnia — najnowszy wpis/rzut na górze (wg `at`,
+    // z zapasowym 0 dla starszych wpisów historii rzutów sprzed wprowadzenia tego pola).
     return Array.from(groups.entries())
         .sort((a, b) => b[0] - a[0])
-        .map(([day, list]) => [day, [...list].reverse()]);
+        .map(([day, list]) => [day, [...list].sort((a, b) => (b.at || 0) - (a.at || 0))]);
 }
 
 function renderEntry(e) {
+    if (e.kind === "roll") {
+        return `
+            <li class="entry">
+                <div class="entry-meta">
+                    <span>${e.table}</span>
+                    <span>${e.ts}</span>
+                </div>
+                <div class="entry-result">
+                    <span class="placeholder">${e.rollText}</span> — <strong>${e.resultText}</strong>
+                </div>
+            </li>
+        `;
+    }
     return `
         <li class="entry">
             <div class="entry-meta">
@@ -26,14 +49,16 @@ function renderEntry(e) {
 }
 
 export function render(root, { state }) {
-    const entries = state.journal ?? [];
-    const grouped = groupByDay(entries);
+    const journalEntries = state.journal ?? [];
+    const rollEntries = state.rollHistory ?? [];
+    const grouped = mergeAndGroupByDay(journalEntries, rollEntries);
 
     root.innerHTML = `
         <div class="card">
             <h2>Nowy wpis — Dzień ${state.day.current}</h2>
             <textarea data-field="new-entry" rows="4" placeholder="Co się wydarzyło…"></textarea>
             <button class="btn btn-primary" data-action="add-entry" style="margin-top:8px;">Dodaj wpis</button>
+            ${rollEntries.length ? `<button class="btn btn-sm btn-secondary" data-action="clear-history" style="margin-top:8px; margin-left:8px;">Wyczyść historię rzutów</button>` : ``}
         </div>
         ${grouped.length ? grouped.map(([day, list]) => `
             <div class="card" style="margin-top:12px;">
@@ -44,7 +69,7 @@ export function render(root, { state }) {
             </div>
         `).join("") : `
             <div class="card" style="margin-top:12px;">
-                <p class="placeholder">Dziennik jest pusty — dodaj pierwszy wpis powyżej.</p>
+                <p class="placeholder">Dziennik jest pusty — dodaj pierwszy wpis powyżej albo wykonaj rzut w Rollerze.</p>
             </div>
         `}
     `;
@@ -66,11 +91,15 @@ function wireEvents(root) {
             const textarea = root.querySelector('[data-field="new-entry"]');
             const text = textarea.value.trim();
             if (!text) return;
-            state.journal.push({ id: uid(), day: state.day.current, text, ts: formatTimestamp() });
+            state.journal.push({ id: uid(), day: state.day.current, text, ts: formatTimestamp(), at: Date.now() });
             touch();
         } else if (action === "delete-entry") {
             if (!window.confirm("Usunąć ten wpis dziennika?")) return;
             state.journal = state.journal.filter(j => j.id !== btn.dataset.id);
+            touch();
+        } else if (action === "clear-history") {
+            if (!window.confirm("Na pewno wyczyścić całą historię rzutów? Tej operacji nie można cofnąć.")) return;
+            state.rollHistory = [];
             touch();
         }
     });
