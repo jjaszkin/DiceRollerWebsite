@@ -4,6 +4,7 @@ import { loadGameData } from "./data.js";
 import { initStore, getState, getData, subscribe, onSaveStatusChange, updateState } from "./store.js";
 import { rollD100, findInRangeTable, clamp } from "./utils.js";
 import { logRoll } from "./rollLog.js";
+import { logEvent, buildDaySummaryText } from "./eventLog.js";
 import { showGate } from "./gate.js";
 
 import * as characterPanel from "./panels/character.js";
@@ -131,7 +132,10 @@ function setupCampButton() {
         logRoll("Camping Event (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
 
         updateState((state) => {
+            // Inkrementacja PRZED zalogowaniem podsumowania, żeby wpis otagował się nowym
+            // dniem (logEvent czyta state.day.current) — to właśnie ma być "stan na starcie dnia".
             state.day.current += 1;
+            logEvent(state, "day-summary", buildDaySummaryText(state));
         });
 
         lastCampResult = { roll, entry, recoveryText: recoveryParts.join(" · ") };

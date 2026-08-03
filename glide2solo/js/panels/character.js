@@ -5,6 +5,7 @@ import { bondLevelFromPoints } from "../state.js";
 import { showGate } from "../gate.js";
 import { equippedGearEntries, installedModEntries, gearCapacity } from "../gearData.js";
 import { unlockedGuildRewards, roleRewardEntries } from "../rewardsData.js";
+import { logEvent } from "../eventLog.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
 
@@ -272,7 +273,17 @@ function wireEvents(root, { data, companions }) {
             // po tymczasowym wzmocnieniu) — patrz też numberInputRow/set-number poniżej.
             const max = maxAttr !== undefined ? parseFloat(maxAttr) : Infinity;
             const cur = getPath(state, path) || 0;
-            setPath(state, path, clamp(cur + delta, min, max));
+            const next = clamp(cur + delta, min, max);
+            setPath(state, path, next);
+            // Logujemy tylko realne zmiany statystyk H/K/R/C/F (nie zasoby typu Stamina/Momentum/
+            // Credits/BP itd., które i tak dostają swoje podsumowanie na starcie nowego dnia).
+            const statMatch = /^character\.stats\.([A-Z])$/.exec(path);
+            if (statMatch && next !== cur) {
+                const key = statMatch[1];
+                const statDef = data.mechanics?.stats?.find(s => s.key === key);
+                const label = statDef ? `${statDef.name} (${key})` : key;
+                logEvent(state, "stat-change", `${label}: ${cur} → ${next}.`);
+            }
             touch();
         } else if (action === "edit-max") {
             const path = btn.dataset.path;
@@ -312,6 +323,13 @@ function wireEvents(root, { data, companions }) {
 
         } else if (action === "toggle-reward-claimed") {
             state.character.rewardClaimed = el.checked;
+            if (el.checked) {
+                const roleInfo = state.character.role
+                    ? data.mechanics?.seeker_roles?.find(r => r.role === state.character.role)
+                    : null;
+                const traitName = roleInfo?.reward_trait ?? state.character.rewardTrait;
+                logEvent(state, "trait-gained", `Odebrano nagrodę za cel: "${traitName}".`);
+            }
             touch();
 
         } else if (action === "set-number") {

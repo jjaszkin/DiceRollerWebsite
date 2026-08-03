@@ -71,7 +71,10 @@ export function createDefaultState(gameData) {
 
         rollHistory: [], // [{ id, day, table, rollText, resultText, ts }]
 
-        journal: []       // [{ id, day, text, ts }]
+        journal: [],      // [{ id, day, text, ts }]
+
+        events: []        // [{ id, day, type, text, ts, at }] — patrz eventLog.js: questy, przedmioty,
+                           // ulepszenia glidera, traity, zmiany statystyk, podsumowania nowego dnia
     };
 }
 

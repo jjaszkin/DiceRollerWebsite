@@ -1,6 +1,7 @@
 // Panel: Tracker questów. Bond Level i nagrody gildii są już widoczne w karcie postaci (Faza 2) —
 // tutaj śledzimy postęp konkretnych Guild Jobs (misji) oraz Odd-Jobs (fuch) zapisanych w stanie gry.
-import { getState, touch } from "../store.js";
+import { getState, getData, touch } from "../store.js";
+import { logEvent } from "../eventLog.js";
 
 const STATUS_LABELS = { available: "Dostępna", active: "Aktywna", completed: "Ukończona" };
 
@@ -117,11 +118,16 @@ function wireEvents(root) {
             const num = parseInt(btn.dataset.num, 10);
             const job = (state.quests.guildJobs[guildId] ?? []).find(j => j.number === num);
             if (!job) return;
+            const g = (getData().guilds?.guilds ?? []).find(gg => gg.id === guildId);
+            const mission = (g?.missions ?? []).find(m => m.number === num);
+            const missionLabel = `"${mission?.name ?? `#${num}`}" (${g?.name_pl ?? guildId})`;
             if (action === "mission-activate") {
                 if (anyGuildMissionActive(state)) return;
                 job.status = "active";
+                logEvent(state, "quest-start", `Rozpoczęto misję gildii ${missionLabel}.`);
             } else if (action === "mission-complete") {
                 job.status = "completed";
+                logEvent(state, "quest-complete", `Ukończono misję gildii ${missionLabel}.`);
             } else if (action === "mission-cancel") {
                 job.status = "available";
             } else if (action === "mission-reset") {
@@ -130,7 +136,11 @@ function wireEvents(root) {
             touch();
         } else if (action === "oddjob-complete") {
             const job = state.quests.oddJobs.find(j => j.id === btn.dataset.id);
-            if (job) { job.status = "completed"; touch(); }
+            if (job) {
+                job.status = "completed";
+                logEvent(state, "quest-complete", `Ukończono fuchę "${job.name}".`);
+                touch();
+            }
         } else if (action === "oddjob-remove") {
             state.quests.oddJobs = state.quests.oddJobs.filter(j => j.id !== btn.dataset.id);
             touch();

@@ -4,6 +4,7 @@
 import { getState, touch } from "../store.js";
 import { rollDie, rollD2, rollD5, rollD100, findInRangeTable, parseRange, clamp, uid } from "../utils.js";
 import { logRoll } from "../rollLog.js";
+import { logEvent } from "../eventLog.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
 const STAT_NAMES = { H: "Hardy", K: "Knowledgeable", R: "Resourceful", C: "Connected", F: "Focused" };
@@ -738,6 +739,7 @@ function acceptOddJob(idx) {
         status: "active"
     });
     ui.oddJobs.blockedMsg = null;
+    logEvent(state, "quest-start", `Przyjęto fuchę "${cand.entry.name}".`);
     touch();
     rerender();
 }

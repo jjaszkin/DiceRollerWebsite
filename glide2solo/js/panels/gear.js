@@ -5,6 +5,7 @@ import { getState, getData, touch } from "../store.js";
 import { escapeHtml } from "../utils.js";
 import { flattenGear, humanizeCategory, gearCapacity, EXPLORERS_BACKPACK_SLUG } from "../gearData.js";
 import { unlockedGuildItemRewards } from "../rewardsData.js";
+import { logEvent } from "../eventLog.js";
 
 function groupByCategory(flat) {
     const groups = new Map();
@@ -153,6 +154,8 @@ function wireEvents(root) {
             if (el.checked) {
                 if (!gear[slug]) gear[slug] = { owned: true, equipped: false, wear: wearPerItem };
                 else gear[slug].owned = true;
+                const item = flattenGear(data.gear).find(g => g.slug === slug);
+                logEvent(state, "item-gained", `Zdobyto sprzęt: "${item?.name ?? slug}".`);
             } else {
                 if (gear[slug]?.equipped && !window.confirm("Ten przedmiot jest założony — na pewno oznaczyć jako niekupiony? (zostanie zdjęty)")) {
                     el.checked = true;
