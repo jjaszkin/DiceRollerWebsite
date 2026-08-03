@@ -3,6 +3,7 @@
 // zarówno w katalogach (panels/gear.js, panels/glider.js) jak i w skrócie na dashboardzie
 // (panels/character.js).
 import { sanitizeNameToKey } from "./utils.js";
+import { unlockedGuildItemRewards } from "./rewardsData.js";
 
 /** Slug używany jako klucz w state.character.gear / state.character.glider.mods —
  *  reużywa sanityzacji nazwy postaci do klucza Firebase (bez diakrytyków/spacji/znaków `.#$[]/`). */
@@ -65,10 +66,16 @@ export function gearCapacity(state, baseMaxCarried) {
 }
 
 /** Lista aktualnie założonego sprzętu (do skrótu na dashboardzie), z dociągniętymi
- *  danymi z katalogu (nazwa/efekt) — pomija sloty, których nazwa zniknęła z katalogu. */
+ *  danymi z katalogu (nazwa/efekt) — pomija sloty, których nazwa zniknęła z katalogu.
+ *  Doklejane są też nagrody Bond Level gildii kategorii "Gear" — nie są w statycznym
+ *  katalogu gear.json (patrz rewardsData.js), więc bez tego ich nazwa/efekt by nie
+ *  wyszukały się po slugu, gdyby gracz je założył. */
 export function equippedGearEntries(state, data) {
     const flat = flattenGear(data.gear);
     const bySlug = Object.fromEntries(flat.map(i => [i.slug, i]));
+    for (const r of unlockedGuildItemRewards(state, data, "Gear")) {
+        if (!bySlug[r.slug]) bySlug[r.slug] = { name: r.baseName, effect: r.effect, slug: r.slug };
+    }
     const gearState = state.character.gear || {};
     return Object.entries(gearState)
         .filter(([, s]) => s.equipped)
@@ -76,10 +83,14 @@ export function equippedGearEntries(state, data) {
         .filter(e => e.name);
 }
 
-/** Lista aktualnie zainstalowanych modów (do skrótu na dashboardzie). */
+/** Lista aktualnie zainstalowanych modów (do skrótu na dashboardzie) — analogicznie doklejane
+ *  są nagrody Bond Level gildii kategorii "Glider Upgrade". */
 export function installedModEntries(state, data) {
     const flat = flattenMods(data.gear?.glider_upgrades);
     const bySlug = Object.fromEntries(flat.map(i => [i.slug, i]));
+    for (const r of unlockedGuildItemRewards(state, data, "Glider Upgrade")) {
+        if (!bySlug[r.slug]) bySlug[r.slug] = { name: r.baseName, effect: r.effect, slug: r.slug };
+    }
     const modsState = state.character.glider.mods || {};
     return Object.entries(modsState)
         .filter(([, s]) => s.installed)

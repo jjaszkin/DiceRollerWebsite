@@ -4,6 +4,7 @@ import { getPath, setPath, clamp, escapeHtml } from "../utils.js";
 import { bondLevelFromPoints } from "../state.js";
 import { showGate } from "../gate.js";
 import { equippedGearEntries, installedModEntries, gearCapacity } from "../gearData.js";
+import { unlockedGuildRewards, roleRewardEntries } from "../rewardsData.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
 
@@ -52,6 +53,23 @@ export function render(root, { state, data }) {
     const roleInfo = ch.role
         ? mechanics.seeker_roles.find(r => r.role === ch.role)
         : null;
+
+    // Nagrody i Traity — zebrane w jednym miejscu z dwóch źródeł: Bond Level gildii (wszystkie
+    // kategorie: Gear/Trait/Glider Upgrade) i roli postaci (cecha startowa + nagroda za cel).
+    // Gear/Glider Upgrade auto-oznaczają się jako posiadane w odpowiednim tabie (patrz gearData.js/
+    // panels/gear.js/panels/glider.js) — tu tylko informujemy o tym w opisie karty.
+    const allRewards = [
+        ...unlockedGuildRewards(state, data).map(r => ({
+            name: r.baseName,
+            effect: r.effect,
+            badge: `${r.guildName} · Lv${r.tier} · ${r.category || "?"}`
+        })),
+        ...roleRewardEntries(state, data).map(r => ({
+            name: r.name,
+            effect: "",
+            badge: `${r.source} · ${r.category}${r.claimed === false ? " (nieodebrana)" : ""}`
+        }))
+    ];
 
     root.innerHTML = `
         <div class="grid grid-2">
@@ -210,6 +228,21 @@ export function render(root, { state, data }) {
                         `;
                     }).join("")}
                 </div>
+            </div>
+
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>Nagrody i Traity</h2>
+                <p class="placeholder">Najedź na pozycję, żeby zobaczyć jej efekt. Nagrody Gear/Glider Upgrade pojawiają się automatycznie jako posiadane w tabach Sprzęt/Glider — wystarczy je tam założyć/zainstalować.</p>
+                ${allRewards.length ? `
+                    <ul class="summary-list">
+                        ${allRewards.map(r => `
+                            <li class="tt" data-tip="${escapeHtml(r.effect || r.name)}">
+                                <span>${escapeHtml(r.name)}</span>
+                                <span class="abbr">${escapeHtml(r.badge)}</span>
+                            </li>
+                        `).join("")}
+                    </ul>
+                ` : `<p class="summary-empty">Brak zebranych nagród i traitów.</p>`}
             </div>
 
         </div>
