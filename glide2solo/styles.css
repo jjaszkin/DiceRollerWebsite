@@ -343,6 +343,12 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 .entry-result { color: var(--fg-0); }
 .entry-result strong { color: var(--fg-0); }
 
+.entry-meta-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 /* ── Character gate (ekran startowy: kreator postaci) ─────────────── */
 
 .hidden { display: none !important; }

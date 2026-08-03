@@ -24,12 +24,19 @@ function mergeAndGroupByDay(journalEntries, rollEntries) {
 }
 
 function renderEntry(e) {
+    const rightMeta = `
+        <span class="entry-meta-right">
+            <span>${e.ts}</span>
+            <button class="btn btn-sm btn-icon" data-action="delete-entry" data-kind="${e.kind}" data-id="${e.id}" title="Usuń wpis">×</button>
+        </span>
+    `;
+
     if (e.kind === "roll") {
         return `
             <li class="entry">
                 <div class="entry-meta">
                     <span>${e.table}</span>
-                    <span>${e.ts}</span>
+                    ${rightMeta}
                 </div>
                 <div class="entry-result">
                     <span class="placeholder">${e.rollText}</span> — <strong>${e.resultText}</strong>
@@ -40,8 +47,8 @@ function renderEntry(e) {
     return `
         <li class="entry">
             <div class="entry-meta">
-                <span>${e.ts}</span>
-                <button class="btn btn-sm btn-icon" data-action="delete-entry" data-id="${e.id}" title="Usuń wpis">×</button>
+                <span></span>
+                ${rightMeta}
             </div>
             <div class="entry-result">${e.text.replace(/\n/g, "<br>")}</div>
         </li>
@@ -59,6 +66,7 @@ export function render(root, { state }) {
             <textarea data-field="new-entry" rows="4" placeholder="Co się wydarzyło…"></textarea>
             <button class="btn btn-primary" data-action="add-entry" style="margin-top:8px;">Dodaj wpis</button>
             ${rollEntries.length ? `<button class="btn btn-sm btn-secondary" data-action="clear-history" style="margin-top:8px; margin-left:8px;">Wyczyść historię rzutów</button>` : ``}
+            ${journalEntries.length ? `<button class="btn btn-sm btn-secondary" data-action="clear-journal" style="margin-top:8px; margin-left:8px;">Wyczyść historię wpisów</button>` : ``}
         </div>
         ${grouped.length ? grouped.map(([day, list]) => `
             <div class="card" style="margin-top:12px;">
@@ -94,12 +102,22 @@ function wireEvents(root) {
             state.journal.push({ id: uid(), day: state.day.current, text, ts: formatTimestamp(), at: Date.now() });
             touch();
         } else if (action === "delete-entry") {
-            if (!window.confirm("Usunąć ten wpis dziennika?")) return;
-            state.journal = state.journal.filter(j => j.id !== btn.dataset.id);
+            const kind = btn.dataset.kind;
+            if (kind === "roll") {
+                if (!window.confirm("Usunąć ten wpis z historii rzutów?")) return;
+                state.rollHistory = state.rollHistory.filter(r => r.id !== btn.dataset.id);
+            } else {
+                if (!window.confirm("Usunąć ten wpis dziennika?")) return;
+                state.journal = state.journal.filter(j => j.id !== btn.dataset.id);
+            }
             touch();
         } else if (action === "clear-history") {
             if (!window.confirm("Na pewno wyczyścić całą historię rzutów? Tej operacji nie można cofnąć.")) return;
             state.rollHistory = [];
+            touch();
+        } else if (action === "clear-journal") {
+            if (!window.confirm("Na pewno wyczyścić całą historię wpisów dziennika? Tej operacji nie można cofnąć.")) return;
+            state.journal = [];
             touch();
         }
     });
