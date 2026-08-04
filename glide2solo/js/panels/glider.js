@@ -4,7 +4,7 @@
 // glidera (Zużycie/Zasoby/Prędkość/Złom/Relikty) zostają na dashboardzie (panel Postać).
 import { getState, getData, touch } from "../store.js";
 import { escapeHtml, clamp } from "../utils.js";
-import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES, applyTierStatBonus } from "../gearData.js";
+import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES, applyTierStatBonus, applyKnownStatBonus } from "../gearData.js";
 import { unlockedGuildItemRewards } from "../rewardsData.js";
 import { logEvent } from "../eventLog.js";
 
@@ -164,11 +164,16 @@ function wireEvents(root) {
                 else mods[slug].owned = true;
                 const item = flattenMods(data.gear?.glider_upgrades).find(m => m.slug === slug);
                 logEvent(state, "item-gained", `Zdobyto mod glidera: "${item?.name ?? slug}".`);
+                // Wzmocnione Siodło (i ew. inne mody "owned"-triggered — patrz gearData.js#
+                // KNOWN_STAT_BONUS_ITEMS) dają trwały bonus już przy zakupie, niezależnie od
+                // tego, czy mod jest akurat zainstalowany w jednym z ograniczonych slotów.
+                applyKnownStatBonus(state, slug, +1);
             } else {
                 if (mods[slug]?.installed && !window.confirm("Ten mod jest zainstalowany — na pewno oznaczyć jako niekupiony? (zostanie odinstalowany)")) {
                     el.checked = true;
                     return;
                 }
+                applyKnownStatBonus(state, slug, -1);
                 delete mods[slug];
             }
             touch();
