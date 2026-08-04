@@ -25,14 +25,14 @@ const ORACLE_WORD_TABLES = {
 // Pomocnicza checklista kroków typowego dnia gry (nie ma osobnej sekcji reguł w podręczniku —
 // to złożenie istniejących mechanik rollera w kolejność, w jakiej zwykle są rozgrywane).
 // Stan zaznaczeń trzymany lokalnie w ui.daySeq (patrz niżej) — resetuje się automatycznie,
-// gdy state.day.current się zmieni (czyli po akcji Camp w nagłówku).
+// gdy state.day.current się zmieni (czyli po akcji Obóz w nagłówku).
 const DAY_SEQUENCE_STEPS = [
     { id: "move", label: "Ruch", desc: "Przesuń się o Prędkość glidera (w heksach) w wybranym kierunku." },
     { id: "loctype", label: "Typ i Poziom Lokacji", desc: "Jeśli to nowy heks, rzuć Typ Lokacji, a jeśli trzeba — także Poziom Lokacji." },
     { id: "action", label: "Akcja w Lokacji", desc: "Wykonaj Eksplorację/Test właściwy dla biomu (Pustynia/Ruiny/Zieleń/Unikalna Lokacja) albo Akcje Osady." },
     { id: "travel", label: "Wydarzenie Podróży", desc: "Opcjonalnie: rzuć Wydarzenie Podróży, jeśli scenariusz tego wymaga." },
     { id: "journal", label: "Dziennik", desc: "Zapisz przebieg i wynik w karcie Dziennik." },
-    { id: "camp", label: "Obóz (Camp)", desc: "Gdy kończysz dzień, rozbij obóz przyciskiem Camp w nagłówku — ta checklista zresetuje się automatycznie na kolejny dzień." }
+    { id: "camp", label: "Obóz", desc: "Gdy kończysz dzień, rozbij obóz przyciskiem Obóz w nagłówku — ta checklista zresetuje się automatycznie na kolejny dzień." }
 ];
 
 // Klucze wspólne dla tabel eventów, obsługiwane w renderEventOutcomes() nazwami własnymi —
@@ -352,7 +352,7 @@ function renderChallengeResult(r) {
 }
 
 /** Sekwencja Dnia — checklista pomocnicza (patrz DAY_SEQUENCE_STEPS). Resetuje zaznaczenia,
- *  gdy wykryje zmianę state.day.current (czyli po Camp), więc nie trzeba jej czyścić ręcznie. */
+ *  gdy wykryje zmianę state.day.current (czyli po Obóz), więc nie trzeba jej czyścić ręcznie. */
 function renderDaySequence(state) {
     if (ui.daySeq.day !== state.day.current) {
         ui.daySeq.day = state.day.current;
@@ -362,7 +362,7 @@ function renderDaySequence(state) {
     return `
         <div class="card">
             <h2>Sekwencja Dnia</h2>
-            <p class="placeholder">Dzień ${state.day.current} · ${doneCount}/${DAY_SEQUENCE_STEPS.length} kroków. Checklista pomocnicza (najedź na krok po opis) — nie zapisuje się w Firebase, resetuje się sama po Camp.</p>
+            <p class="placeholder">Dzień ${state.day.current} · ${doneCount}/${DAY_SEQUENCE_STEPS.length} kroków. Checklista pomocnicza (najedź na krok po opis) — nie zapisuje się w Firebase, resetuje się sama po Obóz.</p>
             ${DAY_SEQUENCE_STEPS.map(s => `
                 <label class="tt" data-tip="${escapeHtml(s.desc)}" style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:pointer;">
                     <input type="checkbox" data-action="toggle-day-step" data-step="${s.id}" ${ui.daySeq.checked[s.id] ? "checked" : ""}>
