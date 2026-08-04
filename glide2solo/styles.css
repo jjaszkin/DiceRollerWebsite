@@ -581,8 +581,37 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     margin-top: 12px;
 }
 
+/* Wiersz siatki heksów + strzałki nawigacji Sektorami (patrz panels/map.js#navigateSegment) po
+   bokach. `.hex-grid-wrap` (flex: 1) nadal dostaje swoją realną szerokość z tego kontenera do
+   computeLayout(), pomniejszoną o miejsce zajęte przez przyciski nawigacji. */
+.hex-grid-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .hex-grid-wrap {
     width: 100%;
+    flex: 1;
+    min-width: 0;
+}
+
+.hex-nav-btn {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 44px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--bg-2);
+    color: var(--fg-0);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    transition: background 0.15s;
+}
+
+.hex-nav-btn:hover {
+    background: var(--bg-3, var(--bg-2));
 }
 
 .hex-grid {

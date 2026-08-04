@@ -15,7 +15,8 @@ export const EVENT_TYPE_LABELS = {
     "trait-gained": "Zdobyto Cechę",
     "stat-change": "Zmiana statystyki",
     "day-summary": "Nowy dzień — podsumowanie",
-    "settlement-action": "Akcja Osady"
+    "settlement-action": "Akcja Osady",
+    "travel-event": "Wydarzenie Podróży"
 };
 
 /** Dopisuje zdarzenie do state.events (mutuje przekazany state — wywołujący odpowiada za

@@ -8,8 +8,10 @@
 // data/desert.json, data/ruins.json, data/green_space.json, data/economy.json i
 // data/unique_locations.json (te same, z których korzysta panels/roller.js).
 import { getState, touch } from "../store.js";
-import { rollDie, uid, formatTimestamp, findInRangeTable, escapeHtml } from "../utils.js";
+import { rollDie, uid, formatTimestamp, findInRangeTable, escapeHtml, clamp } from "../utils.js";
 import { logRoll } from "../rollLog.js";
+import { logEvent } from "../eventLog.js";
+import { applyTravelEventEffects, renderTravelEventEffects } from "../travelEvents.js";
 import {
     rollTiles, needsTileRoll, resolveLocationLevel, rollD100Table,
     renderGenericEntry, renderEventEntry, renderUniqueLocationResult
@@ -66,6 +68,33 @@ function coordId(col, row) {
     return `${COL_LETTERS[col]}${row + 1}`;
 }
 
+// ── Sektory ──────────────────────────────────────────────────────────────
+// Mapa jest podzielona na Sektory (osobne siatki 12x10 heksów) na wschód/zachód od startowego
+// Sektora 0 — patrz state.js#createDefaultState (kształt state.map.segments) i navigateSegment
+// niżej. `currentSegment` to czysto widokowy stan (który Sektor jest aktualnie wyświetlany),
+// niezależny od `state.map.position` (gdzie faktycznie stoi postać) — przesunięcie postaci
+// wymaga osobnej akcji (moveHere), patrząc na Sektor inny niż jej pozycja da baner "Wróć do
+// pozycji postaci" (patrz renderGotoPositionBanner).
+
+/** Zwraca obiekt aktualnie oglądanego Sektora ({ hexes, pendingRegion }), tworząc go leniwie
+ *  (pusty), jeśli jeszcze nie istnieje — na wypadek gdyby currentSegment wskazywał na Sektor,
+ *  który z jakiegoś powodu nie ma jeszcze wpisu w state.map.segments (nie powinno się zdarzyć
+ *  w normalnym flow, bo navigateSegment sam tworzy segment przed przełączeniem, ale to bezpieczny
+ *  fallback zamiast wywalać się na undefined). */
+function currentSeg(state) {
+    const id = String(state.map.currentSegment);
+    if (!state.map.segments[id]) state.map.segments[id] = { hexes: {}, pendingRegion: null };
+    return state.map.segments[id];
+}
+
+/** Etykieta Sektora do wyświetlenia: "Sektor 0" dla startowego, "Sektor W{n}" na wschód
+ *  (id dodatnie), "Sektor Z{n}" na zachód (id ujemne). */
+function segmentLabel(id) {
+    const n = Number(id);
+    if (n === 0) return "Sektor 0";
+    return n > 0 ? `Sektor W${n}` : `Sektor Z${Math.abs(n)}`;
+}
+
 // Firebase RTDB usuwa klucze zapisane jako `null` (nie ma tam pojęcia "null" — zapis wartości
 // null to w praktyce delete tej ścieżki), więc po zapisie+odczycie (albo po odświeżeniu z
 // listenera) pole, które ustawiliśmy na null jako "jeszcze nie wylosowane", wraca jako
@@ -97,9 +126,10 @@ function rerender() {
 /** Zwraca heks-roota dla podanych współrzędnych (samego siebie, jeśli to root/samodzielny heks,
  *  albo wskazywany przez regionRoot dla heksu-członka regionu), albo null jeśli heks nieodkryty. */
 function getRootHex(state, coord) {
-    const hex = state.map.hexes[coord];
+    const hexes = currentSeg(state).hexes;
+    const hex = hexes[coord];
     if (!hex) return null;
-    return hex.regionRoot ? (state.map.hexes[hex.regionRoot] || null) : hex;
+    return hex.regionRoot ? (hexes[hex.regionRoot] || null) : hex;
 }
 
 /** Buduje świeży wpis heksu-roota/samodzielnego na bazie rzutu d10 w Typ Lokacji.
@@ -153,12 +183,13 @@ function lastTestValue(hex, kind) {
 
 function handleHexClick(coord) {
     const state = getState();
-    const pending = state.map.pendingRegion;
-    const exists = !!state.map.hexes[coord];
+    const seg = currentSeg(state);
+    const pending = seg.pendingRegion;
+    const exists = !!seg.hexes[coord];
     if (pending && coord !== pending.rootId && !exists) {
-        state.map.hexes[coord] = { discovered: true, regionRoot: pending.rootId, tests: [] };
+        seg.hexes[coord] = { discovered: true, regionRoot: pending.rootId, tests: [] };
         pending.remaining -= 1;
-        if (pending.remaining <= 0) state.map.pendingRegion = null;
+        if (pending.remaining <= 0) seg.pendingRegion = null;
         selectedCoord = coord;
         touch();
         rerender();
@@ -170,10 +201,11 @@ function handleHexClick(coord) {
 
 function rollHexType(coord) {
     const state = getState();
-    if (state.map.hexes[coord]) return;
+    const seg = currentSeg(state);
+    if (seg.hexes[coord]) return;
     const roll = rollDie(10);
     const hex = buildFreshHexEntry(currentData, roll);
-    state.map.hexes[coord] = hex;
+    seg.hexes[coord] = hex;
     selectedCoord = coord;
     logRoll(`Mapa ${coord} — Typ Lokacji (d10)`, `d10=${roll}`, `${hex.typeResult} (pola: ${hex.tiles})`);
     rerender();
@@ -181,19 +213,20 @@ function rollHexType(coord) {
 
 function rollHexTiles(coord) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const seg = currentSeg(state);
+    const hex = seg.hexes[coord];
     if (!hex || hex.regionRoot || isSet(hex.tilesTotal)) return;
     const rolled = rollTiles(hex.tiles);
     hex.tilesRoll = rolled;
     hex.tilesTotal = rolled;
-    if (rolled > 1) state.map.pendingRegion = { rootId: coord, tilesTotal: rolled, remaining: rolled - 1 };
+    if (rolled > 1) seg.pendingRegion = { rootId: coord, tilesTotal: rolled, remaining: rolled - 1 };
     logRoll(`Mapa ${coord} — liczba pól (${hex.tiles})`, `${hex.tiles}`, `${rolled}`);
     rerender();
 }
 
 function rollHexLevel(coord) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const hex = currentSeg(state).hexes[coord];
     if (!hex || hex.regionRoot || isSet(hex.level)) return;
     const table = currentData.mechanics.location_level_table_d10;
     const roll = rollDie(10);
@@ -207,7 +240,7 @@ function rollHexLevel(coord) {
 
 function rollHexLandmark(coord) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const hex = currentSeg(state).hexes[coord];
     const root = getRootHex(state, coord);
     if (!hex || !root) return;
     const biomeKey = TYPE_BIOME_KEY[root.typeResult];
@@ -221,7 +254,7 @@ function rollHexLandmark(coord) {
 
 function rollHexEvent(coord) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const hex = currentSeg(state).hexes[coord];
     const root = getRootHex(state, coord);
     if (!hex || !root) return;
     const biomeKey = TYPE_BIOME_KEY[root.typeResult];
@@ -242,7 +275,7 @@ const SETTLEMENT_FIELDS = {
 
 function rollHexSettlement(coord, field) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const hex = currentSeg(state).hexes[coord];
     const root = getRootHex(state, coord);
     const cfg = SETTLEMENT_FIELDS[field];
     if (!hex || !root || root.typeResult !== "Osada" || !cfg) return;
@@ -256,7 +289,7 @@ function rollHexSettlement(coord, field) {
 
 function rollHexUnique(coord) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const hex = currentSeg(state).hexes[coord];
     const root = getRootHex(state, coord);
     if (!hex || !root || root.typeResult !== "Unikalna Lokacja") return;
     const table = currentData.unique_locations.unique_locations_table_d100;
@@ -269,7 +302,7 @@ function rollHexUnique(coord) {
 
 function deleteHexTest(coord, testId) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const hex = currentSeg(state).hexes[coord];
     if (!hex) return;
     hex.tests = (hex.tests || []).filter(t => t.id !== testId);
     touch();
@@ -278,8 +311,33 @@ function deleteHexTest(coord, testId) {
 
 function moveHere(coord) {
     const state = getState();
-    state.map.position = coord;
+    // Postać przesuwa się na heks w AKTUALNIE OGLĄDANYM Sektorze (currentSegment) — nawigacja
+    // między Sektorami jest czysto widokowa (patrz navigateSegment) i nie zmienia currentSegment
+    // w oderwaniu od tej akcji, więc "gdzie patrzę" i "dokąd przesuwam postać" to zawsze ten sam
+    // Sektor w momencie kliknięcia.
+    state.map.position = { segment: state.map.currentSegment, coord };
     selectedCoord = coord;
+
+    // Koszt Ruchu: 1 Zasoby na gliderze za każde przesunięcie (mechanics.json#glider.supply),
+    // chyba że aktywna jest jednorazowa flaga nextMoveFreeSupply — ustawiana przez efekt
+    // Wydarzenia Podróży "Następny Ruch kosztuje 0 Zasoby" (patrz travelEvents.js). Flaga jest
+    // zawsze konsumowana (zresetowana) na tym ruchu, niezależnie od dalszej ścieżki. Gdy Zasoby
+    // są już wyzerowane, zamiast kosztu Zasobów zaznacz 1 Zużycie na gliderze
+    // (mechanics.json#glider.supply.on_empty: "zaznacz 1 Zużycie na gliderze zamiast wydawać Zasoby").
+    const glider = state.character.glider;
+    if (state.map.nextMoveFreeSupply) {
+        state.map.nextMoveFreeSupply = false;
+        logEvent(state, "travel-event", "Ruch za darmo (efekt Wydarzenia Podróży) — Zasoby nie zostały zużyte.");
+    } else if (glider.supply.cur > 0) {
+        const before = glider.supply.cur;
+        glider.supply.cur = clamp(glider.supply.cur - 1, 0, glider.supply.max);
+        logEvent(state, "travel-event", `Ruch — Zasoby: ${before} → ${glider.supply.cur}.`);
+    } else {
+        const before = glider.wear.cur;
+        glider.wear.cur = clamp(glider.wear.cur + 1, 0, glider.wear.max);
+        logEvent(state, "travel-event", `Ruch przy zerowych Zasobach — Zużycie na Gliderze: ${before} → ${glider.wear.cur}.`);
+    }
+
     touch();
 
     // Automatyczne sprawdzenie Wydarzenia Podróży przy każdym przesunięciu postaci: d10, próg
@@ -297,12 +355,18 @@ function moveHere(coord) {
  *  wywołało (roll 7+) — ta sama tabela i render co roll-travel-event w panels/roller.js. */
 function rollMapTravelEvent() {
     if (!lastTravelCheck || !lastTravelCheck.triggered) return;
+    const state = getState();
     const table = currentData.economy.travel_events_table_d100;
     const r = rollD100Table(table);
     lastTravelCheck.eventResult = r;
+    // Efekty mechaniczne Wydarzenia Podróży naliczają się automatycznie tam, gdzie da się je
+    // jednoznacznie rozpoznać (patrz travelEvents.js) — reszta (Handel, wybór Gildii, konkretny
+    // Sprzęt itp.) trafia do `manual` i jest pokazywana graczowi do ręcznego zastosowania.
+    lastTravelCheck.effects = r.entry ? applyTravelEventEffects(state, r.entry.text) : { applied: [], manual: [] };
     // Wpisy travel_events_table_d100 mają tylko pole `text` (nie `name`) — tak samo jak
     // roller.js#rollTravelEvent, z którego ta tabela/logika jest przeniesiona 1:1.
     logRoll("Wydarzenie Podróży (d100)", `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
+    touch();
     rerender();
 }
 
@@ -315,35 +379,37 @@ function dismissTravelCheck() {
  *  (oraz czyści pendingRegion, jeśli akurat na niego wskazywał) — używane zarówno przy
  *  usuwaniu, jak i przy przerzucaniu heksu-roota (nowy rzut = nowa lokacja, stary region
  *  przestaje istnieć). */
-function cascadeClearRegion(state, coord) {
-    for (const [c, h] of Object.entries(state.map.hexes)) {
-        if (h.regionRoot === coord) delete state.map.hexes[c];
+function cascadeClearRegion(seg, coord) {
+    for (const [c, h] of Object.entries(seg.hexes)) {
+        if (h.regionRoot === coord) delete seg.hexes[c];
     }
-    if (state.map.pendingRegion && state.map.pendingRegion.rootId === coord) {
-        state.map.pendingRegion = null;
+    if (seg.pendingRegion && seg.pendingRegion.rootId === coord) {
+        seg.pendingRegion = null;
     }
 }
 
 function rerollHex(coord) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const seg = currentSeg(state);
+    const hex = seg.hexes[coord];
     if (!hex) return;
     const wasMember = !!hex.regionRoot;
-    if (!wasMember) cascadeClearRegion(state, coord);
+    if (!wasMember) cascadeClearRegion(seg, coord);
     const roll = rollDie(10);
     const fresh = buildFreshHexEntry(currentData, roll);
-    state.map.hexes[coord] = fresh;
+    seg.hexes[coord] = fresh;
     logRoll(`Mapa ${coord} — Przerzut heksu (d10)`, `d10=${roll}`, `${fresh.typeResult} (pola: ${fresh.tiles})${wasMember ? " — odłączono od regionu" : ""}`);
     rerender();
 }
 
 function removeHex(coord) {
     const state = getState();
-    const hex = state.map.hexes[coord];
+    const seg = currentSeg(state);
+    const hex = seg.hexes[coord];
     if (!hex) return;
     if (!window.confirm(`Usunąć heks ${coord} z mapy? Tej operacji nie można cofnąć.`)) return;
-    if (!hex.regionRoot) cascadeClearRegion(state, coord);
-    delete state.map.hexes[coord];
+    if (!hex.regionRoot) cascadeClearRegion(seg, coord);
+    delete seg.hexes[coord];
     if (selectedCoord === coord) selectedCoord = null;
     touch();
     rerender();
@@ -351,7 +417,41 @@ function removeHex(coord) {
 
 function cancelPendingRegion() {
     const state = getState();
-    state.map.pendingRegion = null;
+    currentSeg(state).pendingRegion = null;
+    touch();
+    rerender();
+}
+
+/** Przełącza aktualnie oglądany Sektor (dir = +1 na wschód, -1 na zachód). Jeśli docelowy Sektor
+ *  jeszcze nie istnieje, prosi o potwierdzenie (window.confirm — ten sam wzorzec co przy usuwaniu
+ *  heksu, patrz removeHex) i dopiero po zgodzie tworzy dla niego pusty wpis w state.map.segments.
+ *  Nawigacja między Sektorami jest czysto widokowa — NIE rusza state.map.position (patrz moveHere)
+ *  ani currentSegment innych heksów/regionów. */
+function navigateSegment(dir) {
+    const state = getState();
+    const targetId = state.map.currentSegment + dir;
+    const key = String(targetId);
+    const exists = !!state.map.segments[key];
+    if (!exists) {
+        const label = segmentLabel(targetId);
+        const dirText = dir > 0 ? "wschód" : "zachód";
+        if (!window.confirm(`Utworzyć nowy ${label} na ${dirText} od obecnego Sektora? To doda nową, pustą siatkę 12x10 heksów.`)) return;
+        state.map.segments[key] = { hexes: {}, pendingRegion: null };
+        touch();
+    }
+    state.map.currentSegment = targetId;
+    selectedCoord = null;
+    touch();
+    rerender();
+}
+
+/** Przełącza widok mapy z powrotem na Sektor, w którym faktycznie stoi postać (patrz
+ *  state.map.position) — pokazywane w banerze, gdy oglądany Sektor różni się od pozycji. */
+function gotoPositionSegment() {
+    const state = getState();
+    if (!state.map.position) return;
+    state.map.currentSegment = state.map.position.segment;
+    selectedCoord = state.map.position.coord;
     touch();
     rerender();
 }
@@ -372,7 +472,7 @@ function renderPendingBanner(pending) {
  *  (d100, ta sama tabela co na zakładce Roller) i jego wynik po rzuceniu. */
 function renderTravelEventBanner(check) {
     if (!check) return "";
-    const { roll, triggered, eventResult } = check;
+    const { roll, triggered, eventResult, effects } = check;
     return `
         <div class="map-banner">
             <span>Sprawdzenie Wydarzenia Podróży (d10 = ${roll})${triggered ? " — <strong>wydarzenie!</strong>" : " — brak wydarzenia."}</span>
@@ -382,14 +482,16 @@ function renderTravelEventBanner(check) {
             </span>
         </div>
         ${eventResult ? renderGenericEntry(eventResult, "d100") : ""}
+        ${renderTravelEventEffects(effects)}
     `;
 }
 
 function renderHexCell(state, coord, col, row) {
-    const hex = state.map.hexes[coord];
+    const seg = currentSeg(state);
+    const hex = seg.hexes[coord];
     const left = col * COL_PITCH;
     const top = row * HEX_HEIGHT + (col % 2 ? HEX_HEIGHT / 2 : 0);
-    const isPosition = state.map.position === coord;
+    const isPosition = !!state.map.position && state.map.position.segment === state.map.currentSegment && state.map.position.coord === coord;
     const isSelected = selectedCoord === coord;
 
     let cls = "hex";
@@ -400,7 +502,7 @@ function renderHexCell(state, coord, col, row) {
         cls += " hex--empty";
         tip += " — nieodkryty";
     } else {
-        const root = hex.regionRoot ? state.map.hexes[hex.regionRoot] : hex;
+        const root = hex.regionRoot ? seg.hexes[hex.regionRoot] : hex;
         const typeResult = root ? root.typeResult : "?";
         cls += " hex--filled";
         if (hex.regionRoot) cls += " hex--member";
@@ -436,7 +538,7 @@ function renderHexCell(state, coord, col, row) {
             <span class="hex-fill"></span>
             <span class="hex-content">
                 <span class="hex-coord">${coord}</span>
-                ${hex ? `<span class="hex-abbr">${TYPE_ABBR[hex.regionRoot ? (state.map.hexes[hex.regionRoot]?.typeResult) : hex.typeResult] || "?"}</span>` : ""}
+                ${hex ? `<span class="hex-abbr">${TYPE_ABBR[hex.regionRoot ? (seg.hexes[hex.regionRoot]?.typeResult) : hex.typeResult] || "?"}</span>` : ""}
             </span>
         </button>
     `;
@@ -510,8 +612,9 @@ function renderHexDetail(state, data, coord) {
     if (!coord) {
         return `<h3>Szczegóły heksu</h3><p class="placeholder">Kliknij heks na mapie, aby zobaczyć szczegóły.</p>`;
     }
-    const hex = state.map.hexes[coord];
-    const isPosition = state.map.position === coord;
+    const seg = currentSeg(state);
+    const hex = seg.hexes[coord];
+    const isPosition = !!state.map.position && state.map.position.segment === state.map.currentSegment && state.map.position.coord === coord;
 
     if (!hex) {
         return `
@@ -525,7 +628,7 @@ function renderHexDetail(state, data, coord) {
     }
 
     const isMember = !!hex.regionRoot;
-    const root = isMember ? state.map.hexes[hex.regionRoot] : hex;
+    const root = isMember ? seg.hexes[hex.regionRoot] : hex;
     if (!root) {
         return `<h3>Heks ${coord}</h3><p class="placeholder">Błąd danych regionu (brak roota ${hex.regionRoot}) — usuń ten heks.</p>${renderHexActions(coord)}`;
     }
@@ -555,22 +658,51 @@ function renderHexDetail(state, data, coord) {
     return parts.join("");
 }
 
+/** Baner "Wróć do pozycji postaci" — pokazywany, gdy oglądany Sektor (currentSegment) różni się
+ *  od Sektora, w którym faktycznie stoi postać (state.map.position.segment). Nawigacja Sektorami
+ *  jest czysto widokowa (patrz navigateSegment), więc bez tego byłoby łatwo "zgubić" pozycję
+ *  postaci po przejrzeniu sąsiednich Sektorów. */
+function renderGotoPositionBanner(state) {
+    const pos = state.map.position;
+    if (!pos || pos.segment === state.map.currentSegment) return "";
+    return `
+        <div class="map-banner">
+            <span>Postać znajduje się w <strong>${segmentLabel(pos.segment)}</strong> (heks ${pos.coord}), nie w oglądanym Sektorze.</span>
+            <button class="btn btn-sm btn-secondary" data-action="goto-position-segment">Wróć do pozycji postaci</button>
+        </div>
+    `;
+}
+
 export function render(root, { state, data }) {
     currentRoot = root;
     currentData = data;
     if (!state.map) return;
 
-    // Tekst instrukcji i wszelkie banery (wybór regionu, sprawdzenie Wydarzenia Podróży) siedzą
-    // POD siatką, nie nad nią — dzięki temu ich pojawianie się/znikanie (albo zmiana treści) nie
-    // przesuwa samej siatki heksów w pionie na stronie.
+    const seg = currentSeg(state);
+    const westId = state.map.currentSegment - 1;
+    const eastId = state.map.currentSegment + 1;
+    const westExists = !!state.map.segments[String(westId)];
+    const eastExists = !!state.map.segments[String(eastId)];
+    const westTip = westExists ? segmentLabel(westId) : `Utwórz ${segmentLabel(westId)}`;
+    const eastTip = eastExists ? segmentLabel(eastId) : `Utwórz ${segmentLabel(eastId)}`;
+
+    // Tekst instrukcji i wszelkie banery (wybór regionu, sprawdzenie Wydarzenia Podróży, powrót
+    // do pozycji postaci) siedzą POD siatką, nie nad nią — dzięki temu ich pojawianie się/znikanie
+    // (albo zmiana treści) nie przesuwa samej siatki heksów w pionie na stronie. Strzałki
+    // nawigacji Sektorami stoją po bokach samej siatki (patrz .hex-grid-row w styles.css).
     root.innerHTML = `
         <div class="card">
-            <h2>Mapa</h2>
-            <div class="hex-grid-wrap">
-                <div class="hex-grid"></div>
+            <h2>Mapa — ${segmentLabel(state.map.currentSegment)}</h2>
+            <div class="hex-grid-row">
+                <button type="button" class="hex-nav-btn tt" data-action="nav-segment" data-dir="-1" data-tip="${escapeHtml(westTip)}" aria-label="Na zachód">◀</button>
+                <div class="hex-grid-wrap">
+                    <div class="hex-grid"></div>
+                </div>
+                <button type="button" class="hex-nav-btn tt" data-action="nav-segment" data-dir="1" data-tip="${escapeHtml(eastTip)}" aria-label="Na wschód">▶</button>
             </div>
             <div class="map-info-below">
-                ${state.map.pendingRegion ? renderPendingBanner(state.map.pendingRegion) : ""}
+                ${seg.pendingRegion ? renderPendingBanner(seg.pendingRegion) : ""}
+                ${renderGotoPositionBanner(state)}
                 ${renderTravelEventBanner(lastTravelCheck)}
                 <p class="placeholder">Kliknij nieodkryty heks, aby rzucić Typ Lokacji. Kliknij odkryty heks, aby zobaczyć szczegóły, wykonać testy/eksplorację, przesunąć postać, przerzucić albo usunąć heks. Dwuklik na heksie przesuwa tam postać.</p>
             </div>
@@ -620,6 +752,8 @@ function wireEvents(root) {
         else if (action === "cancel-pending-region") cancelPendingRegion();
         else if (action === "roll-map-travel-event") rollMapTravelEvent();
         else if (action === "dismiss-travel-check") dismissTravelCheck();
+        else if (action === "nav-segment") navigateSegment(Number(btn.dataset.dir));
+        else if (action === "goto-position-segment") gotoPositionSegment();
     });
 
     // Dwuklik na heksie przesuwa tam postać od razu, bez konieczności najpierw zaznaczać heks

@@ -80,14 +80,31 @@ export function createDefaultState(gameData) {
         journal: [],      // [{ id, day, text, ts }]
 
         map: {
-            hexes: {},        // { [coordId]: HexEntry } — brak klucza = nieodkryty heks. Patrz panels/map.js.
-                               // HexEntry (root/samodzielny): { discovered, regionRoot: null, typeResult, typeRoll,
-                               //   tiles, tilesTotal, tilesRoll, level, levelRoll, levelGapFallback, tests: [] }
-                               // HexEntry (członek regionu): { discovered, regionRoot: <coordId root>, tests: [] }
-                               // — dane typu/poziomu lokacji dla członka regionu czyta się z heksu-roota.
-            position: null,    // coordId aktualnej pozycji postaci na mapie, albo null (jeszcze nieustawiona)
-            pendingRegion: null // { rootId, tilesTotal, remaining } — aktywny tryb "kliknij N pól, żeby dodać
-                                 // do regionu"; null = brak aktywnego wyboru regionu
+            // Mapa jest podzielona na Sektory (osobne siatki 12x10 heksów) rozciągające się na
+            // wschód/zachód od startowego Sektora 0 — patrz panels/map.js#navigateSegment.
+            // Sektory tworzone są leniwie (dopiero przy kliknięciu "Na wschód/zachód"), więc
+            // `segments` na starcie zawiera tylko klucz "0". Segment ID to liczba całkowita
+            // (0 = start, dodatnie = wschód, ujemne = zachód); etykieta "W{n}"/"Z{n}" powstaje
+            // z niej dopiero przy renderze (patrz segmentLabel).
+            segments: {
+                "0": {
+                    hexes: {},        // { [coordId]: HexEntry } — brak klucza = nieodkryty heks. Patrz panels/map.js.
+                                       // HexEntry (root/samodzielny): { discovered, regionRoot: null, typeResult, typeRoll,
+                                       //   tiles, tilesTotal, tilesRoll, level, levelRoll, levelGapFallback, tests: [] }
+                                       // HexEntry (członek regionu): { discovered, regionRoot: <coordId root>, tests: [] }
+                                       // — dane typu/poziomu lokacji dla członka regionu czyta się z heksu-roota.
+                    pendingRegion: null // { rootId, tilesTotal, remaining } — aktywny tryb "kliknij N pól, żeby dodać
+                                         // do regionu"; null = brak aktywnego wyboru regionu
+                }
+            },
+            currentSegment: 0, // ID Sektora aktualnie wyświetlanego na mapie — czysto widokowe, NIE
+                                // zmienia się przy przesunięciu postaci (patrz panels/map.js#navigateSegment
+                                // vs moveHere).
+            position: null,    // { segment, coord } aktualnej pozycji postaci na mapie, albo null
+                                // (jeszcze nieustawiona)
+            nextMoveFreeSupply: false // Flaga ustawiana przez efekt Wydarzenia Podróży "Następny Ruch
+                                // kosztuje 0 Zasoby" (patrz travelEvents.js) — konsumowana (zresetowana
+                                // do false) przez najbliższy kolejny ruch w panels/map.js#moveHere.
         },
 
         events: []        // [{ id, day, type, text, ts, at }] — patrz eventLog.js: questy, przedmioty,
@@ -103,29 +120,48 @@ export function createDefaultState(gameData) {
  *  danych) przechodzą przez tę funkcję bez zmian. Mutuje i zwraca ten sam obiekt `loaded`. */
 export function migrateLoadedState(loaded) {
     if (!loaded || typeof loaded !== "object") return loaded;
-    const ch = loaded.character;
-    if (!ch) return loaded;
 
-    if (Array.isArray(ch.gear)) {
-        const map = {};
-        for (const slot of ch.gear) {
-            if (!slot || !slot.name) continue;
-            map[sanitizeNameToKey(slot.name)] = {
-                owned: true,
-                equipped: true,
-                wear: typeof slot.wear === "number" ? slot.wear : (slot.maxWear ?? 3)
-            };
+    const ch = loaded.character;
+    if (ch) {
+        if (Array.isArray(ch.gear)) {
+            const map = {};
+            for (const slot of ch.gear) {
+                if (!slot || !slot.name) continue;
+                map[sanitizeNameToKey(slot.name)] = {
+                    owned: true,
+                    equipped: true,
+                    wear: typeof slot.wear === "number" ? slot.wear : (slot.maxWear ?? 3)
+                };
+            }
+            ch.gear = map;
         }
-        ch.gear = map;
+
+        if (ch.glider && Array.isArray(ch.glider.mods)) {
+            const map = {};
+            for (const slot of ch.glider.mods) {
+                if (!slot || !slot.name) continue;
+                map[sanitizeNameToKey(slot.name)] = { owned: true, installed: true };
+            }
+            ch.glider.mods = map;
+        }
     }
 
-    if (ch.glider && Array.isArray(ch.glider.mods)) {
-        const map = {};
-        for (const slot of ch.glider.mods) {
-            if (!slot || !slot.name) continue;
-            map[sanitizeNameToKey(slot.name)] = { owned: true, installed: true };
-        }
-        ch.glider.mods = map;
+    // Migracja Mapy: stary (płaski, jednosegmentowy) kształt state.map — { hexes, position: coordId,
+    // pendingRegion } — do nowego, wielosegmentowego { segments: { [segId]: { hexes, pendingRegion } },
+    // currentSegment, position: { segment, coord } }. Segment startowy to zawsze "0". Rozpoznajemy
+    // stary kształt po braku `segments` (nowe zapisy, już w tym kształcie, przechodzą bez zmian).
+    if (loaded.map && !loaded.map.segments) {
+        const oldMap = loaded.map;
+        loaded.map = {
+            segments: {
+                "0": {
+                    hexes: oldMap.hexes || {},
+                    pendingRegion: oldMap.pendingRegion ?? null
+                }
+            },
+            currentSegment: 0,
+            position: oldMap.position ? { segment: 0, coord: oldMap.position } : null
+        };
     }
 
     return loaded;

@@ -5,6 +5,7 @@ import { getState, touch } from "../store.js";
 import { rollDie, rollD2, rollD5, rollD10, rollD100, findInRangeTable, parseRange, clamp, uid, escapeHtml } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
+import { applyTravelEventEffects, renderTravelEventEffects } from "../travelEvents.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
 const STAT_NAMES = { H: "Hardy", K: "Kumaty", R: "Rzutki", C: "Cwany", F: "Fachowy" };
@@ -49,7 +50,7 @@ const ui = {
     biome: { key: "desert", landmark: null, event: null },
     uniqueLoc: { result: null },
     settlement: { name: null, focus: null, trait: null, event: null },
-    travel: { result: null },
+    travel: { result: null, effects: null },
     carousing: { result: null },
     companions: { candidates: null, seek: null, hiredKey: null },
     oddJobs: { candidates: null, blockedMsg: null },
@@ -645,6 +646,7 @@ export function render(root, { state, data }) {
                 <h2>Wydarzenie Podróży (d100)</h2>
                 <button class="btn" data-action="roll-travel-event">Rzuć d100</button>
                 ${ui.travel.result ? renderGenericEntry(ui.travel.result, "d100") : ""}
+                ${renderTravelEventEffects(ui.travel.effects)}
             </div>
             <div class="card">
                 <h2>Wydarzenie Hulanki (d100)</h2>
@@ -867,10 +869,16 @@ function rollSettlementEvent(data) {
 }
 
 function rollTravelEvent(data) {
+    const state = getState();
     const table = data.economy.travel_events_table_d100;
     const r = rollD100Table(table);
     ui.travel.result = r;
+    // Efekty mechaniczne naliczają się automatycznie tam, gdzie da się je jednoznacznie
+    // rozpoznać (patrz travelEvents.js) — ta sama logika co przy Wydarzeniu Podróży wywołanym
+    // z mapy po przesunięciu postaci (panels/map.js#rollMapTravelEvent), reużyta 1:1.
+    ui.travel.effects = r.entry ? applyTravelEventEffects(state, r.entry.text) : { applied: [], manual: [] };
     logRoll("Wydarzenie Podróży (d100)", `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
+    touch();
     rerender();
 }
 
