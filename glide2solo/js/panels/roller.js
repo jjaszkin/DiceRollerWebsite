@@ -55,7 +55,11 @@ const ui = {
     oddJobs: { candidates: null, blockedMsg: null },
     oracle: { yesNo: null, wordBiome: "desert", word: null },
     daySeq: { day: null, checked: {} },
-    settlementAction: { guildId: null } // wybrana gildia dla akcji Osady kierowanych do gildii (donacje, poprawa relacji)
+    settlementAction: {
+        guildId: null, // wybrana gildia dla akcji Osady kierowanych do gildii (donacje, poprawa relacji)
+        scrapQty: 1,   // liczba sztuk Złomu do sprzedaży/zakupu w jednej transakcji (dla bonusu/rabatu 3+)
+        supplyQty: 1   // liczba sztuk Zasobów do zakupu w jednej transakcji (bez rabatu — Zasoby go nie mają)
+    }
 };
 
 let currentRoot = null;
@@ -270,9 +274,13 @@ function renderScrapActions(cat) {
     return `
         <div style="margin-bottom:10px;">
             <div class="entry-meta"><span>${humanizeKey("scrap")}</span></div>
-            <div class="counter-controls" style="gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-sm tt" data-action="scrap-sell" data-tip="${escapeHtml(cat.sell)}">Sprzedaj 1 Złom</button>
-                <button class="btn btn-sm tt" data-action="scrap-buy" data-tip="${escapeHtml(cat.buy)}">Kup 1 Złom</button>
+            <div class="counter-controls" style="gap:8px; flex-wrap:wrap; align-items:center;">
+                <label class="counter-label" style="display:flex; align-items:center; gap:6px;">
+                    Ilość
+                    <input type="number" data-action="scrap-qty" value="${ui.settlementAction.scrapQty}" min="1" style="width:60px;">
+                </label>
+                <button class="btn btn-sm tt" data-action="scrap-sell" data-tip="${escapeHtml(cat.sell)}">Sprzedaj Złom</button>
+                <button class="btn btn-sm tt" data-action="scrap-buy" data-tip="${escapeHtml(cat.buy)}">Kup Złom</button>
             </div>
         </div>
     `;
@@ -282,8 +290,12 @@ function renderSupplyActions(cat) {
     return `
         <div style="margin-bottom:10px;">
             <div class="entry-meta"><span>${humanizeKey("supply")}</span></div>
-            <div class="counter-controls" style="gap:8px; flex-wrap:wrap;">
-                <button class="btn btn-sm tt" data-action="supply-buy" data-tip="${escapeHtml(cat.buy)}">Kup 1 Zasób</button>
+            <div class="counter-controls" style="gap:8px; flex-wrap:wrap; align-items:center;">
+                <label class="counter-label" style="display:flex; align-items:center; gap:6px;">
+                    Ilość
+                    <input type="number" data-action="supply-qty" value="${ui.settlementAction.supplyQty}" min="1" style="width:60px;">
+                </label>
+                <button class="btn btn-sm tt" data-action="supply-buy" data-tip="${escapeHtml(cat.buy)}">Kup Zasoby</button>
             </div>
         </div>
     `;
@@ -982,36 +994,52 @@ function getSelectedGuild(data) {
     return guilds.find(g => g.id === ui.settlementAction.guildId) || guilds[0] || null;
 }
 
+/** Liczba sztuk (min. 1, całkowita) do transakcji Złomu/Zasobów, z pola number input w karcie
+ *  Akcje Osady — `field` to "scrapQty" albo "supplyQty" (patrz ui.settlementAction). */
+function getQty(field) {
+    const n = parseInt(ui.settlementAction[field], 10);
+    return Number.isFinite(n) && n >= 1 ? n : 1;
+}
+
 function sellScrap() {
     const state = getState();
-    const roll = rollD5();
-    state.character.resources.credits += roll;
+    const qty = getQty("scrapQty");
+    const rolls = Array.from({ length: qty }, () => rollD5());
+    const rollSum = rolls.reduce((a, b) => a + b, 0);
+    const bonus = qty >= 3 ? qty : 0; // "Sprzedaż 3+ Złom w jednej transakcji: bonus 1 Kredyt za każdy sprzedany Złom."
+    const gained = rollSum + bonus;
+    state.character.resources.credits += gained;
     const scrap = state.character.glider.scrap;
-    scrap.cur = clamp(scrap.cur - 1, 0, scrap.max);
-    logEvent(state, "settlement-action", `Sprzedano 1 Złom za ${roll} Kredytów (d5=${roll}).`);
+    scrap.cur = clamp(scrap.cur - qty, 0, scrap.max);
+    logEvent(state, "settlement-action", `Sprzedano ${qty} Złom za ${gained} Kredytów (d5: ${rolls.join("+")}=${rollSum}${bonus ? `, bonus 3+: +${bonus}` : ""}).`);
     touch();
     rerender();
 }
 
 function buyScrap() {
     const state = getState();
-    const d10 = rollD10();
-    const cost = d10 + 1;
+    const qty = getQty("scrapQty");
+    const rolls = Array.from({ length: qty }, () => rollD10());
+    const rollSum = rolls.reduce((a, b) => a + b, 0) + qty; // 1d10+1 za sztukę
+    const discount = qty >= 3 ? qty : 0; // "Zakup 3+ Złom w jednej transakcji: rabat 1 Kredyt na każdy Złom."
+    const cost = rollSum - discount;
     state.character.resources.credits -= cost;
     const scrap = state.character.glider.scrap;
-    scrap.cur = clamp(scrap.cur + 1, 0, scrap.max);
-    logEvent(state, "settlement-action", `Kupiono 1 Złom za ${cost} Kredytów (d10=${d10}+1).`);
+    scrap.cur = clamp(scrap.cur + qty, 0, scrap.max);
+    logEvent(state, "settlement-action", `Kupiono ${qty} Złom za ${cost} Kredytów (d10: ${rolls.join("+")}, +${qty} za sztuki${discount ? `, rabat 3+: -${discount}` : ""}).`);
     touch();
     rerender();
 }
 
 function buySupply() {
     const state = getState();
-    const roll = rollD5();
-    state.character.resources.credits -= roll;
+    const qty = getQty("supplyQty");
+    const rolls = Array.from({ length: qty }, () => rollD5());
+    const cost = rolls.reduce((a, b) => a + b, 0);
+    state.character.resources.credits -= cost;
     const supply = state.character.glider.supply;
-    supply.cur = clamp(supply.cur + 1, 0, supply.max);
-    logEvent(state, "settlement-action", `Kupiono 1 Zasób za ${roll} Kredytów (d5=${roll}).`);
+    supply.cur = clamp(supply.cur + qty, 0, supply.max);
+    logEvent(state, "settlement-action", `Kupiono ${qty} Zasób(y) za ${cost} Kredytów (d5: ${rolls.join("+")}).`);
     touch();
     rerender();
 }
@@ -1170,6 +1198,8 @@ function wireEvents(root) {
         const action = el.dataset.action;
         if (action === "challenge-bonus") ui.challenge.bonus = parseFloat(el.value) || 0;
         else if (action === "challenge-difficulty") ui.challenge.difficulty = parseFloat(el.value) || 0;
+        else if (action === "scrap-qty") ui.settlementAction.scrapQty = Math.max(1, parseInt(el.value, 10) || 1);
+        else if (action === "supply-qty") ui.settlementAction.supplyQty = Math.max(1, parseInt(el.value, 10) || 1);
     });
 
     root.addEventListener("click", (e) => {
