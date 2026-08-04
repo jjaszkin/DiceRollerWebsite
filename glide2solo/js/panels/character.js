@@ -156,7 +156,7 @@ export function render(root, { state, data }) {
                 ${counterRow({ label: "Prędkość", curPath: "character.glider.speed.cur", curVal: ch.glider.speed.cur, maxPath: "character.glider.speed.max", maxVal: ch.glider.speed.max, editableMax: true })}
                 ${counterRow({ label: "Złom", curPath: "character.glider.scrap.cur", curVal: ch.glider.scrap.cur, maxPath: "character.glider.scrap.max", maxVal: ch.glider.scrap.max, editableMax: true })}
                 ${counterRow({ label: "Relikty", curPath: "character.glider.relics.cur", curVal: ch.glider.relics.cur, maxPath: "character.glider.relics.max", maxVal: ch.glider.relics.max, editableMax: true })}
-                <div class="counter-row"><div class="counter-label">Cargo slots</div><div class="counter-value">${ch.glider.cargoSlots}</div></div>
+                <div class="counter-row"><div class="counter-label">Przestrzeń załadunkowa</div><div class="counter-value">${ch.glider.cargoSlots}</div></div>
                 <h3 style="margin-top:12px;">Zainstalowane mody</h3>
                 <p class="cap-indicator ${installedMods.length >= modsMax ? "full" : ""}">Zainstalowane: ${installedMods.length} / ${modsMax}</p>
                 ${installedMods.length ? `

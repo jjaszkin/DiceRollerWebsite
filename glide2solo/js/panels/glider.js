@@ -4,7 +4,7 @@
 // glidera (Zużycie/Zasoby/Prędkość/Złom/Relikty) zostają na dashboardzie (panel Postać).
 import { getState, getData, touch } from "../store.js";
 import { escapeHtml, clamp } from "../utils.js";
-import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES } from "../gearData.js";
+import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES, applyTierStatBonus } from "../gearData.js";
 import { unlockedGuildItemRewards } from "../rewardsData.js";
 import { logEvent } from "../eventLog.js";
 
@@ -191,9 +191,24 @@ function wireEvents(root) {
         const maxTier = (data.gear?.glider_upgrades?.[key] || []).length;
         if (!state.character.glider.upgrades) state.character.glider.upgrades = {};
         const upgrades = state.character.glider.upgrades;
+        const tiers = data.gear?.glider_upgrades?.[key] || [];
         const before = upgrades[key] || 0;
         const next = clamp(before + delta, 0, maxTier);
         upgrades[key] = next;
+        // Nakładamy/cofamy bonus do statystyk glidera (np. "Max Złom +4") krok po kroku, tier po
+        // tierze, żeby zadziałało też przy większym skoku niż ±1 (choć przyciski dają tylko ±1) —
+        // patrz gearData.js#applyTierStatBonus.
+        if (next > before) {
+            for (let t = before + 1; t <= next; t++) {
+                const item = tiers.find(it => it.tier === t);
+                if (item) applyTierStatBonus(state, item.effect, +1);
+            }
+        } else if (next < before) {
+            for (let t = before; t > next; t--) {
+                const item = tiers.find(it => it.tier === t);
+                if (item) applyTierStatBonus(state, item.effect, -1);
+            }
+        }
         if (next > before) {
             const label = TIERED_UPGRADE_CATEGORIES.find(c => c.key === key)?.label ?? key;
             logEvent(state, "glider-upgrade", `Ulepszono magazynowanie (${label}) do tieru ${next}.`);

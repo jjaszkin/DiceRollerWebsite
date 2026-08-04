@@ -2,7 +2,7 @@
 // gear.json do kart, slugi kluczy stanu, listy "aktualnie założone/zainstalowane" używane
 // zarówno w katalogach (panels/gear.js, panels/glider.js) jak i w skrócie na dashboardzie
 // (panels/character.js).
-import { sanitizeNameToKey } from "./utils.js";
+import { sanitizeNameToKey, getPath, setPath } from "./utils.js";
 import { unlockedGuildItemRewards } from "./rewardsData.js";
 
 /** Slug używany jako klucz w state.character.gear / state.character.glider.mods —
@@ -60,6 +60,33 @@ export const TIERED_UPGRADE_CATEGORIES = [
     { key: "supply_management_tiers", label: "Magazynowanie Zasobów" },
     { key: "relic_preservation_tiers", label: "Konserwacja Reliktów" }
 ];
+
+/** Niektóre poziomy tierowanych ulepszeń magazynowania dają stały bonus do max. statystyki
+ *  glidera wprost w treści efektu (np. "Max Złom +4", patrz gear.json) — reszta poziomów to
+ *  zdolności sytuacyjne (bez wpływu na statystyki), więc dopasowanie jest opcjonalne (brak
+ *  trafienia = brak zmiany stanu). Wzorce po kolei sprawdzane na treści efektu; ścieżka wskazuje
+ *  pole w state, które ma zostać podniesione/obniżone o wyłuskaną liczbę. */
+const TIER_STAT_BONUS_PATTERNS = [
+    { re: /Max Złom \+(\d+)/i, path: "character.glider.scrap.max" },
+    { re: /Max Zasoby \+(\d+)/i, path: "character.glider.supply.max" },
+    { re: /Max Reliktó?w? \+(\d+)/i, path: "character.glider.relics.max" },
+    { re: /Max Przestrzeń Załadunkowa \+(\d+)/i, path: "character.glider.cargoSlots" }
+];
+
+/** Nakłada (sign=+1) albo cofa (sign=-1) trwały bonus do statystyki glidera opisany w treści
+ *  efektu jednego poziomu tierowanego ulepszenia — wołane raz na każdy pojedynczy stopień
+ *  zmiany poziomu (patrz panels/glider.js#adjust-upgrade-tier), więc przy zejściu o tier w dół
+ *  bonus jest symetrycznie odejmowany. Mutuje przekazany state; wywołujący odpowiada za touch(). */
+export function applyTierStatBonus(state, effectText, sign) {
+    if (!effectText) return;
+    for (const { re, path } of TIER_STAT_BONUS_PATTERNS) {
+        const m = re.exec(effectText);
+        if (!m) continue;
+        const amount = parseInt(m[1], 10) * sign;
+        const cur = getPath(state, path) || 0;
+        setPath(state, path, cur + amount);
+    }
+}
 
 /** Plecak Odkrywcy ma specjalny efekt (patrz gear.json): "Max Sprzęt +2 (ten Sprzęt nie
  *  zajmuje slotu)" — założony podnosi efektywny limit noszonego sprzętu o 2 i sam się do

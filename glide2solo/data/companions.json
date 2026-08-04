@@ -106,7 +106,7 @@
       "description": "Ekspertka od zbieractwa, traktująca ruiny jak własny plac zabaw i potrafiąca znaleźć wartość nawet w zardzewiałej śrubie.",
       "key_stats": ["Kumaty", "Rzutki", "Fachowy"],
       "passive_name": "Krzepki Tragarz",
-      "passive_text": "Pojemność Cargo Hold Twojego glidera zwiększa się o +5 slotów, dopóki Vesper jest Twoim towarzyszem.",
+      "passive_text": "Pojemność Przestrzeni Załadunkowej Twojego glidera zwiększa się o +5 slotów, dopóki Vesper jest Twoim towarzyszem.",
       "stamina": 6,
       "hire_cost": "70 Kredyty i min. R2"
     },

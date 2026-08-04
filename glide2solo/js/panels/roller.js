@@ -27,7 +27,7 @@ const ORACLE_WORD_TABLES = {
 // Stan zaznaczeń trzymany lokalnie w ui.daySeq (patrz niżej) — resetuje się automatycznie,
 // gdy state.day.current się zmieni (czyli po akcji Camp w nagłówku).
 const DAY_SEQUENCE_STEPS = [
-    { id: "move", label: "Ruch", desc: "Przesuń się o jeden heks w wybranym kierunku." },
+    { id: "move", label: "Ruch", desc: "Przesuń się o Prędkość glidera (w heksach) w wybranym kierunku." },
     { id: "loctype", label: "Typ i Poziom Lokacji", desc: "Jeśli to nowy heks, rzuć Typ Lokacji, a jeśli trzeba — także Poziom Lokacji." },
     { id: "action", label: "Akcja w Lokacji", desc: "Wykonaj Eksplorację/Test właściwy dla biomu (Pustynia/Ruiny/Zieleń/Unikalna Lokacja) albo Akcje Osady." },
     { id: "travel", label: "Wydarzenie Podróży", desc: "Opcjonalnie: rzuć Wydarzenie Podróży, jeśli scenariusz tego wymaga." },

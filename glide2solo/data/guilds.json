@@ -133,9 +133,9 @@
         "the_iron_trials": "Poszukiwacze chcący dołączyć do gildii muszą przejść i ukończyć \"Iron Trials\".",
         "entering_the_trial": "Odwiedź dowolną halę Gildii Żelaza w osadzie i wydaj 20 Kredyty i 1 Zasoby.",
         "the_challenge": "Musisz wykonać dwa kolejne testy Hardy z Dużym Sukcesem oraz jeden test Rzutki z Dużym Sukcesem.",
-        "the_reward": "Jeśli się uda, zyskujesz stały +1 Max Wytrzymałość (limit raz) i +1 Max Rozpęd. Jeśli zawiedziesz, spadasz do 0 Staminy i musisz natychmiast rzucić na Exhausted Table (uzdrowiciele gildii wyciągają Cię z podłogi i wyrzucają na zewnątrz).",
+        "the_reward": "Jeśli się uda, zyskujesz stały +1 Max Wytrzymałość (limit raz) i +1 Max Rozpęd. Jeśli zawiedziesz, spadasz do 0 Wytrzymałości i musisz natychmiast rzucić na Tabelę Wyczerpania (uzdrowiciele gildii wyciągają Cię z podłogi i wyrzucają na zewnątrz).",
         "the_heavy_load": "Ponieważ Gildia Żelaza ceni siłę, często modyfikuje swoje glidery, by przenosić dodatkowy ciężar jako pokaz mocy.",
-        "iron_freight": "Po osiągnięciu Poziom Więzi 2 z gildią, możesz wydać 100 Kredyty, by zwiększyć pojemność cargo hold glidera do przechowywania dodatkowego Złom i Zasoby o 3 każdy. Max raz na postać."
+        "iron_freight": "Po osiągnięciu Poziom Więzi 2 z gildią, możesz wydać 100 Kredyty, by zwiększyć pojemność przestrzeni załadunkowej glidera do przechowywania dodatkowego Złom i Zasoby o 3 każdy. Max raz na postać."
       },
       "missions": [
         {

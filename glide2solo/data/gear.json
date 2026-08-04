@@ -102,7 +102,7 @@
     "supply_management_tiers": [
       {"tier": 1, "name": "Dodatkowe Bukłaki", "cost": "30cr + 1 Złom", "effect": "Max Zasoby +2."},
       {"tier": 2, "name": "Siatka Wychwytująca Parę", "cost": "75cr + 3 Złom", "effect": "Przy akcji Camp rzuć d10. Na 7+ zyskaj +1 Zasoby."},
-      {"tier": 3, "name": "Wzmocnione Komory Magazynowe", "cost": "150cr + 5 Złom", "effect": "Max Cargo +3."}
+      {"tier": 3, "name": "Wzmocnione Komory Magazynowe", "cost": "150cr + 5 Złom", "effect": "Max Przestrzeń Załadunkowa +3."}
     ],
     "relic_preservation_tiers": [
       {"tier": 1, "name": "Wyściełana Kapsuła Stazy", "cost": "120cr + 2 Złom", "effect": "Przy sprzedaży, wymianie lub handlu Reliktem za inną nagrodę, rzuć d10. Na 10 zyskaj +1 Sława oprócz innych nagród."},
