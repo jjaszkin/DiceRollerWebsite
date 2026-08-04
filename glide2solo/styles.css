@@ -561,6 +561,119 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 
 .summary-empty { color: var(--fg-dim); font-style: italic; font-size: 0.85rem; margin: 4px 0; }
 
+/* ── Mapa (siatka heksów) ──────────────────────────────────────────── */
+
+.map-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--bg-2);
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+}
+
+.hex-grid-wrap {
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.hex-grid {
+    position: relative;
+}
+
+.hex {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    background: var(--bg-2);
+    color: var(--fg-dim);
+    border: 1.5px solid var(--line-strong);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    font-family: var(--mono);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.hex:hover { background: var(--bg-3); border-color: var(--fg-1); }
+
+.hex--filled {
+    background: var(--bg-3);
+    color: var(--fg-0);
+    border-color: var(--fg-2);
+}
+.hex--filled:hover { background: var(--bg-3); border-color: var(--fg-1); }
+
+.hex--filled[data-loctype="Teren Nieprzejezdny"] { background: var(--bg-1); border-color: var(--line-strong); }
+.hex--filled[data-loctype="Osada"] { border-color: var(--fg-1); }
+.hex--filled[data-loctype="Unikalna Lokacja"] { border-color: var(--fg-0); }
+
+.hex--member { border-style: dashed; }
+
+.hex--unique {
+    border-width: 2px;
+    border-color: var(--fg-1);
+}
+
+.hex--selected { border-color: var(--fg-0); border-width: 2px; }
+
+.hex--position::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 0 2px var(--fg-0);
+    pointer-events: none;
+}
+
+.hex-coord {
+    font-size: 0.62rem;
+    letter-spacing: 0.03em;
+}
+
+.hex-abbr {
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.hex-tests {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+
+.hex-tests h4 {
+    margin: 0 0 8px;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-2);
+}
+
+.hex-test-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.hex-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+
 /* ── Footer ─────────────────────────────────────────────────────────── */
 
 .app-footer {

@@ -12,6 +12,7 @@ import * as gearPanel from "./panels/gear.js";
 import * as gliderPanel from "./panels/glider.js";
 import * as rollerPanel from "./panels/roller.js";
 import * as questsPanel from "./panels/quests.js";
+import * as mapPanel from "./panels/map.js";
 import * as journalPanel from "./panels/journal.js";
 
 const PANELS = {
@@ -20,6 +21,7 @@ const PANELS = {
     glider: gliderPanel,
     roller: rollerPanel,
     quests: questsPanel,
+    map: mapPanel,
     journal: journalPanel
 };
 

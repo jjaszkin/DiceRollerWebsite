@@ -79,6 +79,17 @@ export function createDefaultState(gameData) {
 
         journal: [],      // [{ id, day, text, ts }]
 
+        map: {
+            hexes: {},        // { [coordId]: HexEntry } — brak klucza = nieodkryty heks. Patrz panels/map.js.
+                               // HexEntry (root/samodzielny): { discovered, regionRoot: null, typeResult, typeRoll,
+                               //   tiles, tilesTotal, tilesRoll, level, levelRoll, levelGapFallback, tests: [] }
+                               // HexEntry (członek regionu): { discovered, regionRoot: <coordId root>, tests: [] }
+                               // — dane typu/poziomu lokacji dla członka regionu czyta się z heksu-roota.
+            position: null,    // coordId aktualnej pozycji postaci na mapie, albo null (jeszcze nieustawiona)
+            pendingRegion: null // { rootId, tilesTotal, remaining } — aktywny tryb "kliknij N pól, żeby dodać
+                                 // do regionu"; null = brak aktywnego wyboru regionu
+        },
+
         events: []        // [{ id, day, type, text, ts, at }] — patrz eventLog.js: questy, przedmioty,
                            // ulepszenia glidera, traity, zmiany statystyk, podsumowania nowego dnia
     };

@@ -69,19 +69,23 @@ function rerender() {
     if (currentRoot) render(currentRoot, { state: getState(), data: currentData });
 }
 
-function rollTiles(tilesNotation) {
+// Eksportowane niżej (rollTiles, needsTileRoll, resolveLocationLevel, rollD100Table,
+// renderGenericEntry, renderEventEntry, renderUniqueLocationResult) — reużywane też przez
+// panels/map.js, żeby nie duplikować parsowania/renderowania tych samych tabel z mechanics.json
+// przy rzutach powiązanych z konkretnym heksem mapy.
+export function rollTiles(tilesNotation) {
     if (tilesNotation === "d2") return rollD2();
     if (tilesNotation === "d5") return rollD5();
     return null;
 }
 
-function needsTileRoll(tiles) {
+export function needsTileRoll(tiles) {
     return typeof tiles === "string";
 }
 
 /** Tabela Poziomu Lokacji ma udokumentowaną lukę w druku dla rzutu 9 (level: null).
  *  Defensywnie: użyj najbliższego niższego wpisu z poprawnym poziomem. */
-function resolveLocationLevel(table, roll) {
+export function resolveLocationLevel(table, roll) {
     const entry = findInRangeTable(table, roll, "roll");
     if (entry && entry.level !== null && entry.level !== undefined) {
         return { level: entry.level, gapFallback: false };
@@ -122,7 +126,7 @@ function resolveRangeEntry(table, roll, { rangeField = "range", valueField = nul
 }
 
 /** Rzuca d100 (2d10 wg mechaniki podręcznika) i rozwiązuje wynik w tabeli zakresowej. */
-function rollD100Table(table, opts) {
+export function rollD100Table(table, opts) {
     const { total } = rollD100();
     const { entry, gapFallback } = resolveRangeEntry(table, total, opts);
     return { roll: total, entry, gapFallback };
@@ -211,7 +215,7 @@ function renderEventOutcomes(entry) {
 }
 
 /** Generyczny render dla prostych tabel zakresowych (name i/lub description i/lub text). */
-function renderGenericEntry(r, rangeLabel = "d100") {
+export function renderGenericEntry(r, rangeLabel = "d100") {
     const e = r.entry;
     if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
     return `
@@ -226,7 +230,7 @@ function renderGenericEntry(r, rangeLabel = "d100") {
 }
 
 /** Render dla tabel eventów (Pustynia/Ruiny/Zieleń events + Wydarzenia Osady). */
-function renderEventEntry(r, rangeLabel = "d100") {
+export function renderEventEntry(r, rangeLabel = "d100") {
     const e = r.entry;
     if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
     return `
@@ -251,7 +255,7 @@ function renderUniqueAction(a) {
     return parts.join("");
 }
 
-function renderUniqueLocationResult(r) {
+export function renderUniqueLocationResult(r) {
     const e = r.entry;
     if (!e) return `<p class="placeholder">Brak dopasowania w tabeli.</p>`;
     return `
