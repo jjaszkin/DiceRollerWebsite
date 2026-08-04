@@ -23,7 +23,6 @@ export function createDefaultState(gameData) {
             name: "",
             role: null,
             stats: { H: 0, K: 0, R: 0, C: 0, F: 0 },
-            proficientStats: [],
             startingBonusTrait: "",
             goal: "",
             goalProgress: 0,
@@ -57,6 +56,13 @@ export function createDefaultState(gameData) {
                 key: null,       // "name" wybranego towarzysza z companions_table_d100
                 stamina: { cur: 0, max: 0 },
                 bondPoints: 0
+                // proficientStats (klucze H/K/R/C/F, w których towarzysz jest biegły) celowo NIE ma
+                // tu domyślnej wartości — patrz character.js#companionKeyStatKeys/render(): brak pola
+                // oznacza "użyj domyślnych Key Stats towarzysza", ustawianych realnie dopiero przy
+                // wyborze towarzysza (select-companion) albo pierwszym kliknięciu checkboxa
+                // (auto-vivify, toggle-companion-proficient) — tak jak przy nagrodach gildii w
+                // gear.js/glider.js. Jawne `[]` w defaultach zepsułoby fallback dla starszych zapisów
+                // (mergeWithDefaults nadpisałby brakujące pole pustą tablicą zamiast zostawić undefined).
             }
         },
 

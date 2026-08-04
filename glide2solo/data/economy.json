@@ -117,7 +117,7 @@
       "0": {"name": "Znajomek", "effect": "Nic!"},
       "1": {"name": "Przyjaciel", "effect": "Możesz teraz używać Passive towarzysza."},
       "2": {"name": "Najlepszy Przyjaciel", "effect": "Towarzysz +1 max Wytrzymałość."},
-      "3": {"name": "Uwielbiany", "effect": "Oznacz kolejny Stat jako proficient."},
+      "3": {"name": "Uwielbiany", "effect": "Oznacz kolejny Stat jako biegły."},
       "4": {"name": "Ukochany", "effect": "Towarzysz zyskuje +1 max Wytrzymałość. Podczas uczestnictwa w Wyzwanie, gracz rzuca d10 - na 7+ towarzysz nie zużywa Staminy, by pomóc graczowi."}
     },
     "bond_tests": {

@@ -16,6 +16,19 @@ const STAT_ORDER = ["H", "K", "R", "C", "F"];
 // ma sam opis PL, bez angielskiej nazwy).
 const STAT_ENGLISH_NAMES = { H: "Hardy", K: "Knowledgeable", R: "Resourceful", C: "Connected", F: "Focused" };
 
+/** Domyślne Biegłości (ang. „proficient”) towarzysza = jego Key Stats z companions.json —
+ *  patrz companions.json#rules.roles: „jeśli towarzysz ma Key Stat pasujący do wykonywanego
+ *  testu, gracz może wydać 1 Wytrzymałość towarzysza, by zyskać +1 do rzutu (max raz)”. Nagroda
+ *  Poziomu Więzi „Uwielbiany” (economy.json#companion_bond_rewards) pozwala oznaczyć dodatkowy
+ *  Stat jako biegły — stąd checkboxy są edytowalne, nie tylko informacyjne. Mapujemy tekstowe
+ *  nazwy Key Stats (np. "Kumaty"/"Hardy") na klucze H/K/R/C/F przez mechanics.stats[].name. */
+function companionKeyStatKeys(mechanics, companion) {
+    if (!companion) return [];
+    return (companion.key_stats || [])
+        .map(name => mechanics.stats.find(s => s.name === name)?.key)
+        .filter(Boolean);
+}
+
 /** Opisy do hover-tooltipów Zasobów postaci i Glidera — krótkie wyjaśnienie „czym to jest”
  *  plus angielska nazwa z oryginału (mechanika sama jest po angielsku w podręczniku źródłowym,
  *  patrz mechanics.json przed tłumaczeniem PL, commit fa69bd7). Trzymane tu lokalnie (nie w
@@ -140,15 +153,10 @@ export function render(root, { state, data }) {
                 <h2>Statystyki</h2>
                 ${STAT_ORDER.map(key => {
                     const statDef = mechanics.stats.find(s => s.key === key);
-                    const proficient = ch.proficientStats.includes(key);
                     const statTip = `${statDef.represents || ""} (ang. „${STAT_ENGLISH_NAMES[key]}”)`;
                     return `
                         <div class="counter-row">
-                            <div class="counter-label tt" data-tip="${escapeHtml(statTip)}">${statDef.name} <span class="abbr">${key}</span>
-                                <label style="margin-left:8px;">
-                                    <input type="checkbox" data-action="toggle-proficient" data-stat="${key}" ${proficient ? "checked" : ""}> <span class="abbr">proficient</span>
-                                </label>
-                            </div>
+                            <div class="counter-label tt" data-tip="${escapeHtml(statTip)}">${statDef.name} <span class="abbr">${key}</span></div>
                             <div class="counter-controls">
                                 <button class="btn btn-sm btn-icon" data-action="adjust" data-path="character.stats.${key}" data-delta="-1" data-min="0" data-max="5">−</button>
                                 <span class="counter-value">${ch.stats[key]}</span>
@@ -219,10 +227,27 @@ export function render(root, { state, data }) {
                 ${ch.companion.key ? (() => {
                     const c = companions.find(x => x.name === ch.companion.key);
                     const level = bondLevelFromPoints(ch.companion.bondPoints);
+                    const defaultProficient = companionKeyStatKeys(mechanics, c);
+                    const proficientStats = ch.companion.proficientStats ?? defaultProficient;
                     return `
                         <p>${c ? c.description : ""}</p>
                         ${c ? `<p><strong>Key Stats:</strong> ${c.key_stats.join(", ")} — <strong>${c.passive_name}:</strong> ${c.passive_text}</p>` : ""}
                         ${counterRow({ label: "Wytrzymałość towarzysza", curPath: "character.companion.stamina.cur", curVal: ch.companion.stamina.cur, maxPath: "character.companion.stamina.max", maxVal: ch.companion.stamina.max, editableMax: true })}
+                        <div class="counter-row">
+                            <div class="counter-label tt" data-tip="Przy Rzucie Wyzwania w Stat, w którym towarzysz jest biegły, gracz może wydać 1 Wytrzymałość towarzysza, by zyskać +1 do rzutu (max raz na test). Domyślnie biegli w swoich Key Stats; Poziom Więzi „Uwielbiany” pozwala oznaczyć dodatkowy Stat.">Biegłość towarzysza</div>
+                        </div>
+                        <div class="item-card-toggles" style="margin-bottom:10px;">
+                            ${STAT_ORDER.map(key => {
+                                const statDef = mechanics.stats.find(s => s.key === key);
+                                const checked = proficientStats.includes(key);
+                                return `
+                                    <label>
+                                        <input type="checkbox" data-action="toggle-companion-proficient" data-stat="${key}" ${checked ? "checked" : ""}>
+                                        <span>${statDef.name}</span>
+                                    </label>
+                                `;
+                            }).join("")}
+                        </div>
                         <div class="counter-row">
                             <div class="counter-label">Punkty Więzi <span class="abbr">Poz. ${level} — ${bondScale[level]?.name || ""}</span></div>
                             <div class="counter-controls">
@@ -350,14 +375,7 @@ function wireEvents(root, { data, companions }) {
         const state = getState();
         const action = el.dataset.action;
 
-        if (action === "toggle-proficient") {
-            const stat = el.dataset.stat;
-            const list = state.character.proficientStats;
-            const idx = list.indexOf(stat);
-            if (idx >= 0) list.splice(idx, 1); else list.push(stat);
-            touch();
-
-        } else if (action === "toggle-reward-claimed") {
+        if (action === "toggle-reward-claimed") {
             state.character.rewardClaimed = el.checked;
             if (el.checked) {
                 const roleInfo = state.character.role
@@ -383,15 +401,31 @@ function wireEvents(root, { data, companions }) {
         } else if (action === "select-companion") {
             const idx = parseInt(el.value, 10);
             if (idx < 0) {
-                state.character.companion = { key: null, stamina: { cur: 0, max: 0 }, bondPoints: 0 };
+                state.character.companion = { key: null, stamina: { cur: 0, max: 0 }, bondPoints: 0, proficientStats: [] };
             } else {
                 const c = companions[idx];
                 state.character.companion = {
                     key: c.name,
                     stamina: { cur: c.stamina, max: c.stamina },
-                    bondPoints: 0
+                    bondPoints: 0,
+                    // Domyślnie biegły w swoich Key Stats — patrz companionKeyStatKeys() powyżej.
+                    proficientStats: companionKeyStatKeys(data.mechanics, c)
                 };
             }
+            touch();
+
+        } else if (action === "toggle-companion-proficient") {
+            const stat = el.dataset.stat;
+            // Auto-vivify na wypadek starszych zapisów sprzed tej funkcji (companion.proficientStats
+            // jeszcze nie istnieje w stanie) — inicjalizujemy domyślnymi Key Stats towarzysza, tak
+            // jak przy pierwszym wyborze towarzysza (select-companion powyżej).
+            if (!state.character.companion.proficientStats) {
+                const c = companions.find(x => x.name === state.character.companion.key);
+                state.character.companion.proficientStats = companionKeyStatKeys(data.mechanics, c);
+            }
+            const list = state.character.companion.proficientStats;
+            const idx = list.indexOf(stat);
+            if (idx >= 0) list.splice(idx, 1); else list.push(stat);
             touch();
         }
     });
