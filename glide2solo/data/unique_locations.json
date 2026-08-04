@@ -16,7 +16,7 @@
       "description": "Iglicowata wieża ze szkła rzucająca cień na słonej równinie. Niegdyś używana jako narzędzie kalibracyjne dla orbitalnych układów.",
       "actions": [
         {"name": "Synchronizacja Danych", "test": "Kumaty Test", "major": "+2 Informacje", "minor": "+1 Informacje", "miss": "-2 Rozpęd; iglica zakłóca Twój sprzęt", "effect": null},
-        {"name": "Odpoczynek w Cieniu", "test": null, "major": null, "minor": null, "miss": null, "effect": "Recover +3 Wytrzymałość podczas Camp w tej lokacji."}
+        {"name": "Odpoczynek w Cieniu", "test": null, "major": null, "minor": null, "miss": null, "effect": "Odzyskaj +3 Wytrzymałość podczas Obóz w tej lokacji."}
       ]
     },
     {
@@ -43,7 +43,7 @@
       "description": "Wejście do jaskini w kształcie głowy ogromnego węża - a może niegdyś nim było. Wnętrze wypełnione jest bioluminescencyjnymi grzybami.",
       "actions": [
         {"name": "Zbiór Zarodników", "test": "Fachowy Test", "major": "+2 Zasoby, +1 Rozpęd", "minor": "+1 Zasoby", "miss": "-2 Wytrzymałość; wdychasz obłok toksycznych zarodników", "effect": null},
-        {"name": "Kojący Aromat", "test": null, "major": null, "minor": null, "miss": null, "effect": "Możesz tu wykonać Camp. Jeśli to zrobisz, zyskujesz Przewaga na kolejnych 2 Wyzwanie'ach i odzyskujesz dodatkowo +1 Wytrzymałość."}
+        {"name": "Kojący Aromat", "test": null, "major": null, "minor": null, "miss": null, "effect": "Możesz tu wykonać Obóz. Jeśli to zrobisz, zyskujesz Przewaga na kolejnych 2 Wyzwanie'ach i odzyskujesz dodatkowo +1 Wytrzymałość."}
       ]
     },
     {
@@ -69,8 +69,8 @@
       "name": "Wielki Łuk Wiatru",
       "description": "Naturalny kamienny most rozpięty nad wietrznym kanionem, który bez ustanku wytwarza silne prądy wznoszące.",
       "actions": [
-        {"name": "Dosiadanie Prądu Wznoszącego", "test": "Fachowy Test", "major": "Natychmiastowy Move do dowolnego heksu", "minor": "Natychmiastowy Move do 4 heksów", "miss": "-2 Wytrzymałość, Mark 3 Zużycie Glidera; wiatry rzucają Cię na ścianę kanionu", "effect": null},
-        {"name": "Odzysk z Gliderów", "test": "Rzutki Test", "major": "+2 Złom, +1 Zasoby", "minor": "+1 Złom, +5 Kredyty", "miss": "Mark 2 Zużycie; uszkadzasz swój sprzęt, próbując odzyskać wraki", "effect": null}
+        {"name": "Dosiadanie Prądu Wznoszącego", "test": "Fachowy Test", "major": "Natychmiastowy Ruch do dowolnego heksu", "minor": "Natychmiastowy Ruch do 4 heksów", "miss": "-2 Wytrzymałość, Zaznacz 3 Zużycie Glidera; wiatry rzucają Cię na ścianę kanionu", "effect": null},
+        {"name": "Odzysk z Gliderów", "test": "Rzutki Test", "major": "+2 Złom, +1 Zasoby", "minor": "+1 Złom, +5 Kredyty", "miss": "Zaznacz 2 Zużycie; uszkadzasz swój sprzęt, próbując odzyskać wraki", "effect": null}
       ]
     },
     {
@@ -79,13 +79,13 @@
       "description": "Rząd sześciu kolosalnych anten satelitarnych rozciągający się wzdłuż górskiego grzbietu. Zardzewiałe konstrukcje wciąż śledzą sygnały z głębokiego kosmosu.",
       "actions": [
         {"name": "Przechwycenie Widmowego Sygnału", "test": null, "major": null, "minor": null, "miss": null, "effect": "Odsłoń dowolne 2 heksy na mapie po wejściu do tej lokacji."},
-        {"name": "Wykonanie Napraw", "test": null, "major": null, "minor": null, "miss": null, "effect": "Wydaj 1 Staminę i 2 Złom, by zyskać 1 Informacje, maksymalnie 2 Informacje na wizytę w tej lokacji."}
+        {"name": "Wykonanie Napraw", "test": null, "major": null, "minor": null, "miss": null, "effect": "Wydaj 1 Wytrzymałość i 2 Złom, by zyskać 1 Informacje, maksymalnie 2 Informacje na wizytę w tej lokacji."}
       ]
     },
     {
       "range": "41-45",
       "name": "Posterunek Obserwacyjny Domu",
-      "description": "Zapomniana wieża wysokiej technologii, wciąż obsadzona przez wysłużonego, glitchującego droida z dawno minionego Minor House.",
+      "description": "Zapomniana wieża wysokiej technologii, wciąż obsadzona przez wysłużonego, glitchującego droida z dawno minionego Małego Domu.",
       "actions": [
         {"name": "Zaprzyjaźnianie się z Droidem", "test": "Cwany Test", "major": "+3 Informacje", "minor": "+1 Informacje", "miss": "-2 Wytrzymałość, i nie możesz tu wrócić; droid na stałe oznacza Cię jako wrogą jednostkę", "effect": null},
         {"name": "Aktualizacja Tras Mapy", "test": null, "major": null, "minor": null, "miss": null, "effect": "-10 x Y Kredyty, by odsłonić (str. 18) dowolny heks jako wybrany przez siebie typ. Y odpowiada aktualnej liczbie heksów pasujących do wybranego typu na Twojej mapie. Można to zrobić, aż Y osiągnie 10."}
@@ -105,7 +105,7 @@
       "name": "Zamarznięty Wodospad",
       "description": "Starożytny wyciek chemiczny głęboko pod ziemią stworzył kaskadę zastygłego, niebieskiego, półprzezroczystego \"lodu\", który nigdy się nie topi ani nie porusza.",
       "actions": [
-        {"name": "Analiza Katalizatora", "test": "Kumaty Test", "major": "+2 Informacje i +1 Zasoby", "minor": "+1 Zasoby", "miss": "Mark 2 Zużycie; kwas niszczy Twój sprzęt", "effect": null},
+        {"name": "Analiza Katalizatora", "test": "Kumaty Test", "major": "+2 Informacje i +1 Zasoby", "minor": "+1 Zasoby", "miss": "Zaznacz 2 Zużycie; kwas niszczy Twój sprzęt", "effect": null},
         {"name": "Wykuwanie Odłamków", "test": "Rzutki Test", "major": "+1 Relikt (Blue Catalyst)", "minor": "+1 Zasoby", "miss": "-1 Wytrzymałość; otwierasz bańkę gazu, która dusi Twoje płuca", "effect": null}
       ]
     },
@@ -114,7 +114,7 @@
       "name": "Odlewnia Żelaznego Uścisku",
       "description": "Zautomatyzowany zakład hutniczy z okresu Wojen Domów. Ogromne kubły z żużlem zwisają z nadwieszonych szyn dźwigowych, kołysząc się złowieszczo.",
       "actions": [
-        {"name": "Oczyszczenie Pieca", "test": "Rzutki Test", "major": "+4 Złom, +2 Zasoby", "minor": "+1 Złom, +1 Zasoby", "miss": "Mark 2 Zużycie; stary zawór pęka, oblewając Cię parą", "effect": null},
+        {"name": "Oczyszczenie Pieca", "test": "Rzutki Test", "major": "+4 Złom, +2 Zasoby", "minor": "+1 Złom, +1 Zasoby", "miss": "Zaznacz 2 Zużycie; stary zawór pęka, oblewając Cię parą", "effect": null},
         {"name": "Odzysk Złomu", "test": null, "major": null, "minor": null, "miss": null, "effect": "-2 Wytrzymałość, +2 Złom"}
       ]
     },
@@ -123,7 +123,7 @@
       "name": "Rozbrzmiewający Hangar",
       "description": "Podziemny hangar używany dawno temu przez Gildię Glidera. Wiatr gwiżdże w tubach startowych, tworząc niesamowitą melodię.",
       "actions": [
-        {"name": "Kalibracja Prędkości", "test": "Rzutki Test", "major": "+2 do Twojego następnego Move", "minor": "+1 do Twojego następnego Move", "miss": "Mark 1 Zużycie Glidera; niepoprawnie ustawiasz obudowę silnika w swoim gliderze", "effect": null},
+        {"name": "Kalibracja Prędkości", "test": "Rzutki Test", "major": "+2 do Twojego następnego Ruchu", "minor": "+1 do Twojego następnego Ruchu", "miss": "Zaznacz 1 Zużycie Glidera; niepoprawnie ustawiasz obudowę silnika w swoim gliderze", "effect": null},
         {"name": "Naprawa Windy", "test": null, "major": null, "minor": null, "miss": null, "effect": "Wydaj do 3 Złom, odzyskaj 2 Zużycie Glidera za każdy wydany Złom."}
       ]
     },
@@ -158,15 +158,15 @@
       "name": "Hydroponiczna Kopuła",
       "description": "Roztrzaskana biokopuła z automatycznym awaryjnym systemem zraszaczy, który podlewa niezliczone, zmodyfikowane gatunki traw ozdobnych.",
       "actions": [
-        {"name": "Wzbogacenie Parą", "test": null, "major": null, "minor": null, "miss": null, "effect": "Otaczająca wilgoć w kopule przywraca 1 Staminę Tobie i Twojemu Towarzyszowi po wejściu."},
-        {"name": "Majsterkowanie przy Zraszaczu", "test": "Rzutki Test", "major": "+3 Zasoby", "minor": "+1 Zasoby", "miss": "Mark 1 Zużycie: w Twoim pobliżu eksploduje zawór wysokiego ciśnienia", "effect": null}
+        {"name": "Wzbogacenie Parą", "test": null, "major": null, "minor": null, "miss": null, "effect": "Otaczająca wilgoć w kopule przywraca 1 Wytrzymałość Tobie i Twojemu Towarzyszowi po wejściu."},
+        {"name": "Majsterkowanie przy Zraszaczu", "test": "Rzutki Test", "major": "+3 Zasoby", "minor": "+1 Zasoby", "miss": "Zaznacz 1 Zużycie: w Twoim pobliżu eksploduje zawór wysokiego ciśnienia", "effect": null}
       ]
     },
     {
       "range": "87-93",
       "name": "Placówka na Hałdzie Żużla",
       "description": "Górnicza osada zbudowana wokół ogromnego stosu przemysłowych odpadów maszynowych sprzed Upadku, zamieszkana przez niezależnych górników.",
-      "notes": "Złom Rich: cały Złom kosztuje tu 2cr. Nie możesz tu sprzedawać Złom. Lacking: nie możesz tu kupić Zasoby. Zasoby można sprzedać za 20cr za sztukę.",
+      "notes": "Bogata w Złom: cały Złom kosztuje tu 2cr. Nie możesz tu sprzedawać Złom. Uboga w Zasoby: nie możesz tu kupić Zasoby. Zasoby można sprzedać za 20cr za sztukę.",
       "actions": [
         {"name": "Wydobycie", "test": "Hardy Test", "major": "+3 Złom, +2 PW (dowolny)", "minor": "+2 Złom, +1 PW (dowolny)", "miss": "+1 PW (dowolny), -1 Wytrzymałość; jesteś zmęczony pracą i wracasz z pustymi rękami", "effect": null}
       ]
@@ -184,7 +184,7 @@
       "range": "100",
       "name": "Serce Eridooru (Skarbiec Nasion)",
       "description": "Legendarna lokacja, której niezliczeni Poszukiwacze poszukiwali przez całe życie. Silnie ekranowany, podziemny kompleks bunkrowy z Ery Zieleni. Zawiera niezliczone uśpione bio-nasiona i dzienniki terraformacji potrzebne do odbudowy planety.",
-      "notes": "Przy odkryciu zyskujesz +5 Sława. Ta lokacja jest dostępna wyłącznie z Vault Key (str. 57).",
+      "notes": "Przy odkryciu zyskujesz +5 Sława. Ta lokacja jest dostępna wyłącznie z Kluczem do Skarbca (str. 57).",
       "actions": [
         {"name": "Konsultacja z Głównym Archiwum", "test": "Kumaty Test", "major": "+3 Informacje, +2 Rozpęd", "minor": "+2 Informacje, +1 Rozpęd", "miss": "Tracisz cały Rozpęd; AI uznaje Cię za nieprzygotowanego i blokuje dostęp do banków danych", "effect": null},
         {"name": "Przygotowanie Systemów", "test": "Rzutki lub Hardy Test", "major": "+1 Relikt, +1 Zasoby", "minor": "+1 Relikt", "miss": "-1 Wytrzymałość; system się zacina i musisz spędzić czas na sprzątaniu bałaganu", "effect": null},

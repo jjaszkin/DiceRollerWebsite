@@ -6,19 +6,19 @@
   },
   "rules": {
     "rewards": "Wzrost rangi w gildii daje dostęp do umiejętności i unikalnych ofert, nagradzając zaangażowanie. Wszyscy Poszukiwacze zaczynają na Poziom Więzi 0 z każdą gildią. Nagrody są kumulatywne - Poszukiwacz ma dostęp do nagród niższych poziomów w miarę postępu bondu. Poziom Więzi można też stracić, tak jak z towarzyszami - jeśli poziom spadnie, nagrody danego poziomu przestają działać.",
-    "guild_missions": "Poszukiwacz może mieć jednocześnie tylko 1 Misję Gildii. Jeśli misja jest niemożliwa do ukończenia (brak odpowiednich heksów), wybierz inną. Testy w misji nie wymagają Staminy (chyba że napisano inaczej). Trzeba osiągnąć Duży/Mały Sukces lub podaną liczbę sukcesów. Efekty Porażka rozwiązuje się na bieżąco. Nagrody są przyznawane przy każdym teście, ale misja jest ukończona dopiero po powrocie. Misje można powtarzać dowolną liczbę razy, ale powtórka tej samej misji możliwa dopiero po ukończeniu (lub co najmniej podjęciu próby) wszystkich pozostałych misji danej gildii."
+    "guild_missions": "Poszukiwacz może mieć jednocześnie tylko 1 Misję Gildii. Jeśli misja jest niemożliwa do ukończenia (brak odpowiednich heksów), wybierz inną. Testy w misji nie wymagają Wytrzymałości (chyba że napisano inaczej). Trzeba osiągnąć Duży/Mały Sukces lub podaną liczbę sukcesów. Efekty Porażka rozwiązuje się na bieżąco. Nagrody są przyznawane przy każdym teście, ale misja jest ukończona dopiero po powrocie. Misje można powtarzać dowolną liczbę razy, ale powtórka tej samej misji możliwa dopiero po ukończeniu (lub co najmniej podjęciu próby) wszystkich pozostałych misji danej gildii."
   },
   "guilds": [
     {
       "id": "guild_of_sand",
       "name": "Guild of Sand",
       "name_pl": "Gildia Piasku",
-      "description": "Zdecentralizowana sieć nomadycznych handlarzy, ekspertów nawigacji i brokerów zasobów. Nie roszczą sobie praw do terytorium, skupiając się na \"Niewidzialnych Drogach\" - najbezpieczniejszych i najbardziej efektywnych trasach przez zmieniające się piaski pustyni. Dla członka tej gildii mapa jest warta więcej niż kredyty, a niezawodny partner handlowy więcej niż batalion żołnierzy Domu. Wiele gildii i Minor Houses polega na Gildii Piasku w kwestii bezpiecznego transportu zapasów między izolowanymi społecznościami Eridooru.",
+      "description": "Zdecentralizowana sieć nomadycznych handlarzy, ekspertów nawigacji i brokerów zasobów. Nie roszczą sobie praw do terytorium, skupiając się na \"Niewidzialnych Drogach\" - najbezpieczniejszych i najbardziej efektywnych trasach przez zmieniające się piaski pustyni. Dla członka tej gildii mapa jest warta więcej niż kredyty, a niezawodny partner handlowy więcej niż batalion żołnierzy Domu. Wiele gildii i Małych Domów polega na Gildii Piasku w kwestii bezpiecznego transportu zapasów między izolowanymi społecznościami Eridooru.",
       "special_rules": {
         "guild_caravan": "W odróżnieniu od innych gildii działających z stałych budynków w osadach, Gildia Piasku korzysta z floty mobilnych karawan.",
         "finding_the_caravan": "Będąc w lokacji typu Pustynia, wykonaj test K lub R. Przy Duży Sukces odkrywasz Karawanę Gildii Piasku w obecnej lokacji. Można wykonać raz na wizytę w danej lokacji.",
         "the_caravan_hub": "Karawana działa jak osada, z wyjątkiem że dostępne są tylko akcje Gildii Piasku.",
-        "the_guild_gift": "Przy Poziom Więzi 2 i wyższym, odwiedzenie Karawany automatycznie przywraca 1 Zasoby za darmo, raz na wizytę, w ramach \"Nomad Hospitality\".",
+        "the_guild_gift": "Przy Poziom Więzi 2 i wyższym, odwiedzenie Karawany automatycznie przywraca 1 Zasoby za darmo, raz na wizytę, w ramach \"Gościnności Nomadów\".",
         "caravan_friend": "Wysoko postawieni członkowie otrzymują najlepsze ceny przy kupnie nowego sprzętu i sprzedaży starego.",
         "the_friend": "Zyskujesz Przewaga na cenach sprzedaży i kupna we wszystkich lokacjach. Cały Sprzęt i Mody kosztują 2d10 mniej (rzuć za każdym razem, gdy kupujesz)."
       },
@@ -36,7 +36,7 @@
           "number": 2,
           "name": "Łańcuch Dostaw",
           "task": "Dostarcz paczkę do osady cierpiącej na niedobór (wybierz najdalszą).",
-          "test": "Rzutki lub Hardy Test po każdym Travel Encounter",
+          "test": "Rzutki lub Hardy Test po każdym Wydarzeniu Podróży",
           "major": "+5 Kredyty, +1 PW",
           "minor": "+2 Kredyty",
           "miss": "-1 Rozpęd, -1 PW"
@@ -44,7 +44,7 @@
         {
           "number": 3,
           "name": "Negocjacje Myta",
-          "task": "Minor House blokuje szlak handlowy. Spotkaj się z ich przedstawicielem i przekonaj do ustąpienia.",
+          "task": "Mały Dom blokuje szlak handlowy. Spotkaj się z ich przedstawicielem i przekonaj do ustąpienia.",
           "test": "Cwany Test w najdalszej osadzie od Twojej lokacji",
           "major": "+20 Kredyty, +3 PW",
           "minor": "+10 Kredyty, +1 PW",
@@ -63,7 +63,7 @@
       "bond_level_rewards": {
         "1": {"name": "Kompas Nomady (Sprzęt)", "effect": "+1 do wszystkich testów Fachowy w lokacjach Pustynia."},
         "2": {"name": "Rabat Pośrednika (Cecha)", "effect": "Wszystkie koszty Zasoby są o 2 Kredyty niższe przy zakupie z Karawan Gildii."},
-        "3": {"name": "Podwozie Wydmowego Żagla (Ulepszenie Glidera)", "effect": "+1 Movement przy podróży przez odkryty heks Pustynia (max +3 na Move)."},
+        "3": {"name": "Podwozie Wydmowego Żagla (Ulepszenie Glidera)", "effect": "+1 Ruch przy podróży przez odkryty heks Pustynia (max +3 na Ruch)."},
         "4": {"name": "Mistrz Dróg (Cecha)", "effect": "Możesz wydać 1 Informacje, by przenieść się do dowolnej odkrytej lokacji Pustynia na mapie."}
       }
     },
@@ -71,13 +71,13 @@
       "id": "guild_of_echoes",
       "name": "Guild of Echoes",
       "name_pl": "Gildia Ech",
-      "description": "Kolektyw historyków, pieśniarzy i kryptografów oddanych zachowaniu zanikającego dziedzictwa Eridooru. Gildia działa z cichych, wysoko położonych Archiwów Dźwięku i przerobionych bibliotek, wierząc, że każdy kawałek złomu ma swoją historię, a każdy powiew wiatru może nieść ducha przeszłości. Technologia nie jest ceniona za użyteczność, lecz za dane i wspomnienia, które przechowuje. Dla Historyka Echa działający rdzeń zasilania jest użyteczny, ale zaszyfrowany dziennik uchodźcy z Great House jest bezcenny.",
+      "description": "Kolektyw historyków, pieśniarzy i kryptografów oddanych zachowaniu zanikającego dziedzictwa Eridooru. Gildia działa z cichych, wysoko położonych Archiwów Dźwięku i przerobionych bibliotek, wierząc, że każdy kawałek złomu ma swoją historię, a każdy powiew wiatru może nieść ducha przeszłości. Technologia nie jest ceniona za użyteczność, lecz za dane i wspomnienia, które przechowuje. Dla Historyka Echa działający rdzeń zasilania jest użyteczny, ale zaszyfrowany dziennik uchodźcy z Wielkiego Domu jest bezcenny.",
       "special_rules": {
-        "sound_archive": "Gildia Ech utrzymuje swoje \"Archiwa Dźwięku\" w najbardziej odosobnionych częściach świata. Umieść lokację unikalną \"The Sound Archive\" w dowolnym rogu mapy (wybierz puste pole lub zastąp heks), gdy osiągniesz Poziom Więzi 2.",
+        "sound_archive": "Gildia Ech utrzymuje swoje \"Archiwa Dźwięku\" w najbardziej odosobnionych częściach świata. Umieść lokację unikalną \"Archiwum Dźwięku\" w dowolnym rogu mapy (wybierz puste pole lub zastąp heks), gdy osiągniesz Poziom Więzi 2.",
         "memory_bank": "Przebywając w Archiwum Dźwięku, możesz zdeponować Relikty. Zyskujesz +1 Informacje i +3 PW za Relikt, gdy gildia wydobywa historyczne znaczenie.",
         "echo_training": "Wydaj 2 Informacje w Archiwum Dźwięku, by zyskać Przewaga na wszystkich testach Kumaty aż do następnej wizyty w osadzie.",
-        "the_masterpiece_record": "Członkowie gildii często podejmują się Masterpiece Project - dożywotniego przedsięwzięcia dokumentowania jednego tematu.",
-        "the_chronicle": "Przy Poziom Więzi 4 wybierasz Temat (np. węże piaskowe, Major Houses, ruchy nomadów itd.). Za każdym razem, gdy eksplorujesz heks powiązany z tym tematem, rzuć d10. Na 7+ zyskujesz +1 Informacje. Za każde 10 Informacje zdobyte w ten sposób, zyskujesz +1 Sława."
+        "the_masterpiece_record": "Członkowie gildii często podejmują się Dzieła Życia - dożywotniego przedsięwzięcia dokumentowania jednego tematu.",
+        "the_chronicle": "Przy Poziom Więzi 4 wybierasz Temat (np. węże piaskowe, Wielkie Domy, ruchy nomadów itd.). Za każdym razem, gdy eksplorujesz heks powiązany z tym tematem, rzuć d10. Na 7+ zyskujesz +1 Informacje. Za każde 10 Informacje zdobyte w ten sposób, zyskujesz +1 Sława."
       },
       "missions": [
         {
@@ -118,9 +118,9 @@
         }
       ],
       "bond_level_rewards": {
-        "1": {"name": "Rejestrator Echa (Sprzęt)", "effect": "Małe, czułe urządzenie. +1 do testów Fachowy przy akcji Explore w lokacji Ruiny."},
+        "1": {"name": "Rejestrator Echa (Sprzęt)", "effect": "Małe, czułe urządzenie. +1 do testów Fachowy przy akcji Eksploracja w lokacji Ruiny."},
         "2": {"name": "Oko Historyka (Cecha)", "effect": "Możesz wymienić 1 Informacje na 20cr w dowolnym Archiwum Dźwięku, ale nie możesz już kupować Informacje z Archiwów."},
-        "3": {"name": "Macierz Archiwalna (Ulepszenie Glidera)", "effect": "Specjalistyczny zestaw sensorów glidera. Przy akcji Explore w lokacji Ruiny, przy Duży Sukces, zyskujesz +1 Informacje."},
+        "3": {"name": "Macierz Archiwalna (Ulepszenie Glidera)", "effect": "Specjalistyczny zestaw sensorów glidera. Przy akcji Eksploracja w lokacji Ruiny, przy Duży Sukces, zyskujesz +1 Informacje."},
         "4": {"name": "Żywa Biblioteka (Cecha)", "effect": "Możesz wydać 2 Informacje, by zamienić dowolny Porażka z Kumaty lub Cwany na Duży sukces."}
       }
     },
@@ -128,9 +128,9 @@
       "id": "guild_of_iron",
       "name": "Guild of Iron",
       "name_pl": "Gildia Żelaza",
-      "description": "Zakon wojskowy złożony z obrońców, stróżów pokoju i najemników. Związani surowym kodeksem dyscypliny zwanym \"The Weight\", członkowie wierzą, że ich determinacja jest ich najważniejszym narzędziem. Gildia utrzymuje fortyfikacje w większości osad, oferując ochronę każdemu podróżującemu przez region lub gotowemu zapłacić cenę. Ich hale gildii wahają się od cichych miejsc medytacji po wyczerpujące place treningu fizycznego, produkując członków tak samo ostrych umysłowo, jak i fizycznie odpornych.",
+      "description": "Zakon wojskowy złożony z obrońców, stróżów pokoju i najemników. Związani surowym kodeksem dyscypliny zwanym \"Ciężar\", członkowie wierzą, że ich determinacja jest ich najważniejszym narzędziem. Gildia utrzymuje fortyfikacje w większości osad, oferując ochronę każdemu podróżującemu przez region lub gotowemu zapłacić cenę. Ich hale gildii wahają się od cichych miejsc medytacji po wyczerpujące place treningu fizycznego, produkując członków tak samo ostrych umysłowo, jak i fizycznie odpornych.",
       "special_rules": {
-        "the_iron_trials": "Poszukiwacze chcący dołączyć do gildii muszą przejść i ukończyć \"Iron Trials\".",
+        "the_iron_trials": "Poszukiwacze chcący dołączyć do gildii muszą przejść i ukończyć \"Próby Żelaza\".",
         "entering_the_trial": "Odwiedź dowolną halę Gildii Żelaza w osadzie i wydaj 20 Kredyty i 1 Zasoby.",
         "the_challenge": "Musisz wykonać dwa kolejne testy Hardy z Dużym Sukcesem oraz jeden test Rzutki z Dużym Sukcesem.",
         "the_reward": "Jeśli się uda, zyskujesz stały +1 Max Wytrzymałość (limit raz) i +1 Max Rozpęd. Jeśli zawiedziesz, spadasz do 0 Wytrzymałości i musisz natychmiast rzucić na Tabelę Wyczerpania (uzdrowiciele gildii wyciągają Cię z podłogi i wyrzucają na zewnątrz).",
@@ -150,7 +150,7 @@
         {
           "number": 2,
           "name": "Łowy na Alfę",
-          "task": "Zlokalizuj i zneutralizuj niebezpieczną bestię (np. Sand Snake) w dowolnym heksie Pustynia lub Zieleń.",
+          "task": "Zlokalizuj i zneutralizuj niebezpieczną bestię (np. Wąż Piaskowy) w dowolnym heksie Pustynia lub Zieleń.",
           "test": "Hardy lub Rzutki Test",
           "major": "+30 Kredyty, +2 PW, +1 Relikt",
           "minor": "+20 Kredyty, +1 PW, +2 Złom",
@@ -160,7 +160,7 @@
           "number": 3,
           "name": "Eskorta Wysokiego Ryzyka",
           "task": "Eskortuj wysoko postawionego urzędnika lub wrażliwą karawanę do osady oddalonej o co najmniej 4+ heksów.",
-          "test": "Hardy lub Cwany Test po każdej akcji Move",
+          "test": "Hardy lub Cwany Test po każdej akcji Ruch",
           "major": "+5 Kredyty, +1 PW",
           "minor": "+3 Kredyty",
           "miss": "-1 PW, -1 Rozpęd"
@@ -170,29 +170,29 @@
           "name": "Próba Kutego Żelaza",
           "task": "Przejdź rytuał treningowy w Hali Treningowej Gildii.",
           "test": "Hardy Test w obecnej lokacji",
-          "major": "+4 PW, +3 Rozpęd, odzyskaj całą Staminę",
+          "major": "+4 PW, +3 Rozpęd, odzyskaj całą Wytrzymałość",
           "minor": "+1 PW, -2 Rozpęd",
           "miss": "-2 Wytrzymałość, -5 PW"
         }
       ],
       "bond_level_rewards": {
         "1": {"name": "Żelazne Naramienniki (Sprzęt)", "effect": "Wzmocnione naramienniki, dodatkowa siła i ochrona. +1 do wszystkich rzutów Hardy."},
-        "2": {"name": "Zdyscyplinowana Determinacja (Cecha)", "effect": "Raz na akcję możesz wydać 2 Rozpęd, by zniwelować utratę 1 Staminy."},
+        "2": {"name": "Zdyscyplinowana Determinacja (Cecha)", "effect": "Raz na akcję możesz wydać 2 Rozpęd, by zniwelować utratę 1 Wytrzymałości."},
         "3": {"name": "Poszycie Aegis (Ulepszenie Glidera)", "effect": "Ciężki pancerz zewnętrzny. Twój glider ignoruje pierwszy punkt Zużycie, gdy przypisywane są 2 lub więcej Zużycie."},
-        "4": {"name": "Niezłomna Wola (Cecha)", "effect": "Gdy Twoja Wytrzymałość osiągnie 0, wykonaj Hardy lub Rzutki Rzut Wyzwania. Przy Duży Sukces, wróć do 1 Staminy i kontynuuj obecną akcję. Przy Mały Sukces lub Porażka, rozwiąż efekt Exhaustion (str. 21) normalnie."}
+        "4": {"name": "Niezłomna Wola (Cecha)", "effect": "Gdy Twoja Wytrzymałość osiągnie 0, wykonaj Hardy lub Rzutki Rzut Wyzwania. Przy Duży Sukces, wróć do 1 Wytrzymałości i kontynuuj obecną akcję. Przy Mały Sukces lub Porażka, rozwiąż efekt Wyczerpania (str. 21) normalnie."}
       }
     },
     {
       "id": "guild_of_the_glider",
       "name": "Guild of the Glider",
       "name_pl": "Gildia Glidera",
-      "description": "Bractwo pilotów, posłańców i kurierów, którzy zamienili prosty akt \"gliderowania\" w wyższą formę sztuki i ekspresji. Członków łatwo rozpoznać po lekkich kombinezonach lotniczych i charakterystycznej niebiesko-srebrnej barwie. Członkowie noszą tajemnicę, którą Major Houses chcą pogrzebać, lekarstwa potrzebne izolowanym placówkom do przetrwania, oraz wiadomości tam, gdzie piasek uniemożliwia komunikację. Jeśli coś musi tam być wczoraj, wynajmujesz Glidera Domowego.",
+      "description": "Bractwo pilotów, posłańców i kurierów, którzy zamienili prosty akt \"gliderowania\" w wyższą formę sztuki i ekspresji. Członków łatwo rozpoznać po lekkich kombinezonach lotniczych i charakterystycznej niebiesko-srebrnej barwie. Członkowie noszą tajemnicę, którą Wielkie Domy chcą pogrzebać, lekarstwa potrzebne izolowanym placówkom do przetrwania, oraz wiadomości tam, gdzie piasek uniemożliwia komunikację. Jeśli coś musi tam być wczoraj, wynajmujesz Glidera Domowego.",
       "special_rules": {
-        "the_waystation_network": "Gildia Glidera utrzymuje zautomatyzowane Waystations ukryte na Eridoorze.",
-        "dropping_in": "Będąc w heksie Pustynia, jeśli gracz ma Poziom Więzi 2 lub wyższy, może wykonać Fachowy Rzut Wyzwania, by zlokalizować ukrytą Guild Waystation (max 3 razy między wizytami w gildii).",
-        "the_cache": "Duży sukces odkrywa skrytkę. Wybierz jedno: Refuel (+2 Zasoby), Data-Sync (+1 Informacje), Emergency Repair (-1 Zużycie Glidera).",
+        "the_waystation_network": "Gildia Glidera utrzymuje zautomatyzowaną sieć Przystanków ukrytych na Eridoorze.",
+        "dropping_in": "Będąc w heksie Pustynia, jeśli gracz ma Poziom Więzi 2 lub wyższy, może wykonać Fachowy Rzut Wyzwania, by zlokalizować ukryty Przystanek Gildii (max 3 razy między wizytami w gildii).",
+        "the_cache": "Duży sukces odkrywa skrytkę. Wybierz jedno: Zatankuj (+2 Zasoby), Synchronizacja Danych (+1 Informacje), Nagła Naprawa (-1 Zużycie Glidera).",
         "the_high_speed_repair": "Członkowie tej gildii są ekspertami w naprawie pojazdów w locie.",
-        "mid_drift_patch": "Po osiągnięciu Poziom Więzi 3 możesz wykonać akcję Repair po każdej akcji Move. Naprawa to test Rzutki lub Fachowy, kosztem 1 Złom. Duży Sukces: -2 Zużycie Glidera. Mały Sukces: -1 Zużycie Glidera. Porażka: +1 Zużycie Glidera."
+        "mid_drift_patch": "Po osiągnięciu Poziom Więzi 3 możesz wykonać akcję Naprawa po każdej akcji Ruch. Naprawa to test Rzutki lub Fachowy, kosztem 1 Złom. Duży Sukces: -2 Zużycie Glidera. Mały Sukces: -1 Zużycie Glidera. Porażka: +1 Zużycie Glidera."
       },
       "missions": [
         {
@@ -202,7 +202,7 @@
           "test": "Rzutki lub Hardy Test przy przybyciu do każdej osady",
           "major": "+40 Kredyty, +3 PW, +1 Zasoby",
           "minor": "+20 Kredyty, +1 PW",
-          "miss": "+5 Kredyty, +1 Glider wear"
+          "miss": "+5 Kredyty, +1 Zużycie Glidera"
         },
         {
           "number": 2,
@@ -226,17 +226,17 @@
           "number": 4,
           "name": "Tajna Korespondencja",
           "task": "Przenieś tajemnicę wysokiego priorytetu z obecnej osady do innej, 3+ heksów, bez przechwycenia przez patrole Domu.",
-          "test": "Cwany lub Rzutki test po każdej akcji Move",
+          "test": "Cwany lub Rzutki test po każdej akcji Ruch",
           "major": "+2 PW",
           "minor": "+1 PW",
           "miss": "+1 Zużycie Glidera, -1 Rozpęd"
         }
       ],
       "bond_level_rewards": {
-        "1": {"name": "HUD Smugi Powietrznej (Sprzęt)", "effect": "Smukły wizjer podświetlający prądy powietrzne. +1 do testów Rzutki przy akcji Explore w lokacjach Pustynia."},
+        "1": {"name": "HUD Smugi Powietrznej (Sprzęt)", "effect": "Smukły wizjer podświetlający prądy powietrzne. +1 do testów Rzutki przy akcji Eksploracja w lokacjach Pustynia."},
         "2": {"name": "Powietrzna Intuicja (Cecha)", "effect": "Gdy wydajesz Zasoby, by dodać Prędkość, testuj Kumaty. Przy Duży Sukces, +2 dodatkowej Prędkość."},
         "3": {"name": "Widmowe Silniki (Ulepszenie Glidera)", "effect": "Lekkie, ciche silniki. Zyskujesz Przewaga na wszystkich testach, gdzie Zużycie mogłoby zostać przypisane Twojemu Gliderowi z Porażka."},
-        "4": {"name": "As Pustkowi (Cecha)", "effect": "Raz na akcję Move, jeśli poruszasz się o 4 lub więcej heksów, zyskujesz +1 Rozpęd."}
+        "4": {"name": "As Pustkowi (Cecha)", "effect": "Raz na akcję Ruch, jeśli poruszasz się o 4 lub więcej heksów, zyskujesz +1 Rozpęd."}
       }
     },
     {
@@ -246,11 +246,11 @@
       "description": "Grupa botaników, zoologów i inżynierów środowiskowych, oddanych badaniu i zachowaniu delikatnych kwitnących biomów Eridooru. Często znajdywani w wysoko-technologicznych laboratoriach lub wędrujący po wydmach w swoich specjalistycznych badawczych gliderach, członkowie wierzą, że sekrety przetrwania planety są ukryte w jej DNA. Członkowie gildii to skrupulatni kronikarze, postrzegający każde odkrycie jako zwycięstwo nad piaskiem. Choć gildia jest z natury pokojowa, jest zaciekle terytorialna wobec zielonych przestrzeni, szybko banując intruzów.",
       "special_rules": {
         "documenting_the_wilds": "Członkowie Gildii Ekologii noszą dzienniki polowe, używane do dokumentowania cudów Eridooru.",
-        "documenting_the_wild": "Po osiągnięciu Guild Level 2 i wyższego, przy pierwszej wizycie w Zieleń lub Unikalna Lokacja możesz wykonać Fachowy Rzut Wyzwania, by udokumentować obszar.",
+        "documenting_the_wild": "Po osiągnięciu Poziomu Więzi z Gildią 2 i wyższego, przy pierwszej wizycie w Zieleń lub Unikalna Lokacja możesz wykonać Fachowy Rzut Wyzwania, by udokumentować obszar.",
         "reward_major": "+2 Informacje. Na Poziom Więzi 3, +2 Informacje i +1 Zasoby.",
         "reward_minor": "+1 Informacje. Na Poziom Więzi 3, +1 Informacje i +1 Zasoby.",
         "reward_miss": "-1 PW",
-        "the_seed_vault_access": "Sekretna wiedza: dla tych, którzy osiągną najwyższe rangi gildii, ukryte Seed Vaults Eridooru stają się dostępne.",
+        "the_seed_vault_access": "Sekretna wiedza: dla tych, którzy osiągną najwyższe rangi gildii, ukryte Skarbce Nasion Eridooru stają się dostępne.",
         "restoration_point": "Raz na wizytę w gildii, jeśli gracz ma Poziom Więzi 4, może wydać 3 Informacje, by trwale zmienić heks Pustynia w Zieleń. Poziom lokacji jest ustawiony na 1 (niezależnie od obecnego poziomu)."
       },
       "missions": [
@@ -266,7 +266,7 @@
         {
           "number": 2,
           "name": "Znakowanie Alfy",
-          "task": "Zlokalizuj Sand Snake lub inną dużą istotę Eridooru i przypnij beacon śledzący.",
+          "task": "Zlokalizuj Węża Piaskowego lub inną dużą istotę Eridooru i przypnij beacon śledzący.",
           "test": "Rzutki lub Hardy test w dowolnej lokacji Pustynia, 5+ heksów",
           "major": "+30 Kredyty, +3 PW",
           "minor": "+20 Kredyty, +1 PW",
@@ -284,7 +284,7 @@
         {
           "number": 4,
           "name": "Zielona Odbudowa",
-          "task": "Dostarcz przesyłkę specjalnych \"Seed-Bombs\" do lokacji Pustynia i zasadź je z glebą.",
+          "task": "Dostarcz przesyłkę specjalnych \"Bomb Nasiennych\" do lokacji Pustynia i zasadź je z glebą.",
           "test": "Hardy lub Rzutki test w lokacji Pustynia 5+ heksów od obecnej pozycji",
           "major": "+25 Kredyty, +2 PW, lokacja staje się Zieleń (ten sam poziom)",
           "minor": "+5 Kredyty, +1 PW",
@@ -293,8 +293,8 @@
       ],
       "bond_level_rewards": {
         "1": {"name": "Zestaw Botanika (Sprzęt)", "effect": "+1 do testów Kumaty w Zielenie."},
-        "2": {"name": "Nawigator Oazy (Cecha)", "effect": "Gdy tracisz Staminę w Zieleń z powodu testu, rzuć d10. Na 7+ neguj pierwszy utracony punkt Staminy."},
-        "3": {"name": "Bio-Organiczny Kadłub (Ulepszenie Glidera)", "effect": "Eksperymentalna warstwa mchu na kadłubie glidera. Podczas akcji Camp w Zieleń usuń 1 Zużycie Glidera."},
+        "2": {"name": "Nawigator Oazy (Cecha)", "effect": "Gdy tracisz Wytrzymałość w Zieleń z powodu testu, rzuć d10. Na 7+ neguj pierwszy utracony punkt Wytrzymałości."},
+        "3": {"name": "Bio-Organiczny Kadłub (Ulepszenie Glidera)", "effect": "Eksperymentalna warstwa mchu na kadłubie glidera. Podczas akcji Obóz w Zieleń usuń 1 Zużycie Glidera."},
         "4": {"name": "Harmonia z Eridoorem (Cecha)", "effect": "Zyskujesz Przewaga na wszystkich testach w Zielenie. Dodatkowo możesz wydać 1 Informacje, by potraktować heks Pustynia jako Zieleń dla pojedynczej akcji."}
       }
     },
@@ -302,11 +302,11 @@
       "id": "guild_of_relics",
       "name": "Guild of Relikty",
       "name_pl": "Gildia Reliktów",
-      "description": "Mroczna, żądna bogactwa organizacja archeo-inżynierów, łowców skarbów i tech-archeologów. Podczas gdy Gildia Ech chce studiować i uczyć się z przeszłości, Gildia Reliktów chce ją posiadać. Wierzą, że rozwiązaniem upadku Eridooru są \"Ancient Powers\" - zaawansowana technologia niegdyś używana przez Major Houses. Ze wszystkich gildii na Eridoorze, Gildia Reliktów jest najlepiej wyposażona, wykorzystująca starożytne technologie. Dla członka tej gildii historyczna fresk to marnotrawstwo zasobów, chyba że kryje się za nią technologia.",
+      "description": "Mroczna, żądna bogactwa organizacja archeo-inżynierów, łowców skarbów i tech-archeologów. Podczas gdy Gildia Ech chce studiować i uczyć się z przeszłości, Gildia Reliktów chce ją posiadać. Wierzą, że rozwiązaniem upadku Eridooru są \"Starożytne Moce\" - zaawansowana technologia niegdyś używana przez Wielkie Domy. Ze wszystkich gildii na Eridoorze, Gildia Reliktów jest najlepiej wyposażona, wykorzystująca starożytne technologie. Dla członka tej gildii historyczna fresk to marnotrawstwo zasobów, chyba że kryje się za nią technologia.",
       "special_rules": {
-        "the_vault_keys": "Członkom Gildii Reliktów często powierza się Vault Keys, fragmenty starożytnych kodów szyfrujących.",
-        "coding_the_key": "Za każdym razem, gdy zdobywasz Informacje w lokacji Ruiny, mając Poziom Więzi 2+, możesz zamienić 1 zdobyty Informacje na Vault Key Fragment.",
-        "opening_the_un_openable": "Możesz wydać 3 Vault Key Fragments, by zyskać Przewaga i +2 na dowolny Rzut Wyzwania w Ruiny, osadzie lub Unikalna Lokacja.",
+        "the_vault_keys": "Członkom Gildii Reliktów często powierza się Klucze do Skarbca, fragmenty starożytnych kodów szyfrujących.",
+        "coding_the_key": "Za każdym razem, gdy zdobywasz Informacje w lokacji Ruiny, mając Poziom Więzi 2+, możesz zamienić 1 zdobyty Informacje na Fragment Klucza do Skarbca.",
+        "opening_the_un_openable": "Możesz wydać 3 Fragmenty Klucza do Skarbca, by zyskać Przewaga i +2 na dowolny Rzut Wyzwania w Ruiny, osadzie lub Unikalna Lokacja.",
         "ancient_overclocking": "Gildia Reliktów doskonale radzi sobie z przekraczaniem zamierzonych możliwości maszyn.",
         "experimental_boost": "Mając Poziom Więzi 3 lub wyższy, możesz dodać 1 Zużycie do dowolnego sprzętu lub glidera, by zyskać Przewaga i +1 do testu Rzutki lub Kumaty. Jeśli uzyskasz Porażka na tym teście, przypisz dodatkowe 1 Zużycie."
       },
@@ -358,21 +358,21 @@
   ],
   "odd_jobs_table_d100": [
     {"range": "1-5", "name": "Kurs po Czystą Wodę", "location_type": "Zieleń", "description": "Lokalny mieszkaniec prosi o świeżą wodę z zielonej przestrzeni.", "task": "Eksploruj dowolny Zieleń, raz, z Mały lub Duży Sukces, następnie ukończ test tej fuchy z Duży sukces.", "test": "Fachowy lub Rzutki", "reward": "+2 Zasoby, +15 Kredyty", "fail": "-2 Rozpęd; nie znaleziono czystej wody"},
-    {"range": "6-10", "name": "Prośba o Odzysk", "location_type": "Ruiny", "description": "Mechanik chce rzadkich części z pobliskich ruin.", "task": "Eksploruj dowolne Ruiny, raz, z Mały lub Duży Sukces, następnie ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Rzutki", "reward": "Odzyskaj do 3 Zużycie, +10 Kredyty", "fail": "Mark 2 Zużycie, -1 Rozpęd; Twój sprzęt zostaje uszkodzony"},
+    {"range": "6-10", "name": "Prośba o Odzysk", "location_type": "Ruiny", "description": "Mechanik chce rzadkich części z pobliskich ruin.", "task": "Eksploruj dowolne Ruiny, raz, z Mały lub Duży Sukces, następnie ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Rzutki", "reward": "Odzyskaj do 3 Zużycie, +10 Kredyty", "fail": "Zaznacz 2 Zużycie, -1 Rozpęd; Twój sprzęt zostaje uszkodzony"},
     {"range": "11-15", "name": "Eskorta Karawany", "location_type": "Pustynia", "description": "Handlarze szukają eskorty przez wydmy.", "task": "Przejedź przez 3 heksy Pustynia i ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Hardy lub Cwany", "reward": "+2 PW, +30 Kredyty, +1 Złom", "fail": "-1 Zasoby, -1 Rozpęd; gubisz karawanę"},
     {"range": "16-20", "name": "Zagubiona Pamiątka Rodowa", "location_type": "Osada", "description": "Lokalny mieszkaniec zgubił coś ważnego w osadzie.", "task": "Wykonaj test w tej osadzie, raz, z Duży sukces.", "test": "Kumaty lub Fachowy", "reward": "+40 Kredyty, +2 Rozpęd", "fail": "-2 Rozpęd; trop ginie"},
-    {"range": "21-25", "name": "Dziwna Istota", "location_type": "Unikalna Lokacja", "description": "Zestaw tajemniczych śladów prowadzi z dala od osady.", "task": "Eksploruj dowolną Unikalna Lokacja, raz, i ukończ test tej fuchy z Duży sukces.", "test": "Fachowy", "reward": "+1 Informacje, +10 Kredyty, +5 PW", "fail": "Mark 2 Zużycie, -2 Rozpęd; zostajesz ranny w pościgu za istotą"},
-    {"range": "26-30", "name": "Pomoc dla Zielarza", "location_type": "Zieleń", "description": "Uzdrowiciel prosi o zioła lecznicze z nowo kiełkujących dzikich terenów.", "task": "Eksploruj dowolny Zieleń, raz, i ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Kumaty", "reward": "+1 Zasoby, +10 Kredyty", "fail": "Mark 1 Zużycie, -2 Rozpęd; napotykasz trujące rośliny"},
+    {"range": "21-25", "name": "Dziwna Istota", "location_type": "Unikalna Lokacja", "description": "Zestaw tajemniczych śladów prowadzi z dala od osady.", "task": "Eksploruj dowolną Unikalna Lokacja, raz, i ukończ test tej fuchy z Duży sukces.", "test": "Fachowy", "reward": "+1 Informacje, +10 Kredyty, +5 PW", "fail": "Zaznacz 2 Zużycie, -2 Rozpęd; zostajesz ranny w pościgu za istotą"},
+    {"range": "26-30", "name": "Pomoc dla Zielarza", "location_type": "Zieleń", "description": "Uzdrowiciel prosi o zioła lecznicze z nowo kiełkujących dzikich terenów.", "task": "Eksploruj dowolny Zieleń, raz, i ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Kumaty", "reward": "+1 Zasoby, +10 Kredyty", "fail": "Zaznacz 1 Zużycie, -2 Rozpęd; napotykasz trujące rośliny"},
     {"range": "31-35", "name": "Poszukiwania Reliktów", "location_type": "Ruiny", "description": "Poszukiwacz wynajmuje Cię do szukania reliktów w zestawie ruin.", "task": "Eksploruj dowolne lokacje Ruiny, aż znajdziesz Relikt, następnie ukończ test tej fuchy z Duży sukces.", "test": null, "reward": "+2 PW, +60 Kredyty", "fail": "-1 Wytrzymałość, mark 3 Zużycie; zawalenie uszkadza Twój sprzęt"},
     {"range": "36-40", "name": "Pustynny Beacon", "location_type": "Pustynia", "description": "Miejscowi proszą o rekonfigurację lub naprawę starego beaconu sygnałowego.", "task": "Eksploruj dowolną lokację Pustynia oddaloną o co najmniej 3 heksy, raz, następnie ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Hardy lub Fachowy", "reward": "+25 Kredyty, +2 Zasoby, +1 Złom", "fail": "-1 Wytrzymałość, -1 Zasoby; jesteś zgubiony i nie możesz znaleźć beaconu"},
-    {"range": "41-45", "name": "Praca Kuriera", "location_type": "Osada", "description": "Dostarcz listy, drobny ładunek i inne różne towary.", "task": "Podróżuj do dowolnej innej osady i dostarcz towary.", "test": "Brak! (fucha zawodzi, jeśli staniesz się Exhausted [str. 21])", "reward": "+30 Kredyty", "fail": "-1 Sława, -3 Rozpęd; tracisz przesyłkę"},
-    {"range": "46-50", "name": "Ekipa Ratunkowa", "location_type": "Unikalna Lokacja", "description": "Grupa odkrywców poprosiła o pomoc w unikalnej lokalizacji.", "task": "Eksploruj dowolną Unikalna Lokacja, raz, następnie ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Hardy lub Cwany", "reward": "+2 PW, +2 Rozpęd, +10 Kredyty", "fail": "Mark 3 Zużycie, -1 Rozpęd; zostajesz ranny podczas ratunku"},
+    {"range": "41-45", "name": "Praca Kuriera", "location_type": "Osada", "description": "Dostarcz listy, drobny ładunek i inne różne towary.", "task": "Podróżuj do dowolnej innej osady i dostarcz towary.", "test": "Brak! (fucha zawodzi, jeśli staniesz się Wyczerpany [str. 21])", "reward": "+30 Kredyty", "fail": "-1 Sława, -3 Rozpęd; tracisz przesyłkę"},
+    {"range": "46-50", "name": "Ekipa Ratunkowa", "location_type": "Unikalna Lokacja", "description": "Grupa odkrywców poprosiła o pomoc w unikalnej lokalizacji.", "task": "Eksploruj dowolną Unikalna Lokacja, raz, następnie ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Hardy lub Cwany", "reward": "+2 PW, +2 Rozpęd, +10 Kredyty", "fail": "Zaznacz 3 Zużycie, -1 Rozpęd; zostajesz ranny podczas ratunku"},
     {"range": "51-55", "name": "Pustynne Łowy", "location_type": "Pustynia", "description": "Społeczność organizuje polowanie na niebezpiecznego drapieżnika.", "task": "Eksploruj dowolną lokację Pustynia, raz, i ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Rzutki lub Fachowy", "reward": "+2 Rozpęd, +1 Zasoby, +1 Złom", "fail": "-1 Wytrzymałość, -1 Zasoby; drapieżnik ucieka"},
     {"range": "56-60", "name": "Zepsute Urządzenie", "location_type": "Ruiny", "description": "Lokalny majsterkowicz chce, byś odzyskał urządzenie z pobliskich ruin.", "task": "Eksploruj dowolną lokację Ruiny, raz, i ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Kumaty", "reward": "+2 Złom, +20 Kredyty", "fail": "-1 Wytrzymałość, -2 Rozpęd; zostajesz ranny podczas odzyskiwania"},
     {"range": "61-65", "name": "Warta przy Oazie", "location_type": "Zieleń", "description": "Plotki o wytryskującej oazie wzbudzają zainteresowanie mieszkańców. Znajdź jej lokalizację.", "task": "Przenieś się do dowolnej lokacji Zieleń i ukończ test tej fuchy z Duży sukces.", "test": "Hardy lub Rzutki", "reward": "+2 Wytrzymałość, +30 Kredyty", "fail": "-1 Zasoby, -2 Rozpęd; gubisz się w zielonej przestrzeni"},
     {"range": "66-70", "name": "Opiekun Reliktu", "location_type": "Osada", "description": "Rzadki relikt musi zostać dostarczony do innej osady.", "task": "Podróżuj do najdalszej osady od obecnej lokacji i ukończ test tej fuchy z Duży sukces.", "test": "Cwany", "reward": "+5 PW, +50 Kredyty, +2 Rozpęd", "fail": "-3 Rozpęd, -1 Relikt, -10 PW (dowolny); relikt zostaje skradziony"},
     {"range": "71-75", "name": "Prośba o Zwiad", "location_type": "Unikalna Lokacja", "description": "Miejscowi boją się, że dzieje się coś dziwnego w unikalnej lokacji.", "task": "Przenieś się do najbliższej Unikalna Lokacja i ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Fachowy lub Rzutki", "reward": "+2 Informacje, +20 Kredyty", "fail": "-1 Rozpęd, -1 Informacje; nie ma tam nic do zobaczenia"},
-    {"range": "76-80", "name": "Mapowanie Wydm", "location_type": "Pustynia", "description": "Geodeta wynajmuje Poszukiwaczy do mapowania przesuwających się piasków.", "task": "Eksploruj dowolne 2 lokacje Pustynia (muszą być różne) i ukończ test tej fuchy przy każdej z Mały lub Duży Sukces.", "test": "Kumaty", "reward": "+1 Informacje, +2 Rozpęd, +1 PW", "fail": "-1 Rozpęd, Mark 3 Zużycie; błędnie odczytujesz teren"},
+    {"range": "76-80", "name": "Mapowanie Wydm", "location_type": "Pustynia", "description": "Geodeta wynajmuje Poszukiwaczy do mapowania przesuwających się piasków.", "task": "Eksploruj dowolne 2 lokacje Pustynia (muszą być różne) i ukończ test tej fuchy przy każdej z Mały lub Duży Sukces.", "test": "Kumaty", "reward": "+1 Informacje, +2 Rozpęd, +1 PW", "fail": "-1 Rozpęd, Zaznacz 3 Zużycie; błędnie odczytujesz teren"},
     {"range": "81-85", "name": "Zapasy na Festiwal", "location_type": "Zieleń lub Ruiny", "description": "W miarę zbliżania się festiwalu, osada poszukuje rzadkich składników.", "task": "Eksploruj dowolną lokację Zieleń lub Ruiny i ukończ test tej fuchy z Mały lub Duży Sukces.", "test": "Rzutki", "reward": "+2 PW, +2 Zasoby, +10 Kredyty", "fail": "-1 Zasoby; nie możesz znaleźć składników, zastępujesz własnymi"},
     {"range": "86-90", "name": "Zaginiona Karawana", "location_type": "Pustynia", "description": "Oczekiwana karawana z towarami zniknęła na pustyni.", "task": "Eksploruj dowolną lokację Pustynia oddaloną o co najmniej 3 heksy od obecnej lokacji i ukończ test tej fuchy z Duży sukces.", "test": "Hardy lub Fachowy", "reward": "+2 Wytrzymałość, +4 Złom, +30 Kredyty", "fail": "-1 Rozpęd, -1 Wytrzymałość; nie możesz znaleźć śladu"},
     {"range": "91-95", "name": "Stare Długi", "location_type": "Osada", "description": "Mieszkaniec szuka kogoś, kto dostarczy jego spłatę długu.", "task": "Podróżuj do dowolnej innej osady od obecnej lokacji i ukończ test tej fuchy z Duży sukces.", "test": "Hardy lub Cwany", "reward": "+3 Rozpęd, +3 PW", "fail": "-2 Rozpęd, -4 PW, -100 Kredyty; zostajesz obrabowany lub tracisz dług"},

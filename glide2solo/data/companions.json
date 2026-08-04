@@ -6,8 +6,8 @@
   },
   "rules": {
     "finding_companions": "Gracz rzuca dwa razy w Tabeli Towarzyszy (d100). Koszt Rekrutacji wskazuje wymagania do pierwszego zatrudnienia. Zamiast rzucać, gracz może szukać wcześniej poznanego towarzysza: rzut d10, wynik 7+ oznacza odnalezienie poprzedniego towarzysza.",
-    "roles": "Każdy towarzysz oferuje ekspertyzę reprezentowaną przez Passive Ability oraz Key Stats. Towarzysze mają pulę Staminy, używaną podobnie jak u gracza. Przy Rzut Wyzwania, jeśli towarzysz ma Key Stat pasujący do wykonywanego testu, gracz może wydać 1 Wytrzymałość towarzysza, by zyskać +1 do rzutu (max raz). Inne bonusy z Passive Abilities są zawsze aktywne, gdy odblokowane przez Więź.",
-    "restrictions_and_control": "Gracz może mieć tylko 1 towarzysza naraz. Akcjami towarzysza zarządza gracz. Umiejętności towarzysza wymagające zasobów zawsze opłaca gracz. Towarzysz nie musi uczestniczyć i nie może działać samodzielnie. Jeśli towarzysz ma 0 Staminy, jego Passive Abilities przestają działać."
+    "roles": "Każdy towarzysz oferuje ekspertyzę reprezentowaną przez Zdolność Pasywną oraz Key Stats. Towarzysze mają pulę Wytrzymałości, używaną podobnie jak u gracza. Przy Rzut Wyzwania, jeśli towarzysz ma Key Stat pasujący do wykonywanego testu, gracz może wydać 1 Wytrzymałość towarzysza, by zyskać +1 do rzutu (max raz). Inne bonusy ze Zdolności Pasywnych są zawsze aktywne, gdy odblokowane przez Więź.",
+    "restrictions_and_control": "Gracz może mieć tylko 1 towarzysza naraz. Akcjami towarzysza zarządza gracz. Umiejętności towarzysza wymagające zasobów zawsze opłaca gracz. Towarzysz nie musi uczestniczyć i nie może działać samodzielnie. Jeśli towarzysz ma 0 Wytrzymałości, jego Zdolności Pasywne przestają działać."
   },
   "companions_table_d100": [
     {
@@ -16,7 +16,7 @@
       "description": "Nerwowy, ale genialny mechanik, potrafiący usłyszeć włos-pęknięcie w przewodzie paliwowym glidera z mili odległości. Żyje z wydmy na wydmę.",
       "key_stats": ["Kumaty", "Rzutki"],
       "passive_name": "Naprawa Polowa",
-      "passive_text": "Jax przywraca 1 Zużycie gliderowi gracza raz na akcję Camp.",
+      "passive_text": "Jax przywraca 1 Zużycie gliderowi gracza raz na akcję Obóz.",
       "stamina": 5,
       "hire_cost": "50 Kredyty i 1 Złom"
     },
@@ -36,7 +36,7 @@
       "description": "Ciężki przemysłowy droid ze wzmocnionym pancerzem i zaskakująco łagodną osobowością - jak na robota.",
       "key_stats": ["Hardy", "Fachowy"],
       "passive_name": "Pancerna Osłona",
-      "passive_text": "Raz na akcję możesz użyć 1 Staminy Unit-04 zamiast przyjąć do 1 Zużycie na sprzęt lub glider z dowolnego źródła. Unit-04 odzyskuje Staminę tylko poprzez naprawę, kosztem 1 Złom za 1 punkt Staminy.",
+      "passive_text": "Raz na akcję możesz użyć 1 Wytrzymałości Unit-04 zamiast przyjąć do 1 Zużycie na sprzęt lub glider z dowolnego źródła. Unit-04 odzyskuje Wytrzymałość tylko poprzez naprawę, kosztem 1 Złom za 1 punkt Wytrzymałości.",
       "stamina": 10,
       "hire_cost": "100 Kredyty i 1 Zasoby"
     },
@@ -46,7 +46,7 @@
       "description": "Specjalistka od flory Eridooru, wierząca że pustynia to po prostu jeden wielki ogród czekający na odpowiednie składniki odżywcze.",
       "key_stats": ["Kumaty", "Fachowy"],
       "passive_name": "Synteza Składników",
-      "passive_text": "Raz na akcję Camp w Zieleń możesz wydać 1 Staminę (gracza lub towarzysza), by zyskać +2 Zasoby.",
+      "passive_text": "Raz na akcję Obóz w Zieleń możesz wydać 1 Wytrzymałość (gracza lub towarzysza), by zyskać +2 Zasoby.",
       "stamina": 3,
       "hire_cost": "65 Kredyty i 1 Zasoby"
     },
@@ -56,7 +56,7 @@
       "description": "Nomadka, która nawiguje wg zmieniających się kolorów i zapachów wydm, zamiast polegać na mapie.",
       "key_stats": ["Kumaty", "Rzutki", "Fachowy"],
       "passive_name": "Skan Predykcyjny",
-      "passive_text": "Podczas akcji Reveal możesz wydać 1 Staminę Nym, by zwiększyć lub zmniejszyć wynik rzutu o 1, np. 7 można traktować jako 6 lub 8.",
+      "passive_text": "Podczas rzutu na Typ Lokacji lub Poziom Lokacji możesz wydać 1 Wytrzymałość Nym, by zwiększyć lub zmniejszyć wynik rzutu o 1, np. 7 można traktować jako 6 lub 8.",
       "stamina": 5,
       "hire_cost": "40 Kredyty"
     },
@@ -66,27 +66,27 @@
       "description": "Survivalistka postrzegająca Eridoor jako żywą bestię, którą trzeba szanować, a nie oswajać.",
       "key_stats": ["Hardy", "Rzutki"],
       "passive_name": "Zahartowana Wiatrem",
-      "passive_text": "Możesz wydać 1 Staminę Talon, by zyskać Przewaga na dowolnym Evencie w lokacji typu Pustynia.",
+      "passive_text": "Możesz wydać 1 Wytrzymałość Talon, by zyskać Przewaga na dowolnym Wydarzeniu w lokacji typu Pustynia.",
       "stamina": 5,
       "hire_cost": "80 Kredyty i min. H2"
     },
     {
       "range": "38-43",
       "name": "Soli, Archiwistka",
-      "description": "Cichy uczony, zafiksowany na \"Green Era\". Nosi torbę pełną cyfrowych tabletów do notowania i rejestrowania nowych znalezisk.",
+      "description": "Cichy uczony, zafiksowany na \"Erze Zieleni\". Nosi torbę pełną cyfrowych tabletów do notowania i rejestrowania nowych znalezisk.",
       "key_stats": ["Kumaty", "Cwany"],
       "passive_name": "Rozpoznawanie Wzorców",
-      "passive_text": "Za każdym razem, gdy osiągniesz Duży Sukces na akcji Explore z użyciem Kumaty, Soli daje +1 dodatkowy Informacje.",
+      "passive_text": "Za każdym razem, gdy osiągniesz Duży Sukces na akcji Eksploracja z użyciem Kumaty, Soli daje +1 dodatkowy Informacje.",
       "stamina": 4,
       "hire_cost": "90 Kredyty i min. C2 lub K2"
     },
     {
       "range": "44-50",
       "name": "Kael, Zaginiony Dziedzic",
-      "description": "Były następca tronu Minor House, zna kody wysokiego towarzystwa i gorzki smak wygnania.",
+      "description": "Były następca tronu Małego Domu, zna kody wysokiego towarzystwa i gorzki smak wygnania.",
       "key_stats": ["Rzutki", "Cwany"],
       "passive_name": "Szlachetne Pochodzenie",
-      "passive_text": "Możesz wydać 1 Staminę Kaela, by zyskać Przewaga na dowolnym teście Cwany.",
+      "passive_text": "Możesz wydać 1 Wytrzymałość Kaela, by zyskać Przewaga na dowolnym teście Cwany.",
       "stamina": 4,
       "hire_cost": "80 Kredyty"
     },
@@ -126,7 +126,7 @@
       "description": "Onieśmielająca, lecz milcząca obecność, wystarczająca by rozwiązać każdy spór.",
       "key_stats": ["Hardy", "Rzutki", "Fachowy"],
       "passive_name": "Onieśmielająca Aura",
-      "passive_text": "Gdy uzyskasz Porażka na teście Cwany lub Hardy w osadzie, możesz wydać 1 Staminę Duncana, by spróbować ponownie (max raz).",
+      "passive_text": "Gdy uzyskasz Porażka na teście Cwany lub Hardy w osadzie, możesz wydać 1 Wytrzymałość Duncana, by spróbować ponownie (max raz).",
       "stamina": 5,
       "hire_cost": "110 Kredyty"
     },
@@ -136,17 +136,17 @@
       "description": "Nomadyczny Poszukiwacz, który spędził 10 000 godzin w powietrzu nad wydmami.",
       "key_stats": ["Rzutki", "Fachowy"],
       "passive_name": "Jeździec Wiatru",
-      "passive_text": "Podczas akcji Move rzuć d10: 1-4 brak efektu, 5-7 +1 Move, 8+ +2 Move.",
+      "passive_text": "Podczas akcji Ruch rzuć d10: 1-4 brak efektu, 5-7 +1 do Ruchu, 8+ +2 do Ruchu.",
       "stamina": 5,
       "hire_cost": "40 Kredyty, 2 Złom"
     },
     {
       "range": "82-87",
       "name": "Echo, Syntetyczna Artystka",
-      "description": "Droid używający projekcji świetlnych do odtwarzania dzieł sztuki reprezentujących \"Green Era\" Eridooru.",
+      "description": "Droid używający projekcji świetlnych do odtwarzania dzieł sztuki reprezentujących \"Erę Zieleni\" Eridooru.",
       "key_stats": ["Cwany", "Fachowy"],
       "passive_name": "Żywe Obrazy",
-      "passive_text": "Podczas akcji Camp zyskujesz bonus +1 Rozpęd za każdą lokację typu Zieleń, przez którą przejechałeś od ostatniej akcji Camp (maksymalnie +3).",
+      "passive_text": "Podczas akcji Obóz zyskujesz bonus +1 Rozpęd za każdą lokację typu Zieleń, przez którą przejechałeś od ostatniej akcji Obóz (maksymalnie +3).",
       "stamina": 4,
       "hire_cost": "60 Kredyty i min. K4 lub C3"
     },
@@ -156,7 +156,7 @@
       "description": "Emerytowany egzekutor gildii, zbyt uparty, by przestać wędrować po wydmach.",
       "key_stats": ["Hardy", "Fachowy"],
       "passive_name": "Pewna Ręka",
-      "passive_text": "Raz na Wyzwanie możesz wydać 1 Staminę Garricka, by potraktować wynik rzutu jako o 1 większy lub mniejszy.",
+      "passive_text": "Raz na Wyzwanie możesz wydać 1 Wytrzymałość Garricka, by potraktować wynik rzutu jako o 1 większy lub mniejszy.",
       "stamina": 6,
       "hire_cost": "130 Kredyty i min. Poziom Więzi 2+ z dowolną gildią"
     },

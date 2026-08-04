@@ -389,8 +389,8 @@ function renderExhaustionResult(r) {
             <div class="entry-meta"><span>d10 = ${r.roll}</span></div>
             <div class="entry-result"><strong>${e.name}</strong></div>
             <p>${e.effect}</p>
-            <p class="placeholder">Odzyskaj Staminę: ${e.recover_stamina}</p>
-            <button class="btn btn-sm" data-action="apply-exhaustion-recovery">Zastosuj odzyskanie Staminy postaci</button>
+            <p class="placeholder">Odzyskaj Wytrzymałość: ${e.recover_stamina}</p>
+            <button class="btn btn-sm" data-action="apply-exhaustion-recovery">Zastosuj odzyskanie Wytrzymałości postaci</button>
             ${r.roll === 10 ? `
                 <div style="margin-top:8px;">
                     <button class="btn btn-sm" data-action="roll-exhaustion-sub">Rzuć subtabelę „Otarcie się o Śmierć” (d10)</button>
@@ -658,7 +658,7 @@ function rollExhaustion(data) {
     const roll = rollDie(10);
     const entry = findInRangeTable(table, roll, "roll");
     ui.exhaustion.result = { roll, entry, sub: null };
-    logRoll("Tabela Wyczerpania (d10)", `d10=${roll}`, entry ? `${entry.name} — ${entry.effect} (odzyskaj Staminę: ${entry.recover_stamina})` : "brak dopasowania w tabeli");
+    logRoll("Tabela Wyczerpania (d10)", `d10=${roll}`, entry ? `${entry.name} — ${entry.effect} (odzyskaj Wytrzymałość: ${entry.recover_stamina})` : "brak dopasowania w tabeli");
     rerender();
 }
 

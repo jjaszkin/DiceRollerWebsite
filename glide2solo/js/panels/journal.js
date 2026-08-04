@@ -94,7 +94,7 @@ export function render(root, { state }) {
             </div>
         `).join("") : `
             <div class="card" style="margin-top:12px;">
-                <p class="placeholder">Dziennik jest pusty — dodaj pierwszy wpis powyżej, wykonaj rzut w Rollerze albo podejmij jakąś akcję w grze (quest, przedmiot, upgrade, trait…).</p>
+                <p class="placeholder">Dziennik jest pusty — dodaj pierwszy wpis powyżej, wykonaj rzut w Rollerze albo podejmij jakąś akcję w grze (fucha, przedmiot, upgrade, cecha…).</p>
             </div>
         `}
     `;

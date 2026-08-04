@@ -44,7 +44,7 @@ const RESOURCE_TIPS = {
 const GLIDER_STAT_TIPS = {
     wear: { en: "Wear", desc: "Stan techniczny glidera. Przy 0: maks. Prędkość spada do 1, Mody stają się niedostępne." },
     supply: { en: "Supply", desc: "Zapasy na pokładzie glidera. Przy 0 zaznacz 1 Zużycie zamiast wydawać Zasoby." },
-    speed: { en: "Speed", desc: "Zasięg ruchu glidera (w heksach) podczas akcji Move." },
+    speed: { en: "Speed", desc: "Zasięg ruchu glidera (w heksach) podczas akcji Ruch." },
     scrap: { en: "Scrap", desc: "Surowiec zbierany podczas eksploracji — waluta rzemieślnicza/handlowa Glidera." },
     relics: { en: "Relics", desc: "Rzadkie, cenne znaleziska — nagroda za Duże Sukcesy w trudniejszych lokacjach." },
     cargoSlots: { en: "Cargo Slots", desc: "Pojemność przestrzeni ładunkowej glidera na towary/dobra wymienne, osobno od Złom/Zasoby/Relikty." }
@@ -178,7 +178,7 @@ export function render(root, { state, data }) {
             </div>
 
             <div class="card">
-                <h2>Sprzęt (Sprzęt)</h2>
+                <h2>Sprzęt</h2>
                 <p class="cap-indicator ${equippedGearCount >= maxCarried ? "full" : ""}">Założone: ${equippedGearCount} / ${maxCarried}</p>
                 ${equippedGear.length ? `
                     <ul class="summary-list">
@@ -293,7 +293,7 @@ export function render(root, { state, data }) {
             </div>
 
             <div class="card" style="grid-column: 1 / -1;">
-                <h2>Nagrody i Traity</h2>
+                <h2>Nagrody i Cechy</h2>
                 <p class="placeholder">Najedź na pozycję, żeby zobaczyć jej efekt. Nagrody Sprzęt/Ulepszenie Glidera pojawiają się automatycznie jako posiadane w tabach Sprzęt/Glider — wystarczy je tam założyć/zainstalować.</p>
                 ${allRewards.length ? `
                     <ul class="summary-list">
@@ -304,7 +304,7 @@ export function render(root, { state, data }) {
                             </li>
                         `).join("")}
                     </ul>
-                ` : `<p class="summary-empty">Brak zebranych nagród i traitów.</p>`}
+                ` : `<p class="summary-empty">Brak zebranych nagród i cech.</p>`}
             </div>
 
         </div>

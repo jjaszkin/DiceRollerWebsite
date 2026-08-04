@@ -9,21 +9,21 @@
       {"name": "Szyfr Gildii", "cost": "100cr", "effect": "Przewaga na wszystkich testach Cwany w osadach i Unikalnych Lokacjach (max raz na wizytę)."},
       {"name": "Matryca Tłumacząca", "cost": "65cr", "effect": "+1 Cwany w lokacjach Pustynia i Zieleń."},
       {"name": "Sygnet Rodowy [Podrobiony]", "cost": "150cr", "effect": "Zapłać 5cr za +1 do testu Cwany lub Kumaty (max +3) w osadzie lub Unikalna Lokacja."},
-      {"name": "Talia Szyfrująca", "cost": "95cr", "effect": "Wydaj 1 Informacje, by zyskać Przewaga na dowolnej akcji Trade."},
-      {"name": "Księga Łowów", "cost": "50cr", "effect": "Zyskaj +10 Kredyty za każdym razem, gdy ukończysz Quest wymagający testu Hardy lub Fachowy."},
+      {"name": "Talia Szyfrująca", "cost": "95cr", "effect": "Wydaj 1 Informacje, by zyskać Przewaga na dowolnej akcji Handel."},
+      {"name": "Księga Łowów", "cost": "50cr", "effect": "Zyskaj +10 Kredyty za każdym razem, gdy ukończysz Fuchę wymagającą testu Hardy lub Fachowy."},
       {"name": "Wagi Kupca", "cost": "80cr", "effect": "Przewaga na wszystkich rzutach kupna i sprzedaży w osadach."}
     ],
     "survival_and_exploration_gear": [
       {"name": "Termiczny Płaszcz", "cost": "40cr", "effect": "Przewaga na testach Hardy w lokacjach Pustynia."},
-      {"name": "Przenośny Namiot", "cost": "65cr", "effect": "Przewaga na akcjach Camp (raz na Camp)."},
+      {"name": "Przenośny Namiot", "cost": "65cr", "effect": "Przewaga na akcjach Obóz (raz na Obóz)."},
       {"name": "Bukłak Nawadniający", "cost": "50cr", "effect": "Wymień 1 Zasoby, by zyskać 2 Wytrzymałość."},
       {"name": "Czekany Wspinaczkowe", "cost": "35cr", "effect": "+1 do testów Hardy w lokacjach Ruiny."},
-      {"name": "Maska Filtrująca", "cost": "60cr", "effect": "Dodaj 1 Zużycie, by zignorować utratę Staminy w Ruiny lub Pustynia."},
-      {"name": "Zestaw Przetrwania", "cost": "80cr", "effect": "Camp Duży Sukces: +1 Zasoby."},
+      {"name": "Maska Filtrująca", "cost": "60cr", "effect": "Dodaj 1 Zużycie, by zignorować utratę Wytrzymałości w Ruiny lub Pustynia."},
+      {"name": "Zestaw Przetrwania", "cost": "80cr", "effect": "Obóz Duży Sukces: +1 Zasoby."},
       {"name": "Plecak Odkrywcy", "cost": "100cr", "effect": "Max Sprzęt +2 (ten Sprzęt nie zajmuje slotu)."}
     ],
     "navigation_and_sensory_equipment": [
-      {"name": "Lornetka Tropiciela", "cost": "50cr", "effect": "Możesz przerzucić Reveals i poziomy lokacji, używając dowolnego wyniku (max raz na lokację)."},
+      {"name": "Lornetka Tropiciela", "cost": "50cr", "effect": "Możesz przerzucić rzuty na Typ Lokacji i Poziom Lokacji, używając dowolnego wyniku (max raz na lokację)."},
       {"name": "Czujnik Sejsmiczny", "cost": "70cr", "effect": "Przewaga na Wyzwanie Fachowy, gdzie mogłaby zostać utracona Wytrzymałość, w lokacjach Pustynia lub Ruiny."},
       {"name": "Pistolet Sygnałowy", "cost": "30cr", "effect": "Wydaj 1 Złom, by odkryć wszystkie sąsiednie heksy (jeśli możliwe) i zyskać Przewaga na następnym teście."},
       {"name": "Echolokator", "cost": "85cr", "effect": "+1 do Fachowy w Pustynia, Ruiny i Zieleń."},
@@ -32,14 +32,14 @@
     "technical_and_scavenging_tools": [
       {"name": "Multinarzędzie", "cost": "55cr", "effect": "+1 do Rzutki we wszystkich typach lokacji."},
       {"name": "Multiskaner", "cost": "90cr", "effect": "+1 do Kumaty we wszystkich typach lokacji."},
-      {"name": "Magnes na Złom", "cost": "75cr", "effect": "Gdy zdobywasz Złom z Explore, +1 dodatkowy Złom."},
+      {"name": "Magnes na Złom", "cost": "75cr", "effect": "Gdy zdobywasz Złom z Eksploracji, +1 dodatkowy Złom."},
       {"name": "Diagnostyczny HUD", "cost": "110cr", "effect": "Przewaga na testach Kumaty, gdy można zdobyć Informacje, w lokacjach Ruiny lub Pustynia."},
       {"name": "Palnik Spawalniczy", "cost": "45cr", "effect": "Wydaj 1 Złom, by usunąć 2 Zużycie z glidera."}
     ],
     "consumables_and_supplies": [
       {"name": "Racja Żywnościowa", "cost": "10cr", "effect": "Jednorazowy. +2 Zasoby."},
       {"name": "Plaster Stymulujący", "cost": "20cr", "effect": "Jednorazowy. +3 Wytrzymałość."},
-      {"name": "Kanister Paliwa", "cost": "15cr", "effect": "Jednorazowy. +1 Zasoby, lub +5 bonusu Move na pojedynczą akcję Move."},
+      {"name": "Kanister Paliwa", "cost": "15cr", "effect": "Jednorazowy. +1 Zasoby, lub +5 bonusu Ruchu na pojedynczą akcję Ruch."},
       {"name": "Masa Naprawcza", "cost": "30cr", "effect": "Jednorazowy. Usuń do 5 Zużycie z dowolnej kombinacji Sprzęt lub Glider."},
       {"name": "Chip Obejściowy", "cost": "15cr", "effect": "Jednorazowy. Automatycznie osiągnij Duży sukces dla dowolnego testu Rzutki w lokacji Ruiny."}
     ]
@@ -50,23 +50,23 @@
       {"name": "Podprogowy Modulator Głosu", "cost": "135cr", "effect": "Możesz traktować dowolny sprzedany handel Złom jakby był wart +5 Kredyty, za jednostkę (max 3)."},
       {"name": "Sygnet Mistrza Gildii", "cost": "300cr", "effect": "Za każdym razem, gdy zdobywasz Punkty Więzi z Gildią, zyskujesz +1 bonus (max +3 na nagrodę)."},
       {"name": "Neuralny Węzeł Perswazji", "cost": "195cr", "effect": "Nagrody Kredyty z testów Cwany lub Fachowy w osadach zwiększają się o +10."},
-      {"name": "Przekaźnik Czarnego Rynku", "cost": "150cr", "effect": "Możesz wziąć 2 Questy zamiast 1. Nie możesz brać tego samego Questu jednocześnie."},
+      {"name": "Przekaźnik Czarnego Rynku", "cost": "150cr", "effect": "Możesz wziąć 2 Fuchy zamiast 1. Nie możesz brać tej samej Fuchy jednocześnie."},
       {"name": "Szyfrowana Księga", "cost": "125cr", "effect": "Twoja maksymalna pojemność Informacje zwiększa się do 8. Zyskujesz 5 Kredyty za każdym razem, gdy zdobywasz Informacje."}
     ],
     "navigation_and_sensory_equipment": [
       {"name": "Nawigacja Orbitalna", "cost": "250cr", "effect": "Wydaj 1 Informacje, by odkryć d5 lokacji na mapie, niezależnie od odległości. Zyskaj Przewaga na pierwszym Wyzwanie w każdej odkrytej lokacji (możesz też \"odkryć\" istniejące lokacje dla tego bonusu)."},
       {"name": "Zestaw Obrazowania Sejsmicznego", "cost": "175cr", "effect": "Wydaj 1 Informacje, by trwale zmniejszyć poziom trudności dowolnego heksa (minimum 1)."},
-      {"name": "Chronokompas", "cost": "130cr", "effect": "Możesz przerzucić Travel Encounters, wybierając dowolny wynik."},
+      {"name": "Chronokompas", "cost": "130cr", "effect": "Możesz przerzucić Wydarzenia Podróży, wybierając dowolny wynik."},
       {"name": "Soczewki Termiczne", "cost": "120cr", "effect": "+1 Fachowy. Przewaga na Wyzwanie Fachowy w Zielenie i Pustynie."},
-      {"name": "Kotwica Grawitacyjna", "cost": "90cr", "effect": "Możesz poruszać się przez Difficult Terrain, ale nie możesz na nim zakończyć ruchu."}
+      {"name": "Kotwica Grawitacyjna", "cost": "90cr", "effect": "Możesz poruszać się przez Trudny Teren, ale nie możesz na nim zakończyć ruchu."}
     ],
     "survival_and_exploration_gear": [
       {"name": "Egzoszkielet", "cost": "180cr", "effect": "+1 Hardy, +1 max Sprzęt."},
-      {"name": "Kombinezon Kriogeniczny", "cost": "150cr", "effect": "Gdy tracisz Zasoby lub Staminę w lokacji Pustynia, rzuć d10; na 7+ strata jest zniwelowana."},
-      {"name": "Neuralny Stymulant", "cost": "160cr", "effect": "Wydaj 1 Informacje, by zyskać +3 do dowolnego Stat Wyzwanie; rzuć d10, na 7+ trać 1 Staminę."},
+      {"name": "Kombinezon Kriogeniczny", "cost": "150cr", "effect": "Gdy tracisz Zasoby lub Wytrzymałość w lokacji Pustynia, rzuć d10; na 7+ strata jest zniwelowana."},
+      {"name": "Neuralny Stymulant", "cost": "160cr", "effect": "Wydaj 1 Informacje, by zyskać +3 do dowolnej Statystyki w Rzucie Wyzwania; rzuć d10, na 7+ trać 1 Wytrzymałość."},
       {"name": "Oczyszczacz Środowiskowy", "cost": "140cr", "effect": "Ignoruj Utrudnienie z lokacji Zieleń, Pustynia i Ruina."},
-      {"name": "Tłumiki Kinetyczne", "cost": "120cr", "effect": "Ignoruj pierwszy utracony punkt Staminy z wyników w lokacjach Ruina, Osada i Unikalna Lokacja."},
-      {"name": "Autonomiczna Izba Medyczna", "cost": "200cr", "effect": "Przy akcji Camp rzuć d10. Na 7+ zarówno Ty, jak i Twój towarzysz zyskujecie +1 Wytrzymałość."}
+      {"name": "Tłumiki Kinetyczne", "cost": "120cr", "effect": "Ignoruj pierwszy utracony punkt Wytrzymałości z wyników w lokacjach Ruina, Osada i Unikalna Lokacja."},
+      {"name": "Autonomiczna Izba Medyczna", "cost": "200cr", "effect": "Przy akcji Obóz rzuć d10. Na 7+ zarówno Ty, jak i Twój towarzysz zyskujecie +1 Wytrzymałość."}
     ],
     "technical_and_scavenging_tools": [
       {"name": "Nanonaprawczy Rój", "cost": "220cr", "effect": "Wydaj 1 Złom, by usunąć cały Zużycie z dowolnego jednego Sprzęt."},
@@ -80,9 +80,9 @@
   "glider_upgrades": {
     "rules": "Ulepszenia magazynowania Złom, Zasoby i Reliktów na gliderze są tierowane - trzeba kupić tier 1 przed 2, a 2 przed 3. Ulepszenia można sprzedać za połowę (zaokrągloną w górę) ich wartości w Kredyty.",
     "engine_and_mobility": [
-      {"name": "Przeciążone Silniki", "cost": "80cr", "effect": "Wydaj 1 Złom, by zyskać +2 Prędkość na następną akcję Move."},
+      {"name": "Przeciążone Silniki", "cost": "80cr", "effect": "Wydaj 1 Złom, by zyskać +2 Prędkość na następną akcję Ruch."},
       {"name": "Dysze Wektorowe", "cost": "55cr", "effect": "+1 do testów Rzutki w lokacjach Pustynia."},
-      {"name": "Płozy Piaskowe", "cost": "45cr", "effect": "+1 Prędkość przy rozpoczęciu akcji Move w Pustynia."}
+      {"name": "Płozy Piaskowe", "cost": "45cr", "effect": "+1 Prędkość przy rozpoczęciu akcji Ruch w Pustynia."}
     ],
     "sensors_and_tech": [
       {"name": "Rozszerzony HUD", "cost": "70cr", "effect": "+1 do Wyzwanie Fachowy w Ruiny i Zielenie."},
@@ -90,7 +90,7 @@
       {"name": "Kartograf Terenu", "cost": "90cr", "effect": "+1 do Kumaty w lokacjach Pustynia i Ruiny."}
     ],
     "frame_and_survival": [
-      {"name": "Wzmocnione Siodło", "cost": "100cr", "effect": "Zwiększ max Staminę o 1 (zyskaj tę Staminę natychmiast przy zakupie ulepszenia)."},
+      {"name": "Wzmocnione Siodło", "cost": "100cr", "effect": "Zwiększ max Wytrzymałość o 1 (zyskaj tę Wytrzymałość natychmiast przy zakupie ulepszenia)."},
       {"name": "Osłona Termiczna", "cost": "65cr", "effect": "+1 do Hardy w lokacjach Pustynia."},
       {"name": "Zautomatyzowane Ramię Naprawcze", "cost": "85cr", "effect": "Wydaj 1 Złom, by usunąć 1 Zużycie z glidera."}
     ],
@@ -101,13 +101,13 @@
     ],
     "supply_management_tiers": [
       {"tier": 1, "name": "Dodatkowe Bukłaki", "cost": "30cr + 1 Złom", "effect": "Max Zasoby +2."},
-      {"tier": 2, "name": "Siatka Wychwytująca Parę", "cost": "75cr + 3 Złom", "effect": "Przy akcji Camp rzuć d10. Na 7+ zyskaj +1 Zasoby."},
+      {"tier": 2, "name": "Siatka Wychwytująca Parę", "cost": "75cr + 3 Złom", "effect": "Przy akcji Obóz rzuć d10. Na 7+ zyskaj +1 Zasoby."},
       {"tier": 3, "name": "Wzmocnione Komory Magazynowe", "cost": "150cr + 5 Złom", "effect": "Max Przestrzeń Załadunkowa +3."}
     ],
     "relic_preservation_tiers": [
       {"tier": 1, "name": "Wyściełana Kapsuła Stazy", "cost": "120cr + 2 Złom", "effect": "Przy sprzedaży, wymianie lub handlu Reliktem za inną nagrodę, rzuć d10. Na 10 zyskaj +1 Sława oprócz innych nagród."},
       {"tier": 2, "name": "Radar Głębokiego Skanowania", "cost": "150cr + 4 Złom", "effect": "Przewaga na pierwszym Wyzwanie Kumaty lub Fachowy, gdy nagrodą byłby Relikt."},
-      {"tier": 3, "name": "Skarbiec Pradawnych", "cost": "260cr + 1 Relikt", "effect": "Raz na Event, jeśli nie udałoby Ci się osiągnąć Duży sukces o 1, możesz przerzucić kość i użyć nowego wyniku. Nie można użyć, jeśli masz 2+ Reliktów."}
+      {"tier": 3, "name": "Skarbiec Pradawnych", "cost": "260cr + 1 Relikt", "effect": "Raz na Wydarzenie, jeśli nie udałoby Ci się osiągnąć Duży sukces o 1, możesz przerzucić kość i użyć nowego wyniku. Nie można użyć, jeśli masz 2+ Reliktów."}
     ]
   }
 }

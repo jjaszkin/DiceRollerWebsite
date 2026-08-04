@@ -8,11 +8,11 @@ import { uid, formatTimestamp } from "./utils.js";
 
 /** Etykiety kategorii zdarzeń używane przy renderowaniu w journal.js. */
 export const EVENT_TYPE_LABELS = {
-    "quest-start": "Quest — rozpoczęto",
-    "quest-complete": "Quest — ukończono",
+    "quest-start": "Fucha — rozpoczęto",
+    "quest-complete": "Fucha — ukończono",
     "item-gained": "Zdobyto przedmiot",
     "glider-upgrade": "Ulepszenie glidera",
-    "trait-gained": "Zdobyto trait",
+    "trait-gained": "Zdobyto Cechę",
     "stat-change": "Zmiana statystyki",
     "day-summary": "Nowy dzień — podsumowanie"
 };
