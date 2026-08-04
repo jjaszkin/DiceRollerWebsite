@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "title": "GLIDE 2 - Oracles (Glide Oracle, Desert/Ruins/Green Space/Settlement Word Oracles)",
+    "title": "GLIDE 2 - Wyrocznie (Glide Wyrocznia, Pustynia/Ruiny/Zieleń/Wyrocznie Słowne Osady)",
     "source": "GLIDE 2 - Part Two (v1 spreads).pdf (str. 139-146)",
     "created": "2026-08-02"
   },
@@ -45,10 +45,10 @@
           "name": "NIE, ALE… (5)",
           "description": "To się nie udaje, ale ze srebrną podszewką.",
           "table_d10": [
-            {"range": "1-2", "text": "Zyskujesz Intel."},
+            {"range": "1-2", "text": "Zyskujesz Informacje."},
             {"range": "3-4", "text": "Otwiera się inna droga."},
             {"range": "5", "text": "Koszt zostaje zmniejszony."},
-            {"range": "6-7", "text": "Zyskujesz przewagę (Advantage)."},
+            {"range": "6-7", "text": "Zyskujesz przewagę (Przewaga)."},
             {"range": "8-10", "text": "Żadne zasoby nie zostają wydane."}
           ]
         },
@@ -80,10 +80,10 @@
           "name": "TAK, I… (10)",
           "description": null,
           "table_d10": [
-            {"range": "1-2", "text": "Zyskujesz Momentum."},
-            {"range": "3-4", "text": "Advantage w przyszłym ryzyku."},
+            {"range": "1-2", "text": "Zyskujesz Rozpęd."},
+            {"range": "3-4", "text": "Przewaga w przyszłym ryzyku."},
             {"range": "5", "text": "Otwiera się nowa okazja."},
-            {"range": "6-7", "text": "Odkrywasz cenny Intel."},
+            {"range": "6-7", "text": "Odkrywasz cenny Informacje."},
             {"range": "8-9", "text": "Zasób zostaje przywrócony."},
             {"range": "10", "text": "Rezultat jest większy, niż oczekiwano."}
           ]
@@ -94,7 +94,7 @@
       "rule": "Kiedy zadajesz pytanie, na które nie da się odpowiedzieć prostym tak lub nie, wymagany jest rzut abstrakcyjny w Tabelach Wyroczni (str. 143-146). Użyj tabeli pasującej do Twojej obecnej lokacji, lub dowolnej, jeśli jesteś w Unikalnej Lokacji, rzucając tyle razy, ile potrzeba, by znaleźć odpowiedź. Wyniki z pytań otwartych mogą też prowadzić Cię do Wyroczni Tak/Nie i odwrotnie, więc baw się tymi narzędziami, by utrzymać swoją historię w ruchu."
     },
     "interpreting_results": {
-      "rule": "Gdy zyskujesz zasób, dodaj 1 z podanych zasobów lub dowolny, który pasuje do Twojej obecnej sytuacji. Redukując ryzyko, wyzwania lub trudność, dostosuj Poziom Trudności następnego rzutu o 1. Jeśli coś staje się jasne, zyskuje przewagę lub ułatwia Ci sytuację, zyskaj Advantage na następnym rzucie. Zyskaj Disadvantage na następnym rzucie, jeśli jest odwrotnie. Celem wyroczni jest tworzenie napięcia i rozwiązywanie przeszkód, zawsze posuwając historię naprzód."
+      "rule": "Gdy zyskujesz zasób, dodaj 1 z podanych zasobów lub dowolny, który pasuje do Twojej obecnej sytuacji. Redukując ryzyko, wyzwania lub trudność, dostosuj Poziom Trudności następnego rzutu o 1. Jeśli coś staje się jasne, zyskuje przewagę lub ułatwia Ci sytuację, zyskaj Przewaga na następnym rzucie. Zyskaj Utrudnienie na następnym rzucie, jeśli jest odwrotnie. Celem wyroczni jest tworzenie napięcia i rozwiązywanie przeszkód, zawsze posuwając historię naprzód."
     }
   },
   "desert_oracle": [

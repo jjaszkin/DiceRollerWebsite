@@ -4,7 +4,7 @@ import { uid, formatTimestamp } from "./utils.js";
 
 /**
  * Dodaje wpis do historii rzutów, otagowany aktualnym dniem gry.
- * @param {string} table - nazwa tabeli/rzutu (np. "Challenge Roll", "Desert — Landmarks")
+ * @param {string} table - nazwa tabeli/rzutu (np. "Rzut Wyzwania", "Pustynia — Landmarks")
  * @param {string} rollText - opis samego rzutu kośćmi (np. "d100: 42")
  * @param {string} resultText - pełny tekst efektu/wyniku
  */

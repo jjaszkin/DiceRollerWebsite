@@ -1,13 +1,17 @@
-// Panel: Dziennik — połączony log przygody: swobodne notatki narracyjne gracza (state.journal)
-// oraz automatyczny log rzutów kośćmi (state.rollHistory), tagowane dniem gry i wyświetlane
-// razem w jednej chronologicznej liście (najnowsze na górze).
+// Panel: Dziennik — połączony log przygody: swobodne notatki narracyjne gracza (state.journal),
+// automatyczny log rzutów kośćmi (state.rollHistory) oraz automatyczny log zdarzeń mechanicznych
+// (state.events — patrz eventLog.js: questy, przedmioty, ulepszenia glidera, traity, zmiany
+// statystyk, podsumowania nowego dnia), tagowane dniem gry i wyświetlane razem w jednej
+// chronologicznej liście (najnowsze na górze).
 import { getState, touch } from "../store.js";
 import { uid, formatTimestamp } from "../utils.js";
+import { EVENT_TYPE_LABELS } from "../eventLog.js";
 
-function mergeAndGroupByDay(journalEntries, rollEntries) {
+function mergeAndGroupByDay(journalEntries, rollEntries, eventEntries) {
     const tagged = [
         ...journalEntries.map(e => ({ ...e, kind: "journal" })),
-        ...rollEntries.map(e => ({ ...e, kind: "roll" }))
+        ...rollEntries.map(e => ({ ...e, kind: "roll" })),
+        ...eventEntries.map(e => ({ ...e, kind: "event" }))
     ];
 
     const groups = new Map();
@@ -44,6 +48,17 @@ function renderEntry(e) {
             </li>
         `;
     }
+    if (e.kind === "event") {
+        return `
+            <li class="entry entry-event">
+                <div class="entry-meta">
+                    <span>${EVENT_TYPE_LABELS[e.type] || e.type}</span>
+                    ${rightMeta}
+                </div>
+                <div class="entry-result">${e.text.replace(/\n/g, "<br>")}</div>
+            </li>
+        `;
+    }
     return `
         <li class="entry">
             <div class="entry-meta">
@@ -58,7 +73,8 @@ function renderEntry(e) {
 export function render(root, { state }) {
     const journalEntries = state.journal ?? [];
     const rollEntries = state.rollHistory ?? [];
-    const grouped = mergeAndGroupByDay(journalEntries, rollEntries);
+    const eventEntries = state.events ?? [];
+    const grouped = mergeAndGroupByDay(journalEntries, rollEntries, eventEntries);
 
     root.innerHTML = `
         <div class="card">
@@ -67,6 +83,7 @@ export function render(root, { state }) {
             <button class="btn btn-primary" data-action="add-entry" style="margin-top:8px;">Dodaj wpis</button>
             ${rollEntries.length ? `<button class="btn btn-sm btn-secondary" data-action="clear-history" style="margin-top:8px; margin-left:8px;">Wyczyść historię rzutów</button>` : ``}
             ${journalEntries.length ? `<button class="btn btn-sm btn-secondary" data-action="clear-journal" style="margin-top:8px; margin-left:8px;">Wyczyść historię wpisów</button>` : ``}
+            ${eventEntries.length ? `<button class="btn btn-sm btn-secondary" data-action="clear-events" style="margin-top:8px; margin-left:8px;">Wyczyść historię zdarzeń</button>` : ``}
         </div>
         ${grouped.length ? grouped.map(([day, list]) => `
             <div class="card" style="margin-top:12px;">
@@ -77,7 +94,7 @@ export function render(root, { state }) {
             </div>
         `).join("") : `
             <div class="card" style="margin-top:12px;">
-                <p class="placeholder">Dziennik jest pusty — dodaj pierwszy wpis powyżej albo wykonaj rzut w Rollerze.</p>
+                <p class="placeholder">Dziennik jest pusty — dodaj pierwszy wpis powyżej, wykonaj rzut w Rollerze albo podejmij jakąś akcję w grze (quest, przedmiot, upgrade, trait…).</p>
             </div>
         `}
     `;
@@ -106,6 +123,9 @@ function wireEvents(root) {
             if (kind === "roll") {
                 if (!window.confirm("Usunąć ten wpis z historii rzutów?")) return;
                 state.rollHistory = state.rollHistory.filter(r => r.id !== btn.dataset.id);
+            } else if (kind === "event") {
+                if (!window.confirm("Usunąć ten wpis z historii zdarzeń?")) return;
+                state.events = (state.events ?? []).filter(ev => ev.id !== btn.dataset.id);
             } else {
                 if (!window.confirm("Usunąć ten wpis dziennika?")) return;
                 state.journal = state.journal.filter(j => j.id !== btn.dataset.id);
@@ -118,6 +138,10 @@ function wireEvents(root) {
         } else if (action === "clear-journal") {
             if (!window.confirm("Na pewno wyczyścić całą historię wpisów dziennika? Tej operacji nie można cofnąć.")) return;
             state.journal = [];
+            touch();
+        } else if (action === "clear-events") {
+            if (!window.confirm("Na pewno wyczyścić całą historię zdarzeń? Tej operacji nie można cofnąć.")) return;
+            state.events = [];
             touch();
         }
     });

@@ -1,10 +1,11 @@
-// Panel: Tracker questów. Bond Level i nagrody gildii są już widoczne w karcie postaci (Faza 2) —
-// tutaj śledzimy postęp konkretnych Guild Jobs (misji) oraz Odd-Jobs (fuch) zapisanych w stanie gry.
-import { getState, touch } from "../store.js";
+// Panel: Tracker questów. Poziom Więzi i nagrody gildii są już widoczne w karcie postaci (Faza 2) —
+// tutaj śledzimy postęp konkretnych Misji Gildii oraz Fuchy (fuch) zapisanych w stanie gry.
+import { getState, getData, touch } from "../store.js";
+import { logEvent } from "../eventLog.js";
 
 const STATUS_LABELS = { available: "Dostępna", active: "Aktywna", completed: "Ukończona" };
 
-/** Wg zasad podręcznika: Seeker może mieć jednocześnie tylko 1 aktywną Guild Mission (globalnie, przez wszystkie gildie). */
+/** Wg zasad podręcznika: Poszukiwacz może mieć jednocześnie tylko 1 aktywną Misję Gildii (globalnie, przez wszystkie gildie). */
 function anyGuildMissionActive(state) {
     return Object.values(state.quests.guildJobs).some(list => list.some(j => j.status === "active"));
 }
@@ -20,11 +21,11 @@ function renderMission(g, mission, jobState, blockActivate) {
             <div class="entry-result"><strong>${mission.name}</strong></div>
             <p>${mission.task}</p>
             ${mission.test ? `<p class="placeholder"><strong>Test:</strong> ${mission.test}</p>` : ""}
-            <p><strong>Major:</strong> ${mission.major}</p>
-            <p><strong>Minor:</strong> ${mission.minor}</p>
-            <p><strong>Miss:</strong> ${mission.miss}</p>
+            <p><strong>Duży Sukces:</strong> ${mission.major}</p>
+            <p><strong>Mały Sukces:</strong> ${mission.minor}</p>
+            <p><strong>Porażka:</strong> ${mission.miss}</p>
             <div class="counter-controls">
-                ${status === "available" ? `<button class="btn btn-sm btn-primary" data-action="mission-activate" data-guild="${g.id}" data-num="${mission.number}" ${blockActivate ? "disabled title=\"Masz już aktywną Guild Mission\"" : ""}>Rozpocznij</button>` : ""}
+                ${status === "available" ? `<button class="btn btn-sm btn-primary" data-action="mission-activate" data-guild="${g.id}" data-num="${mission.number}" ${blockActivate ? "disabled title=\"Masz już aktywną Misję Gildii\"" : ""}>Rozpocznij</button>` : ""}
                 ${status === "active" ? `
                     <button class="btn btn-sm" data-action="mission-complete" data-guild="${g.id}" data-num="${mission.number}">Ukończ</button>
                     <button class="btn btn-sm btn-secondary" data-action="mission-cancel" data-guild="${g.id}" data-num="${mission.number}">Anuluj</button>
@@ -35,14 +36,27 @@ function renderMission(g, mission, jobState, blockActivate) {
     `;
 }
 
-function renderOddJob(job) {
+/** Stan fuchy (state.quests.oddJobs) trzyma tylko { id, range, name, status } — pełny opis
+ *  (lokacja, opis fabularny, zadanie, test, nagroda, porażka) jest w katalogu
+ *  data.guilds.odd_jobs_table_d100 i dociągany tu po nazwie (unikalna w tabeli 20 wpisów,
+ *  patrz roller.js rollOddJobs/acceptOddJob). Bez tego po wzięciu fuchy nie było widać,
+ *  na czym w ogóle polega — tylko nazwa i status. */
+function renderOddJob(job, oddJobsTable) {
+    const entry = oddJobsTable.find(e => e.name === job.name);
     return `
         <div class="entry" style="margin-top:8px;">
             <div class="entry-meta">
-                <span>d100 ${job.range}</span>
+                <span>d100 ${job.range}${entry?.location_type ? ` — ${entry.location_type}` : ""}</span>
                 <span>${STATUS_LABELS[job.status] || job.status}</span>
             </div>
             <div class="entry-result"><strong>${job.name}</strong></div>
+            ${entry ? `
+                ${entry.description ? `<p>${entry.description}</p>` : ""}
+                ${entry.task ? `<p><strong>Zadanie:</strong> ${entry.task}</p>` : ""}
+                ${entry.test ? `<p class="placeholder"><strong>Test:</strong> ${entry.test}</p>` : ""}
+                ${entry.reward ? `<p><strong>Nagroda:</strong> ${entry.reward}</p>` : ""}
+                ${entry.fail ? `<p><strong>Porażka:</strong> ${entry.fail}</p>` : ""}
+            ` : `<p class="placeholder">Brak opisu w katalogu (nazwa fuchy nie została odnaleziona).</p>`}
             <div class="counter-controls">
                 ${job.status === "active" ? `<button class="btn btn-sm" data-action="oddjob-complete" data-id="${job.id}">Ukończ</button>` : ""}
                 <button class="btn btn-sm btn-secondary" data-action="oddjob-remove" data-id="${job.id}">Usuń</button>
@@ -53,6 +67,7 @@ function renderOddJob(job) {
 
 export function render(root, { state, data }) {
     const guilds = data.guilds?.guilds ?? [];
+    const oddJobsTable = data.guilds?.odd_jobs_table_d100 ?? [];
     const blockActivate = anyGuildMissionActive(state);
     const activeOddJobs = state.quests.oddJobs.filter(j => j.status === "active");
     const completedOddJobs = state.quests.oddJobs.filter(j => j.status === "completed");
@@ -73,14 +88,14 @@ export function render(root, { state, data }) {
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Odd-Jobs — Aktywne (${activeOddJobs.length}/2)</h2>
-            ${activeOddJobs.length ? activeOddJobs.map(renderOddJob).join("") : `<p class="placeholder">Brak aktywnych zleceń. Rzuć w karcie Roller → Odd-Jobs Table.</p>`}
+            <h2>Fuchy — Aktywne (${activeOddJobs.length}/2)</h2>
+            ${activeOddJobs.length ? activeOddJobs.map(j => renderOddJob(j, oddJobsTable)).join("") : `<p class="placeholder">Brak aktywnych zleceń. Rzuć w karcie Roller → Tabela Fuch.</p>`}
         </div>
 
         ${completedOddJobs.length ? `
             <div class="card" style="margin-top:12px;">
-                <h2>Odd-Jobs — Ukończone</h2>
-                ${completedOddJobs.map(renderOddJob).join("")}
+                <h2>Fuchy — Ukończone</h2>
+                ${completedOddJobs.map(j => renderOddJob(j, oddJobsTable)).join("")}
             </div>
         ` : ""}
     `;
@@ -103,11 +118,16 @@ function wireEvents(root) {
             const num = parseInt(btn.dataset.num, 10);
             const job = (state.quests.guildJobs[guildId] ?? []).find(j => j.number === num);
             if (!job) return;
+            const g = (getData().guilds?.guilds ?? []).find(gg => gg.id === guildId);
+            const mission = (g?.missions ?? []).find(m => m.number === num);
+            const missionLabel = `"${mission?.name ?? `#${num}`}" (${g?.name_pl ?? guildId})`;
             if (action === "mission-activate") {
                 if (anyGuildMissionActive(state)) return;
                 job.status = "active";
+                logEvent(state, "quest-start", `Rozpoczęto misję gildii ${missionLabel}.`);
             } else if (action === "mission-complete") {
                 job.status = "completed";
+                logEvent(state, "quest-complete", `Ukończono misję gildii ${missionLabel}.`);
             } else if (action === "mission-cancel") {
                 job.status = "available";
             } else if (action === "mission-reset") {
@@ -116,7 +136,11 @@ function wireEvents(root) {
             touch();
         } else if (action === "oddjob-complete") {
             const job = state.quests.oddJobs.find(j => j.id === btn.dataset.id);
-            if (job) { job.status = "completed"; touch(); }
+            if (job) {
+                job.status = "completed";
+                logEvent(state, "quest-complete", `Ukończono fuchę "${job.name}".`);
+                touch();
+            }
         } else if (action === "oddjob-remove") {
             state.quests.oddJobs = state.quests.oddJobs.filter(j => j.id !== btn.dataset.id);
             touch();

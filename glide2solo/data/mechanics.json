@@ -14,24 +14,24 @@
   },
   "stats": [
     {"key": "H", "name": "Hardy", "represents": "odwaga, siła, wytrzymałość, wyczyny fizyczne"},
-    {"key": "K", "name": "Knowledgeable", "represents": "wnikliwość, wiedza, dedukcja, naprawianie"},
-    {"key": "R", "name": "Resourceful", "represents": "zręczność, szybkość, precyzja, zbieractwo"},
-    {"key": "C", "name": "Connected", "represents": "charyzma, wpływy, empatia, negocjacje"},
-    {"key": "F", "name": "Focused", "represents": "obserwacja, mądrość, nawigacja, intuicja"}
+    {"key": "K", "name": "Kumaty", "represents": "wnikliwość, wiedza, dedukcja, naprawianie"},
+    {"key": "R", "name": "Rzutki", "represents": "zręczność, szybkość, precyzja, zbieractwo"},
+    {"key": "C", "name": "Cwany", "represents": "charyzma, wpływy, empatia, negocjacje"},
+    {"key": "F", "name": "Fachowy", "represents": "obserwacja, mądrość, nawigacja, intuicja"}
   ],
   "stat_limits": {"min": 0, "max": 5},
   "resources": {
     "stamina": {"abbr": "S", "start": 5, "max": 5, "min": 0, "on_zero": "rzuć w tabeli exhaustion_table"},
-    "momentum": {"abbr": "MM", "start": 1, "max": 3, "spend_1_for": ["przerzuć dowolną kość lub wynik kości", "użyj zamiast Staminy lub Supply"]},
-    "intel": {"abbr": "IN", "start": 1, "max": 3, "spend_1_for": ["zyskaj Advantage (rzuć dwa razy, wybierz jeden wynik)", "przerzuć jedną Challenge Die", "zmniejsz Difficulty Level lokacji o 1 (min 1)", "wymień na nagrody w osadzie"]},
+    "momentum": {"abbr": "MM", "start": 1, "max": 3, "spend_1_for": ["przerzuć dowolną kość lub wynik kości", "użyj zamiast Staminy lub Zasoby"]},
+    "intel": {"abbr": "IN", "start": 1, "max": 3, "spend_1_for": ["zyskaj Przewaga (rzuć dwa razy, wybierz jeden wynik)", "przerzuć jedną Kość Wyzwania", "zmniejsz Difficulty Level lokacji o 1 (min 1)", "wymień na nagrody w osadzie"]},
     "credits": {"abbr": "cr", "start": 50, "max": null, "min": 0},
     "fame": {"start": 0, "end_game_threshold": 10},
     "gear": {"max_carried": 3, "wear_per_item": 3, "note": "przy 0 wear sprzęt jest bezużyteczny; użycie sprzętu oznacza 1 wear, chyba że ma efekt ciągły"}
   },
   "glider": {
-    "wear": {"start": 5, "max": 5, "on_zero": "maks. Speed staje się 1, Mody niedostępne"},
-    "supply": {"start": 6, "max": 6, "on_empty": "zaznacz 1 Wear na gliderze zamiast wydawać Supply"},
-    "speed": {"start": 2, "max": 5, "min": 1, "note": "maks. może dalej rosnąć dzięki Gear/Traits/innym efektom"},
+    "wear": {"start": 5, "max": 5, "on_zero": "maks. Prędkość staje się 1, Mody niedostępne"},
+    "supply": {"start": 6, "max": 6, "on_empty": "zaznacz 1 Zużycie na gliderze zamiast wydawać Zasoby"},
+    "speed": {"start": 2, "max": 5, "min": 1, "note": "maks. może dalej rosnąć dzięki Sprzęt/Cechy/innym efektom"},
     "cargo_slots": 3,
     "scrap_max_in_glider": 5,
     "relics_max_in_glider": 3,
@@ -42,63 +42,63 @@
     {
       "role": "Żołnierz",
       "starting_stats": {"H": 3, "K": 1, "R": 2, "C": 1, "F": 1},
-      "starting_bonus_trait": "Szczytowa Forma: +1 Max Stamina",
-      "goal": "Ukończ łącznie 6 Settlement Events z wynikiem Major Success",
-      "reward_trait": "Trening Przetrwania: +1 Hardy, +1 Resourceful, +1 Max Stamina"
+      "starting_bonus_trait": "Szczytowa Forma: +1 Max Wytrzymałość",
+      "goal": "Ukończ łącznie 6 Wydarzenia Osady z wynikiem Duży Sukces",
+      "reward_trait": "Trening Przetrwania: +1 Hardy, +1 Rzutki, +1 Max Wytrzymałość"
     },
     {
       "role": "Kupiec",
       "starting_stats": {"H": 1, "K": 2, "R": 1, "C": 3, "F": 1},
-      "starting_bonus_trait": "Targowicz: Advantage na testach Connected i Knowledgeable w osadach",
-      "goal": "Wymień łącznie 30 Scrap",
-      "reward_trait": "Twarde Negocjacje: sprzedany Scrap wart +d5 dodatkowych Credits (maks. 3x na wizytę w osadzie), Supply tańsze o 1cr (maks. 3x na wizytę), +1 Knowledgeable lub Resourceful"
+      "starting_bonus_trait": "Targowicz: Przewaga na testach Cwany i Kumaty w osadach",
+      "goal": "Wymień łącznie 30 Złom",
+      "reward_trait": "Twarde Negocjacje: sprzedany Złom wart +d5 dodatkowych Kredyty (maks. 3x na wizytę w osadzie), Zasoby tańsze o 1cr (maks. 3x na wizytę), +1 Kumaty lub Rzutki"
     },
     {
       "role": "Odkrywca",
       "starting_stats": {"H": 2, "K": 1, "R": 2, "C": 1, "F": 2},
-      "starting_bonus_trait": "Doświadczony Poszukiwacz: przerzuć Challenge die (1x na akcję Explore)",
+      "starting_bonus_trait": "Doświadczony Poszukiwacz: przerzuć Wyzwanie die (1x na akcję Explore)",
       "goal": "Rozbij obóz (Camp) w 10 różnych lokacjach",
-      "reward_trait": "Wiedza Przetrwania: akcja Camp zawsze przywraca +1 Supply, możesz przerzucić Camp Event (1x na Camp), +1 Hardy/Resourceful/Focused"
+      "reward_trait": "Wiedza Przetrwania: akcja Camp zawsze przywraca +1 Zasoby, możesz przerzucić Camp Event (1x na Camp), +1 Hardy/Rzutki/Fachowy"
     },
     {
       "role": "Wolny Strzelec",
       "starting_stats": {"H": 2, "K": 2, "R": 2, "C": 1, "F": 1},
-      "starting_bonus_trait": "Praca na Zlecenie: zawsze znajdujesz +1 Scrap przy Major success podczas Explore",
+      "starting_bonus_trait": "Praca na Zlecenie: zawsze znajdujesz +1 Złom przy Duży sukces podczas Explore",
       "goal": "Ukończ łącznie 6 questów gildii",
-      "reward_trait": "Obyty w Świecie: +1 do dwóch wybranych różnych Statystyk; jeśli nagroda Bond Point byłaby mniejsza niż +3, dodaj do niej +1 (0 i wartości ujemne się nie liczą)"
+      "reward_trait": "Obyty w Świecie: +1 do dwóch wybranych różnych Statystyk; jeśli nagroda Punkt Więzi byłaby mniejsza niż +3, dodaj do niej +1 (0 i wartości ujemne się nie liczą)"
     },
     {
       "role": "Nawigator",
       "starting_stats": {"H": 1, "K": 3, "R": 1, "C": 1, "F": 2},
-      "starting_bonus_trait": "Zwiedzacz: zaczynasz z ekwipunkiem Lornetka Tropiciela (str. 81) i maksymalnym Intel",
+      "starting_bonus_trait": "Zwiedzacz: zaczynasz z ekwipunkiem Lornetka Tropiciela (str. 81) i maksymalnym Informacje",
       "goal": "Odkryj (Reveal) łącznie 40 heksów (liczą się wszystkie typy lokacji)",
-      "reward_trait": "Traser Szlaków: poruszaj się przez lokacje Non-traversable, minimum 2 Speed, +1 Resourceful lub Focused"
+      "reward_trait": "Traser Szlaków: poruszaj się przez lokacje Non-traversable, minimum 2 Prędkość, +1 Rzutki lub Fachowy"
     },
     {
       "role": "Kanciarz",
       "starting_stats": {"H": 1, "K": 1, "R": 2, "C": 2, "F": 2},
-      "starting_bonus_trait": "Kontakty Pozaświatowe: sprzedane Relics warte +25cr więcej",
-      "goal": "Sprzedaj łącznie 6 Relics",
-      "reward_trait": "Najlepsi Oferenci: +1 Resourceful, +1 Knowledgeable, sprzedane Relics warte dodatkowe +50 Credits"
+      "starting_bonus_trait": "Kontakty Pozaświatowe: sprzedane Relikty warte +25cr więcej",
+      "goal": "Sprzedaj łącznie 6 Relikty",
+      "reward_trait": "Najlepsi Oferenci: +1 Rzutki, +1 Kumaty, sprzedane Relikty warte dodatkowe +50 Kredyty"
     }
   ],
   "challenge_resolution": {
-    "roll": "2 osobne d10: Player Die (+ wybrana/wskazana statystyka + bonusy, maks. +5) i Challenge Die (+ Difficulty Level lokacji)",
+    "roll": "2 osobne d10: Player Die (+ wybrana/wskazana statystyka + bonusy, maks. +5) i Kość Wyzwania (+ Difficulty Level lokacji)",
     "outcomes": [
-      {"result": "major_success", "condition": "suma Player Die >= 2x suma Challenge Die"},
-      {"result": "minor_success", "condition": "suma Player Die >= suma Challenge Die"},
-      {"result": "miss", "condition": "suma Player Die < suma Challenge Die"}
+      {"result": "major_success", "condition": "suma Player Die >= 2x suma Kość Wyzwania"},
+      {"result": "minor_success", "condition": "suma Player Die >= suma Kość Wyzwania"},
+      {"result": "miss", "condition": "suma Player Die < suma Kość Wyzwania"}
     ],
-    "gear_use": "możesz użyć pasującego założonego Gear przy Challenge Roll; zaznacz 1 Wear za każdy użyty przedmiot; niedostępny przy 0 Wear",
+    "gear_use": "możesz użyć pasującego założonego Sprzęt przy Rzut Wyzwania; zaznacz 1 Zużycie za każdy użyty przedmiot; niedostępny przy 0 Zużycie",
     "companion_aid": "wydaj 1 Staminę towarzysza, by zyskać +1 do rzutu, jeśli towarzysz ma wskazaną Key Stat; towarzysz musi mieć >=1 Staminy"
   },
   "location_type_table_d10": [
-    {"roll": "1-2", "result": "Impassible Terrain", "tiles": "d2"},
-    {"roll": "3", "result": "Settlement", "tiles": 1},
-    {"roll": "4-7", "result": "Desert", "tiles": "d5"},
-    {"roll": "8", "result": "Ruin", "tiles": "d2"},
-    {"roll": "9", "result": "Green Space", "tiles": 1},
-    {"roll": "10", "result": "Unique Location", "tiles": 1}
+    {"roll": "1-2", "result": "Teren Nieprzejezdny", "tiles": "d2"},
+    {"roll": "3", "result": "Osada", "tiles": 1},
+    {"roll": "4-7", "result": "Pustynia", "tiles": "d5"},
+    {"roll": "8", "result": "Ruina", "tiles": "d2"},
+    {"roll": "9", "result": "Zieleń", "tiles": 1},
+    {"roll": "10", "result": "Unikalna Lokacja", "tiles": 1}
   ],
   "location_level_table_d10": [
     {"roll": "1-2", "level": 0},
@@ -112,72 +112,72 @@
     "impassible_terrain": "brak Difficulty Level (traktuj jako 0), nie można wykonać Explore"
   },
   "exploration_table_by_location_type": {
-    "desert": "Tabela Desert Exploration",
-    "ruins": "Tabela Ruins Exploration",
-    "green_space": "Tabela Green Space Exploration",
-    "settlement": "Tabela Settlement Event",
+    "desert": "Tabela Pustynia Exploration",
+    "ruins": "Tabela Ruiny Exploration",
+    "green_space": "Tabela Zieleń Exploration",
+    "settlement": "Tabela Wydarzenie Osady",
     "unique": "własne unikalne zasady dla lokacji",
     "impassible_terrain": null
   },
   "exhaustion_table_d10": [
     {"roll": 1, "name": "Zapadnięcie w Piasku", "effect": "trać 1 przedmiot ekwipunku", "recover_stamina": 2},
-    {"roll": 2, "name": "Ledwo się Trzymasz", "effect": "zaznacz 1 Wear na gliderze i dowolnym ekwipunku; przemieść się na najbliższy odkryty heks poza najbliższą osadą", "recover_stamina": 2},
-    {"roll": 3, "name": "Pustynia Bierze Swoje", "effect": "przemieść się na losowy heks (rzuć na mapie), a następnie na najbliższy odkryty heks; trać 1 Supply", "recover_stamina": 3},
-    {"roll": 4, "name": "Okradziony Podczas Nieprzytomności", "effect": "trać połowę Credits (zaokrąglając w górę) i 3 Scrap", "recover_stamina": 2},
-    {"roll": 5, "name": "Potrzeba Ratunku", "effect": "trać 1 Relic lub 3 Scrap; jeśli nie możesz zapłacić, -3 Bond Points z dowolną gildią", "recover_stamina": 2},
-    {"roll": 6, "name": "Szkodliwy Powrót do Zdrowia", "effect": "zaznacz d5 Wear na ekwipunku i/lub gliderze (dowolna kombinacja)", "recover_stamina": 2},
-    {"roll": 7, "name": "Twarda Lekcja", "effect": "-3 Momentum, +1 Intel", "recover_stamina": 2},
-    {"roll": 8, "name": "Kiepsko Opatrzony", "effect": "budzisz się w najbliższej osadzie; -1 Supply, -d100 Credits", "recover_stamina": "all"},
-    {"roll": 9, "name": "Stracony Czas", "effect": "budzisz się w najbliższej osadzie; -2 Supply, -1 Intel, -1 Fame", "recover_stamina": 3},
-    {"roll": 10, "name": "Otarcie się o Śmierć", "effect": "rzuć na subtabelę d10: 1-4 trać 2 przedmioty ekwipunku i 3 Supply / 5-8 -2 Bond Points x3 (dowolna kombinacja) i -2 Intel / 9-10 zaznacz 1 Wear na całym ekwipunku i gliderze, trać wszystkie Relics i Scrap", "recover_stamina": 2, "bonus": "+1 Fame za przeżycie"}
+    {"roll": 2, "name": "Ledwo się Trzymasz", "effect": "zaznacz 1 Zużycie na gliderze i dowolnym ekwipunku; przemieść się na najbliższy odkryty heks poza najbliższą osadą", "recover_stamina": 2},
+    {"roll": 3, "name": "Pustynia Bierze Swoje", "effect": "przemieść się na losowy heks (rzuć na mapie), a następnie na najbliższy odkryty heks; trać 1 Zasoby", "recover_stamina": 3},
+    {"roll": 4, "name": "Okradziony Podczas Nieprzytomności", "effect": "trać połowę Kredyty (zaokrąglając w górę) i 3 Złom", "recover_stamina": 2},
+    {"roll": 5, "name": "Potrzeba Ratunku", "effect": "trać 1 Relikt lub 3 Złom; jeśli nie możesz zapłacić, -3 Punkty Więzi z dowolną gildią", "recover_stamina": 2},
+    {"roll": 6, "name": "Szkodliwy Powrót do Zdrowia", "effect": "zaznacz d5 Zużycie na ekwipunku i/lub gliderze (dowolna kombinacja)", "recover_stamina": 2},
+    {"roll": 7, "name": "Twarda Lekcja", "effect": "-3 Rozpęd, +1 Informacje", "recover_stamina": 2},
+    {"roll": 8, "name": "Kiepsko Opatrzony", "effect": "budzisz się w najbliższej osadzie; -1 Zasoby, -d100 Kredyty", "recover_stamina": "all"},
+    {"roll": 9, "name": "Stracony Czas", "effect": "budzisz się w najbliższej osadzie; -2 Zasoby, -1 Informacje, -1 Sława", "recover_stamina": 3},
+    {"roll": 10, "name": "Otarcie się o Śmierć", "effect": "rzuć na subtabelę d10: 1-4 trać 2 przedmioty ekwipunku i 3 Zasoby / 5-8 -2 Punkty Więzi x3 (dowolna kombinacja) i -2 Informacje / 9-10 zaznacz 1 Zużycie na całym ekwipunku i gliderze, trać wszystkie Relikty i Złom", "recover_stamina": 2, "bonus": "+1 Sława za przeżycie"}
   ],
   "camping_events_table_d100": [
-    {"roll": "1-4", "effect": "Łagodny wiatr utrzymuje chłodną, spokojną noc (+1 Stamina)"},
-    {"roll": "5-8", "effect": "Na niebie widać dziwny wzór gwiazd (+1 Momentum)"},
-    {"roll": "9-12", "effect": "Przejeżdża karawana, dzieląc się plotkami (+1 Supply i Momentum)"},
-    {"roll": "13-16", "effect": "Znajomy kontaktuje się, by sprawdzić, co u Ciebie (+1 Momentum)"},
-    {"roll": "17-20", "effect": "Czyste nocne niebo prowadzi Twoje myśli (+1 Momentum)"},
-    {"roll": "21-24", "effect": "Inny Seeker zatrzymuje się, by podzielić się jedzeniem i piciem (+1 Momentum i Stamina)"},
-    {"roll": "25-28", "effect": "Nagła nawałnica piasku zasypuje obozowisko (-1 Supply i Stamina)"},
-    {"roll": "29-36", "effect": "Ciepła noc sprzyja odpoczynkowi (+1 Stamina)"},
-    {"roll": "37-40", "effect": "Dziwny sen budzi Cię nagle (-1 Stamina)"},
-    {"roll": "41-44", "effect": "Prorocki sen ukazuje bezpieczną drogę naprzód (+3 Momentum)"},
-    {"roll": "45-48", "effect": "W pobliżu obozowiska znajdujesz zapasy (+1 Supply)"},
-    {"roll": "49-52", "effect": "Na horyzoncie rozbłyska burza relików (-1 Momentum)"},
-    {"roll": "53-56", "effect": "Na piasku pozostaje dziwny znak (-1 Momentum)"},
-    {"roll": "57-60", "effect": "Przy wejściu do namiotu zostawiono podarunek (+1 Relic)"},
-    {"roll": "61-64", "effect": "Dziwny pomruk zakłóca sen tej nocy (-1 Stamina)"},
-    {"roll": "65-68", "effect": "Burza piaskowa uniemożliwia odpoczynek (-1 Momentum i Stamina)"},
-    {"roll": "69-72", "effect": "Pod obozowiskiem znajdujesz ukrytą oazę (+1 Stamina)"},
-    {"roll": "73-76", "effect": "Pod namiotem wyrasta mały skrawek zieleni (+1 Momentum)"},
-    {"roll": "77-80", "effect": "Część Twoich zapasów się psuje (-1 Supply)"},
-    {"roll": "81-84", "effect": "Trzęsienie piasku wstrząsa obozowiskiem (-1 Momentum)"},
-    {"roll": "85-88", "effect": "Nagła zmiana temperatury przeszywa Cię chłodem (-1 Stamina)"},
-    {"roll": "89-92", "effect": "Posiłek wychodzi lepszy, niż się spodziewałeś (+1 Stamina)"},
-    {"roll": "93-96", "effect": "Spokojna noc bez zakłóceń (+1 Stamina)"},
+    {"roll": "1-4", "effect": "Łagodny wiatr utrzymuje chłodną, spokojną noc (+1 Wytrzymałość)"},
+    {"roll": "5-8", "effect": "Na niebie widać dziwny wzór gwiazd (+1 Rozpęd)"},
+    {"roll": "9-12", "effect": "Przejeżdża karawana, dzieląc się plotkami (+1 Zasoby i Rozpęd)"},
+    {"roll": "13-16", "effect": "Znajomy kontaktuje się, by sprawdzić, co u Ciebie (+1 Rozpęd)"},
+    {"roll": "17-20", "effect": "Czyste nocne niebo prowadzi Twoje myśli (+1 Rozpęd)"},
+    {"roll": "21-24", "effect": "Inny Poszukiwacz zatrzymuje się, by podzielić się jedzeniem i piciem (+1 Rozpęd i Wytrzymałość)"},
+    {"roll": "25-28", "effect": "Nagła nawałnica piasku zasypuje obozowisko (-1 Zasoby i Wytrzymałość)"},
+    {"roll": "29-36", "effect": "Ciepła noc sprzyja odpoczynkowi (+1 Wytrzymałość)"},
+    {"roll": "37-40", "effect": "Dziwny sen budzi Cię nagle (-1 Wytrzymałość)"},
+    {"roll": "41-44", "effect": "Prorocki sen ukazuje bezpieczną drogę naprzód (+3 Rozpęd)"},
+    {"roll": "45-48", "effect": "W pobliżu obozowiska znajdujesz zapasy (+1 Zasoby)"},
+    {"roll": "49-52", "effect": "Na horyzoncie rozbłyska burza relików (-1 Rozpęd)"},
+    {"roll": "53-56", "effect": "Na piasku pozostaje dziwny znak (-1 Rozpęd)"},
+    {"roll": "57-60", "effect": "Przy wejściu do namiotu zostawiono podarunek (+1 Relikt)"},
+    {"roll": "61-64", "effect": "Dziwny pomruk zakłóca sen tej nocy (-1 Wytrzymałość)"},
+    {"roll": "65-68", "effect": "Burza piaskowa uniemożliwia odpoczynek (-1 Rozpęd i Wytrzymałość)"},
+    {"roll": "69-72", "effect": "Pod obozowiskiem znajdujesz ukrytą oazę (+1 Wytrzymałość)"},
+    {"roll": "73-76", "effect": "Pod namiotem wyrasta mały skrawek zieleni (+1 Rozpęd)"},
+    {"roll": "77-80", "effect": "Część Twoich zapasów się psuje (-1 Zasoby)"},
+    {"roll": "81-84", "effect": "Trzęsienie piasku wstrząsa obozowiskiem (-1 Rozpęd)"},
+    {"roll": "85-88", "effect": "Nagła zmiana temperatury przeszywa Cię chłodem (-1 Wytrzymałość)"},
+    {"roll": "89-92", "effect": "Posiłek wychodzi lepszy, niż się spodziewałeś (+1 Wytrzymałość)"},
+    {"roll": "93-96", "effect": "Spokojna noc bez zakłóceń (+1 Wytrzymałość)"},
     {"roll": "97-100", "effect": "Rzuć dwa razy (maks. raz na akcję Camp)"}
   ],
   "camping_base_recovery": {"seeker_stamina": 3, "companion_stamina": 2},
   "end_game": {
-    "retire_condition": "10+ Fame, wydaj akcję będąc w dowolnej osadzie",
-    "legacy_score_formula": "Obecny Fame + liczba Bond Level 4 z gildiami + liczba Bond Level 4 z towarzyszami",
+    "retire_condition": "10+ Sława, wydaj akcję będąc w dowolnej osadzie",
+    "legacy_score_formula": "Obecny Sława + liczba Poziom Więzi 4 z gildiami + liczba Poziom Więzi 4 z towarzyszami",
     "path_a_living_legend": [
-      {"name": "Patron Frakcji", "effect": "kolejna postać zaczyna automatycznie z Bond Level 3 z jedną wybraną gildią"},
-      {"name": "Dziedzictwo Mistrzowskiego Dzieła", "effect": "kolejna postać zaczyna z jednym ulepszeniem glidera Level 2 i dowolnym jednym Advanced Gear"},
+      {"name": "Patron Frakcji", "effect": "kolejna postać zaczyna automatycznie z Poziom Więzi 3 z jedną wybraną gildią"},
+      {"name": "Dziedzictwo Mistrzowskiego Dzieła", "effect": "kolejna postać zaczyna z jednym ulepszeniem glidera Level 2 i dowolnym jednym Zaawansowany Sprzęt"},
       {"name": "Nauki Weterana", "effect": "kolejna postać na stałe zwiększa dwie wybrane Statystyki o +1 podczas tworzenia postaci"},
-      {"name": "Ukryte Skrytki", "effect": "kolejna postać zaczyna z maksymalnym Supply, Scrap, Intel, Relics i +100 Credits"}
+      {"name": "Ukryte Skrytki", "effect": "kolejna postać zaczyna z maksymalnym Zasoby, Złom, Informacje, Relikty i +100 Kredyty"}
     ],
     "path_b_trade_in": {
-      "clean_slate": "Fame resetuje się do 0",
-      "new_identity": "wybierz zupełnie nowe Seeker Background, zachowując wszystkie dotychczasowe korzyści",
-      "severed_bonds": "wszystkie Bond Level z gildiami i towarzyszami resetują się do Level 0; usuń wszystkie zdobyte Bond Rewards",
+      "clean_slate": "Sława resetuje się do 0",
+      "new_identity": "wybierz zupełnie nowe Poszukiwacz Background, zachowując wszystkie dotychczasowe korzyści",
+      "severed_bonds": "wszystkie Poziom Więzi z gildiami i towarzyszami resetują się do Level 0; usuń wszystkie zdobyte Nagrody Więzi",
       "choose_2_rewards": [
         {"name": "Fałszerstwo z Czarnego Rynku", "effect": "+200cr"},
-        {"name": "Rozebrana Technologia", "effect": "+3 Scrap, +1 Relic"},
-        {"name": "Dziennik Amnezji", "effect": "+2 Intel"},
-        {"name": "Widmowe Silniki", "effect": "trwałe +1 Speed, nie zajmuje slotu moda"}
+        {"name": "Rozebrana Technologia", "effect": "+3 Złom, +1 Relikt"},
+        {"name": "Dziennik Amnezji", "effect": "+2 Informacje"},
+        {"name": "Widmowe Silniki", "effect": "trwałe +1 Prędkość, nie zajmuje slotu moda"}
       ]
     },
-    "map_blueprint": "niezależnie od ścieżki: rzuć d100 w tabeli Unique Location (str. 132/131), umieść jako nową Unique Location na pustym heksie (lub zastąp istniejącą lokację typu Desert); nazwij imieniem przechodzącego na emeryturę Seekera; traktuj jako Level 0"
+    "map_blueprint": "niezależnie od ścieżki: rzuć d100 w tabeli Unikalna Lokacja (str. 132/131), umieść jako nową Unikalna Lokacja na pustym heksie (lub zastąp istniejącą lokację typu Pustynia); nazwij imieniem przechodzącego na emeryturę Poszukiwacza; traktuj jako Level 0"
   }
 }

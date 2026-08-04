@@ -1,10 +1,12 @@
 // Panel: Glider — katalog Modów do zamontowania (do limitu mechanics.glider.mods_max) oraz
-// tierowanych ulepszeń magazynowania Scrap/Supply/Reliktów (kupowane po kolei, tier po tierze,
+// tierowanych ulepszeń magazynowania Złom/Zasoby/Reliktów (kupowane po kolei, tier po tierze,
 // bez limitu montażu — to trwałe ulepszenia gliderа, nie mody w slotach). Podstawowe statystyki
-// glidera (Wear/Supply/Speed/Scrap/Relics) zostają na dashboardzie (panel Postać).
+// glidera (Zużycie/Zasoby/Prędkość/Złom/Relikty) zostają na dashboardzie (panel Postać).
 import { getState, getData, touch } from "../store.js";
 import { escapeHtml, clamp } from "../utils.js";
 import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES } from "../gearData.js";
+import { unlockedGuildItemRewards } from "../rewardsData.js";
+import { logEvent } from "../eventLog.js";
 
 function renderModCard(item, itemState, canInstallMore) {
     const owned = !!itemState.owned;
@@ -30,12 +32,38 @@ function renderModCard(item, itemState, canInstallMore) {
     `;
 }
 
+/** Karta dla nagrody Poziom Więzi gildii kategorii "Ulepszenie Glidera" — zawsze posiadana
+ *  ("Kupione" zastąpione stałą etykietą źródła), ale Zainstalowane liczy się normalnie
+ *  do mods_max, tak jak zwykłe mody. */
+function renderRewardModCard(item, itemState, canInstallMore) {
+    const installed = !!itemState.installed;
+    const disabledInstall = !installed && !canInstallMore;
+    return `
+        <div class="item-card tt owned ${installed ? "equipped" : ""}" data-tip="${escapeHtml(item.effect || "")}">
+            <div class="item-card-head">
+                <span class="item-card-name">${escapeHtml(item.name)}</span>
+                <span class="item-card-cost">${escapeHtml(item.badge)}</span>
+            </div>
+            <div class="item-card-toggles">
+                <label class="disabled">
+                    <input type="checkbox" checked disabled>
+                    <span>Nagroda gildii</span>
+                </label>
+                <label class="${disabledInstall ? "disabled" : ""}">
+                    <input type="checkbox" data-action="toggle-mod-installed" data-slug="${item.slug}" ${installed ? "checked" : ""} ${disabledInstall ? "disabled" : ""}>
+                    <span>Zainstalowane</span>
+                </label>
+            </div>
+        </div>
+    `;
+}
+
 function renderTierCard(item, level) {
     const owned = item.tier <= level;
     return `
         <div class="item-card tt ${owned ? "owned equipped" : ""}" data-tip="${escapeHtml(item.effect || "")}">
             <div class="item-card-head">
-                <span class="item-card-name">Tier ${item.tier}: ${escapeHtml(item.name)}</span>
+                <span class="item-card-name">Poziom ${item.tier}: ${escapeHtml(item.name)}</span>
                 <span class="item-card-cost">${escapeHtml(item.cost || "")}</span>
             </div>
             <p class="placeholder" style="margin:0;">${owned ? "Posiadane" : "Niekupione"}</p>
@@ -59,6 +87,7 @@ export function render(root, { state, data }) {
     }
 
     const upgrades = state.character.glider.upgrades || {};
+    const guildModRewards = unlockedGuildItemRewards(state, data, "Ulepszenie Glidera");
 
     root.innerHTML = `
         <div class="card">
@@ -74,6 +103,18 @@ export function render(root, { state, data }) {
                 </div>
             </div>
         `).join("")}
+        ${guildModRewards.length ? `
+            <div class="card catalog-group" style="margin-top:12px;">
+                <h4>Nagrody Gildii (Ulepszenie Glidera)</h4>
+                <p class="placeholder">Odblokowane przez Poziom Więzi — posiadane automatycznie, można je normalnie zainstalować/odinstalować.</p>
+                <div class="catalog-grid">
+                    ${guildModRewards.map(r => renderRewardModCard(
+                        { slug: r.slug, name: r.baseName, effect: r.effect, badge: `${r.guildName} · Lv${r.tier}` },
+                        modsState[r.slug] || {}, canInstallMore
+                    )).join("")}
+                </div>
+            </div>
+        ` : ""}
 
         <div class="card" style="margin-top:16px;">
             <h2>Ulepszenia magazynowania</h2>
@@ -113,6 +154,7 @@ function wireEvents(root) {
         const action = el.dataset.action;
         if (!action) return;
         const state = getState();
+        const data = getData();
         const slug = el.dataset.slug;
         const mods = state.character.glider.mods;
 
@@ -120,6 +162,8 @@ function wireEvents(root) {
             if (el.checked) {
                 if (!mods[slug]) mods[slug] = { owned: true, installed: false };
                 else mods[slug].owned = true;
+                const item = flattenMods(data.gear?.glider_upgrades).find(m => m.slug === slug);
+                logEvent(state, "item-gained", `Zdobyto mod glidera: "${item?.name ?? slug}".`);
             } else {
                 if (mods[slug]?.installed && !window.confirm("Ten mod jest zainstalowany — na pewno oznaczyć jako niekupiony? (zostanie odinstalowany)")) {
                     el.checked = true;
@@ -129,7 +173,9 @@ function wireEvents(root) {
             }
             touch();
         } else if (action === "toggle-mod-installed") {
-            if (!mods[slug]) return;
+            // Auto-vivify: nagrody gildii (Ulepszenie Glidera) nie mają wpisu w mods[] dopóki
+            // gracz sam czegoś tu nie przełączy — patrz renderRewardModCard/toggle-gear-equipped.
+            if (!mods[slug]) mods[slug] = { owned: true, installed: false };
             mods[slug].installed = el.checked;
             touch();
         }
@@ -145,7 +191,13 @@ function wireEvents(root) {
         const maxTier = (data.gear?.glider_upgrades?.[key] || []).length;
         if (!state.character.glider.upgrades) state.character.glider.upgrades = {};
         const upgrades = state.character.glider.upgrades;
-        upgrades[key] = clamp((upgrades[key] || 0) + delta, 0, maxTier);
+        const before = upgrades[key] || 0;
+        const next = clamp(before + delta, 0, maxTier);
+        upgrades[key] = next;
+        if (next > before) {
+            const label = TIERED_UPGRADE_CATEGORIES.find(c => c.key === key)?.label ?? key;
+            logEvent(state, "glider-upgrade", `Ulepszono magazynowanie (${label}) do tieru ${next}.`);
+        }
         touch();
     });
 }

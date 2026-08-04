@@ -1,7 +1,7 @@
-// GLIDE: Part Two — Ekran startowy: wybór/utworzenie zapisu (imię Seekera) + kreator roli.
+// GLIDE: Part Two — Ekran startowy: wybór/utworzenie zapisu (imię Poszukiwacza) + kreator roli.
 //
 // Dwuetapowy przepływ:
-//   Krok 1 (imię) — użytkownik wpisuje imię Seekera. Zsanityzowana wersja imienia
+//   Krok 1 (imię) — użytkownik wpisuje imię Poszukiwacza. Zsanityzowana wersja imienia
 //   (patrz utils.js#sanitizeNameToKey) staje się kluczem zapisu w Firebase, pod
 //   GlidePartTwoSolo/{klucz} — patrz store.js#connectSave. Istniejące imię wczytuje
 //   istniejący zapis (kontynuacja tej samej postaci), nowe imię tworzy nową, pustą
@@ -21,7 +21,7 @@
 //
 // Pokazywany:
 //   1) przy starcie aplikacji (main.js#bootstrap) — zawsze zaczyna od kroku imienia,
-//   2) później na żądanie, przez przycisk „Zmień postać” w karcie Seeker (panel character.js).
+//   2) później na żądanie, przez przycisk „Zmień postać” w karcie Poszukiwacz (panel character.js).
 
 import { connectSave, getSaveKey, notifyNow, updateState } from "./store.js";
 import { sanitizeNameToKey } from "./utils.js";
@@ -96,7 +96,7 @@ function finish() {
 async function goToRoleOrFinish() {
     const name = nameInput.value.trim();
     if (!name) {
-        nameErrorEl.textContent = "Podaj imię Seekera, żeby kontynuować.";
+        nameErrorEl.textContent = "Podaj imię Poszukiwacza, żeby kontynuować.";
         nameErrorEl.style.display = "block";
         return;
     }
