@@ -492,7 +492,8 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 
 .item-card-toggles {
     display: flex;
-    gap: 12px;
+    flex-wrap: wrap;
+    gap: 8px 12px;
     font-size: 0.78rem;
     color: var(--fg-2);
 }

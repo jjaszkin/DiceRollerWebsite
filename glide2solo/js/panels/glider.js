@@ -4,7 +4,7 @@
 // glidera (Zużycie/Zasoby/Prędkość/Złom/Relikty) zostają na dashboardzie (panel Postać).
 import { getState, getData, touch } from "../store.js";
 import { escapeHtml, clamp } from "../utils.js";
-import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES } from "../gearData.js";
+import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES, applyTierStatBonus, applyKnownStatBonus } from "../gearData.js";
 import { unlockedGuildItemRewards } from "../rewardsData.js";
 import { logEvent } from "../eventLog.js";
 
@@ -164,11 +164,16 @@ function wireEvents(root) {
                 else mods[slug].owned = true;
                 const item = flattenMods(data.gear?.glider_upgrades).find(m => m.slug === slug);
                 logEvent(state, "item-gained", `Zdobyto mod glidera: "${item?.name ?? slug}".`);
+                // Wzmocnione Siodło (i ew. inne mody "owned"-triggered — patrz gearData.js#
+                // KNOWN_STAT_BONUS_ITEMS) dają trwały bonus już przy zakupie, niezależnie od
+                // tego, czy mod jest akurat zainstalowany w jednym z ograniczonych slotów.
+                applyKnownStatBonus(state, slug, +1);
             } else {
                 if (mods[slug]?.installed && !window.confirm("Ten mod jest zainstalowany — na pewno oznaczyć jako niekupiony? (zostanie odinstalowany)")) {
                     el.checked = true;
                     return;
                 }
+                applyKnownStatBonus(state, slug, -1);
                 delete mods[slug];
             }
             touch();
@@ -191,9 +196,24 @@ function wireEvents(root) {
         const maxTier = (data.gear?.glider_upgrades?.[key] || []).length;
         if (!state.character.glider.upgrades) state.character.glider.upgrades = {};
         const upgrades = state.character.glider.upgrades;
+        const tiers = data.gear?.glider_upgrades?.[key] || [];
         const before = upgrades[key] || 0;
         const next = clamp(before + delta, 0, maxTier);
         upgrades[key] = next;
+        // Nakładamy/cofamy bonus do statystyk glidera (np. "Max Złom +4") krok po kroku, tier po
+        // tierze, żeby zadziałało też przy większym skoku niż ±1 (choć przyciski dają tylko ±1) —
+        // patrz gearData.js#applyTierStatBonus.
+        if (next > before) {
+            for (let t = before + 1; t <= next; t++) {
+                const item = tiers.find(it => it.tier === t);
+                if (item) applyTierStatBonus(state, item.effect, +1);
+            }
+        } else if (next < before) {
+            for (let t = before; t > next; t--) {
+                const item = tiers.find(it => it.tier === t);
+                if (item) applyTierStatBonus(state, item.effect, -1);
+            }
+        }
         if (next > before) {
             const label = TIERED_UPGRADE_CATEGORIES.find(c => c.key === key)?.label ?? key;
             logEvent(state, "glider-upgrade", `Ulepszono magazynowanie (${label}) do tieru ${next}.`);

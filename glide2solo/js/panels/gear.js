@@ -3,7 +3,7 @@
 // a założony przedmiot dostaje licznik Zużycie (max = mechanics.resources.gear.wear_per_item).
 import { getState, getData, touch } from "../store.js";
 import { escapeHtml } from "../utils.js";
-import { flattenGear, humanizeCategory, gearCapacity, EXPLORERS_BACKPACK_SLUG } from "../gearData.js";
+import { flattenGear, humanizeCategory, gearCapacity, EXPLORERS_BACKPACK_SLUG, applyKnownStatBonus } from "../gearData.js";
 import { unlockedGuildItemRewards } from "../rewardsData.js";
 import { logEvent } from "../eventLog.js";
 
@@ -100,7 +100,7 @@ export function render(root, { state, data }) {
     const wearPerItem = mechanics?.resources?.gear?.wear_per_item ?? 3;
     const flat = flattenGear(data.gear);
     const gearState = state.character.gear || {};
-    const { maxCarried, equippedCount, backpackEquipped } = gearCapacity(state, baseMaxCarried);
+    const { maxCarried, equippedCount, backpackEquipped, exoskeletonEquipped } = gearCapacity(state, baseMaxCarried);
     const groups = groupByCategory(flat);
     const canEquipMore = equippedCount < maxCarried;
     const guildGearRewards = unlockedGuildItemRewards(state, data, "Sprzęt");
@@ -109,7 +109,7 @@ export function render(root, { state, data }) {
         <div class="card">
             <h2>Sprzęt — Katalog</h2>
             <p class="cap-indicator ${equippedCount >= maxCarried ? "full" : ""}">Założone: ${equippedCount} / ${maxCarried}</p>
-            <p class="placeholder">Najedź na kartę, żeby zobaczyć efekt. "Kupione" oznacza posiadanie w ekwipunku; "Założone" liczy się do limitu noszonego sprzętu i odsłania licznik Zużycie.${backpackEquipped ? " Plecak Odkrywcy podnosi limit o 2 i sam nie zajmuje slotu." : ""}</p>
+            <p class="placeholder">Najedź na kartę, żeby zobaczyć efekt. "Kupione" oznacza posiadanie w ekwipunku; "Założone" liczy się do limitu noszonego sprzętu i odsłania licznik Zużycie.${backpackEquipped ? " Plecak Odkrywcy podnosi limit o 2 i sam nie zajmuje slotu." : ""}${exoskeletonEquipped ? " Egzoszkielet podnosi limit o 1 (i sam zajmuje slot)." : ""}</p>
         </div>
         ${Array.from(groups.entries()).map(([label, items]) => `
             <div class="card catalog-group" style="margin-top:12px;">
@@ -161,6 +161,10 @@ function wireEvents(root) {
                     el.checked = true;
                     return;
                 }
+                // Jeśli przedmiot dawał trwały bonus do statystyki (patrz KNOWN_STAT_BONUS_ITEMS)
+                // i był założony, cofnij bonus PRZED usunięciem wpisu — inaczej "Kupione" odznaczone
+                // na założonym przedmiocie ominęłoby toggle-gear-equipped i bonus zostałby na stałe.
+                if (gear[slug]?.equipped) applyKnownStatBonus(state, slug, -1);
                 delete gear[slug];
             }
             touch();
@@ -171,6 +175,10 @@ function wireEvents(root) {
             if (!gear[slug]) gear[slug] = { owned: true, equipped: false, wear: wearPerItem };
             gear[slug].equipped = el.checked;
             if (el.checked && gear[slug].wear === undefined) gear[slug].wear = wearPerItem;
+            // Trwałe bonusy do statystyk (Szyfrowana Księga, Soczewki Termiczne, Egzoszkielet —
+            // patrz gearData.js#KNOWN_STAT_BONUS_ITEMS) są "equipped"-triggered: aktywne tylko,
+            // gdy przedmiot jest założony, tak jak reszta efektów Sprzęt.
+            applyKnownStatBonus(state, slug, el.checked ? +1 : -1);
             touch();
         }
     });

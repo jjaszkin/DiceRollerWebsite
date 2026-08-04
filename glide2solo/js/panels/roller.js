@@ -25,14 +25,14 @@ const ORACLE_WORD_TABLES = {
 // Pomocnicza checklista kroków typowego dnia gry (nie ma osobnej sekcji reguł w podręczniku —
 // to złożenie istniejących mechanik rollera w kolejność, w jakiej zwykle są rozgrywane).
 // Stan zaznaczeń trzymany lokalnie w ui.daySeq (patrz niżej) — resetuje się automatycznie,
-// gdy state.day.current się zmieni (czyli po akcji Camp w nagłówku).
+// gdy state.day.current się zmieni (czyli po akcji Obóz w nagłówku).
 const DAY_SEQUENCE_STEPS = [
-    { id: "move", label: "Ruch", desc: "Przesuń się o jeden heks w wybranym kierunku." },
+    { id: "move", label: "Ruch", desc: "Przesuń się o Prędkość glidera (w heksach) w wybranym kierunku." },
     { id: "loctype", label: "Typ i Poziom Lokacji", desc: "Jeśli to nowy heks, rzuć Typ Lokacji, a jeśli trzeba — także Poziom Lokacji." },
     { id: "action", label: "Akcja w Lokacji", desc: "Wykonaj Eksplorację/Test właściwy dla biomu (Pustynia/Ruiny/Zieleń/Unikalna Lokacja) albo Akcje Osady." },
     { id: "travel", label: "Wydarzenie Podróży", desc: "Opcjonalnie: rzuć Wydarzenie Podróży, jeśli scenariusz tego wymaga." },
     { id: "journal", label: "Dziennik", desc: "Zapisz przebieg i wynik w karcie Dziennik." },
-    { id: "camp", label: "Obóz (Camp)", desc: "Gdy kończysz dzień, rozbij obóz przyciskiem Camp w nagłówku — ta checklista zresetuje się automatycznie na kolejny dzień." }
+    { id: "camp", label: "Obóz", desc: "Gdy kończysz dzień, rozbij obóz przyciskiem Obóz w nagłówku — ta checklista zresetuje się automatycznie na kolejny dzień." }
 ];
 
 // Klucze wspólne dla tabel eventów, obsługiwane w renderEventOutcomes() nazwami własnymi —
@@ -352,7 +352,7 @@ function renderChallengeResult(r) {
 }
 
 /** Sekwencja Dnia — checklista pomocnicza (patrz DAY_SEQUENCE_STEPS). Resetuje zaznaczenia,
- *  gdy wykryje zmianę state.day.current (czyli po Camp), więc nie trzeba jej czyścić ręcznie. */
+ *  gdy wykryje zmianę state.day.current (czyli po Obóz), więc nie trzeba jej czyścić ręcznie. */
 function renderDaySequence(state) {
     if (ui.daySeq.day !== state.day.current) {
         ui.daySeq.day = state.day.current;
@@ -362,7 +362,7 @@ function renderDaySequence(state) {
     return `
         <div class="card">
             <h2>Sekwencja Dnia</h2>
-            <p class="placeholder">Dzień ${state.day.current} · ${doneCount}/${DAY_SEQUENCE_STEPS.length} kroków. Checklista pomocnicza (najedź na krok po opis) — nie zapisuje się w Firebase, resetuje się sama po Camp.</p>
+            <p class="placeholder">Dzień ${state.day.current} · ${doneCount}/${DAY_SEQUENCE_STEPS.length} kroków. Checklista pomocnicza (najedź na krok po opis) — nie zapisuje się w Firebase, resetuje się sama po Obóz.</p>
             ${DAY_SEQUENCE_STEPS.map(s => `
                 <label class="tt" data-tip="${escapeHtml(s.desc)}" style="display:flex; align-items:center; gap:8px; margin-top:6px; cursor:pointer;">
                     <input type="checkbox" data-action="toggle-day-step" data-step="${s.id}" ${ui.daySeq.checked[s.id] ? "checked" : ""}>
@@ -389,8 +389,8 @@ function renderExhaustionResult(r) {
             <div class="entry-meta"><span>d10 = ${r.roll}</span></div>
             <div class="entry-result"><strong>${e.name}</strong></div>
             <p>${e.effect}</p>
-            <p class="placeholder">Odzyskaj Staminę: ${e.recover_stamina}</p>
-            <button class="btn btn-sm" data-action="apply-exhaustion-recovery">Zastosuj odzyskanie Staminy postaci</button>
+            <p class="placeholder">Odzyskaj Wytrzymałość: ${e.recover_stamina}</p>
+            <button class="btn btn-sm" data-action="apply-exhaustion-recovery">Zastosuj odzyskanie Wytrzymałości postaci</button>
             ${r.roll === 10 ? `
                 <div style="margin-top:8px;">
                     <button class="btn btn-sm" data-action="roll-exhaustion-sub">Rzuć subtabelę „Otarcie się o Śmierć” (d10)</button>
@@ -658,7 +658,7 @@ function rollExhaustion(data) {
     const roll = rollDie(10);
     const entry = findInRangeTable(table, roll, "roll");
     ui.exhaustion.result = { roll, entry, sub: null };
-    logRoll("Tabela Wyczerpania (d10)", `d10=${roll}`, entry ? `${entry.name} — ${entry.effect} (odzyskaj Staminę: ${entry.recover_stamina})` : "brak dopasowania w tabeli");
+    logRoll("Tabela Wyczerpania (d10)", `d10=${roll}`, entry ? `${entry.name} — ${entry.effect} (odzyskaj Wytrzymałość: ${entry.recover_stamina})` : "brak dopasowania w tabeli");
     rerender();
 }
 

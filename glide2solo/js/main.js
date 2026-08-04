@@ -103,7 +103,7 @@ function setupSaveIndicator() {
 }
 
 function setupCampButton() {
-    // Akcja Camp: rzuca Wydarzenie Obozowe (d100), przywraca bazową Staminę (Poszukiwaczowi i towarzyszowi,
+    // Akcja Obóz: rzuca Wydarzenie Obozowe (d100), przywraca bazową Staminę (Poszukiwaczowi i towarzyszowi,
     // jeśli obecny) wg camping_base_recovery z mechanics.json, po czym przechodzi do kolejnego dnia.
     campButton.addEventListener("click", () => {
         const data = getData();
@@ -128,7 +128,7 @@ function setupCampButton() {
             }
         });
 
-        // Zaloguj rzut pod dniem, w którym nastąpił Camp, zanim przejdziemy do kolejnego dnia.
+        // Zaloguj rzut pod dniem, w którym nastąpił Obóz, zanim przejdziemy do kolejnego dnia.
         logRoll("Wydarzenie Obozowe (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
 
         updateState((state) => {

@@ -2,7 +2,7 @@
 // gear.json do kart, slugi kluczy stanu, listy "aktualnie założone/zainstalowane" używane
 // zarówno w katalogach (panels/gear.js, panels/glider.js) jak i w skrócie na dashboardzie
 // (panels/character.js).
-import { sanitizeNameToKey } from "./utils.js";
+import { sanitizeNameToKey, getPath, setPath } from "./utils.js";
 import { unlockedGuildItemRewards } from "./rewardsData.js";
 
 /** Slug używany jako klucz w state.character.gear / state.character.glider.mods —
@@ -61,6 +61,33 @@ export const TIERED_UPGRADE_CATEGORIES = [
     { key: "relic_preservation_tiers", label: "Konserwacja Reliktów" }
 ];
 
+/** Niektóre poziomy tierowanych ulepszeń magazynowania dają stały bonus do max. statystyki
+ *  glidera wprost w treści efektu (np. "Max Złom +4", patrz gear.json) — reszta poziomów to
+ *  zdolności sytuacyjne (bez wpływu na statystyki), więc dopasowanie jest opcjonalne (brak
+ *  trafienia = brak zmiany stanu). Wzorce po kolei sprawdzane na treści efektu; ścieżka wskazuje
+ *  pole w state, które ma zostać podniesione/obniżone o wyłuskaną liczbę. */
+const TIER_STAT_BONUS_PATTERNS = [
+    { re: /Max Złom \+(\d+)/i, path: "character.glider.scrap.max" },
+    { re: /Max Zasoby \+(\d+)/i, path: "character.glider.supply.max" },
+    { re: /Max Reliktó?w? \+(\d+)/i, path: "character.glider.relics.max" },
+    { re: /Max Przestrzeń Załadunkowa \+(\d+)/i, path: "character.glider.cargoSlots" }
+];
+
+/** Nakłada (sign=+1) albo cofa (sign=-1) trwały bonus do statystyki glidera opisany w treści
+ *  efektu jednego poziomu tierowanego ulepszenia — wołane raz na każdy pojedynczy stopień
+ *  zmiany poziomu (patrz panels/glider.js#adjust-upgrade-tier), więc przy zejściu o tier w dół
+ *  bonus jest symetrycznie odejmowany. Mutuje przekazany state; wywołujący odpowiada za touch(). */
+export function applyTierStatBonus(state, effectText, sign) {
+    if (!effectText) return;
+    for (const { re, path } of TIER_STAT_BONUS_PATTERNS) {
+        const m = re.exec(effectText);
+        if (!m) continue;
+        const amount = parseInt(m[1], 10) * sign;
+        const cur = getPath(state, path) || 0;
+        setPath(state, path, cur + amount);
+    }
+}
+
 /** Plecak Odkrywcy ma specjalny efekt (patrz gear.json): "Max Sprzęt +2 (ten Sprzęt nie
  *  zajmuje slotu)" — założony podnosi efektywny limit noszonego sprzętu o 2 i sam się do
  *  tego limitu nie liczy. Slug wyliczony tym samym sanityzatorem co pozostałe klucze stanu.
@@ -70,18 +97,87 @@ export const TIERED_UPGRADE_CATEGORIES = [
 export const EXPLORERS_BACKPACK_SLUG = gearSlug("Plecak Odkrywcy");
 export const EXPLORERS_BACKPACK_GEAR_BONUS = 2;
 
-/** Efektywny limit noszonego Sprzęt (bazowy max_carried z mechanics.json + bonus z założonego
- *  Plecaka Odkrywcy) oraz liczba faktycznie zajętych slotów (Plecak, mimo że założony,
- *  slotu nie zajmuje — patrz jego efekt). Współdzielone przez panels/gear.js i panels/character.js,
- *  żeby limit i licznik zawsze się zgadzały. */
+/** Egzoszkielet (Sprzęt Zaawansowany): "+1 Hardy, +1 max Sprzęt" — w przeciwieństwie do Plecaka
+ *  Odkrywcy SAM zajmuje slot (efekt tego nie zastrzega), tylko podnosi limit. Bonus do Hardy
+ *  idzie osobną ścieżką (patrz KNOWN_STAT_BONUS_ITEMS niżej); limit liczony tu na żywo, tak samo
+ *  jak bonus Plecaka — nie ma osobnego pola w state do mutowania (max_carried to stała z
+ *  mechanics.json, nie licznik postaci). */
+export const EXOSKELETON_SLUG = gearSlug("Egzoszkielet");
+export const EXOSKELETON_GEAR_BONUS = 1;
+
+/** Efektywny limit noszonego Sprzęt (bazowy max_carried z mechanics.json + bonusy z założonego
+ *  Plecaka Odkrywcy/Egzoszkieletu) oraz liczba faktycznie zajętych slotów (Plecak, mimo że
+ *  założony, slotu nie zajmuje — patrz jego efekt; Egzoszkielet slot zajmuje normalnie).
+ *  Współdzielone przez panels/gear.js i panels/character.js, żeby limit i licznik zawsze się zgadzały. */
 export function gearCapacity(state, baseMaxCarried) {
     const gearState = state.character.gear || {};
     const backpackEquipped = !!gearState[EXPLORERS_BACKPACK_SLUG]?.equipped;
-    const maxCarried = baseMaxCarried + (backpackEquipped ? EXPLORERS_BACKPACK_GEAR_BONUS : 0);
+    const exoskeletonEquipped = !!gearState[EXOSKELETON_SLUG]?.equipped;
+    const maxCarried = baseMaxCarried
+        + (backpackEquipped ? EXPLORERS_BACKPACK_GEAR_BONUS : 0)
+        + (exoskeletonEquipped ? EXOSKELETON_GEAR_BONUS : 0);
     const equippedCount = Object.entries(gearState)
         .filter(([slug, s]) => s.equipped && slug !== EXPLORERS_BACKPACK_SLUG)
         .length;
-    return { maxCarried, equippedCount, backpackEquipped };
+    return { maxCarried, equippedCount, backpackEquipped, exoskeletonEquipped };
+}
+
+/** Jawna lista przedmiotów Sprzętu/Modów glidera dających TRWAŁY bonus do statystyki poza już
+ *  obsłużonymi wyżej przypadkami (tierowane ulepszenia magazynowania — TIER_STAT_BONUS_PATTERNS;
+ *  Plecak Odkrywcy/Egzoszkielet w gearCapacity — max Sprzęt liczony na żywo, bo nie ma osobnego
+ *  licznika w state). Trzymane jako jawna mapa po slugu (NIE parsowanie treści efektu regexem) —
+ *  teksty efektów są naturalnym językiem i luźny regex łatwo złapałby fałszywe dopasowanie
+ *  (np. "Przewaga na testach Hardy w Pustynia" nie powinno dawać +1 Hardy).
+ *  `trigger` mówi, który checkbox nakłada/cofa bonus:
+ *   - "equipped" — Sprzęt: bonus aktywny tylko, gdy przedmiot jest założony (jak reszta efektów Sprzęt).
+ *   - "owned"    — Wzmocnione Siodło: treść efektu wprost mówi "natychmiast przy zakupie" (trwałe,
+ *                  niezależne od tego, czy mod akurat jest zainstalowany w jednym z ograniczonych
+ *                  slotów mods_max) — inaczej niż reszta modów Glidera.
+ *  `alsoCur` (tylko dla zasobów cur/max) dodaje/odejmuje też z bieżącej wartości — odpowiednik
+ *  "zyskaj tę Staminę natychmiast" przy Wzmocnionym Siodle.
+ *  UWAGA migracja: bonus nakłada/cofa się dopiero w momencie przełączenia właściwego checkboksa
+ *  PO wdrożeniu tej funkcji — przedmiot już posiadany/założony/zainstalowany wcześniej w istniejącym
+ *  zapisie nie dostanie bonusu retroaktywnie, dopóki nie zostanie raz odznaczony i zaznaczony ponownie. */
+export const KNOWN_STAT_BONUS_ITEMS = {
+    // Szyfrowana Księga: "Twoja maksymalna pojemność Informacje zwiększa się do 8" — baza to
+    // mechanics.resources.intel.max = 3, więc modelowane jako +5 (delta do wartości docelowej 8).
+    [gearSlug("Szyfrowana Księga")]: {
+        trigger: "equipped",
+        bonuses: [{ path: "character.resources.intel.max", amount: 5 }]
+    },
+    // Soczewki Termiczne: "+1 Fachowy. Przewaga na Wyzwanie Fachowy w Zielenie i Pustynie."
+    [gearSlug("Soczewki Termiczne")]: {
+        trigger: "equipped",
+        bonuses: [{ path: "character.stats.F", amount: 1 }]
+    },
+    // Egzoszkielet: "+1 Hardy, +1 max Sprzęt." — część "+1 Hardy" tutaj, część "+1 max Sprzęt"
+    // liczona na żywo w gearCapacity() (patrz EXOSKELETON_GEAR_BONUS wyżej).
+    [gearSlug("Egzoszkielet")]: {
+        trigger: "equipped",
+        bonuses: [{ path: "character.stats.H", amount: 1 }]
+    },
+    // Wzmocnione Siodło: "Zwiększ max Staminę o 1 (zyskaj tę Staminę natychmiast przy zakupie ulepszenia)."
+    [gearSlug("Wzmocnione Siodło")]: {
+        trigger: "owned",
+        bonuses: [{ path: "character.resources.stamina.max", amount: 1, alsoCur: "character.resources.stamina.cur" }]
+    }
+};
+
+/** Nakłada (sign=+1) albo cofa (sign=-1) bonus(y) zarejestrowane dla danego slugu w
+ *  KNOWN_STAT_BONUS_ITEMS — no-op, jeśli slug nie jest w tabeli. Wołający sam decyduje, w
+ *  reakcji na który checkbox to wywołać (patrz pole `trigger` w definicji wyżej) i sam
+ *  odpowiada za touch() po swojej stronie. */
+export function applyKnownStatBonus(state, slug, sign) {
+    const def = KNOWN_STAT_BONUS_ITEMS[slug];
+    if (!def) return;
+    for (const b of def.bonuses) {
+        const cur = getPath(state, b.path) || 0;
+        setPath(state, b.path, cur + b.amount * sign);
+        if (b.alsoCur) {
+            const curVal = getPath(state, b.alsoCur) || 0;
+            setPath(state, b.alsoCur, Math.max(0, curVal + b.amount * sign));
+        }
+    }
 }
 
 /** Lista aktualnie założonego sprzętu (do skrótu na dashboardzie), z dociągniętymi

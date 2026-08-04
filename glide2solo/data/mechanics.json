@@ -22,8 +22,8 @@
   "stat_limits": {"min": 0, "max": 5},
   "resources": {
     "stamina": {"abbr": "S", "start": 5, "max": 5, "min": 0, "on_zero": "rzuć w tabeli exhaustion_table"},
-    "momentum": {"abbr": "MM", "start": 1, "max": 3, "spend_1_for": ["przerzuć dowolną kość lub wynik kości", "użyj zamiast Staminy lub Zasoby"]},
-    "intel": {"abbr": "IN", "start": 1, "max": 3, "spend_1_for": ["zyskaj Przewaga (rzuć dwa razy, wybierz jeden wynik)", "przerzuć jedną Kość Wyzwania", "zmniejsz Difficulty Level lokacji o 1 (min 1)", "wymień na nagrody w osadzie"]},
+    "momentum": {"abbr": "MM", "start": 1, "max": 3, "spend_1_for": ["przerzuć dowolną kość lub wynik kości", "użyj zamiast Wytrzymałości lub Zasoby"]},
+    "intel": {"abbr": "IN", "start": 1, "max": 3, "spend_1_for": ["zyskaj Przewaga (rzuć dwa razy, wybierz jeden wynik)", "przerzuć jedną Kość Wyzwania", "zmniejsz Poziom Trudności lokacji o 1 (min 1)", "wymień na nagrody w osadzie"]},
     "credits": {"abbr": "cr", "start": 50, "max": null, "min": 0},
     "fame": {"start": 0, "end_game_threshold": 10},
     "gear": {"max_carried": 3, "wear_per_item": 3, "note": "przy 0 wear sprzęt jest bezużyteczny; użycie sprzętu oznacza 1 wear, chyba że ma efekt ciągły"}
@@ -56,23 +56,23 @@
     {
       "role": "Odkrywca",
       "starting_stats": {"H": 2, "K": 1, "R": 2, "C": 1, "F": 2},
-      "starting_bonus_trait": "Doświadczony Poszukiwacz: przerzuć Wyzwanie die (1x na akcję Explore)",
-      "goal": "Rozbij obóz (Camp) w 10 różnych lokacjach",
-      "reward_trait": "Wiedza Przetrwania: akcja Camp zawsze przywraca +1 Zasoby, możesz przerzucić Camp Event (1x na Camp), +1 Hardy/Rzutki/Fachowy"
+      "starting_bonus_trait": "Doświadczony Poszukiwacz: przerzuć Kość Wyzwania (1x na akcję Eksploracja)",
+      "goal": "Rozbij obóz w 10 różnych lokacjach",
+      "reward_trait": "Wiedza Przetrwania: akcja Obóz zawsze przywraca +1 Zasoby, możesz przerzucić Wydarzenie Obozowe (1x na Obóz), +1 Hardy/Rzutki/Fachowy"
     },
     {
       "role": "Wolny Strzelec",
       "starting_stats": {"H": 2, "K": 2, "R": 2, "C": 1, "F": 1},
-      "starting_bonus_trait": "Praca na Zlecenie: zawsze znajdujesz +1 Złom przy Duży sukces podczas Explore",
-      "goal": "Ukończ łącznie 6 questów gildii",
+      "starting_bonus_trait": "Praca na Zlecenie: zawsze znajdujesz +1 Złom przy Duży sukces podczas Eksploracji",
+      "goal": "Ukończ łącznie 6 Fuch gildii",
       "reward_trait": "Obyty w Świecie: +1 do dwóch wybranych różnych Statystyk; jeśli nagroda Punkt Więzi byłaby mniejsza niż +3, dodaj do niej +1 (0 i wartości ujemne się nie liczą)"
     },
     {
       "role": "Nawigator",
       "starting_stats": {"H": 1, "K": 3, "R": 1, "C": 1, "F": 2},
       "starting_bonus_trait": "Zwiedzacz: zaczynasz z ekwipunkiem Lornetka Tropiciela (str. 81) i maksymalnym Informacje",
-      "goal": "Odkryj (Reveal) łącznie 40 heksów (liczą się wszystkie typy lokacji)",
-      "reward_trait": "Traser Szlaków: poruszaj się przez lokacje Non-traversable, minimum 2 Prędkość, +1 Rzutki lub Fachowy"
+      "goal": "Odkryj łącznie 40 heksów (liczą się wszystkie typy lokacji)",
+      "reward_trait": "Traser Szlaków: poruszaj się przez lokacje typu Teren Nieprzejezdny, minimum 2 Prędkość, +1 Rzutki lub Fachowy"
     },
     {
       "role": "Kanciarz",
@@ -83,14 +83,14 @@
     }
   ],
   "challenge_resolution": {
-    "roll": "2 osobne d10: Player Die (+ wybrana/wskazana statystyka + bonusy, maks. +5) i Kość Wyzwania (+ Difficulty Level lokacji)",
+    "roll": "2 osobne d10: Kość Gracza (+ wybrana/wskazana statystyka + bonusy, maks. +5) i Kość Wyzwania (+ Poziom Trudności lokacji)",
     "outcomes": [
-      {"result": "major_success", "condition": "suma Player Die >= 2x suma Kość Wyzwania"},
-      {"result": "minor_success", "condition": "suma Player Die >= suma Kość Wyzwania"},
-      {"result": "miss", "condition": "suma Player Die < suma Kość Wyzwania"}
+      {"result": "major_success", "condition": "suma Kość Gracza >= 2x suma Kość Wyzwania"},
+      {"result": "minor_success", "condition": "suma Kość Gracza >= suma Kość Wyzwania"},
+      {"result": "miss", "condition": "suma Kość Gracza < suma Kość Wyzwania"}
     ],
     "gear_use": "możesz użyć pasującego założonego Sprzęt przy Rzut Wyzwania; zaznacz 1 Zużycie za każdy użyty przedmiot; niedostępny przy 0 Zużycie",
-    "companion_aid": "wydaj 1 Staminę towarzysza, by zyskać +1 do rzutu, jeśli towarzysz ma wskazaną Key Stat; towarzysz musi mieć >=1 Staminy"
+    "companion_aid": "wydaj 1 Wytrzymałość towarzysza, by zyskać +1 do rzutu, jeśli towarzysz ma wskazaną Key Stat; towarzysz musi mieć >=1 Wytrzymałości"
   },
   "location_type_table_d10": [
     {"roll": "1-2", "result": "Teren Nieprzejezdny", "tiles": "d2"},
@@ -108,13 +108,13 @@
     {"roll": "10", "level": 3}
   ],
   "location_level_special_cases": {
-    "unique_location": "zawsze Level 3, nie rzucaj",
-    "impassible_terrain": "brak Difficulty Level (traktuj jako 0), nie można wykonać Explore"
+    "unique_location": "zawsze Poziom 3, nie rzucaj",
+    "impassible_terrain": "brak Poziomu Trudności (traktuj jako 0), nie można wykonać Eksploracji"
   },
   "exploration_table_by_location_type": {
-    "desert": "Tabela Pustynia Exploration",
-    "ruins": "Tabela Ruiny Exploration",
-    "green_space": "Tabela Zieleń Exploration",
+    "desert": "Tabela Pustynia Eksploracja",
+    "ruins": "Tabela Ruiny Eksploracja",
+    "green_space": "Tabela Zieleń Eksploracja",
     "settlement": "Tabela Wydarzenie Osady",
     "unique": "własne unikalne zasady dla lokacji",
     "impassible_terrain": null
@@ -155,7 +155,7 @@
     {"roll": "85-88", "effect": "Nagła zmiana temperatury przeszywa Cię chłodem (-1 Wytrzymałość)"},
     {"roll": "89-92", "effect": "Posiłek wychodzi lepszy, niż się spodziewałeś (+1 Wytrzymałość)"},
     {"roll": "93-96", "effect": "Spokojna noc bez zakłóceń (+1 Wytrzymałość)"},
-    {"roll": "97-100", "effect": "Rzuć dwa razy (maks. raz na akcję Camp)"}
+    {"roll": "97-100", "effect": "Rzuć dwa razy (maks. raz na akcję Obóz)"}
   ],
   "camping_base_recovery": {"seeker_stamina": 3, "companion_stamina": 2},
   "end_game": {
@@ -163,14 +163,14 @@
     "legacy_score_formula": "Obecny Sława + liczba Poziom Więzi 4 z gildiami + liczba Poziom Więzi 4 z towarzyszami",
     "path_a_living_legend": [
       {"name": "Patron Frakcji", "effect": "kolejna postać zaczyna automatycznie z Poziom Więzi 3 z jedną wybraną gildią"},
-      {"name": "Dziedzictwo Mistrzowskiego Dzieła", "effect": "kolejna postać zaczyna z jednym ulepszeniem glidera Level 2 i dowolnym jednym Zaawansowany Sprzęt"},
+      {"name": "Dziedzictwo Mistrzowskiego Dzieła", "effect": "kolejna postać zaczyna z jednym ulepszeniem glidera Poziom 2 i dowolnym jednym Zaawansowany Sprzęt"},
       {"name": "Nauki Weterana", "effect": "kolejna postać na stałe zwiększa dwie wybrane Statystyki o +1 podczas tworzenia postaci"},
       {"name": "Ukryte Skrytki", "effect": "kolejna postać zaczyna z maksymalnym Zasoby, Złom, Informacje, Relikty i +100 Kredyty"}
     ],
     "path_b_trade_in": {
       "clean_slate": "Sława resetuje się do 0",
-      "new_identity": "wybierz zupełnie nowe Poszukiwacz Background, zachowując wszystkie dotychczasowe korzyści",
-      "severed_bonds": "wszystkie Poziom Więzi z gildiami i towarzyszami resetują się do Level 0; usuń wszystkie zdobyte Nagrody Więzi",
+      "new_identity": "wybierz zupełnie nową Rolę Poszukiwacza, zachowując wszystkie dotychczasowe korzyści",
+      "severed_bonds": "wszystkie Poziom Więzi z gildiami i towarzyszami resetują się do Poziomu 0; usuń wszystkie zdobyte Nagrody Więzi",
       "choose_2_rewards": [
         {"name": "Fałszerstwo z Czarnego Rynku", "effect": "+200cr"},
         {"name": "Rozebrana Technologia", "effect": "+3 Złom, +1 Relikt"},
@@ -178,6 +178,6 @@
         {"name": "Widmowe Silniki", "effect": "trwałe +1 Prędkość, nie zajmuje slotu moda"}
       ]
     },
-    "map_blueprint": "niezależnie od ścieżki: rzuć d100 w tabeli Unikalna Lokacja (str. 132/131), umieść jako nową Unikalna Lokacja na pustym heksie (lub zastąp istniejącą lokację typu Pustynia); nazwij imieniem przechodzącego na emeryturę Poszukiwacza; traktuj jako Level 0"
+    "map_blueprint": "niezależnie od ścieżki: rzuć d100 w tabeli Unikalna Lokacja (str. 132/131), umieść jako nową Unikalna Lokacja na pustym heksie (lub zastąp istniejącą lokację typu Pustynia); nazwij imieniem przechodzącego na emeryturę Poszukiwacza; traktuj jako Poziom 0"
   }
 }
