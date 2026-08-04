@@ -2,7 +2,7 @@
 // Faza 4: Pustynia/Ruiny/Zieleń (punkty orientacyjne+wydarzenia), Unikalne Lokacje, tabele osady, Wydarzenia Podróży/Hulanki.
 // Faza 5: Tabela Towarzyszy, Tabela Fuch, narzędzia Wyroczni (Glide + 4 biomowe).
 import { getState, touch } from "../store.js";
-import { rollDie, rollD2, rollD5, rollD100, findInRangeTable, parseRange, clamp, uid, escapeHtml } from "../utils.js";
+import { rollDie, rollD2, rollD5, rollD10, rollD100, findInRangeTable, parseRange, clamp, uid, escapeHtml } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
 
@@ -54,7 +54,8 @@ const ui = {
     companions: { candidates: null, seek: null, hiredKey: null },
     oddJobs: { candidates: null, blockedMsg: null },
     oracle: { yesNo: null, wordBiome: "desert", word: null },
-    daySeq: { day: null, checked: {} }
+    daySeq: { day: null, checked: {} },
+    settlementAction: { guildId: null } // wybrana gildia dla akcji Osady kierowanych do gildii (donacje, poprawa relacji)
 };
 
 let currentRoot = null;
@@ -260,13 +261,118 @@ function renderUniqueLocationResult(r) {
     `;
 }
 
-function renderSettlementActionsReference(actions) {
-    return Object.entries(actions).map(([catKey, cat]) => `
+/** Kategorie akcji Osady, dla których zamiast czystego tekstu-referencji renderujemy przyciski
+ *  wykonujące akcję: wpis do Dziennika zawsze, a jeśli akcja dotyczy prostych zasobów liczbowych
+ *  (Kredyty/Złom/Zasoby/Wytrzymałość/Relikty/Informacje/Punkty Więzi/Sława) — także aktualizację
+ *  stanu. Sprzęt/Glider (repair_buy_upgrade_trade) i Zlecenia (contracts_odd_jobs) zostają czystym
+ *  tekstem — gracz oznacza je ręcznie (patrz komentarz przy imporcie na górze pliku / opis featury). */
+function renderScrapActions(cat) {
+    return `
         <div style="margin-bottom:10px;">
-            <div class="entry-meta"><span>${humanizeKey(catKey)}</span></div>
-            ${Object.entries(cat).map(([k, v]) => `<p><strong>${humanizeKey(k)}:</strong> ${v}</p>`).join("")}
+            <div class="entry-meta"><span>${humanizeKey("scrap")}</span></div>
+            <div class="counter-controls" style="gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm tt" data-action="scrap-sell" data-tip="${escapeHtml(cat.sell)}">Sprzedaj 1 Złom</button>
+                <button class="btn btn-sm tt" data-action="scrap-buy" data-tip="${escapeHtml(cat.buy)}">Kup 1 Złom</button>
+            </div>
         </div>
-    `).join("");
+    `;
+}
+
+function renderSupplyActions(cat) {
+    return `
+        <div style="margin-bottom:10px;">
+            <div class="entry-meta"><span>${humanizeKey("supply")}</span></div>
+            <div class="counter-controls" style="gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm tt" data-action="supply-buy" data-tip="${escapeHtml(cat.buy)}">Kup 1 Zasób</button>
+            </div>
+        </div>
+    `;
+}
+
+function renderRestActions(cat) {
+    return `
+        <div style="margin-bottom:10px;">
+            <div class="entry-meta"><span>${humanizeKey("rest_and_recovery")}</span></div>
+            <div class="counter-controls" style="gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm tt" data-action="rest-recover" data-tip="${escapeHtml(cat.cost)}">Odpocznij (+1 Wytrzymałość za 3cr)</button>
+            </div>
+        </div>
+    `;
+}
+
+function renderRelicActions(cat) {
+    return `
+        <div style="margin-bottom:10px;">
+            <div class="entry-meta"><span>${humanizeKey("relics")}</span></div>
+            <div class="counter-controls" style="gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm tt" data-action="relic-sell" data-tip="${escapeHtml(cat.sell)}">Sprzedaj Relikt</button>
+                <button class="btn btn-sm tt" data-action="relic-donate-companion" data-tip="${escapeHtml(cat.donate)}">Oddaj Relikt Towarzyszowi (+2 PW)</button>
+                <button class="btn btn-sm tt" data-action="relic-donate-guild" data-tip="${escapeHtml(cat.donate)}">Oddaj Relikt Gildii (+3 PW)</button>
+                <button class="btn btn-sm tt" data-action="relic-donate-fame" data-tip="${escapeHtml(cat.donate_for_fame)}">Oddaj 3 Relikty za Sławę</button>
+            </div>
+        </div>
+    `;
+}
+
+function renderIntelActions(cat) {
+    return `
+        <div style="margin-bottom:10px;">
+            <div class="entry-meta"><span>${humanizeKey("intel")}</span></div>
+            <div class="counter-controls" style="gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm tt" data-action="intel-buy" data-tip="${escapeHtml(cat.buy)}">Kup 1 Informację</button>
+                <button class="btn btn-sm tt" data-action="intel-sell" data-tip="${escapeHtml(cat.sell)}">Sprzedaj 1 Informację</button>
+                <button class="btn btn-sm tt" data-action="intel-trade-scrap" data-tip="${escapeHtml(cat.trade_for_scrap)}">Wymień 1 Informację na 2 Złom</button>
+                <button class="btn btn-sm tt" data-action="intel-donate-guild" data-tip="${escapeHtml(cat.donate)}">Oddaj 3 Informacje Gildii (+1 PW)</button>
+                <button class="btn btn-sm tt" data-action="intel-donate-companion" data-tip="${escapeHtml(cat.donate)}">Oddaj 3 Informacje Towarzyszowi (+2 PW)</button>
+            </div>
+            ${cat.limit ? `<p class="placeholder" style="margin-top:6px;">${cat.limit}</p>` : ""}
+        </div>
+    `;
+}
+
+function renderCompanionsAction(cat) {
+    return `
+        <div style="margin-bottom:10px;">
+            <div class="entry-meta"><span>${humanizeKey("companions_action")}</span></div>
+            ${cat.hire ? `<p><strong>${humanizeKey("hire")}:</strong> ${cat.hire}</p>` : ""}
+            <div class="counter-controls" style="gap:8px; flex-wrap:wrap; margin-top:6px;">
+                <button class="btn btn-sm tt" data-action="improve-relations-companion" data-tip="${escapeHtml(cat.improve_relations)}">Popraw Relacje z Towarzyszem (+2 PW)</button>
+                <button class="btn btn-sm tt" data-action="improve-relations-guild" data-tip="${escapeHtml(cat.improve_relations)}">Popraw Relacje z Gildią (+2 PW)</button>
+            </div>
+        </div>
+    `;
+}
+
+function renderSettlementActionsReference(actions, data) {
+    const guilds = data?.guilds?.guilds ?? [];
+    if (!ui.settlementAction.guildId && guilds[0]) ui.settlementAction.guildId = guilds[0].id;
+    const selectedGuildId = ui.settlementAction.guildId;
+
+    const guildSelectHtml = guilds.length ? `
+        <div class="counter-row" style="margin-bottom:10px;">
+            <div class="counter-label">Gildia (dla akcji z Punktami Więzi)</div>
+            <select data-action="settlement-guild-select">
+                ${guilds.map(g => `<option value="${g.id}" ${selectedGuildId === g.id ? "selected" : ""}>${g.name_pl}</option>`).join("")}
+            </select>
+        </div>
+    ` : "";
+
+    const catsHtml = Object.entries(actions).map(([catKey, cat]) => {
+        if (catKey === "scrap") return renderScrapActions(cat);
+        if (catKey === "supply") return renderSupplyActions(cat);
+        if (catKey === "rest_and_recovery") return renderRestActions(cat);
+        if (catKey === "relics") return renderRelicActions(cat);
+        if (catKey === "intel") return renderIntelActions(cat);
+        if (catKey === "companions_action") return renderCompanionsAction(cat);
+        return `
+            <div style="margin-bottom:10px;">
+                <div class="entry-meta"><span>${humanizeKey(catKey)}</span></div>
+                ${Object.entries(cat).map(([k, v]) => `<p><strong>${humanizeKey(k)}:</strong> ${v}</p>`).join("")}
+            </div>
+        `;
+    }).join("");
+
+    return guildSelectHtml + catsHtml;
 }
 
 /** Render kandydata z Tabeli Towarzyszy — z przyciskiem naboru (chyba że to już aktualny towarzysz). */
@@ -533,8 +639,9 @@ export function render(root, { state, data }) {
         </div>
 
         <div class="card" style="margin-top:12px;">
-            <h2>Akcje Osady — Referencja</h2>
-            ${renderSettlementActionsReference(data.economy.settlement_actions)}
+            <h2>Akcje Osady</h2>
+            <p class="placeholder">Kliknięcie przycisku dodaje wpis do Dziennika i (jeśli dotyczy prostych zasobów) aktualizuje stan. Sprzęt/Glider i Zlecenia oznacz ręcznie — patrz opisy poniżej.</p>
+            ${renderSettlementActionsReference(data.economy.settlement_actions, data)}
         </div>
 
         <div class="card" style="margin-top:12px;">
@@ -868,6 +975,185 @@ function rollOracleWord(data) {
     rerender();
 }
 
+/** Zwraca aktualnie wybraną gildię (z selecta w karcie Akcje Osady) dla akcji kierowanych do gildii
+ *  (donacje, poprawa relacji) — z fallbackiem na pierwszą gildię z listy, gdyby stan UI był pusty. */
+function getSelectedGuild(data) {
+    const guilds = data?.guilds?.guilds ?? [];
+    return guilds.find(g => g.id === ui.settlementAction.guildId) || guilds[0] || null;
+}
+
+function sellScrap() {
+    const state = getState();
+    const roll = rollD5();
+    state.character.resources.credits += roll;
+    const scrap = state.character.glider.scrap;
+    scrap.cur = clamp(scrap.cur - 1, 0, scrap.max);
+    logEvent(state, "settlement-action", `Sprzedano 1 Złom za ${roll} Kredytów (d5=${roll}).`);
+    touch();
+    rerender();
+}
+
+function buyScrap() {
+    const state = getState();
+    const d10 = rollD10();
+    const cost = d10 + 1;
+    state.character.resources.credits -= cost;
+    const scrap = state.character.glider.scrap;
+    scrap.cur = clamp(scrap.cur + 1, 0, scrap.max);
+    logEvent(state, "settlement-action", `Kupiono 1 Złom za ${cost} Kredytów (d10=${d10}+1).`);
+    touch();
+    rerender();
+}
+
+function buySupply() {
+    const state = getState();
+    const roll = rollD5();
+    state.character.resources.credits -= roll;
+    const supply = state.character.glider.supply;
+    supply.cur = clamp(supply.cur + 1, 0, supply.max);
+    logEvent(state, "settlement-action", `Kupiono 1 Zasób za ${roll} Kredytów (d5=${roll}).`);
+    touch();
+    rerender();
+}
+
+function restRecoverStamina() {
+    const state = getState();
+    const cost = 3;
+    state.character.resources.credits -= cost;
+    const stam = state.character.resources.stamina;
+    stam.cur = clamp(stam.cur + 1, 0, stam.max);
+    logEvent(state, "settlement-action", `Odpoczynek: +1 Wytrzymałość za ${cost} Kredyty.`);
+    touch();
+    rerender();
+}
+
+function sellRelic() {
+    const state = getState();
+    const d10 = rollD10();
+    const gained = d10 * 5;
+    state.character.resources.credits += gained;
+    const relics = state.character.glider.relics;
+    relics.cur = clamp(relics.cur - 1, 0, relics.max);
+    logEvent(state, "settlement-action", `Sprzedano 1 Relikt za ${gained} Kredytów (d10=${d10}×5).`);
+    touch();
+    rerender();
+}
+
+function donateRelicCompanion() {
+    const state = getState();
+    const relics = state.character.glider.relics;
+    relics.cur = clamp(relics.cur - 1, 0, relics.max);
+    state.character.companion.bondPoints = (state.character.companion.bondPoints || 0) + 2;
+    logEvent(state, "settlement-action", `Oddano 1 Relikt Towarzyszowi za +2 Punkty Więzi.`);
+    touch();
+    rerender();
+}
+
+function donateRelicGuild(data) {
+    const state = getState();
+    const guild = getSelectedGuild(data);
+    if (!guild) return;
+    const relics = state.character.glider.relics;
+    relics.cur = clamp(relics.cur - 1, 0, relics.max);
+    if (!state.guildBonds[guild.id]) state.guildBonds[guild.id] = { points: 0 };
+    state.guildBonds[guild.id].points += 3;
+    logEvent(state, "settlement-action", `Oddano 1 Relikt gildii "${guild.name_pl}" za +3 Punkty Więzi.`);
+    touch();
+    rerender();
+}
+
+function donateRelicsForFame() {
+    const state = getState();
+    const relics = state.character.glider.relics;
+    relics.cur = clamp(relics.cur - 3, 0, relics.max);
+    state.character.resources.fame = (state.character.resources.fame || 0) + 1;
+    logEvent(state, "settlement-action", `Oddano 3 Relikty za +1 Sława.`);
+    touch();
+    rerender();
+}
+
+function buyIntel() {
+    const state = getState();
+    const d10 = rollD10();
+    const cost = d10 * 2;
+    state.character.resources.credits -= cost;
+    const intel = state.character.resources.intel;
+    intel.cur = clamp(intel.cur + 1, 0, intel.max);
+    logEvent(state, "settlement-action", `Kupiono 1 Informację za ${cost} Kredytów (d10=${d10}×2).`);
+    touch();
+    rerender();
+}
+
+function sellIntel() {
+    const state = getState();
+    const d10 = rollD10();
+    state.character.resources.credits += d10;
+    const intel = state.character.resources.intel;
+    intel.cur = clamp(intel.cur - 1, 0, intel.max);
+    logEvent(state, "settlement-action", `Sprzedano 1 Informację za ${d10} Kredytów (d10=${d10}×1).`);
+    touch();
+    rerender();
+}
+
+function tradeIntelForScrap() {
+    const state = getState();
+    const intel = state.character.resources.intel;
+    intel.cur = clamp(intel.cur - 1, 0, intel.max);
+    const scrap = state.character.glider.scrap;
+    scrap.cur = clamp(scrap.cur + 2, 0, scrap.max);
+    logEvent(state, "settlement-action", `Wymieniono 1 Informację na 2 Złom.`);
+    touch();
+    rerender();
+}
+
+function donateIntelGuild(data) {
+    const state = getState();
+    const guild = getSelectedGuild(data);
+    if (!guild) return;
+    const intel = state.character.resources.intel;
+    intel.cur = clamp(intel.cur - 3, 0, intel.max);
+    if (!state.guildBonds[guild.id]) state.guildBonds[guild.id] = { points: 0 };
+    state.guildBonds[guild.id].points += 1;
+    logEvent(state, "settlement-action", `Oddano 3 Informacje gildii "${guild.name_pl}" za +1 Punkty Więzi.`);
+    touch();
+    rerender();
+}
+
+function donateIntelCompanion() {
+    const state = getState();
+    const intel = state.character.resources.intel;
+    intel.cur = clamp(intel.cur - 3, 0, intel.max);
+    state.character.companion.bondPoints = (state.character.companion.bondPoints || 0) + 2;
+    logEvent(state, "settlement-action", `Oddano 3 Informacje Towarzyszowi za +2 Punkty Więzi.`);
+    touch();
+    rerender();
+}
+
+function improveRelationsCompanion() {
+    const state = getState();
+    const d10 = rollD10();
+    const cost = d10 * 5;
+    state.character.resources.credits -= cost;
+    state.character.companion.bondPoints = (state.character.companion.bondPoints || 0) + 2;
+    logEvent(state, "settlement-action", `Poprawiono relacje z Towarzyszem za ${cost} Kredytów (d10=${d10}×5): +2 Punkty Więzi.`);
+    touch();
+    rerender();
+}
+
+function improveRelationsGuild(data) {
+    const state = getState();
+    const guild = getSelectedGuild(data);
+    if (!guild) return;
+    const d10 = rollD10();
+    const cost = d10 * 5;
+    state.character.resources.credits -= cost;
+    if (!state.guildBonds[guild.id]) state.guildBonds[guild.id] = { points: 0 };
+    state.guildBonds[guild.id].points += 2;
+    logEvent(state, "settlement-action", `Poprawiono relacje z gildią "${guild.name_pl}" za ${cost} Kredytów (d10=${d10}×5): +2 Punkty Więzi.`);
+    touch();
+    rerender();
+}
+
 function wireEvents(root) {
     root.addEventListener("change", (e) => {
         const el = e.target;
@@ -876,6 +1162,7 @@ function wireEvents(root) {
         else if (action === "biome-select") { ui.biome.key = el.value; rerender(); }
         else if (action === "oracle-biome-select") { ui.oracle.wordBiome = el.value; rerender(); }
         else if (action === "toggle-day-step") { ui.daySeq.checked[el.dataset.step] = el.checked; rerender(); }
+        else if (action === "settlement-guild-select") { ui.settlementAction.guildId = el.value; rerender(); }
     });
 
     root.addEventListener("input", (e) => {
@@ -914,5 +1201,20 @@ function wireEvents(root) {
         else if (action === "roll-oracle-yesno") rollOracleYesNo(currentData);
         else if (action === "roll-oracle-word") rollOracleWord(currentData);
         else if (action === "reset-day-sequence") { ui.daySeq.checked = {}; rerender(); }
+        else if (action === "scrap-sell") sellScrap();
+        else if (action === "scrap-buy") buyScrap();
+        else if (action === "supply-buy") buySupply();
+        else if (action === "rest-recover") restRecoverStamina();
+        else if (action === "relic-sell") sellRelic();
+        else if (action === "relic-donate-companion") donateRelicCompanion();
+        else if (action === "relic-donate-guild") donateRelicGuild(currentData);
+        else if (action === "relic-donate-fame") donateRelicsForFame();
+        else if (action === "intel-buy") buyIntel();
+        else if (action === "intel-sell") sellIntel();
+        else if (action === "intel-trade-scrap") tradeIntelForScrap();
+        else if (action === "intel-donate-guild") donateIntelGuild(currentData);
+        else if (action === "intel-donate-companion") donateIntelCompanion();
+        else if (action === "improve-relations-companion") improveRelationsCompanion();
+        else if (action === "improve-relations-guild") improveRelationsGuild(currentData);
     });
 }

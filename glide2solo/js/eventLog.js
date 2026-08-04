@@ -14,7 +14,8 @@ export const EVENT_TYPE_LABELS = {
     "glider-upgrade": "Ulepszenie glidera",
     "trait-gained": "Zdobyto Cechę",
     "stat-change": "Zmiana statystyki",
-    "day-summary": "Nowy dzień — podsumowanie"
+    "day-summary": "Nowy dzień — podsumowanie",
+    "settlement-action": "Akcja Osady"
 };
 
 /** Dopisuje zdarzenie do state.events (mutuje przekazany state — wywołujący odpowiada za
