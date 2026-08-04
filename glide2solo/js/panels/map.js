@@ -19,12 +19,31 @@ const COLS = 12;
 const ROWS = 10;
 const COL_LETTERS = "ABCDEFGHIJKL".split("");
 
-const HEX_SIZE = 36;
-const HEX_WIDTH = HEX_SIZE * 2;
-const HEX_HEIGHT = Math.sqrt(3) * HEX_SIZE;
-const COL_PITCH = HEX_WIDTH * 0.75;
-const GRID_WIDTH = (COLS - 1) * COL_PITCH + HEX_WIDTH;
-const GRID_HEIGHT = ROWS * HEX_HEIGHT + HEX_HEIGHT / 2;
+// Rozmiar heksów jest wyliczany dynamicznie z szerokości kontenera (patrz computeLayout), tak
+// żeby siatka zawsze wypełniała całą dostępną szerokość karty bez pustego marginesu z prawej
+// strony i bez poziomego scrolla. Te zmienne to tylko bieżący (przeliczony) stan layoutu —
+// wartości startowe to bezpieczny fallback, zanim panel zostanie choć raz zmierzony.
+let HEX_SIZE = 36;
+let HEX_WIDTH = HEX_SIZE * 2;
+let HEX_HEIGHT = Math.sqrt(3) * HEX_SIZE;
+let COL_PITCH = HEX_WIDTH * 0.75;
+let GRID_WIDTH = (COLS - 1) * COL_PITCH + HEX_WIDTH;
+let GRID_HEIGHT = ROWS * HEX_HEIGHT + HEX_HEIGHT / 2;
+
+/** Przelicza rozmiar heksów tak, żeby COLS kolumn (z zachowaniem overlapu 0.75 szerokości na
+ *  kolumnę, jak przy plastrze miodu) dokładnie wypełniało `containerWidth`. Wywoływane przy
+ *  każdym renderze mapy, z realnie zmierzoną szerokością `.hex-grid-wrap`. Gdy panel jest
+ *  aktualnie ukryty (display:none na nieaktywnej zakładce daje clientWidth=0), zachowujemy
+ *  poprzednio wyliczoną szerokość zamiast zjeżdżać do zera. */
+function computeLayout(containerWidth) {
+    const w = containerWidth > 0 ? containerWidth : GRID_WIDTH;
+    HEX_WIDTH = w / ((COLS - 1) * 0.75 + 1);
+    HEX_SIZE = HEX_WIDTH / 2;
+    HEX_HEIGHT = Math.sqrt(3) * HEX_SIZE;
+    COL_PITCH = HEX_WIDTH * 0.75;
+    GRID_WIDTH = w;
+    GRID_HEIGHT = ROWS * HEX_HEIGHT + HEX_HEIGHT / 2;
+}
 
 /** Typ Lokacji (mechanics.json#location_type_table_d10) → klucz biomu w data/*.json
  *  (landmarks_table_d100 / events_table_d100), używany przy testach/eksploracji na heksie. */
@@ -327,11 +346,20 @@ function renderHexCell(state, coord, col, row) {
     if (isPosition) cls += " hex--position";
     if (isSelected) cls += " hex--selected";
 
+    // Struktura hex-fill/hex-content: `.hex` sam w sobie pełni rolę warstwy "obramowania"
+    // (tło + clip-path heksagonu), a `.hex-fill` to druga, mniejsza (inset o grubość ramki)
+    // kopia tego samego clip-path z tłem wypełnienia — dwie nałożone na siebie warstwy z tym
+    // samym clip-path dają czysty heksagonalny kontur. Zwykły CSS `border` na elemencie z
+    // clip-path NIE działa poprawnie (obrys rysuje się na oryginalnym prostokącie i po
+    // przycięciu widać go tylko jako proste, "docięte" krawędzie, nie kontur heksagonu).
     return `
         <button type="button" class="${cls} tt" data-action="select-hex" data-coord="${coord}"${loctypeAttr}
                 data-tip="${escapeHtml(tip)}" style="left:${left}px; top:${top}px; width:${HEX_WIDTH}px; height:${HEX_HEIGHT}px;">
-            <span class="hex-coord">${coord}</span>
-            ${hex ? `<span class="hex-abbr">${TYPE_ABBR[hex.regionRoot ? (state.map.hexes[hex.regionRoot]?.typeResult) : hex.typeResult] || "?"}</span>` : ""}
+            <span class="hex-fill"></span>
+            <span class="hex-content">
+                <span class="hex-coord">${coord}</span>
+                ${hex ? `<span class="hex-abbr">${TYPE_ABBR[hex.regionRoot ? (state.map.hexes[hex.regionRoot]?.typeResult) : hex.typeResult] || "?"}</span>` : ""}
+            </span>
         </button>
     `;
 }
@@ -412,8 +440,8 @@ function renderHexDetail(state, data, coord) {
             <h3>Heks ${coord}${isPosition ? " · pozycja postaci" : ""}</h3>
             <p class="placeholder">Nieodkryty.</p>
             <div class="hex-actions">
-                <button class="btn btn-primary btn-sm" data-action="roll-hex-type" data-coord="${coord}">Rzuć Typ Lokacji (d10)</button>
                 <button class="btn btn-sm btn-secondary" data-action="move-here" data-coord="${coord}">Przesuń postać</button>
+                <button class="btn btn-primary btn-sm" data-action="roll-hex-type" data-coord="${coord}">Rzuć Typ Lokacji (d10)</button>
             </div>
         `;
     }
@@ -460,15 +488,25 @@ export function render(root, { state, data }) {
             <p class="placeholder">Kliknij nieodkryty heks, aby rzucić Typ Lokacji. Kliknij odkryty heks, aby zobaczyć szczegóły, wykonać testy/eksplorację, przesunąć postać, przerzucić albo usunąć heks.</p>
             ${state.map.pendingRegion ? renderPendingBanner(state.map.pendingRegion) : ""}
             <div class="hex-grid-wrap">
-                <div class="hex-grid" style="width:${GRID_WIDTH}px; height:${GRID_HEIGHT}px;">
-                    ${renderGrid(state)}
-                </div>
+                <div class="hex-grid"></div>
             </div>
         </div>
         <div class="card" style="margin-top:12px;">
             ${renderHexDetail(state, data, selectedCoord)}
         </div>
     `;
+
+    // Siatka jest budowana w dwóch krokach: najpierw pusty `.hex-grid-wrap` (żeby dostać jego
+    // realną, wynikającą z layoutu karty szerokość — jest 0, jeśli zakładka Mapa jest akurat
+    // ukryta, patrz computeLayout), dopiero potem heksy w rozmiarze dopasowanym do tej
+    // szerokości. Dzięki temu siatka zawsze wypełnia kartę na całą szerokość, bez pustego
+    // marginesu i bez poziomego scrolla.
+    const wrap = root.querySelector(".hex-grid-wrap");
+    const gridEl = root.querySelector(".hex-grid");
+    computeLayout(wrap.clientWidth);
+    gridEl.style.width = `${GRID_WIDTH}px`;
+    gridEl.style.height = `${GRID_HEIGHT}px`;
+    gridEl.innerHTML = renderGrid(state);
 
     if (!root.dataset.wired) {
         wireEvents(root);
@@ -497,4 +535,17 @@ function wireEvents(root) {
         else if (action === "remove-hex") removeHex(coord);
         else if (action === "cancel-pending-region") cancelPendingRegion();
     });
+
+    // Siatka heksów ma dynamiczny rozmiar (patrz computeLayout w render()) — trzeba ją
+    // przeliczyć zarówno przy zmianie szerokości okna, jak i w momencie przełączenia na
+    // zakładkę Mapa (wcześniej panel był `display:none`, więc `.hex-grid-wrap` miał szerokość
+    // 0 i heksy wyrenderowały się z rozmiarem fallbackowym). Nasłuch na kliknięcie przycisku
+    // zakładki jest dopięty PO nasłuchu z main.js#setupTabs (bo ten dopina się wcześniej, przy
+    // starcie apki, a ten tutaj dopiero przy pierwszym renderze panelu Mapa) — więc w momencie
+    // gdy odpalamy rerender(), klasa .active (i przez to display) jest już przełączona.
+    window.addEventListener("resize", () => {
+        if (root.offsetParent !== null) rerender();
+    });
+    const mapTabBtn = document.querySelector('.tab-btn[data-tab="map"]');
+    if (mapTabBtn) mapTabBtn.addEventListener("click", () => rerender());
 }

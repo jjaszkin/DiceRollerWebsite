@@ -578,59 +578,83 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 }
 
 .hex-grid-wrap {
-    overflow-x: auto;
-    padding-bottom: 4px;
+    width: 100%;
 }
 
 .hex-grid {
     position: relative;
 }
 
+/* Heksagony z prawdziwym obrysem pod clip-path: zwykły CSS `border` na elemencie z clip-path
+   rysuje się na oryginalnym prostokącie i po przycięciu wygląda jak proste, "docięte"
+   krawędzie zamiast konturu heksagonu. Zamiast tego `.hex` to warstwa tła pełniąca rolę
+   obramowania, a `.hex-fill` to druga kopia tego samego clip-path, wstawiona (inset) o
+   grubość ramki (--hex-border-w) i wypełniona kolorem tła — dwie nałożone na siebie
+   heksagonalne warstwy dają czysty kontur w dowolnej grubości. */
 .hex {
     position: absolute;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--line-strong);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    cursor: pointer;
+    --hex-border-w: 1.5px;
+    transition: background 0.15s;
+}
+
+.hex:hover { background: var(--fg-1); }
+
+.hex-fill {
+    position: absolute;
+    inset: var(--hex-border-w);
+    background: var(--bg-2);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    transition: background 0.15s;
+}
+
+.hex:hover .hex-fill { background: var(--bg-3); }
+
+.hex-content {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1px;
-    margin: 0;
-    padding: 0;
-    background: var(--bg-2);
     color: var(--fg-dim);
-    border: 1.5px solid var(--line-strong);
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
     font-family: var(--mono);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
+    pointer-events: none;
 }
 
-.hex:hover { background: var(--bg-3); border-color: var(--fg-1); }
+.hex--filled { background: var(--fg-2); }
+.hex--filled .hex-fill { background: var(--bg-3); }
+.hex--filled .hex-content { color: var(--fg-0); }
+.hex--filled:hover { background: var(--fg-1); }
 
-.hex--filled {
-    background: var(--bg-3);
-    color: var(--fg-0);
-    border-color: var(--fg-2);
-}
-.hex--filled:hover { background: var(--bg-3); border-color: var(--fg-1); }
+.hex--filled[data-loctype="Teren Nieprzejezdny"] { background: var(--line-strong); }
+.hex--filled[data-loctype="Teren Nieprzejezdny"] .hex-fill { background: var(--bg-1); }
+.hex--filled[data-loctype="Osada"] { background: var(--fg-1); }
+.hex--filled[data-loctype="Unikalna Lokacja"] { background: var(--fg-0); }
 
-.hex--filled[data-loctype="Teren Nieprzejezdny"] { background: var(--bg-1); border-color: var(--line-strong); }
-.hex--filled[data-loctype="Osada"] { border-color: var(--fg-1); }
-.hex--filled[data-loctype="Unikalna Lokacja"] { border-color: var(--fg-0); }
+/* Heks-członek regionu: cieńsza ramka + lekko przygaszony tekst zamiast (niekompatybilnego z
+   clip-path) obramowania kreskowanego. */
+.hex--member { --hex-border-w: 1px; }
+.hex--member .hex-content { opacity: 0.8; }
 
-.hex--member { border-style: dashed; }
+.hex--unique { --hex-border-w: 2.5px; }
 
-.hex--unique {
-    border-width: 2px;
-    border-color: var(--fg-1);
-}
-
-.hex--selected { border-color: var(--fg-0); border-width: 2px; }
+/* Podniesiona specyficzność (.hex.hex--selected), żeby zaznaczenie zawsze było widoczne, także
+   na heksach z ustawionym data-loctype (te selektory mają wyższą specyficzność niż sam
+   .hex--selected). */
+.hex.hex--selected { --hex-border-w: 2px; background: var(--fg-0); }
 
 .hex--position::after {
     content: "";
     position: absolute;
     inset: 0;
-    box-shadow: inset 0 0 0 2px var(--fg-0);
+    box-shadow: inset 0 0 0 4px var(--fg-0);
     pointer-events: none;
 }
 
