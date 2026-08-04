@@ -9,11 +9,46 @@ import { logEvent } from "../eventLog.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
 
-function counterRow({ label, abbr, curPath, curVal, maxPath, maxVal, min = 0, editableMax = false }) {
+// Angielskie nazwy pięciu statystyk core z oryginału podręcznika (przed tłumaczeniem PL) —
+// patrz commit fa69bd7 (przed tłumaczeniem mechanics.json): H=Hardy, K=Knowledgeable,
+// R=Resourceful, C=Connected, F=Focused. Nigdzie indziej w przetłumaczonych danych już nie
+// występują, więc trzymane tu lokalnie do treści hover-tooltipów (mechanics.stats[].represents
+// ma sam opis PL, bez angielskiej nazwy).
+const STAT_ENGLISH_NAMES = { H: "Hardy", K: "Knowledgeable", R: "Resourceful", C: "Connected", F: "Focused" };
+
+/** Opisy do hover-tooltipów Zasobów postaci i Glidera — krótkie wyjaśnienie „czym to jest”
+ *  plus angielska nazwa z oryginału (mechanika sama jest po angielsku w podręczniku źródłowym,
+ *  patrz mechanics.json przed tłumaczeniem PL, commit fa69bd7). Trzymane tu lokalnie (nie w
+ *  danych), bo to czysto opisowy tekst pomocniczy UI, niezależny od katalogów przedmiotów. */
+const RESOURCE_TIPS = {
+    stamina: { en: "Stamina", desc: "Zdrowie/wytrzymałość fizyczna Poszukiwacza. Przy 0 rzuć na Tabelę Wyczerpania." },
+    momentum: { en: "Momentum", desc: "Zapas tempa/szczęścia. Wydaj 1, by przerzucić kość albo użyć zamiast Wytrzymałości lub Zasobów." },
+    intel: { en: "Intel", desc: "Zgromadzona wiedza/dane. Wydaj 1, by zyskać Przewagę, przerzucić Kość Wyzwania, zmniejszyć trudność lokacji (min. 1) albo wymienić na nagrody w osadzie." },
+    credits: { en: "Credits", desc: "Waluta do zakupów Sprzętu, Modów i usług w osadach oraz u gildii." },
+    fame: { en: "Fame", desc: "Reputacja Poszukiwacza. Po osiągnięciu progu odblokowuje zakończenie gry." }
+};
+
+const GLIDER_STAT_TIPS = {
+    wear: { en: "Wear", desc: "Stan techniczny glidera. Przy 0: maks. Prędkość spada do 1, Mody stają się niedostępne." },
+    supply: { en: "Supply", desc: "Zapasy na pokładzie glidera. Przy 0 zaznacz 1 Zużycie zamiast wydawać Zasoby." },
+    speed: { en: "Speed", desc: "Zasięg ruchu glidera (w heksach) podczas akcji Move." },
+    scrap: { en: "Scrap", desc: "Surowiec zbierany podczas eksploracji — waluta rzemieślnicza/handlowa Glidera." },
+    relics: { en: "Relics", desc: "Rzadkie, cenne znaleziska — nagroda za Duże Sukcesy w trudniejszych lokacjach." },
+    cargoSlots: { en: "Cargo Slots", desc: "Pojemność przestrzeni ładunkowej glidera na towary/dobra wymienne, osobno od Złom/Zasoby/Relikty." }
+};
+
+/** Buduje treść hover-tooltipa z opisu + angielskiej nazwy — wspólny format dla Zasobów i
+ *  statów Glidera (patrz RESOURCE_TIPS/GLIDER_STAT_TIPS powyżej). */
+function tipText(entry) {
+    if (!entry) return "";
+    return `${entry.desc} (ang. „${entry.en}”)`;
+}
+
+function counterRow({ label, abbr, curPath, curVal, maxPath, maxVal, min = 0, editableMax = false, tip = "" }) {
     const hasMax = maxVal !== undefined && maxVal !== null;
     return `
         <div class="counter-row">
-            <div class="counter-label">${label}${abbr ? ` <span class="abbr">${abbr}</span>` : ""}</div>
+            <div class="counter-label${tip ? " tt" : ""}"${tip ? ` data-tip="${escapeHtml(tip)}"` : ""}>${label}${abbr ? ` <span class="abbr">${abbr}</span>` : ""}</div>
             <div class="counter-controls">
                 <button class="btn btn-sm btn-icon" data-action="adjust" data-path="${curPath}" data-delta="-1" data-min="${min}">−</button>
                 <span class="counter-value">${curVal}${hasMax ? ` <span class="max">${editableMax ? `/ <button class="max-edit" data-action="edit-max" data-path="${maxPath}" title="Zmień maksimum">${maxVal}</button>` : `/ ${maxVal}`}</span>` : ""}</span>
@@ -25,10 +60,10 @@ function counterRow({ label, abbr, curPath, curVal, maxPath, maxVal, min = 0, ed
 
 /** Wiersz z licznikiem wpisywanym bezpośrednio (input number) zamiast +/- klikanych po jednym —
  *  wygodniejsze dla wartości, które często zmieniają się o więcej niż 1 (np. Kredyty). */
-function numberInputRow({ label, abbr, path, value, min = 0 }) {
+function numberInputRow({ label, abbr, path, value, min = 0, tip = "" }) {
     return `
         <div class="counter-row">
-            <div class="counter-label">${label}${abbr ? ` <span class="abbr">${abbr}</span>` : ""}</div>
+            <div class="counter-label${tip ? " tt" : ""}"${tip ? ` data-tip="${escapeHtml(tip)}"` : ""}>${label}${abbr ? ` <span class="abbr">${abbr}</span>` : ""}</div>
             <div class="counter-controls">
                 <input type="number" class="counter-input" data-action="set-number" data-path="${path}" data-min="${min}" value="${value}" step="1">
             </div>
@@ -106,9 +141,10 @@ export function render(root, { state, data }) {
                 ${STAT_ORDER.map(key => {
                     const statDef = mechanics.stats.find(s => s.key === key);
                     const proficient = ch.proficientStats.includes(key);
+                    const statTip = `${statDef.represents || ""} (ang. „${STAT_ENGLISH_NAMES[key]}”)`;
                     return `
                         <div class="counter-row">
-                            <div class="counter-label">${statDef.name} <span class="abbr">${key}</span>
+                            <div class="counter-label tt" data-tip="${escapeHtml(statTip)}">${statDef.name} <span class="abbr">${key}</span>
                                 <label style="margin-left:8px;">
                                     <input type="checkbox" data-action="toggle-proficient" data-stat="${key}" ${proficient ? "checked" : ""}> <span class="abbr">proficient</span>
                                 </label>
@@ -125,11 +161,11 @@ export function render(root, { state, data }) {
 
             <div class="card">
                 <h2>Zasoby</h2>
-                ${counterRow({ label: "Wytrzymałość", abbr: "S", curPath: "character.resources.stamina.cur", curVal: ch.resources.stamina.cur, maxPath: "character.resources.stamina.max", maxVal: ch.resources.stamina.max, editableMax: true })}
-                ${counterRow({ label: "Rozpęd", abbr: "MM", curPath: "character.resources.momentum.cur", curVal: ch.resources.momentum.cur, maxPath: "character.resources.momentum.max", maxVal: ch.resources.momentum.max, editableMax: true })}
-                ${counterRow({ label: "Informacje", abbr: "IN", curPath: "character.resources.intel.cur", curVal: ch.resources.intel.cur, maxPath: "character.resources.intel.max", maxVal: ch.resources.intel.max, editableMax: true })}
-                ${numberInputRow({ label: "Kredyty", abbr: "cr", path: "character.resources.credits", value: ch.resources.credits, min: 0 })}
-                ${counterRow({ label: "Sława", curPath: "character.resources.fame", curVal: ch.resources.fame })}
+                ${counterRow({ label: "Wytrzymałość", abbr: "S", curPath: "character.resources.stamina.cur", curVal: ch.resources.stamina.cur, maxPath: "character.resources.stamina.max", maxVal: ch.resources.stamina.max, editableMax: true, tip: tipText(RESOURCE_TIPS.stamina) })}
+                ${counterRow({ label: "Rozpęd", abbr: "MM", curPath: "character.resources.momentum.cur", curVal: ch.resources.momentum.cur, maxPath: "character.resources.momentum.max", maxVal: ch.resources.momentum.max, editableMax: true, tip: tipText(RESOURCE_TIPS.momentum) })}
+                ${counterRow({ label: "Informacje", abbr: "IN", curPath: "character.resources.intel.cur", curVal: ch.resources.intel.cur, maxPath: "character.resources.intel.max", maxVal: ch.resources.intel.max, editableMax: true, tip: tipText(RESOURCE_TIPS.intel) })}
+                ${numberInputRow({ label: "Kredyty", abbr: "cr", path: "character.resources.credits", value: ch.resources.credits, min: 0, tip: tipText(RESOURCE_TIPS.credits) })}
+                ${counterRow({ label: "Sława", curPath: "character.resources.fame", curVal: ch.resources.fame, tip: tipText(RESOURCE_TIPS.fame) })}
                 <p class="placeholder">Koniec gry dostępny przy Sława ${mechanics.resources.fame.end_game_threshold}+.</p>
             </div>
 
@@ -151,12 +187,12 @@ export function render(root, { state, data }) {
 
             <div class="card">
                 <h2>Glider</h2>
-                ${counterRow({ label: "Zużycie", curPath: "character.glider.wear.cur", curVal: ch.glider.wear.cur, maxPath: "character.glider.wear.max", maxVal: ch.glider.wear.max, editableMax: true })}
-                ${counterRow({ label: "Zasoby", curPath: "character.glider.supply.cur", curVal: ch.glider.supply.cur, maxPath: "character.glider.supply.max", maxVal: ch.glider.supply.max, editableMax: true })}
-                ${counterRow({ label: "Prędkość", curPath: "character.glider.speed.cur", curVal: ch.glider.speed.cur, maxPath: "character.glider.speed.max", maxVal: ch.glider.speed.max, editableMax: true })}
-                ${counterRow({ label: "Złom", curPath: "character.glider.scrap.cur", curVal: ch.glider.scrap.cur, maxPath: "character.glider.scrap.max", maxVal: ch.glider.scrap.max, editableMax: true })}
-                ${counterRow({ label: "Relikty", curPath: "character.glider.relics.cur", curVal: ch.glider.relics.cur, maxPath: "character.glider.relics.max", maxVal: ch.glider.relics.max, editableMax: true })}
-                <div class="counter-row"><div class="counter-label">Przestrzeń załadunkowa</div><div class="counter-value">${ch.glider.cargoSlots}</div></div>
+                ${counterRow({ label: "Zużycie", curPath: "character.glider.wear.cur", curVal: ch.glider.wear.cur, maxPath: "character.glider.wear.max", maxVal: ch.glider.wear.max, editableMax: true, tip: tipText(GLIDER_STAT_TIPS.wear) })}
+                ${counterRow({ label: "Zasoby", curPath: "character.glider.supply.cur", curVal: ch.glider.supply.cur, maxPath: "character.glider.supply.max", maxVal: ch.glider.supply.max, editableMax: true, tip: tipText(GLIDER_STAT_TIPS.supply) })}
+                ${counterRow({ label: "Prędkość", curPath: "character.glider.speed.cur", curVal: ch.glider.speed.cur, maxPath: "character.glider.speed.max", maxVal: ch.glider.speed.max, editableMax: true, tip: tipText(GLIDER_STAT_TIPS.speed) })}
+                ${counterRow({ label: "Złom", curPath: "character.glider.scrap.cur", curVal: ch.glider.scrap.cur, maxPath: "character.glider.scrap.max", maxVal: ch.glider.scrap.max, editableMax: true, tip: tipText(GLIDER_STAT_TIPS.scrap) })}
+                ${counterRow({ label: "Relikty", curPath: "character.glider.relics.cur", curVal: ch.glider.relics.cur, maxPath: "character.glider.relics.max", maxVal: ch.glider.relics.max, editableMax: true, tip: tipText(GLIDER_STAT_TIPS.relics) })}
+                <div class="counter-row"><div class="counter-label tt" data-tip="${escapeHtml(tipText(GLIDER_STAT_TIPS.cargoSlots))}">Przestrzeń załadunkowa</div><div class="counter-value">${ch.glider.cargoSlots}</div></div>
                 <h3 style="margin-top:12px;">Zainstalowane mody</h3>
                 <p class="cap-indicator ${installedMods.length >= modsMax ? "full" : ""}">Zainstalowane: ${installedMods.length} / ${modsMax}</p>
                 ${installedMods.length ? `
