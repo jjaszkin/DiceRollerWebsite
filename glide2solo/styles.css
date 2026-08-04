@@ -577,6 +577,10 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     font-size: 0.85rem;
 }
 
+.map-info-below {
+    margin-top: 12px;
+}
+
 .hex-grid-wrap {
     width: 100%;
 }
@@ -650,12 +654,36 @@ label { font-size: 0.8rem; color: var(--fg-2); }
    .hex--selected). */
 .hex.hex--selected { --hex-border-w: 2px; background: var(--fg-0); }
 
+/* Znacznik pozycji postaci: gruby pulsujący pierścień (przyciąga uwagę ruchem, nie tylko grubością
+   linii — sama grubsza linia gubiła się wśród masy innych heksagonalnych konturów na siatce) +
+   dodatkowa, stała kropka nad tekstem heksu (patrz .hex-content::before niżej) — kropka to zupełnie
+   inny kształt niż linie siatki, więc nie konkuruje wzrokowo z obramowaniami heksów. */
 .hex--position::after {
     content: "";
     position: absolute;
     inset: 0;
     box-shadow: inset 0 0 0 4px var(--fg-0);
     pointer-events: none;
+    animation: hexPositionPulse 1.6s ease-in-out infinite;
+}
+
+.hex--position .hex-content::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--fg-0);
+    box-shadow: 0 0 4px 1px var(--fg-0);
+    transform: translateX(-50%);
+    animation: hexPositionPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes hexPositionPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
 }
 
 .hex-coord {

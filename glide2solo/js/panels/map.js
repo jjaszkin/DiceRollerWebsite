@@ -85,6 +85,11 @@ let currentData = null;
 // (nie zapisujemy do Firebase), tak samo jak `ui` w panels/roller.js.
 let selectedCoord = null;
 
+// Wynik ostatniego sprawdzenia Wydarzenia Podróży po przesunięciu postaci (d10, próg 7+) —
+// tak samo jak selectedCoord, to czysty, nietrwały stan UI (nie zapisujemy do Firebase); znika
+// przy kolejnym przesunięciu (nadpisany) albo po ręcznym zamknięciu banera.
+let lastTravelCheck = null;
+
 function rerender() {
     if (currentRoot) render(currentRoot, { state: getState(), data: currentData });
 }
@@ -122,13 +127,26 @@ function buildFreshHexEntry(data, roll) {
     return hex;
 }
 
-function pushTest(hex, kind, label, roll, html) {
+function pushTest(hex, kind, label, roll, html, value = null) {
     // Firebase RTDB nie przechowuje pustych tablic/obiektów (zapis `[]` usuwa klucz, tak samo
     // jak przy `null` — patrz komentarz przy isSet/isUnset wyżej), więc `hex.tests` może po
     // zapisie+odczycie wrócić jako `undefined` zamiast `[]`. Odtwarzamy tablicę w razie potrzeby,
     // zamiast zakładać, że zawsze istnieje.
     if (!hex.tests) hex.tests = [];
-    hex.tests.push({ id: uid(), kind, label, roll, html, ts: formatTimestamp(), at: Date.now() });
+    // `value` to opcjonalny "goły" tekst wyniku (np. nazwa osady/unikalnej lokacji), osobno od
+    // `html` (gotowego do wstrzyknięcia markupu) — używany w tooltipie heksu na mapie (patrz
+    // lastTestValue/renderHexCell), gdzie nie chcemy renderować całego bloku HTML z detali.
+    hex.tests.push({ id: uid(), kind, label, roll, html, value, ts: formatTimestamp(), at: Date.now() });
+}
+
+/** Szuka ostatniego (najnowszego) wpisu testu danego rodzaju z niepustym `value` — używane do
+ *  wyciągnięcia nazwy osady/unikalnej lokacji na potrzeby tooltipa heksu (patrz renderHexCell). */
+function lastTestValue(hex, kind) {
+    const tests = hex.tests || [];
+    for (let i = tests.length - 1; i >= 0; i--) {
+        if (tests[i].kind === kind && tests[i].value) return tests[i].value;
+    }
+    return null;
 }
 
 // ── Akcje mutujące stan ──────────────────────────────────────────────────
@@ -230,7 +248,8 @@ function rollHexSettlement(coord, field) {
     if (!hex || !root || root.typeResult !== "Osada" || !cfg) return;
     const table = currentData.economy[cfg.tableKey];
     const r = rollD100Table(table);
-    pushTest(hex, `settlement-${field}`, cfg.label, r.roll, cfg.render(r, "d100"));
+    const value = field === "name" && r.entry ? (r.entry.name || r.entry.text || null) : null;
+    pushTest(hex, `settlement-${field}`, cfg.label, r.roll, cfg.render(r, "d100"), value);
     logRoll(`Mapa ${coord} — ${cfg.label} (d100)`, `d100=${r.roll}`, r.entry ? (r.entry.name || r.entry.text || "") : "brak dopasowania");
     rerender();
 }
@@ -242,7 +261,8 @@ function rollHexUnique(coord) {
     if (!hex || !root || root.typeResult !== "Unikalna Lokacja") return;
     const table = currentData.unique_locations.unique_locations_table_d100;
     const r = rollD100Table(table);
-    pushTest(hex, "unique", "Unikalna Lokacja", r.roll, renderUniqueLocationResult(r));
+    const value = r.entry ? r.entry.name : null;
+    pushTest(hex, "unique", "Unikalna Lokacja", r.roll, renderUniqueLocationResult(r), value);
     logRoll(`Mapa ${coord} — Unikalna Lokacja (d100)`, `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
     rerender();
 }
@@ -259,7 +279,35 @@ function deleteHexTest(coord, testId) {
 function moveHere(coord) {
     const state = getState();
     state.map.position = coord;
+    selectedCoord = coord;
     touch();
+
+    // Automatyczne sprawdzenie Wydarzenia Podróży przy każdym przesunięciu postaci: d10, próg
+    // 7+ (homebrew, nie ma osobnej tabeli triggera w mechanics.json — sam rzut Wydarzenia
+    // Podróży d100 to ta sama tabela co na zakładce Roller, patrz roller.js#rollTravelEvent).
+    const roll = rollDie(10);
+    const triggered = roll >= 7;
+    lastTravelCheck = { roll, triggered, eventResult: null };
+    logRoll("Mapa — sprawdzenie Wydarzenia Podróży (d10)", `d10=${roll}`, triggered ? "Wydarzenie Podróży! (7+)" : "Brak wydarzenia");
+
+    rerender();
+}
+
+/** Rzuca właściwe Wydarzenie Podróży (d100) po tym, jak sprawdzenie d10 w moveHere() je
+ *  wywołało (roll 7+) — ta sama tabela i render co roll-travel-event w panels/roller.js. */
+function rollMapTravelEvent() {
+    if (!lastTravelCheck || !lastTravelCheck.triggered) return;
+    const table = currentData.economy.travel_events_table_d100;
+    const r = rollD100Table(table);
+    lastTravelCheck.eventResult = r;
+    // Wpisy travel_events_table_d100 mają tylko pole `text` (nie `name`) — tak samo jak
+    // roller.js#rollTravelEvent, z którego ta tabela/logika jest przeniesiona 1:1.
+    logRoll("Wydarzenie Podróży (d100)", `d100=${r.roll}`, r.entry ? r.entry.text : "brak dopasowania");
+    rerender();
+}
+
+function dismissTravelCheck() {
+    lastTravelCheck = null;
     rerender();
 }
 
@@ -319,6 +367,24 @@ function renderPendingBanner(pending) {
     `;
 }
 
+/** Baner sprawdzenia Wydarzenia Podróży po przesunięciu postaci (patrz moveHere) — pokazuje wynik
+ *  d10 zawsze, a przy trafieniu 7+ dodatkowo przycisk do właściwego rzutu Wydarzenia Podróży
+ *  (d100, ta sama tabela co na zakładce Roller) i jego wynik po rzuceniu. */
+function renderTravelEventBanner(check) {
+    if (!check) return "";
+    const { roll, triggered, eventResult } = check;
+    return `
+        <div class="map-banner">
+            <span>Sprawdzenie Wydarzenia Podróży (d10 = ${roll})${triggered ? " — <strong>wydarzenie!</strong>" : " — brak wydarzenia."}</span>
+            <span style="display:flex; gap:8px;">
+                ${triggered && !eventResult ? `<button class="btn btn-sm" data-action="roll-map-travel-event">Rzuć Wydarzenie Podróży (d100)</button>` : ""}
+                <button class="btn btn-sm btn-secondary" data-action="dismiss-travel-check">Zamknij</button>
+            </span>
+        </div>
+        ${eventResult ? renderGenericEntry(eventResult, "d100") : ""}
+    `;
+}
+
 function renderHexCell(state, coord, col, row) {
     const hex = state.map.hexes[coord];
     const left = col * COL_PITCH;
@@ -341,7 +407,19 @@ function renderHexCell(state, coord, col, row) {
         if (typeResult === "Unikalna Lokacja") cls += " hex--unique";
         loctypeAttr = ` data-loctype="${escapeHtml(typeResult)}"`;
         const levelText = root && isSet(root.level) ? ` · Poziom ${root.level}` : "";
-        tip = `${coord} — ${typeResult}${levelText}${hex.regionRoot ? ` (część regionu ${hex.regionRoot})` : ""}`;
+        // Nazwa osady/unikalnej lokacji do tooltipa bierzemy z testów zapisanych na TYM
+        // konkretnym heksie (nie na roocie regionu) — tak samo jak renderHexTests czyta
+        // `hex.tests`, bo testy (w tym rzut Nazwy Osady / Unikalnej Lokacji) można wykonać
+        // osobno na każdym polu regionu, nie tylko na roocie.
+        let nameText = "";
+        if (typeResult === "Osada") {
+            const name = lastTestValue(hex, "settlement-name");
+            if (name) nameText = ` · „${name}”`;
+        } else if (typeResult === "Unikalna Lokacja") {
+            const name = lastTestValue(hex, "unique");
+            if (name) nameText = ` · „${name}”`;
+        }
+        tip = `${coord} — ${typeResult}${levelText}${nameText}${hex.regionRoot ? ` (część regionu ${hex.regionRoot})` : ""}`;
     }
     if (isPosition) cls += " hex--position";
     if (isSelected) cls += " hex--selected";
@@ -482,13 +560,19 @@ export function render(root, { state, data }) {
     currentData = data;
     if (!state.map) return;
 
+    // Tekst instrukcji i wszelkie banery (wybór regionu, sprawdzenie Wydarzenia Podróży) siedzą
+    // POD siatką, nie nad nią — dzięki temu ich pojawianie się/znikanie (albo zmiana treści) nie
+    // przesuwa samej siatki heksów w pionie na stronie.
     root.innerHTML = `
         <div class="card">
             <h2>Mapa</h2>
-            <p class="placeholder">Kliknij nieodkryty heks, aby rzucić Typ Lokacji. Kliknij odkryty heks, aby zobaczyć szczegóły, wykonać testy/eksplorację, przesunąć postać, przerzucić albo usunąć heks.</p>
-            ${state.map.pendingRegion ? renderPendingBanner(state.map.pendingRegion) : ""}
             <div class="hex-grid-wrap">
                 <div class="hex-grid"></div>
+            </div>
+            <div class="map-info-below">
+                ${state.map.pendingRegion ? renderPendingBanner(state.map.pendingRegion) : ""}
+                ${renderTravelEventBanner(lastTravelCheck)}
+                <p class="placeholder">Kliknij nieodkryty heks, aby rzucić Typ Lokacji. Kliknij odkryty heks, aby zobaczyć szczegóły, wykonać testy/eksplorację, przesunąć postać, przerzucić albo usunąć heks. Dwuklik na heksie przesuwa tam postać.</p>
             </div>
         </div>
         <div class="card" style="margin-top:12px;">
@@ -534,6 +618,17 @@ function wireEvents(root) {
         else if (action === "reroll-hex") rerollHex(coord);
         else if (action === "remove-hex") removeHex(coord);
         else if (action === "cancel-pending-region") cancelPendingRegion();
+        else if (action === "roll-map-travel-event") rollMapTravelEvent();
+        else if (action === "dismiss-travel-check") dismissTravelCheck();
+    });
+
+    // Dwuklik na heksie przesuwa tam postać od razu, bez konieczności najpierw zaznaczać heks
+    // i szukać przycisku "Przesuń postać" w panelu szczegółów pod mapą — czysty skrót UX, sam
+    // przycisk w panelu szczegółów zostaje (patrz renderHexActions/renderHexDetail).
+    root.addEventListener("dblclick", (e) => {
+        const hexBtn = e.target.closest(".hex[data-coord]");
+        if (!hexBtn) return;
+        moveHere(hexBtn.dataset.coord);
     });
 
     // Siatka heksów ma dynamiczny rozmiar (patrz computeLayout w render()) — trzeba ją
