@@ -403,6 +403,8 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 
 .gate-field input, .gate-field select { width: 100%; }
 
+#gateRandomName { margin-bottom: 14px; }
+
 .gate-role-preview {
     background: var(--bg-2);
     border: 1px solid var(--line);
@@ -579,6 +581,13 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 
 .map-info-below {
     margin-top: 12px;
+}
+
+/* Trwały baner ostrzegawczy (Zasoby=0 + Zużycie=maks., patrz panels/map.js#renderGliderLimitBanner)
+   — grubsza, jaśniejsza ramka zamiast koloru (paleta jest monochromatyczna), żeby odróżnić go od
+   zwykłych, informacyjnych bannerów .map-banner. */
+.map-banner--warning {
+    border: 2px solid var(--fg-0);
 }
 
 /* Wiersz siatki heksów + strzałki nawigacji Sektorami (patrz panels/map.js#navigateSegment) po

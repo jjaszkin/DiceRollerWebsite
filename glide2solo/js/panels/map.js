@@ -658,6 +658,23 @@ function renderHexDetail(state, data, coord) {
     return parts.join("");
 }
 
+/** Baner ostrzegający, że Zasoby na gliderze są wyczerpane, a Zużycie osiągnęło maksimum —
+ *  tekst efektu bierzemy wprost z mechanics.json#glider.wear.on_zero (zamiast duplikować regułę
+ *  na sztywno w kodzie). Trwały: nie ma tu żadnej flagi do odznaczenia — po prostu odzwierciedla
+ *  aktualny stan glidera przy KAŻDYM renderze mapy, więc znika sam, gdy tylko warunek przestanie
+ *  być spełniony (uzupełnienie Zasobów w osadzie, naprawa Zużycia na Obozie/w osadzie itp.), i
+ *  wraca, gdyby warunek ponownie zaszedł. */
+function renderGliderLimitBanner(state, data) {
+    const glider = state.character.glider;
+    if (glider.supply.cur > 0 || glider.wear.cur < glider.wear.max) return "";
+    const effectText = data?.mechanics?.glider?.wear?.on_zero || "maks. Prędkość staje się 1, Mody niedostępne";
+    return `
+        <div class="map-banner map-banner--warning">
+            <span>Zasoby = 0 i Zużycie na Gliderze = maks. — <strong>${escapeHtml(effectText)}</strong></span>
+        </div>
+    `;
+}
+
 /** Baner "Wróć do pozycji postaci" — pokazywany, gdy oglądany Sektor (currentSegment) różni się
  *  od Sektora, w którym faktycznie stoi postać (state.map.position.segment). Nawigacja Sektorami
  *  jest czysto widokowa (patrz navigateSegment), więc bez tego byłoby łatwo "zgubić" pozycję
@@ -701,6 +718,7 @@ export function render(root, { state, data }) {
                 <button type="button" class="hex-nav-btn tt" data-action="nav-segment" data-dir="1" data-tip="${escapeHtml(eastTip)}" aria-label="Na wschód">▶</button>
             </div>
             <div class="map-info-below">
+                ${renderGliderLimitBanner(state, data)}
                 ${seg.pendingRegion ? renderPendingBanner(seg.pendingRegion) : ""}
                 ${renderGotoPositionBanner(state)}
                 ${renderTravelEventBanner(lastTravelCheck)}
