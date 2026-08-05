@@ -22,6 +22,10 @@ export function createDefaultState(gameData) {
         character: {
             name: "",
             role: null,
+            pin: null, // string "0000".."9999" (4 cyfry) albo null — prosta ochrona przed przypadkowym/
+                       // niepożądanym wczytaniem cudzego zapisu po samym imieniu, patrz gate.js#showPinStep.
+                       // To NIE jest prawdziwe zabezpieczenie bazy (reguły Firebase pod GlidePartTwoSolo są
+                       // otwarte, patrz firebase.js) — tylko bramka po stronie aplikacji.
             stats: { H: 0, K: 0, R: 0, C: 0, F: 0 },
             startingBonusTrait: "",
             goal: "",

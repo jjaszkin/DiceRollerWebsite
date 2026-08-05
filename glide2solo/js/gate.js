@@ -1,16 +1,22 @@
 // GLIDE: Part Two — Ekran startowy: wybór/utworzenie zapisu (imię Poszukiwacza) + kreator roli.
 //
-// Dwuetapowy przepływ:
+// Do trzech etapów przepływ (krok PIN pomijany, gdy nie dotyczy):
 //   Krok 1 (imię) — użytkownik wpisuje imię Poszukiwacza. Zsanityzowana wersja imienia
 //   (patrz utils.js#sanitizeNameToKey) staje się kluczem zapisu w Firebase, pod
 //   GlidePartTwoSolo/{klucz} — patrz store.js#connectSave. Istniejące imię wczytuje
 //   istniejący zapis (kontynuacja tej samej postaci), nowe imię tworzy nową, pustą
 //   równoległą grę solo.
-//   Krok 2 (rola) — pokazywany tylko, gdy wczytany zapis nie ma jeszcze ustawionej
-//   roli (nowa postać), albo gdy użytkownik edytuje AKTUALNIE aktywną postać (np.
-//   przez „Zmień postać” na tej samej postaci, żeby świadomie zmienić rolę). Przy
-//   przełączeniu się na inną, już skonfigurowaną postać krok roli jest pomijany —
-//   dashboard od razu pokazuje wczytany stan.
+//   Krok 1.5 (PIN, opcjonalny) — pokazywany tylko, gdy wczytany zapis ma już ustawiony
+//   PIN (patrz state.js#character.pin) i NIE jest to samo-edycja aktualnie aktywnej
+//   postaci (patrz goToRoleOrFinish/checkPin). To bramka po stronie aplikacji przeciwko
+//   przypadkowemu/niepożądanemu wczytaniu cudzego zapisu po samym imieniu — NIE jest to
+//   prawdziwe zabezpieczenie bazy (reguły Firebase pod GlidePartTwoSolo są otwarte).
+//   Krok 2 (rola + PIN) — pokazywany tylko, gdy wczytany zapis nie ma jeszcze ustawionej
+//   roli (nowa postać, wymaga też ustawienia nowego PIN-u), albo gdy użytkownik edytuje
+//   AKTUALNIE aktywną postać (np. przez „Zmień postać” na tej samej postaci, żeby
+//   świadomie zmienić rolę i/albo PIN). Przy przełączeniu się na inną, już skonfigurowaną
+//   postać (po ewentualnym kroku PIN) krok roli jest pomijany — dashboard od razu
+//   pokazuje wczytany stan.
 //
 // Uwaga: kliknięcie „Dalej” na kroku imienia natychmiast łączy store z wybranym
 // zapisem (connectSave) — od tego momentu store „patrzy” już na nowy zapis. Przycisk
@@ -35,6 +41,7 @@ const gateEl = document.getElementById("characterGate");
 const appEl = document.getElementById("app");
 
 const stepNameEl = document.getElementById("gateStepName");
+const stepPinEl = document.getElementById("gateStepPin");
 const stepRoleEl = document.getElementById("gateStepRole");
 
 const subNameEl = document.getElementById("gateSubName");
@@ -44,9 +51,16 @@ const nameNextBtn = document.getElementById("gateNameNext");
 const randomNameBtn = document.getElementById("gateRandomName");
 const cancelBtn = document.getElementById("gateCancel");
 
+const subPinEl = document.getElementById("gateSubPin");
+const pinInput = document.getElementById("gatePin");
+const pinErrorEl = document.getElementById("gatePinError");
+const pinBackBtn = document.getElementById("gatePinBack");
+const pinNextBtn = document.getElementById("gatePinNext");
+
 const subRoleEl = document.getElementById("gateSubRole");
 const roleSelect = document.getElementById("gateRole");
 const previewEl = document.getElementById("gateRolePreview");
+const setPinInput = document.getElementById("gateSetPin");
 const roleErrorEl = document.getElementById("gateRoleError");
 const backBtn = document.getElementById("gateBack");
 const submitBtn = document.getElementById("gateSubmit");
@@ -55,6 +69,11 @@ let wired = false;
 let currentData = null;
 let currentOnDone = null;
 let pendingDisplayName = "";
+// Zapis wczytany po kroku imienia, którego pokazanie (krok Roli albo od razu finish()) czeka na
+// weryfikację PIN-u — patrz showPinStep()/checkPin() niżej. Ustawiane tylko, gdy dany zapis ma
+// już ustawiony PIN i nie jest to samo-edycja aktualnie aktywnej postaci (patrz goToRoleOrFinish).
+let pendingLoadedState = null;
+let pendingIsSelfEdit = false;
 
 function renderPreview(role) {
     if (!role) { previewEl.innerHTML = ""; return; }
@@ -74,19 +93,38 @@ function updateNameNextState() {
     nameNextBtn.disabled = nameInput.value.trim().length === 0;
 }
 
+function updatePinNextState() {
+    pinErrorEl.style.display = "none";
+    pinNextBtn.disabled = !/^\d{4}$/.test(pinInput.value.trim());
+}
+
 function updateSubmitState() {
     roleErrorEl.style.display = "none";
-    submitBtn.disabled = !(parseInt(roleSelect.value, 10) >= 0);
+    const roleOk = parseInt(roleSelect.value, 10) >= 0;
+    const pinOk = /^\d{4}$/.test(setPinInput.value.trim());
+    submitBtn.disabled = !(roleOk && pinOk);
 }
 
 function showNameStep() {
+    stepPinEl.style.display = "none";
     stepRoleEl.style.display = "none";
     stepNameEl.style.display = "block";
     nameInput.focus();
 }
 
+function showPinStep() {
+    stepNameEl.style.display = "none";
+    stepRoleEl.style.display = "none";
+    pinInput.value = "";
+    updatePinNextState();
+    subPinEl.textContent = `Zapis „${pendingDisplayName}” jest zabezpieczony PIN-em. Podaj PIN, żeby go wczytać.`;
+    stepPinEl.style.display = "block";
+    pinInput.focus();
+}
+
 function showRoleStep() {
     stepNameEl.style.display = "none";
+    stepPinEl.style.display = "none";
     stepRoleEl.style.display = "block";
 }
 
@@ -127,6 +165,23 @@ async function goToRoleOrFinish() {
     }
 
     const isSelfEdit = previousSaveKey !== null && previousSaveKey === saveKey;
+
+    // Zapis ma ustawiony PIN i nie jest to samo-edycja aktualnie aktywnej postaci (ta jest już
+    // "zalogowana" w tej sesji, patrz showGate/wywołania z panels/character.js) — wymagamy
+    // podania PIN-u, zanim cokolwiek pokażemy (patrz showPinStep/checkPin niżej).
+    if (loadedState.character.role && loadedState.character.pin && !isSelfEdit) {
+        pendingLoadedState = loadedState;
+        pendingIsSelfEdit = isSelfEdit;
+        showPinStep();
+        return;
+    }
+
+    proceedAfterAuth(loadedState, isSelfEdit);
+}
+
+/** Woła się po tym, jak dostęp do zapisu jest już potwierdzony — od razu (brak ustawionego PIN-u
+ *  albo samo-edycja aktywnej postaci), albo dopiero po poprawnie podanym PIN-ie (patrz checkPin). */
+function proceedAfterAuth(loadedState, isSelfEdit) {
     const roles = currentData.mechanics.seeker_roles;
 
     if (loadedState.character.role && !isSelfEdit) {
@@ -143,9 +198,29 @@ async function goToRoleOrFinish() {
         roles.map((r, i) => `<option value="${i}" ${i === currentIdx ? "selected" : ""}>${r.role}</option>`).join("");
 
     renderPreview(currentIdx >= 0 ? roles[currentIdx] : null);
-    subRoleEl.textContent = `Wybierz rolę dla: ${name}`;
+    subRoleEl.textContent = `Wybierz rolę dla: ${pendingDisplayName}`;
+    setPinInput.value = loadedState.character.pin || "";
     updateSubmitState();
     showRoleStep();
+}
+
+/** Sprawdza PIN podany na kroku gateStepPin przeciwko temu z pendingLoadedState (patrz
+ *  goToRoleOrFinish). Zła próba tylko czyści pole i pokazuje błąd — bez limitu prób, to nie
+ *  prawdziwe zabezpieczenie bazy (patrz komentarz przy character.pin w state.js), tylko bramka
+ *  po stronie aplikacji przeciwko przypadkowemu/niepożądanemu wczytaniu cudzego zapisu. */
+function checkPin() {
+    const val = pinInput.value.trim();
+    if (val === pendingLoadedState.character.pin) {
+        const state = pendingLoadedState;
+        const selfEdit = pendingIsSelfEdit;
+        pendingLoadedState = null;
+        proceedAfterAuth(state, selfEdit);
+    } else {
+        pinErrorEl.textContent = "Nieprawidłowy PIN.";
+        pinErrorEl.style.display = "block";
+        pinInput.value = "";
+        pinInput.focus();
+    }
 }
 
 /** Konsumuje (odczytuje + usuwa z localStorage) ewentualny most Nowej Twarzy i stosuje jego
@@ -226,7 +301,19 @@ function wireOnce() {
         updateSubmitState();
     });
 
+    setPinInput.addEventListener("input", updateSubmitState);
+
     backBtn.addEventListener("click", () => {
+        showNameStep();
+    });
+
+    pinInput.addEventListener("input", updatePinNextState);
+    pinInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !pinNextBtn.disabled) checkPin();
+    });
+    pinNextBtn.addEventListener("click", checkPin);
+    pinBackBtn.addEventListener("click", () => {
+        pendingLoadedState = null;
         showNameStep();
     });
 
@@ -237,9 +324,16 @@ function wireOnce() {
             roleErrorEl.style.display = "block";
             return;
         }
+        const pin = setPinInput.value.trim();
+        if (!/^\d{4}$/.test(pin)) {
+            roleErrorEl.textContent = "Podaj 4-cyfrowy PIN, żeby zabezpieczyć ten zapis.";
+            roleErrorEl.style.display = "block";
+            return;
+        }
         const role = currentData.mechanics.seeker_roles[idx];
         updateState((s) => {
             s.character.name = pendingDisplayName;
+            s.character.pin = pin;
             applyRole(s.character, role);
             applyPendingBridgeIfAny(s);
         });
