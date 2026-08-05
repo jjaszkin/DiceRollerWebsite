@@ -3,6 +3,7 @@ import { getState, touch } from "../store.js";
 import { getPath, setPath, clamp, escapeHtml } from "../utils.js";
 import { bondLevelFromPoints } from "../state.js";
 import { showGate } from "../gate.js";
+import { showEndgameDecision } from "../endgame.js";
 import { equippedGearEntries, installedModEntries, gearCapacity } from "../gearData.js";
 import { unlockedGuildRewards, roleRewardEntries } from "../rewardsData.js";
 import { logEvent } from "../eventLog.js";
@@ -175,6 +176,9 @@ export function render(root, { state, data }) {
                 ${numberInputRow({ label: "Kredyty", abbr: "cr", path: "character.resources.credits", value: ch.resources.credits, min: 0, tip: tipText(RESOURCE_TIPS.credits) })}
                 ${counterRow({ label: "Sława", curPath: "character.resources.fame", curVal: ch.resources.fame, tip: tipText(RESOURCE_TIPS.fame) })}
                 <p class="placeholder">Koniec gry dostępny przy Sława ${mechanics.resources.fame.end_game_threshold}+.</p>
+                ${ch.resources.fame >= mechanics.resources.fame.end_game_threshold ? `
+                    <button class="btn btn-primary" data-action="open-endgame-decision" style="margin-top:10px;">🌟 Zdecyduj co dalej →</button>
+                ` : ""}
             </div>
 
             <div class="card">
@@ -367,6 +371,9 @@ function wireEvents(root, { data, companions }) {
 
         } else if (action === "goto-tab") {
             document.querySelector(`.tab-btn[data-tab="${btn.dataset.tab}"]`)?.click();
+
+        } else if (action === "open-endgame-decision") {
+            showEndgameDecision(data);
         }
     });
 

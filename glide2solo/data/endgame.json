@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "title": "GLIDE 2 - Rozdroże (Endgame Decision)",
+    "notes": "Własna treść (nie z podręcznika) — obsługuje ekran „Zdecyduj co dalej” pokazywany po osiągnięciu progu Fame (mechanics.json#resources.fame.end_game_threshold), patrz panels/character.js (przycisk) i js/endgame.js (logika/overlay). Dwie ścieżki: A) Nowa Twarz — kończysz historię tej postaci i zaczynasz nową, wybierając 1 z 4 legacy_traits jako spuściznę; B) Kontynuacja — postać gra dalej, w zamian oddając (odznacza jako spożytkowane) 2 ze swoich Punktów Fame za dokładnie 2 z 4 trade_in_rewards. Pola `effect` są ustrukturyzowane pod bezpośrednie zastosowanie w kodzie (js/endgame.js), nie tylko pod wyświetlenie opisu."
+  },
+
+  "legacy_traits": [
+    {
+      "id": "faction_patron",
+      "name_pl": "Patron Frakcji",
+      "description_pl": "Twój następca odziedziczył twoje koneksje — jedna z gildii traktuje go jak sprawdzonego sojusznika, zanim ten postawi choć jeden krok na pustyni.",
+      "choice": {
+        "type": "guild",
+        "prompt_pl": "Wybierz gildię, która wspiera Nową Twarz"
+      },
+      "effect": {
+        "guildBondPoints": 25
+      }
+    },
+    {
+      "id": "masterwork_inheritance",
+      "name_pl": "Dziedzictwo Mistrza",
+      "description_pl": "Poprzednik zostawił swój najcenniejszy sprzęt — Nowa Twarz zaczyna z nim, gotowym do użycia.",
+      "effect": {
+        "grantGear": { "name": "Sygnet Mistrza Gildii", "equipped": true }
+      }
+    },
+    {
+      "id": "veterans_teachings",
+      "name_pl": "Nauki Weterana",
+      "description_pl": "Miesiące treningu pod okiem poprzednika zostawiły ślad — Nowa Twarz zaczyna wyraźnie biegłejsza w jednej dziedzinie.",
+      "choice": {
+        "type": "stat",
+        "prompt_pl": "Wybierz statystykę, w której poprzednik szkolił Nową Twarz"
+      },
+      "effect": {
+        "statBonus": 1
+      }
+    },
+    {
+      "id": "hidden_caches",
+      "name_pl": "Ukryte Skrytki",
+      "description_pl": "Poprzednik przed końcem zdążył zakopać zapasy na czarną godzinę — Nowa Twarz zna ich lokalizacje.",
+      "effect": {
+        "credits": 150,
+        "scrap": 2
+      }
+    }
+  ],
+
+  "trade_in_rewards": [
+    {
+      "id": "black_market_forgery",
+      "name_pl": "Fałszywe Dokumenty z Czarnego Rynku",
+      "description_pl": "Twoja sława ma swoją cenę — na czarnym rynku ktoś płaci słono za twoje papiery i alibi.",
+      "effect": { "credits": 200 }
+    },
+    {
+      "id": "stripped_tech",
+      "name_pl": "Wypatroszona Technologia",
+      "description_pl": "Rozbierasz na części stary sprzęt zebrany po drodze, odzyskując cenny złom i relikt.",
+      "effect": { "scrap": 3, "relics": 1 }
+    },
+    {
+      "id": "amnesia_log",
+      "name_pl": "Dziennik z Amnezją",
+      "description_pl": "Wymieniasz się informacjami z kimś, kto woli zapomnieć o pewnych sprawach — ty pamiętasz za nich.",
+      "effect": { "intel": 2 }
+    },
+    {
+      "id": "ghost_thrusters",
+      "name_pl": "Silniki Widmo",
+      "description_pl": "Trwałe, nielegalne dostrojenie silnika glidera — nie zajmuje slotu, zostaje na zawsze.",
+      "effect": { "speedBonusPermanent": 1 }
+    }
+  ]
+}
