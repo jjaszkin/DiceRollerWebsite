@@ -150,7 +150,8 @@ function buildFreshHexEntry(data, roll) {
         level: null,
         levelRoll: null,
         levelGapFallback: false,
-        tests: []
+        tests: [],
+        explorationCostPaid: false
     };
     if (entry.result === "Unikalna Lokacja") hex.level = 3;
     else if (entry.result === "Teren Nieprzejezdny") hex.level = 0;
@@ -177,6 +178,44 @@ function lastTestValue(hex, kind) {
         if (tests[i].kind === kind && tests[i].value) return tests[i].value;
     }
     return null;
+}
+
+/** Zestaw rodzajów testów (hex.tests[].kind), których komplet stanowi "pełną Eksplorację" danego
+ *  typu lokacji — Pustynia/Ruina/Zieleń: Punkt Orientacyjny + Wydarzenie; Osada: wszystkie 4 pola;
+ *  Unikalna Lokacja: jedyny możliwy rzut. Teren Nieprzejezdny nie ma testów w ogóle (obsłużone
+ *  osobno w renderHexTests) — stąd brak wpisu tutaj i explorationKindsForType() zwracające null. */
+const EXPLORATION_REQUIRED_KINDS = {
+    biome: ["landmark", "event"],
+    settlement: ["settlement-name", "settlement-focus", "settlement-trait", "settlement-event"],
+    unique: ["unique"]
+};
+
+function explorationKindsForType(type) {
+    if (TYPE_BIOME_KEY[type]) return EXPLORATION_REQUIRED_KINDS.biome;
+    if (type === "Osada") return EXPLORATION_REQUIRED_KINDS.settlement;
+    if (type === "Unikalna Lokacja") return EXPLORATION_REQUIRED_KINDS.unique;
+    return null;
+}
+
+/** Koszt akcji Testy/Eksploracja na heksie — naliczany RAZ na heks, dopiero gdy zostanie
+ *  wykonany KOMPLET wymaganych testów dla jego typu lokacji (patrz EXPLORATION_REQUIRED_KINDS),
+ *  a nie za każde pojedyncze losowanie (patrz mechanics.json#exploration_table_by_location_type.
+ *  stamina_cost_per_exploration/stamina_cost_note). `hex.explorationCostPaid` pilnuje, żeby
+ *  późniejsze przerzuty już ukończonych testów (np. gracz nie jest zadowolony z Wydarzenia i
+ *  rzuca je ponownie) nie naliczały kosztu po raz drugi. Przycięte do [0, max] (jak reszta
+ *  liczników zasobów — brak tu automatycznego rzutu na Tabelę Wyczerpania przy 0, to osobna,
+ *  ręczna akcja gracza w panels/roller.js). */
+function maybeChargeExplorationCompletion(state, hex, type) {
+    if (hex.explorationCostPaid) return;
+    const required = explorationKindsForType(type);
+    if (!required) return;
+    const doneKinds = new Set((hex.tests || []).map(t => t.kind));
+    if (!required.every(k => doneKinds.has(k))) return;
+
+    hex.explorationCostPaid = true;
+    const cost = currentData?.mechanics?.exploration_table_by_location_type?.stamina_cost_per_exploration ?? 1;
+    const stamina = state.character.resources.stamina;
+    stamina.cur = clamp(stamina.cur - cost, 0, stamina.max);
 }
 
 // ── Akcje mutujące stan ──────────────────────────────────────────────────
@@ -248,7 +287,9 @@ function rollHexLandmark(coord) {
     const table = currentData[biomeKey].landmarks_table_d100;
     const r = rollD100Table(table, { valueField: "text" });
     pushTest(hex, "landmark", "Punkt Orientacyjny", r.roll, renderGenericEntry(r, "d100"));
+    maybeChargeExplorationCompletion(state, hex, root.typeResult);
     logRoll(`Mapa ${coord} — Punkt Orientacyjny (d100)`, `d100=${r.roll}`, r.entry ? (r.entry.text || r.entry.name || "") : "brak dopasowania");
+    touch();
     rerender();
 }
 
@@ -262,7 +303,9 @@ function rollHexEvent(coord) {
     const table = currentData[biomeKey].events_table_d100;
     const r = rollD100Table(table);
     pushTest(hex, "event", "Wydarzenie", r.roll, renderEventEntry(r, "d100"));
+    maybeChargeExplorationCompletion(state, hex, root.typeResult);
     logRoll(`Mapa ${coord} — Wydarzenie (d100)`, `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
+    touch();
     rerender();
 }
 
@@ -283,7 +326,9 @@ function rollHexSettlement(coord, field) {
     const r = rollD100Table(table);
     const value = field === "name" && r.entry ? (r.entry.name || r.entry.text || null) : null;
     pushTest(hex, `settlement-${field}`, cfg.label, r.roll, cfg.render(r, "d100"), value);
+    maybeChargeExplorationCompletion(state, hex, root.typeResult);
     logRoll(`Mapa ${coord} — ${cfg.label} (d100)`, `d100=${r.roll}`, r.entry ? (r.entry.name || r.entry.text || "") : "brak dopasowania");
+    touch();
     rerender();
 }
 
@@ -296,7 +341,9 @@ function rollHexUnique(coord) {
     const r = rollD100Table(table);
     const value = r.entry ? r.entry.name : null;
     pushTest(hex, "unique", "Unikalna Lokacja", r.roll, renderUniqueLocationResult(r), value);
+    maybeChargeExplorationCompletion(state, hex, root.typeResult);
     logRoll(`Mapa ${coord} — Unikalna Lokacja (d100)`, `d100=${r.roll}`, r.entry ? r.entry.name : "brak dopasowania");
+    touch();
     rerender();
 }
 
@@ -634,13 +681,31 @@ function renderHexTests(data, root, hex, coord) {
         </li>
     `).join("");
 
+    const staminaCost = data?.mechanics?.exploration_table_by_location_type?.stamina_cost_per_exploration ?? 1;
+    const costHint = renderExplorationCostHint(type, staminaCost, hex);
     return `
         <div class="hex-tests">
             <h4>Testy / Eksploracja</h4>
+            ${costHint}
             <div class="hex-test-buttons">${buttons}</div>
             ${history ? `<ul class="entry-list" style="margin-top:8px;">${history}</ul>` : `<p class="placeholder">Brak wykonanych testów na tym polu.</p>`}
         </div>
     `;
+}
+
+/** Podpowiedź kosztu Eksploracji pod nagłówkiem "Testy / Eksploracja" — odzwierciedla, że koszt
+ *  nalicza się RAZ za komplet testów (patrz maybeChargeExplorationCompletion), nie za pojedynczy
+ *  rzut, i informuje, czy dla tego konkretnego heksu został już opłacony. */
+function renderExplorationCostHint(type, cost, hex) {
+    const required = explorationKindsForType(type);
+    if (!required) return "";
+    if (hex.explorationCostPaid) {
+        return `<p class="placeholder" style="margin:0 0 4px;">Koszt Eksploracji tego heksu (${cost} Wytrzymałość) został już opłacony — dalsze testy/przerzuty nic nie kosztują.</p>`;
+    }
+    if (required.length > 1) {
+        return `<p class="placeholder" style="margin:0 0 4px;">Komplet testów (wszystkie ${required.length}) kosztuje ${cost} Wytrzymałość — jednorazowo, dopiero po wykonaniu ich wszystkich.</p>`;
+    }
+    return `<p class="placeholder" style="margin:0 0 4px;">Ten rzut kosztuje ${cost} Wytrzymałość.</p>`;
 }
 
 function renderHexActions(coord) {
@@ -704,15 +769,15 @@ function renderHexDetail(state, data, coord) {
 }
 
 /** Baner ostrzegający, że Zasoby na gliderze są wyczerpane, a Zużycie osiągnęło maksimum —
- *  tekst efektu bierzemy wprost z mechanics.json#glider.wear.on_zero (zamiast duplikować regułę
+ *  tekst efektu bierzemy wprost z mechanics.json#glider.wear.on_max (zamiast duplikować regułę
  *  na sztywno w kodzie). Trwały: nie ma tu żadnej flagi do odznaczenia — po prostu odzwierciedla
  *  aktualny stan glidera przy KAŻDYM renderze mapy, więc znika sam, gdy tylko warunek przestanie
- *  być spełniony (uzupełnienie Zasobów w osadzie, naprawa Zużycia na Obozie/w osadzie itp.), i
+ *  być spełniona (uzupełnienie Zasobów w osadzie, naprawa Zużycia na Obozie/w osadzie itp.), i
  *  wraca, gdyby warunek ponownie zaszedł. */
 function renderGliderLimitBanner(state, data) {
     const glider = state.character.glider;
     if (glider.supply.cur > 0 || glider.wear.cur < glider.wear.max) return "";
-    const effectText = data?.mechanics?.glider?.wear?.on_zero || "maks. Prędkość staje się 1, Mody niedostępne";
+    const effectText = data?.mechanics?.glider?.wear?.on_max || "maks. Prędkość staje się 1, Mody niedostępne";
     return `
         <div class="map-banner map-banner--warning">
             <span>Zasoby = 0 i Zużycie na Gliderze = maks. — <strong>${escapeHtml(effectText)}</strong></span>

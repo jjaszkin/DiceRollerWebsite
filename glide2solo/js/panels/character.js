@@ -43,7 +43,7 @@ const RESOURCE_TIPS = {
 };
 
 const GLIDER_STAT_TIPS = {
-    wear: { en: "Wear", desc: "Stan techniczny glidera. Przy 0: maks. Prędkość spada do 1, Mody stają się niedostępne." },
+    wear: { en: "Wear", desc: "Stan techniczny glidera. Przy maks. Zużyciu: Prędkość spada do 1, Mody stają się niedostępne." },
     supply: { en: "Supply", desc: "Zapasy na pokładzie glidera. Przy 0 zaznacz 1 Zużycie zamiast wydawać Zasoby." },
     speed: { en: "Speed", desc: "Zasięg ruchu glidera (w heksach) podczas akcji Ruch." },
     scrap: { en: "Scrap", desc: "Surowiec zbierany podczas eksploracji — waluta rzemieślnicza/handlowa Glidera." },

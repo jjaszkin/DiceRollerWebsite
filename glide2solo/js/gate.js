@@ -52,7 +52,7 @@ const randomNameBtn = document.getElementById("gateRandomName");
 const cancelBtn = document.getElementById("gateCancel");
 
 const subPinEl = document.getElementById("gateSubPin");
-const pinInput = document.getElementById("gatePin");
+const pinInputsEl = document.getElementById("gatePinInputs");
 const pinErrorEl = document.getElementById("gatePinError");
 const pinBackBtn = document.getElementById("gatePinBack");
 const pinNextBtn = document.getElementById("gatePinNext");
@@ -60,7 +60,7 @@ const pinNextBtn = document.getElementById("gatePinNext");
 const subRoleEl = document.getElementById("gateSubRole");
 const roleSelect = document.getElementById("gateRole");
 const previewEl = document.getElementById("gateRolePreview");
-const setPinInput = document.getElementById("gateSetPin");
+const setPinInputsEl = document.getElementById("gateSetPinInputs");
 const roleErrorEl = document.getElementById("gateRoleError");
 const backBtn = document.getElementById("gateBack");
 const submitBtn = document.getElementById("gateSubmit");
@@ -74,6 +74,68 @@ let pendingDisplayName = "";
 // już ustawiony PIN i nie jest to samo-edycja aktualnie aktywnej postaci (patrz goToRoleOrFinish).
 let pendingLoadedState = null;
 let pendingIsSelfEdit = false;
+
+// Kontrolery grup 4 osobnych pól cyfr PIN-u (patrz createPinDigitGroup niżej) — przypisywane
+// dopiero w wireOnce(), bo dopiero tam wiążemy faktyczne inputy z DOM-u z resztą logiki.
+let pinGroup = null;
+let setPinGroup = null;
+
+/** Owija 4 osobne inputy cyfr (jeden na cyfrę PIN-u, patrz index.html#gatePinInputs/
+ *  #gateSetPinInputs) w jeden logiczny "input" — z .value (get/set stringa 0-4 cyfr) i .focus() —
+ *  żeby reszta modułu (checkPin, submitBtn, updateSubmitState itd.) mogła traktować grupę
+ *  tak samo jak zwykłe pojedyncze pole tekstowe. Obsługuje: auto-przeskok do następnego pola po
+ *  wpisaniu cyfry, Backspace na pustym polu cofa do poprzedniego, strzałki lewo/prawo, wklejenie
+ *  całego PIN-u naraz (rozdziela cyfry po kolejnych polach) i zaznaczenie zawartości przy fokusie
+ *  (żeby wpisanie nowej cyfry nadpisywało starą zamiast być blokowane przez maxlength=1). */
+function createPinDigitGroup(container, { onChange, onEnter } = {}) {
+    const boxes = Array.from(container.querySelectorAll(".pin-digit"));
+
+    boxes.forEach((box, i) => {
+        box.addEventListener("focus", () => box.select());
+
+        box.addEventListener("input", () => {
+            box.value = box.value.replace(/\D/g, "").slice(0, 1);
+            if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
+            if (onChange) onChange();
+        });
+
+        box.addEventListener("keydown", (e) => {
+            if (e.key === "Backspace" && !box.value && i > 0) {
+                e.preventDefault();
+                boxes[i - 1].value = "";
+                boxes[i - 1].focus();
+                if (onChange) onChange();
+            } else if (e.key === "ArrowLeft" && i > 0) {
+                e.preventDefault();
+                boxes[i - 1].focus();
+            } else if (e.key === "ArrowRight" && i < boxes.length - 1) {
+                e.preventDefault();
+                boxes[i + 1].focus();
+            } else if (e.key === "Enter" && onEnter) {
+                onEnter();
+            }
+        });
+
+        box.addEventListener("paste", (e) => {
+            const text = (e.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "");
+            if (!text) return;
+            e.preventDefault();
+            boxes.forEach((b, j) => { b.value = text[j] || ""; });
+            const nextEmpty = boxes.findIndex(b => !b.value);
+            (nextEmpty >= 0 ? boxes[nextEmpty] : boxes[boxes.length - 1]).focus();
+            if (onChange) onChange();
+        });
+    });
+
+    return {
+        get value() { return boxes.map(b => b.value).join(""); },
+        set value(v) {
+            const digits = String(v || "").split("");
+            boxes.forEach((b, i) => { b.value = digits[i] || ""; });
+        },
+        focus() { boxes[0].focus(); }
+    };
+}
 
 function renderPreview(role) {
     if (!role) { previewEl.innerHTML = ""; return; }
@@ -95,13 +157,13 @@ function updateNameNextState() {
 
 function updatePinNextState() {
     pinErrorEl.style.display = "none";
-    pinNextBtn.disabled = !/^\d{4}$/.test(pinInput.value.trim());
+    pinNextBtn.disabled = !/^\d{4}$/.test(pinGroup.value);
 }
 
 function updateSubmitState() {
     roleErrorEl.style.display = "none";
     const roleOk = parseInt(roleSelect.value, 10) >= 0;
-    const pinOk = /^\d{4}$/.test(setPinInput.value.trim());
+    const pinOk = /^\d{4}$/.test(setPinGroup.value);
     submitBtn.disabled = !(roleOk && pinOk);
 }
 
@@ -115,11 +177,11 @@ function showNameStep() {
 function showPinStep() {
     stepNameEl.style.display = "none";
     stepRoleEl.style.display = "none";
-    pinInput.value = "";
+    pinGroup.value = "";
     updatePinNextState();
     subPinEl.textContent = `Zapis „${pendingDisplayName}” jest zabezpieczony PIN-em. Podaj PIN, żeby go wczytać.`;
     stepPinEl.style.display = "block";
-    pinInput.focus();
+    pinGroup.focus();
 }
 
 function showRoleStep() {
@@ -199,7 +261,7 @@ function proceedAfterAuth(loadedState, isSelfEdit) {
 
     renderPreview(currentIdx >= 0 ? roles[currentIdx] : null);
     subRoleEl.textContent = `Wybierz rolę dla: ${pendingDisplayName}`;
-    setPinInput.value = loadedState.character.pin || "";
+    setPinGroup.value = loadedState.character.pin || "";
     updateSubmitState();
     showRoleStep();
 }
@@ -209,7 +271,7 @@ function proceedAfterAuth(loadedState, isSelfEdit) {
  *  prawdziwe zabezpieczenie bazy (patrz komentarz przy character.pin w state.js), tylko bramka
  *  po stronie aplikacji przeciwko przypadkowemu/niepożądanemu wczytaniu cudzego zapisu. */
 function checkPin() {
-    const val = pinInput.value.trim();
+    const val = pinGroup.value;
     if (val === pendingLoadedState.character.pin) {
         const state = pendingLoadedState;
         const selfEdit = pendingIsSelfEdit;
@@ -218,8 +280,8 @@ function checkPin() {
     } else {
         pinErrorEl.textContent = "Nieprawidłowy PIN.";
         pinErrorEl.style.display = "block";
-        pinInput.value = "";
-        pinInput.focus();
+        pinGroup.value = "";
+        pinGroup.focus();
     }
 }
 
@@ -260,8 +322,9 @@ function applyPendingBridgeIfAny(state) {
 
     if (effect.grantGear && effect.grantGear.name) {
         const slug = sanitizeNameToKey(effect.grantGear.name);
-        const wearPerItem = currentData?.mechanics?.resources?.gear?.wear_per_item ?? 3;
-        ch.gear[slug] = { owned: true, equipped: !!effect.grantGear.equipped, wear: wearPerItem };
+        // wear: 0 = świeży/nieużywany przedmiot (licznik rośnie w stronę max wraz z użyciem —
+        // patrz mechanics.json#resources.gear.wear_per_item i panels/gear.js).
+        ch.gear[slug] = { owned: true, equipped: !!effect.grantGear.equipped, wear: 0 };
     }
 
     logEvent(state, "endgame", `Nowa Twarz dziedziczy Cechę Spuścizny: „${trait.name_pl}” (po „${bridge.previousName || "poprzedniku"}”).`);
@@ -301,15 +364,15 @@ function wireOnce() {
         updateSubmitState();
     });
 
-    setPinInput.addEventListener("input", updateSubmitState);
+    setPinGroup = createPinDigitGroup(setPinInputsEl, { onChange: updateSubmitState });
 
     backBtn.addEventListener("click", () => {
         showNameStep();
     });
 
-    pinInput.addEventListener("input", updatePinNextState);
-    pinInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !pinNextBtn.disabled) checkPin();
+    pinGroup = createPinDigitGroup(pinInputsEl, {
+        onChange: updatePinNextState,
+        onEnter: () => { if (!pinNextBtn.disabled) checkPin(); }
     });
     pinNextBtn.addEventListener("click", checkPin);
     pinBackBtn.addEventListener("click", () => {
@@ -324,7 +387,7 @@ function wireOnce() {
             roleErrorEl.style.display = "block";
             return;
         }
-        const pin = setPinInput.value.trim();
+        const pin = setPinGroup.value;
         if (!/^\d{4}$/.test(pin)) {
             roleErrorEl.textContent = "Podaj 4-cyfrowy PIN, żeby zabezpieczyć ten zapis.";
             roleErrorEl.style.display = "block";
