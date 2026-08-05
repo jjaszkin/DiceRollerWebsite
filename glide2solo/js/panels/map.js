@@ -456,6 +456,51 @@ function gotoPositionSegment() {
     rerender();
 }
 
+/** Wybiera losowe nieodkryte pole w Sektorze `segmentId` (tworząc go leniwie, jeśli jeszcze nie
+ *  istnieje) i umieszcza tam Pomnik — specjalną, zawsze Poziom 0 Unikalną Lokację nazwaną
+ *  imieniem Poszukiwacza. Używane przez js/endgame.js (Ścieżka A "Nowa Twarz"), żeby upamiętnić
+ *  poprzednią postać na mapie kontynuowanej gry solo. W przeciwieństwie do zwykłych Unikalnych
+ *  Lokacji (zawsze Poziom 3, patrz buildFreshHexEntry) Pomnik jest celowo Poziom 0 — to czysto
+ *  fabularny znacznik, nie licznik dla żadnego Wyzwania. Zwraca umieszczony coordId, albo null,
+ *  jeśli w Sektorze zabrakło wolnych pól (na siatce 12x10=120 pól w praktyce się nie zdarza —
+ *  to tylko bezpieczny fallback zamiast nadpisania istniejącego heksu). Woła `touch()` sama —
+ *  wywołujący nie musi robić tego osobno. */
+export function placeMemorialHex(state, segmentId, seekerName) {
+    const key = String(segmentId);
+    if (!state.map.segments[key]) state.map.segments[key] = { hexes: {}, pendingRegion: null };
+    const seg = state.map.segments[key];
+
+    const free = [];
+    for (let col = 0; col < COLS; col++) {
+        for (let row = 0; row < ROWS; row++) {
+            const c = coordId(col, row);
+            if (!seg.hexes[c]) free.push(c);
+        }
+    }
+    if (!free.length) return null;
+    const coord = free[Math.floor(Math.random() * free.length)];
+
+    const html = `<p><strong>Pomnik: ${escapeHtml(seekerName)}</strong></p><p>Miejsce pamięci poprzedniego Poszukiwacza, którego historia dobiegła końca.</p>`;
+    seg.hexes[coord] = {
+        discovered: true,
+        regionRoot: null,
+        typeResult: "Unikalna Lokacja",
+        typeRoll: null,
+        tiles: "1",
+        tilesTotal: 1,
+        tilesRoll: null,
+        level: 0,
+        levelRoll: null,
+        levelGapFallback: false,
+        tests: [{
+            id: uid(), kind: "unique", label: "Unikalna Lokacja", roll: null,
+            html, value: `Pomnik: ${seekerName}`, ts: formatTimestamp(), at: Date.now()
+        }]
+    };
+    touch();
+    return coord;
+}
+
 // ── Render ────────────────────────────────────────────────────────────────
 
 function renderPendingBanner(pending) {
@@ -579,7 +624,7 @@ function renderHexTests(data, root, hex, coord) {
     const history = tests.slice().reverse().map(t => `
         <li class="entry">
             <div class="entry-meta">
-                <span>${escapeHtml(t.label)} — d100=${t.roll}</span>
+                <span>${escapeHtml(t.label)}${t.roll != null ? ` — d100=${t.roll}` : ""}</span>
                 <span class="entry-meta-right">
                     <span>${t.ts}</span>
                     <button class="btn btn-sm btn-icon" data-action="delete-hex-test" data-coord="${coord}" data-id="${t.id}" title="Usuń wpis">×</button>

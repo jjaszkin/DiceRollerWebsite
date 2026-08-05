@@ -24,9 +24,12 @@
 //   2) później na żądanie, przez przycisk „Zmień postać” w karcie Poszukiwacz (panel character.js).
 
 import { connectSave, getSaveKey, notifyNow, updateState } from "./store.js";
-import { sanitizeNameToKey } from "./utils.js";
+import { sanitizeNameToKey, clamp } from "./utils.js";
 import { applyRole } from "./state.js";
 import { generateName } from "./nameGenerator.js";
+import { logEvent } from "./eventLog.js";
+import { placeMemorialHex } from "./panels/map.js";
+import { peekPendingBridge, consumePendingBridge } from "./endgameBridge.js";
 
 const gateEl = document.getElementById("characterGate");
 const appEl = document.getElementById("app");
@@ -34,6 +37,7 @@ const appEl = document.getElementById("app");
 const stepNameEl = document.getElementById("gateStepName");
 const stepRoleEl = document.getElementById("gateStepRole");
 
+const subNameEl = document.getElementById("gateSubName");
 const nameInput = document.getElementById("gateName");
 const nameErrorEl = document.getElementById("gateNameError");
 const nameNextBtn = document.getElementById("gateNameNext");
@@ -144,6 +148,55 @@ async function goToRoleOrFinish() {
     showRoleStep();
 }
 
+/** Konsumuje (odczytuje + usuwa z localStorage) ewentualny most Nowej Twarzy i stosuje jego
+ *  efekt (Cecha Spuścizny, patrz data/endgame.json#legacy_traits) na świeżo utworzonej postaci
+ *  `state`, tuż po applyRole() w submitBtn handlerze niżej — to jedyne miejsce, w którym most
+ *  jest w ogóle konsumowany, więc efekt aplikuje się dokładnie raz, niezależnie od tego, ile razy
+ *  gracz wcześniej otworzy/zamknie ekran startowy (peekPendingBridge w showGate() tylko podgląda,
+ *  nie usuwa). Brak mostu (zwykłe utworzenie/edycja postaci bez przejścia przez endgame.js) to
+ *  normalny, najczęstszy przypadek — funkcja wtedy nic nie robi. */
+function applyPendingBridgeIfAny(state) {
+    const bridge = consumePendingBridge();
+    if (!bridge || bridge.type !== "new-face") return;
+
+    // Zabezpieczenie: most jest przeznaczony dla NOWEJ postaci. Jeśli gracz zignorował adnotację
+    // (patrz showGate) i wpisał to samo imię co poprzednik, NIE aplikujemy efektu — to nie byłaby
+    // Nowa Twarz, tylko przypadkowo nadpisana rola tej samej, starej postaci. Most i tak został
+    // już skonsumowany (usunięty) wyżej, więc nie zaaplikuje się przy kolejnej, właściwej próbie —
+    // gracz musiałby ponownie przejść przez ekran Rozdroża, co jest akceptowalne dla tego rzadkiego
+    // przypadku świadomego zignorowania instrukcji.
+    if (bridge.previousName && sanitizeNameToKey(bridge.previousName) === getSaveKey()) return;
+
+    const trait = currentData?.endgame?.legacy_traits?.find(t => t.id === bridge.traitId);
+    if (!trait) return;
+    const effect = trait.effect || {};
+    const ch = state.character;
+
+    if (typeof effect.credits === "number") ch.resources.credits += effect.credits;
+    if (typeof effect.scrap === "number") ch.glider.scrap.cur += effect.scrap;
+
+    if (typeof effect.statBonus === "number" && bridge.subChoice && ch.stats[bridge.subChoice] !== undefined) {
+        ch.stats[bridge.subChoice] = clamp(ch.stats[bridge.subChoice] + effect.statBonus, 0, 5);
+    }
+
+    if (typeof effect.guildBondPoints === "number" && bridge.subChoice && state.guildBonds[bridge.subChoice]) {
+        state.guildBonds[bridge.subChoice].points = Math.max(state.guildBonds[bridge.subChoice].points, effect.guildBondPoints);
+    }
+
+    if (effect.grantGear && effect.grantGear.name) {
+        const slug = sanitizeNameToKey(effect.grantGear.name);
+        const wearPerItem = currentData?.mechanics?.resources?.gear?.wear_per_item ?? 3;
+        ch.gear[slug] = { owned: true, equipped: !!effect.grantGear.equipped, wear: wearPerItem };
+    }
+
+    logEvent(state, "endgame", `Nowa Twarz dziedziczy Cechę Spuścizny: „${trait.name_pl}” (po „${bridge.previousName || "poprzedniku"}”).`);
+
+    // Pomnik poprzednika na mapie nowej postaci (Sektor 0 — start) — wołane na końcu, bo
+    // placeMemorialHex samo woła touch()/notify() (patrz panels/map.js), więc powinno nastąpić
+    // dopiero po tym, jak wszystkie inne mutacje stanu w tej funkcji są już zastosowane.
+    placeMemorialHex(state, 0, bridge.previousName || "Poprzednik");
+}
+
 function wireOnce() {
     if (wired) return;
     wired = true;
@@ -188,6 +241,7 @@ function wireOnce() {
         updateState((s) => {
             s.character.name = pendingDisplayName;
             applyRole(s.character, role);
+            applyPendingBridgeIfAny(s);
         });
         finish();
     });
@@ -210,6 +264,16 @@ export function showGate(data, { initialName = "", allowCancel = false, onDone =
     nameInput.value = initialName;
     nameErrorEl.style.display = "none";
     cancelBtn.style.display = allowCancel ? "inline-block" : "none";
+
+    // Adnotacja "Nowa Twarz": jeśli czeka most z endgame.js (Ścieżka A, patrz endgameBridge.js),
+    // informujemy gracza, że wpisywane tu imię tworzy następcę, który odziedziczy Cechę Spuścizny
+    // — most sam w sobie jest konsumowany dopiero przy faktycznym utworzeniu postaci (patrz
+    // submitBtn handler niżej), więc samo jego istnienie tu tylko czytamy (peek), nie usuwamy.
+    const pendingBridge = peekPendingBridge();
+    subNameEl.textContent = (pendingBridge && pendingBridge.type === "new-face")
+        ? `Nowa Twarz — poprzednia postać: ${pendingBridge.previousName || "?"}. Podaj imię nowej postaci, żeby przejęła Cechę Spuścizny: „${pendingBridge.traitName || "?"}”.`
+        : "Wpisz imię Poszukiwacza, żeby rozpocząć nową grę albo wczytać istniejący zapis";
+
     updateNameNextState();
     showNameStep();
 
