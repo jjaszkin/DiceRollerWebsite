@@ -79,6 +79,10 @@ export function createDefaultState(gameData) {
 
         journal: [],      // [{ id, day, text, ts }]
 
+        contacts: [],      // [{ id, day, name, faction: {id,name_pl}|null, keywords: string[],
+                            //    location, origin: string|null, savedAt }] — zapisani NPC z panelu
+                            //    Znajomości (panels/contacts.js), patrz npcGenerator.js#generateNpc
+
         map: {
             // Mapa jest podzielona na Sektory (osobne siatki 12x10 heksów) rozciągające się na
             // wschód/zachód od startowego Sektora 0 — patrz panels/map.js#navigateSegment.

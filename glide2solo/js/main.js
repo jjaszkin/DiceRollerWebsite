@@ -14,6 +14,7 @@ import * as rollerPanel from "./panels/roller.js";
 import * as questsPanel from "./panels/quests.js";
 import * as mapPanel from "./panels/map.js";
 import * as journalPanel from "./panels/journal.js";
+import * as contactsPanel from "./panels/contacts.js";
 
 const PANELS = {
     character: characterPanel,
@@ -22,7 +23,8 @@ const PANELS = {
     roller: rollerPanel,
     quests: questsPanel,
     map: mapPanel,
-    journal: journalPanel
+    journal: journalPanel,
+    contacts: contactsPanel
 };
 
 // Klucz pod którym w localStorage zapamiętujemy ostatnio używane imię postaci — czysta
@@ -169,7 +171,7 @@ async function bootstrap() {
             onDone: () => {
                 const name = getState()?.character?.name;
                 if (name) localStorage.setItem(LAST_NAME_KEY, name);
-                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/10 plików.`);
+                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/11 plików.`);
             }
         });
     } catch (err) {

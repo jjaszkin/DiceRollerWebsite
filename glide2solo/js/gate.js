@@ -26,6 +26,7 @@
 import { connectSave, getSaveKey, notifyNow, updateState } from "./store.js";
 import { sanitizeNameToKey } from "./utils.js";
 import { applyRole } from "./state.js";
+import { generateName } from "./nameGenerator.js";
 
 const gateEl = document.getElementById("characterGate");
 const appEl = document.getElementById("app");
@@ -36,6 +37,7 @@ const stepRoleEl = document.getElementById("gateStepRole");
 const nameInput = document.getElementById("gateName");
 const nameErrorEl = document.getElementById("gateNameError");
 const nameNextBtn = document.getElementById("gateNameNext");
+const randomNameBtn = document.getElementById("gateRandomName");
 const cancelBtn = document.getElementById("gateCancel");
 
 const subRoleEl = document.getElementById("gateSubRole");
@@ -151,6 +153,14 @@ function wireOnce() {
         if (e.key === "Enter" && !nameNextBtn.disabled) goToRoleOrFinish();
     });
     nameNextBtn.addEventListener("click", goToRoleOrFinish);
+
+    // Losuje imię i wstawia je do pola — nie zatwierdza niczego samo z siebie, gracz nadal musi
+    // kliknąć "Dalej" (albo je najpierw poprawić/odrzucić), dokładnie jak przy ręcznym wpisywaniu.
+    randomNameBtn.addEventListener("click", () => {
+        nameInput.value = generateName(currentData);
+        updateNameNextState();
+        nameInput.focus();
+    });
 
     cancelBtn.addEventListener("click", () => {
         currentOnDone = null;

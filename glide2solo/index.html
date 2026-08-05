@@ -20,6 +20,8 @@
                     <input type="text" id="gateName" maxlength="40" placeholder="Imię Twojej postaci" autocomplete="off">
                 </label>
 
+                <button type="button" class="btn btn-sm btn-secondary" id="gateRandomName">🎲 Wylosuj imię</button>
+
                 <p class="gate-error" id="gateNameError" style="display:none;"></p>
 
                 <div class="gate-actions">
@@ -72,6 +74,7 @@
             <button class="tab-btn" data-tab="glider">Glider</button>
             <button class="tab-btn" data-tab="roller">Roller</button>
             <button class="tab-btn" data-tab="quests">Questy</button>
+            <button class="tab-btn" data-tab="contacts">Znajomości</button>
             <button class="tab-btn" data-tab="map">Mapa</button>
             <button class="tab-btn" data-tab="journal">Dziennik</button>
         </nav>
@@ -95,6 +98,10 @@
 
             <section id="panel-quests" class="tab-panel">
                 <p class="placeholder">Ładowanie questów…</p>
+            </section>
+
+            <section id="panel-contacts" class="tab-panel">
+                <p class="placeholder">Ładowanie znajomości…</p>
             </section>
 
             <section id="panel-map" class="tab-panel">

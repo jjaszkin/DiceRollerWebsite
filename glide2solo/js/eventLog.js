@@ -16,7 +16,8 @@ export const EVENT_TYPE_LABELS = {
     "stat-change": "Zmiana statystyki",
     "day-summary": "Nowy dzień — podsumowanie",
     "settlement-action": "Akcja Osady",
-    "travel-event": "Wydarzenie Podróży"
+    "travel-event": "Wydarzenie Podróży",
+    "contact-added": "Nowa znajomość"
 };
 
 /** Dopisuje zdarzenie do state.events (mutuje przekazany state — wywołujący odpowiada za
