@@ -30,6 +30,22 @@
                 </div>
             </div>
 
+            <div id="gateStepPin" style="display:none;">
+                <p class="gate-sub" id="gateSubPin">Ten zapis jest zabezpieczony PIN-em</p>
+
+                <label class="gate-field">
+                    <span>PIN (4 cyfry)</span>
+                    <input type="password" id="gatePin" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="••••" autocomplete="off">
+                </label>
+
+                <p class="gate-error" id="gatePinError" style="display:none;"></p>
+
+                <div class="gate-actions">
+                    <button class="btn btn-secondary" id="gatePinBack">Wstecz</button>
+                    <button class="btn btn-primary" id="gatePinNext" disabled>Dalej</button>
+                </div>
+            </div>
+
             <div id="gateStepRole" style="display:none;">
                 <p class="gate-sub" id="gateSubRole">Wybierz rolę</p>
 
@@ -41,6 +57,11 @@
                 </label>
 
                 <div id="gateRolePreview"></div>
+
+                <label class="gate-field" id="gateSetPinField">
+                    <span>Ustaw PIN (4 cyfry) — zabezpiecza ten zapis przed wczytaniem po samym imieniu</span>
+                    <input type="password" id="gateSetPin" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="np. 4271" autocomplete="off">
+                </label>
 
                 <p class="gate-error" id="gateRoleError" style="display:none;"></p>
 
