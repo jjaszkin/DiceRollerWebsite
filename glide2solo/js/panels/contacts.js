@@ -8,7 +8,7 @@
 // postaci).
 import { getState, touch } from "../store.js";
 import { generateNpc } from "../npcGenerator.js";
-import { uid, escapeHtml } from "../utils.js";
+import { uid, escapeHtml, preserveScroll } from "../utils.js";
 import { logEvent } from "../eventLog.js";
 
 let draft = null; // aktualnie wylosowany, jeszcze niezapisany NPC (albo null)
@@ -16,9 +16,13 @@ let includeFaction = true; // stan checkboxa "losuj Frakcję" — lokalny UI, ni
 let includeOrigin = true;  // stan checkboxa "losuj Pochodzenie" — lokalny UI, nietrwały
 let currentRoot = null;
 let currentData = null;
+// Id kontaktu, którego notatka jest aktualnie edytowana inline (patrz renderSavedContact) —
+// albo null. Zastępuje window.prompt() polem wpisywanym wprost pod kontaktem, tak samo jak przy
+// nazwie/opisie heksu w panels/map.js#editingHexField. Czysty, nietrwały stan UI.
+let editingNoteId = null;
 
 function rerender() {
-    if (currentRoot) render(currentRoot, { state: getState(), data: currentData });
+    if (currentRoot) preserveScroll(() => render(currentRoot, { state: getState(), data: currentData }));
 }
 
 function renderFactionLine(faction) {
@@ -48,6 +52,30 @@ function renderDraft(npc) {
     `;
 }
 
+/** Notatka gracza o zapisanym NPC-u — edycja inline w miejscu (bez window.prompt, patrz
+ *  editingNoteId/startEditContactNote/saveContactNote niżej), tak jak nazwa/opis heksu w
+ *  panels/map.js#renderHexCustomInfo. */
+function renderNoteBlock(c) {
+    if (editingNoteId === c.id) {
+        return `
+            <div class="hex-inline-edit">
+                <textarea class="hex-inline-input" data-role="edit-input" rows="2" maxlength="280"
+                          placeholder="Notatka o tym NPC-u…">${escapeHtml(c.note || "")}</textarea>
+                <div class="hex-inline-edit-actions">
+                    <button class="btn btn-sm btn-primary" data-action="save-contact-note" data-id="${c.id}">Zapisz</button>
+                    <button class="btn btn-sm btn-secondary" data-action="cancel-contact-note">Anuluj</button>
+                </div>
+            </div>
+        `;
+    }
+    return `
+        ${c.note ? `<p class="placeholder">Notatka: ${escapeHtml(c.note)}</p>` : ""}
+        <div class="counter-controls">
+            <button class="btn btn-sm btn-secondary" data-action="contact-edit-note" data-id="${c.id}">${c.note ? "Edytuj notatkę" : "Dodaj notatkę"}</button>
+        </div>
+    `;
+}
+
 function renderSavedContact(c) {
     return `
         <div class="entry" style="margin-top:8px;">
@@ -59,6 +87,7 @@ function renderSavedContact(c) {
             ${renderFactionLine(c.faction)}
             ${renderOriginLine(c.origin)}
             <p>${(c.keywords ?? []).map(escapeHtml).join(" · ")}</p>
+            ${renderNoteBlock(c)}
         </div>
     `;
 }
@@ -130,6 +159,7 @@ function wireEvents(root) {
                 keywords: draft.keywords,
                 location: draft.location,
                 origin: draft.origin,
+                note: "", // swobodna notatka gracza — dodawana/edytowana po zapisaniu, patrz "contact-edit-note" niżej
                 savedAt: Date.now()
             });
             logEvent(state, "contact-added", `Poznano nową postać: ${draft.name}${draft.faction ? ` (${draft.faction.name_pl})` : ""}.`);
@@ -140,6 +170,42 @@ function wireEvents(root) {
             const state = getState();
             state.contacts = (state.contacts ?? []).filter(c => c.id !== btn.dataset.id);
             touch();
+        } else if (action === "contact-edit-note") {
+            editingNoteId = btn.dataset.id;
+            rerender();
+            focusNoteInput();
+        } else if (action === "save-contact-note") {
+            const state = getState();
+            const contact = (state.contacts ?? []).find(c => c.id === btn.dataset.id);
+            editingNoteId = null;
+            if (!contact) { rerender(); return; }
+            const textarea = currentRoot?.querySelector('.hex-inline-edit [data-role="edit-input"]');
+            contact.note = textarea ? textarea.value.trim() : contact.note;
+            touch();
+        } else if (action === "cancel-contact-note") {
+            editingNoteId = null;
+            rerender();
         }
     });
+
+    // Escape anuluje edycję notatki inline; Enter w textarea celowo zostaje zwykłym nowym
+    // wierszem (notatka może być wielolinijkowa) — zapisuje wyłącznie przycisk "Zapisz".
+    root.addEventListener("keydown", (e) => {
+        const input = e.target.closest('.hex-inline-edit [data-role="edit-input"]');
+        if (!input || !editingNoteId) return;
+        if (e.key === "Escape") {
+            e.preventDefault();
+            editingNoteId = null;
+            rerender();
+        }
+    });
+}
+
+function focusNoteInput() {
+    if (!currentRoot) return;
+    const input = currentRoot.querySelector('.hex-inline-edit [data-role="edit-input"]');
+    if (!input) return;
+    input.focus();
+    const len = input.value.length;
+    input.setSelectionRange(len, len);
 }

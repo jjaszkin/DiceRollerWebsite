@@ -8,7 +8,7 @@
 // data/desert.json, data/ruins.json, data/green_space.json, data/economy.json i
 // data/unique_locations.json (te same, z których korzysta panels/roller.js).
 import { getState, touch } from "../store.js";
-import { rollDie, uid, formatTimestamp, findInRangeTable, escapeHtml, clamp } from "../utils.js";
+import { rollDie, uid, formatTimestamp, findInRangeTable, escapeHtml, clamp, preserveScroll } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
 import { applyTravelEventEffects, renderTravelEventEffects } from "../travelEvents.js";
@@ -119,8 +119,14 @@ let selectedCoord = null;
 // przy kolejnym przesunięciu (nadpisany) albo po ręcznym zamknięciu banera.
 let lastTravelCheck = null;
 
+// Które pole nazwy/opisu heksu jest aktualnie edytowane inline (patrz renderHexCustomInfo) —
+// { coord, field: "name" | "desc" } albo null. Zastępuje wcześniejsze window.prompt() (przeglądarki
+// coraz częściej blokują wyskakujące okienka przy powtarzalnych akcjach) polem wpisywanym wprost
+// w panelu szczegółów heksu. Czysty, nietrwały stan UI — jak selectedCoord/lastTravelCheck wyżej.
+let editingHexField = null;
+
 function rerender() {
-    if (currentRoot) render(currentRoot, { state: getState(), data: currentData });
+    if (currentRoot) preserveScroll(() => render(currentRoot, { state: getState(), data: currentData }));
 }
 
 /** Zwraca heks-roota dla podanych współrzędnych (samego siebie, jeśli to root/samodzielny heks,
@@ -151,7 +157,11 @@ function buildFreshHexEntry(data, roll) {
         levelRoll: null,
         levelGapFallback: false,
         tests: [],
-        explorationCostPaid: false
+        explorationCostPaid: false,
+        customName: null,       // nazwa nadana ręcznie przez gracza (np. "Dolina Księżycowej Rosy"),
+                                 // niezależna od ewentualnej losowanej nazwy Osady/Unikalnej Lokacji
+                                 // (hex.tests[].kind "settlement-name"/"unique") — patrz renderHexCustomInfo.
+        customDescription: null // krótki opis fabularny nadany ręcznie przez gracza — jw.
     };
     if (entry.result === "Unikalna Lokacja") hex.level = 3;
     else if (entry.result === "Teren Nieprzejezdny") hex.level = 0;
@@ -226,7 +236,7 @@ function handleHexClick(coord) {
     const pending = seg.pendingRegion;
     const exists = !!seg.hexes[coord];
     if (pending && coord !== pending.rootId && !exists) {
-        seg.hexes[coord] = { discovered: true, regionRoot: pending.rootId, tests: [] };
+        seg.hexes[coord] = { discovered: true, regionRoot: pending.rootId, tests: [], customName: null, customDescription: null };
         pending.remaining -= 1;
         if (pending.remaining <= 0) seg.pendingRegion = null;
         selectedCoord = coord;
@@ -505,7 +515,7 @@ function gotoPositionSegment() {
 
 /** Wybiera losowe nieodkryte pole w Sektorze `segmentId` (tworząc go leniwie, jeśli jeszcze nie
  *  istnieje) i umieszcza tam Pomnik — specjalną, zawsze Poziom 0 Unikalną Lokację nazwaną
- *  imieniem Poszukiwacza. Używane przez js/endgame.js (Ścieżka A "Nowa Twarz"), żeby upamiętnić
+ *  imieniem Poszukiwacza. Używane przez js/endgame.js (Ścieżka A "Żyjąca Legenda"), żeby upamiętnić
  *  poprzednią postać na mapie kontynuowanej gry solo. W przeciwieństwie do zwykłych Unikalnych
  *  Lokacji (zawsze Poziom 3, patrz buildFreshHexEntry) Pomnik jest celowo Poziom 0 — to czysto
  *  fabularny znacznik, nie licznik dla żadnego Wyzwania. Zwraca umieszczony coordId, albo null,
@@ -605,8 +615,12 @@ function renderHexCell(state, coord, col, row) {
         // konkretnym heksie (nie na roocie regionu) — tak samo jak renderHexTests czyta
         // `hex.tests`, bo testy (w tym rzut Nazwy Osady / Unikalnej Lokacji) można wykonać
         // osobno na każdym polu regionu, nie tylko na roocie.
+        // Ręcznie nadana nazwa (patrz renderHexCustomInfo) ma pierwszeństwo przed losowaną nazwą
+        // Osady/Unikalnej Lokacji — to gracz decyduje, jak lokacja faktycznie się nazywa "na mapie".
         let nameText = "";
-        if (typeResult === "Osada") {
+        if (hex.customName) {
+            nameText = ` · „${hex.customName}”`;
+        } else if (typeResult === "Osada") {
             const name = lastTestValue(hex, "settlement-name");
             if (name) nameText = ` · „${name}”`;
         } else if (typeResult === "Unikalna Lokacja") {
@@ -708,6 +722,98 @@ function renderExplorationCostHint(type, cost, hex) {
     return `<p class="placeholder" style="margin:0 0 4px;">Ten rzut kosztuje ${cost} Wytrzymałość.</p>`;
 }
 
+/** Ręcznie nadana nazwa/opis heksu (hex.customName/hex.customDescription) — niezależne od
+ *  ewentualnej losowanej nazwy Osady/Unikalnej Lokacji (hex.tests[]), którą tabela nadal
+ *  zapisuje w historii testów. Pozwala graczowi np. ochrzcić Osadę własną nazwą ("Dolina
+ *  Księżycowej Rosy") i dopisać krótką notatkę fabularną — edycja inline w miejscu, patrz
+ *  editingHexField/startEditHexField/saveHexField niżej (bez window.prompt — przeglądarki
+ *  potrafią blokować powtarzalne wyskakujące okienka). */
+function renderHexCustomInfo(hex, coord) {
+    const editing = editingHexField && editingHexField.coord === coord ? editingHexField.field : null;
+
+    const nameDisplay = editing === "name"
+        ? `
+            <div class="hex-inline-edit">
+                <input type="text" class="hex-inline-input" data-role="edit-input"
+                       value="${escapeHtml(hex.customName || "")}" placeholder="np. Dolina Księżycowej Rosy" maxlength="60">
+                <div class="hex-inline-edit-actions">
+                    <button class="btn btn-sm btn-primary" data-action="save-hex-name" data-coord="${coord}">Zapisz</button>
+                    <button class="btn btn-sm btn-secondary" data-action="cancel-hex-edit">Anuluj</button>
+                </div>
+            </div>
+        `
+        : `
+            <div class="hex-custom-row">
+                ${hex.customName ? `<p class="hex-custom-name">„${escapeHtml(hex.customName)}”</p>` : ""}
+                <button class="btn btn-sm btn-secondary" data-action="edit-hex-name" data-coord="${coord}">${hex.customName ? "Zmień nazwę" : "Nadaj nazwę"}</button>
+            </div>
+        `;
+
+    const descDisplay = editing === "desc"
+        ? `
+            <div class="hex-inline-edit">
+                <textarea class="hex-inline-input" data-role="edit-input" rows="3" maxlength="280"
+                          placeholder="Krótki opis lokacji…">${escapeHtml(hex.customDescription || "")}</textarea>
+                <div class="hex-inline-edit-actions">
+                    <button class="btn btn-sm btn-primary" data-action="save-hex-desc" data-coord="${coord}">Zapisz</button>
+                    <button class="btn btn-sm btn-secondary" data-action="cancel-hex-edit">Anuluj</button>
+                </div>
+            </div>
+        `
+        : `
+            <div class="hex-custom-row">
+                ${hex.customDescription ? `<p class="hex-custom-desc">${escapeHtml(hex.customDescription)}</p>` : ""}
+                <button class="btn btn-sm btn-secondary" data-action="edit-hex-desc" data-coord="${coord}">${hex.customDescription ? "Edytuj opis" : "Dodaj opis"}</button>
+            </div>
+        `;
+
+    return `
+        <div class="hex-custom-info">
+            ${nameDisplay}
+            ${descDisplay}
+        </div>
+    `;
+}
+
+/** Wchodzi w tryb edycji inline pola `field` ("name"/"desc") heksu `coord` — pokazuje
+ *  <input>/<textarea> w miejscu tekstu zamiast window.prompt(). Czysta zmiana stanu UI
+ *  (brak touch(), nic jeszcze nie zapisane), więc trzeba samemu zawołać rerender(). */
+function startEditHexField(coord, field) {
+    editingHexField = { coord, field };
+    rerender();
+    focusHexEditInput();
+}
+
+function focusHexEditInput() {
+    if (!currentRoot) return;
+    const input = currentRoot.querySelector('.hex-inline-edit [data-role="edit-input"]');
+    if (!input) return;
+    input.focus();
+    const len = input.value.length;
+    input.setSelectionRange(len, len);
+}
+
+/** Zapisuje wartość z widocznego pola inline (odczytaną wprost z DOM, na wzór
+ *  journal.js#new-entry — pole jest "niekontrolowane", bez śledzenia każdego znaku w stanie UI)
+ *  do hex.customName/hex.customDescription, zamyka tryb edycji i persystuje zmianę. */
+function saveHexField(coord, field) {
+    const state = getState();
+    const hex = currentSeg(state).hexes[coord];
+    editingHexField = null;
+    if (!hex) { rerender(); return; }
+    const input = currentRoot?.querySelector('.hex-inline-edit [data-role="edit-input"]');
+    const value = input ? input.value.trim() : "";
+    if (field === "name") hex.customName = value || null;
+    else hex.customDescription = value || null;
+    touch();
+    rerender();
+}
+
+function cancelHexEdit() {
+    editingHexField = null;
+    rerender();
+}
+
 function renderHexActions(coord) {
     return `
         <div class="hex-actions">
@@ -746,6 +852,7 @@ function renderHexDetail(state, data, coord) {
     const parts = [];
     parts.push(`<h3>Heks ${coord}${isPosition ? " · pozycja postaci" : ""}${isMember ? ` · część regionu ${hex.regionRoot}` : ""}</h3>`);
     parts.push(`<p><strong>${root.typeResult}</strong>${isSet(root.level) ? ` — Poziom ${root.level}` : ""}</p>`);
+    parts.push(renderHexCustomInfo(hex, coord));
 
     if (!isMember) {
         if (needsTileRoll(root.tiles) && isUnset(root.tilesTotal)) {
@@ -874,6 +981,11 @@ function wireEvents(root) {
         else if (action === "roll-hex-settlement") rollHexSettlement(coord, btn.dataset.field);
         else if (action === "roll-hex-unique") rollHexUnique(coord);
         else if (action === "delete-hex-test") deleteHexTest(coord, btn.dataset.id);
+        else if (action === "edit-hex-name") startEditHexField(coord, "name");
+        else if (action === "edit-hex-desc") startEditHexField(coord, "desc");
+        else if (action === "save-hex-name") saveHexField(coord, "name");
+        else if (action === "save-hex-desc") saveHexField(coord, "desc");
+        else if (action === "cancel-hex-edit") cancelHexEdit();
         else if (action === "move-here") moveHere(coord);
         else if (action === "reroll-hex") rerollHex(coord);
         else if (action === "remove-hex") removeHex(coord);
@@ -882,6 +994,21 @@ function wireEvents(root) {
         else if (action === "dismiss-travel-check") dismissTravelCheck();
         else if (action === "nav-segment") navigateSegment(Number(btn.dataset.dir));
         else if (action === "goto-position-segment") gotoPositionSegment();
+    });
+
+    // Skróty klawiszowe w polu edycji inline nazwy/opisu heksu (patrz renderHexCustomInfo):
+    // Escape zawsze anuluje; Enter zapisuje TYLKO w polu nazwy (pojedynczy <input>) — w opisie
+    // (<textarea>) Enter ma zostać zwykłym nowym wierszem, tam zapisuje wyłącznie przycisk.
+    root.addEventListener("keydown", (e) => {
+        const input = e.target.closest('.hex-inline-edit [data-role="edit-input"]');
+        if (!input || !editingHexField) return;
+        if (e.key === "Escape") {
+            e.preventDefault();
+            cancelHexEdit();
+        } else if (e.key === "Enter" && input.tagName === "INPUT") {
+            e.preventDefault();
+            saveHexField(editingHexField.coord, editingHexField.field);
+        }
     });
 
     // Dwuklik na heksie przesuwa tam postać od razu, bez konieczności najpierw zaznaczać heks

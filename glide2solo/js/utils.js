@@ -109,6 +109,21 @@ export function sanitizeNameToKey(name) {
         .trim();
 }
 
+/** Wykonuje `fn` (zwykle pełne nadpisanie panelu przez innerHTML) z zachowaniem pozycji scrolla
+ *  strony. Bez tego każda przebudowa DOM, która zmienia wysokość dokumentu (np. pojawienie się/
+ *  zniknięcie banera, dłuższa/krótsza lista wpisów, inny zestaw przycisków po odkryciu heksu),
+ *  potrafi skrócić stronę poniżej aktualnego window.scrollY — przeglądarka wtedy przycina scroll
+ *  do nowej, mniejszej wysokości, co wygląda jak losowy "skok" strony po kliknięciu byle
+ *  przycisku (np. "Przesuń postać"). Używane w main.js#renderAll (globalne odświeżenie po każdym
+ *  touch()) oraz w lokalnych rerender() paneli, które przebudowują DOM poza touch() (patrz
+ *  panels/map.js, panels/contacts.js, panels/roller.js). Przywrócenie scrolla następuje w tej
+ *  samej klatce, więc jest niezauważalne dla użytkownika. */
+export function preserveScroll(fn) {
+    const y = window.scrollY;
+    fn();
+    if (window.scrollY !== y) window.scrollTo(0, y);
+}
+
 export function formatTimestamp(date = new Date()) {
     const pad = n => String(n).padStart(2, "0");
     return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${String(date.getFullYear()).slice(-2)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;

@@ -2,7 +2,7 @@
 
 import { loadGameData } from "./data.js";
 import { initStore, getState, getData, subscribe, onSaveStatusChange, updateState } from "./store.js";
-import { rollD100, findInRangeTable, clamp } from "./utils.js";
+import { rollD100, findInRangeTable, clamp, preserveScroll } from "./utils.js";
 import { logRoll } from "./rollLog.js";
 import { logEvent, buildDaySummaryText } from "./eventLog.js";
 import { showGate } from "./gate.js";
@@ -49,13 +49,19 @@ function renderAll() {
     const data = getData();
     if (!state) return;
 
-    dayValue.textContent = state.day.current;
-    renderCampResultBox();
+    // preserveScroll: renderAll przebudowuje WSZYSTKIE panele (nie tylko aktywną zakładkę) przy
+    // każdej zmianie stanu — bez tego zmiana wysokości aktywnego panelu (nowy baner, dłuższa
+    // lista wpisów…) potrafi przyciąć scroll do nowej, krótszej strony i wyglądać jak losowy
+    // "skok" po kliknięciu byle przycisku. Patrz utils.js#preserveScroll.
+    preserveScroll(() => {
+        dayValue.textContent = state.day.current;
+        renderCampResultBox();
 
-    for (const [tab, mod] of Object.entries(PANELS)) {
-        const root = document.getElementById(`panel-${tab}`);
-        if (root && mod.render) mod.render(root, { state, data });
-    }
+        for (const [tab, mod] of Object.entries(PANELS)) {
+            const root = document.getElementById(`panel-${tab}`);
+            if (root && mod.render) mod.render(root, { state, data });
+        }
+    });
 }
 
 function renderCampResultBox() {

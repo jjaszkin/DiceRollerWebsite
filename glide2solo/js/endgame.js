@@ -3,16 +3,20 @@
 // przy Sława >= mechanics.json#resources.fame.end_game_threshold. Dwie ścieżki, patrz
 // data/endgame.json#_meta.notes:
 //
-//   Ścieżka A "Nowa Twarz" — ta postać kończy swoją historię (zapis zostaje w Firebase,
+//   Ścieżka A "Żyjąca Legenda" — ta postać kończy swoją historię (zapis zostaje w Firebase,
 //   nienaruszony — gracz może do niego wrócić, wpisując ponownie to samo imię na ekranie
 //   startowym). Gracz wybiera 1 z 4 legacy_traits jako spuściznę dla następcy. Ponieważ nowa
 //   postać jeszcze nie istnieje (i store.js obsługuje tylko jeden podłączony zapis naraz),
 //   wybór jest zapisywany do localStorage (PENDING_BRIDGE_KEY) jako "most" — dopiero
 //   gate.js#goToRoleOrFinish, po podłączeniu NOWEGO zapisu, odczytuje i konsumuje ten most
 //   (patrz consumePendingBridge tam), stosując efekt Cechy Spuścizny na świeżo utworzonej
-//   postaci oraz umieszczając Pomnik poprzednika na jej mapie (panels/map.js#placeMemorialHex).
+//   postaci, ustawiając licznik Nowej Gry+ (character.generation, patrz panels/character.js —
+//   odznaka pod kartą Postaci), dopisując pierwszy wpis Dziennika z Wynikiem Dziedzictwa i
+//   statystykami końcowymi poprzednika (bridge.legacySummary, patrz computeLegacySummary niżej)
+//   oraz umieszczając Pomnik poprzednika na mapie (panels/map.js#placeMemorialHex).
 //
-//   Ścieżka B "Kontynuacja" — ta sama postać gra dalej. W zamian Sława resetuje się do 0
+//   Ścieżka B "Nowa Twarz" — ta sama postać gra dalej pod nową tożsamością (fałszywa śmierć
+//   starej reputacji). W zamian Sława resetuje się do 0
 //   (mechanics.json#end_game.path_b_trade_in.clean_slate), a gracz wybiera dokładnie 2 z 4
 //   trade_in_rewards (data/endgame.json), których efekty stosujemy od razu na aktualnym
 //   stanie. Brak mostu do gate.js — to czysto lokalna operacja na bieżącym zapisie.
@@ -21,6 +25,7 @@ import { escapeHtml } from "./utils.js";
 import { logEvent } from "./eventLog.js";
 import { showGate } from "./gate.js";
 import { writePendingBridge } from "./endgameBridge.js";
+import { bondLevelFromPoints } from "./state.js";
 
 const overlayEl = document.getElementById("endgameOverlay");
 const appEl = document.getElementById("app");
@@ -59,14 +64,14 @@ function renderChoiceStep(ch) {
         <p class="gate-sub">Sława Poszukiwacza (${fame}) osiągnęła próg zakończenia — czas zdecydować, co dalej z historią „${escapeHtml(ch.name || "Poszukiwacz")}”.</p>
         <div class="endgame-choice-grid">
             <div class="card endgame-choice-card">
-                <h3>Ścieżka A — Nowa Twarz</h3>
+                <h3>Ścieżka A — Żyjąca Legenda</h3>
                 <p>Historia tej postaci dobiega końca. Zaczynasz od nowa nową postacią, która dziedziczy jedną Cechę Spuścizny po poprzedniku. Ten zapis zostaje zachowany — możesz do niego wrócić, wpisując ponownie to samo imię na ekranie startowym.</p>
-                <button class="btn btn-primary" data-action="endgame-goto-path-a">Wybierz Nową Twarz →</button>
+                <button class="btn btn-primary" data-action="endgame-goto-path-a">Wybierz Żyjącą Legendę →</button>
             </div>
             <div class="card endgame-choice-card">
-                <h3>Ścieżka B — Kontynuacja</h3>
-                <p>Ta postać gra dalej. Twoja Sława resetuje się do 0, a w zamian wybierz dokładnie 2 z 4 nagród za wymianę.</p>
-                <button class="btn btn-primary" data-action="endgame-goto-path-b">Wybierz Kontynuację →</button>
+                <h3>Ścieżka B — Nowa Twarz</h3>
+                <p>Ta postać gra dalej pod nową tożsamością — fałszywa śmierć starej reputacji. Twoja Sława resetuje się do 0, a w zamian wybierz dokładnie 2 z 4 nagród za wymianę.</p>
+                <button class="btn btn-primary" data-action="endgame-goto-path-b">Wybierz Nową Twarz →</button>
             </div>
         </div>
         <div class="gate-actions">
@@ -105,7 +110,7 @@ function renderPathAStep(data, ch) {
     const selectedTrait = traits.find(t => t.id === selectedTraitId);
     const canConfirm = traitReady(selectedTrait);
     return `
-        <h1>NOWA TWARZ</h1>
+        <h1>ŻYJĄCA LEGENDA</h1>
         <p class="gate-sub">Wynik Spuścizny: ${ch.resources.fame} — wybierz Cechę, którą odziedziczy następca „${escapeHtml(ch.name || "Poszukiwacza")}”.</p>
         <div class="endgame-trait-list">
             ${traits.map(t => `
@@ -131,7 +136,7 @@ function renderPathBStep(data, ch) {
     const fame = ch.resources.fame;
     const canConfirm = selectedRewardIds.length === 2;
     return `
-        <h1>KONTYNUACJA</h1>
+        <h1>NOWA TWARZ</h1>
         <p class="gate-sub">Wybierz dokładnie 2 z 4 nagród za wymianę — Twoja Sława (obecnie: ${fame}) resetuje się do 0.</p>
         <div class="endgame-trait-list">
             ${rewards.map(r => {
@@ -187,7 +192,40 @@ function spawnStarBurst() {
     setTimeout(() => layer.remove(), 1600);
 }
 
-// ── Ścieżka A: Nowa Twarz ────────────────────────────────────────────────
+// ── Ścieżka A: Żyjąca Legenda ─────────────────────────────────────────────
+
+/** Wynik Dziedzictwa (własna treść, patrz mechanics.json#end_game.legacy_score_formula) = Sława
+ *  na koniec gry + liczba Poziom Więzi 4 z gildiami + liczba Poziom Więzi 4 z towarzyszem (0 albo
+ *  1 — w tej grze solo jest tylko jeden towarzysz naraz). Do tego kilka ciekawostkowych statystyk
+ *  końcowych postaci — całość trafia do bridge.legacySummary i jest zapisywana jako pierwszy wpis
+ *  Dziennika następcy (patrz gate.js#applyPendingBridgeIfAny). Liczone tu, PRZED przełączeniem
+ *  na nowy zapis, bo to ostatni moment, w którym `state` wciąż wskazuje na kończącą historię postać. */
+function computeLegacySummary(state) {
+    const ch = state.character;
+    const fame = ch.resources.fame;
+    const guildBondsLevel4 = Object.values(state.guildBonds || {})
+        .filter(b => bondLevelFromPoints(b.points) === 4).length;
+    const companionLevel4 = (ch.companion?.key && bondLevelFromPoints(ch.companion.bondPoints) === 4) ? 1 : 0;
+
+    let hexesDiscovered = 0;
+    for (const seg of Object.values(state.map?.segments || {})) {
+        hexesDiscovered += Object.values(seg.hexes || {}).filter(h => h.discovered).length;
+    }
+    const gearCount = Object.values(ch.gear || {}).filter(g => g.owned).length;
+    const modsCount = Object.values(ch.glider?.mods || {}).filter(m => m.owned).length;
+
+    return {
+        legacyScore: fame + guildBondsLevel4 + companionLevel4,
+        fame,
+        guildBondsLevel4,
+        companionLevel4,
+        finalDay: state.day.current,
+        hexesDiscovered,
+        credits: ch.resources.credits,
+        gearCount,
+        modsCount
+    };
+}
 
 function confirmPathA() {
     const state = getState();
@@ -196,7 +234,7 @@ function confirmPathA() {
     const trait = traits.find(t => t.id === selectedTraitId);
     if (!trait || !traitReady(trait)) return;
 
-    if (!window.confirm(`Na pewno? Historia postaci „${ch.name || "Poszukiwacz"}” dobiega końca. Ten zapis zostaje zachowany (możesz do niego wrócić, wpisując to samo imię), ale dashboard przełączy się teraz na tworzenie Nowej Twarzy.`)) {
+    if (!window.confirm(`Na pewno? Historia postaci „${ch.name || "Poszukiwacz"}” dobiega końca jako Żyjąca Legenda. Ten zapis zostaje zachowany (możesz do niego wrócić, wpisując to samo imię), ale dashboard przełączy się teraz na tworzenie nowej postaci — następcy.`)) {
         return;
     }
 
@@ -206,12 +244,14 @@ function confirmPathA() {
         traitId: trait.id,
         traitName: trait.name_pl,
         subChoice: selectedSubChoice || null,
+        generation: ch.generation || 1,
+        legacySummary: computeLegacySummary(state),
         createdAt: Date.now()
     };
     try {
         writePendingBridge(bridge);
     } catch (err) {
-        console.error("[GLIDE] Nie udało się zapisać mostu Nowej Twarzy do localStorage:", err);
+        console.error("[GLIDE] Nie udało się zapisać mostu Żyjącej Legendy do localStorage:", err);
         alert("Nie udało się zapisać decyzji lokalnie — spróbuj ponownie.");
         return;
     }
@@ -227,7 +267,7 @@ function confirmPathA() {
     showGate(data, { allowCancel: false });
 }
 
-// ── Ścieżka B: Kontynuacja ───────────────────────────────────────────────
+// ── Ścieżka B: Nowa Twarz ─────────────────────────────────────────────────
 
 function applyTradeInReward(state, effect) {
     const ch = state.character;
@@ -258,7 +298,7 @@ function confirmPathB() {
 
     for (const r of chosen) applyTradeInReward(state, r.effect);
     ch.resources.fame = 0;
-    logEvent(state, "endgame", `Kontynuacja: Sława zresetowana do 0 (było: ${fameBefore}) w zamian za „${chosen[0].name_pl}” i „${chosen[1].name_pl}”.`);
+    logEvent(state, "endgame", `Nowa Twarz: Sława zresetowana do 0 (było: ${fameBefore}) w zamian za „${chosen[0].name_pl}” i „${chosen[1].name_pl}”.`);
     touch();
 
     spawnStarBurst();

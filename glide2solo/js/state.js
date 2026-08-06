@@ -26,6 +26,13 @@ export function createDefaultState(gameData) {
                        // niepożądanym wczytaniem cudzego zapisu po samym imieniu, patrz gate.js#showPinStep.
                        // To NIE jest prawdziwe zabezpieczenie bazy (reguły Firebase pod GlidePartTwoSolo są
                        // otwarte, patrz firebase.js) — tylko bramka po stronie aplikacji.
+            generation: 1, // 1 = pierwsza postać w tej historii; rośnie przy każdej Ścieżce A "Żyjąca Legenda"
+                           // w Rozdrożu (patrz endgame.js#confirmPathA i gate.js#applyPendingBridgeIfAny) —
+                           // przenoszone przez most (endgameBridge.js), NIE przez saveKey (każdy następca po
+                           // Żyjącej Legendzie to osobny zapis Firebase pod nowym imieniem). Używane do
+                           // odznaki "Nowa Gra+" w panels/character.js.
+            previousCharacterName: null, // imię bezpośredniego poprzednika (ustawiane razem z generation),
+                                          // albo null dla pierwszej postaci w historii — tylko UI (tooltip odznaki).
             stats: { H: 0, K: 0, R: 0, C: 0, F: 0 },
             startingBonusTrait: "",
             goal: "",
@@ -85,8 +92,9 @@ export function createDefaultState(gameData) {
         journal: [],      // [{ id, day, text, ts }]
 
         contacts: [],      // [{ id, day, name, faction: {id,name_pl}|null, keywords: string[],
-                            //    location, origin: string|null, savedAt }] — zapisani NPC z panelu
-                            //    Znajomości (panels/contacts.js), patrz npcGenerator.js#generateNpc
+                            //    location, origin: string|null, note: string, savedAt }] — zapisani
+                            //    NPC z panelu Znajomości (panels/contacts.js), patrz npcGenerator.js#
+                            //    generateNpc; `note` to swobodna notatka gracza, edytowalna po zapisie
 
         map: {
             // Mapa jest podzielona na Sektory (osobne siatki 12x10 heksów) rozciągające się na
@@ -99,9 +107,12 @@ export function createDefaultState(gameData) {
                 "0": {
                     hexes: {},        // { [coordId]: HexEntry } — brak klucza = nieodkryty heks. Patrz panels/map.js.
                                        // HexEntry (root/samodzielny): { discovered, regionRoot: null, typeResult, typeRoll,
-                                       //   tiles, tilesTotal, tilesRoll, level, levelRoll, levelGapFallback, tests: [] }
-                                       // HexEntry (członek regionu): { discovered, regionRoot: <coordId root>, tests: [] }
-                                       // — dane typu/poziomu lokacji dla członka regionu czyta się z heksu-roota.
+                                       //   tiles, tilesTotal, tilesRoll, level, levelRoll, levelGapFallback, tests: [],
+                                       //   explorationCostPaid, customName, customDescription }
+                                       // HexEntry (członek regionu): { discovered, regionRoot: <coordId root>, tests: [],
+                                       //   customName, customDescription }
+                                       // — dane typu/poziomu lokacji dla członka regionu czyta się z heksu-roota, ale
+                                       // customName/customDescription są per-heks (patrz panels/map.js#renderHexCustomInfo).
                     pendingRegion: null // { rootId, tilesTotal, remaining } — aktywny tryb "kliknij N pól, żeby dodać
                                          // do regionu"; null = brak aktywnego wyboru regionu
                 }

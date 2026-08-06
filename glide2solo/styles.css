@@ -448,7 +448,7 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     justify-content: flex-end;
 }
 
-/* ── Endgame (Rozdroże: Nowa Twarz / Kontynuacja) ──────────────────────── */
+/* ── Endgame (Rozdroże: Żyjąca Legenda / Nowa Twarz) ────────────────────── */
 /* Reużywa .gate/.gate-card (patrz wyżej) — #endgameOverlay to drugi, niezależny
    pełnoekranowy overlay obok #characterGate, sterowany tymi samymi klasami
    (.active pokazuje, .hidden na #app chowa dashboard pod spodem). */
@@ -544,6 +544,71 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     margin: 0 0 8px;
 }
 .cap-indicator.full { color: var(--fg-0); font-weight: 700; }
+
+/* Odznaka "Nowa Gra+" — patrz panels/character.js#renderGenerationBadge. */
+.legacy-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--fg-1);
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 4px 8px;
+}
+
+/* Nazwa/opis heksu nadane ręcznie przez gracza — patrz panels/map.js#renderHexCustomInfo. */
+.hex-custom-name {
+    font-weight: 700;
+    margin: 6px 0 2px;
+}
+.hex-custom-desc {
+    color: var(--fg-1);
+    margin: 0 0 6px;
+    white-space: pre-line;
+}
+.hex-custom-actions {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 10px;
+}
+/* Nazwa/opis heksu obok przycisku "Zmień nazwę"/"Edytuj opis" (a nie pod nim) — patrz
+   panels/map.js#renderHexCustomInfo. Przycisk nie kurczy się (flex-shrink: 0), tekst może
+   się zawijać i wypełnia resztę szerokości; margines akapitu wyzerowany, żeby wyrównać go
+   pionowo do środka razem z przyciskiem. */
+.hex-custom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 6px 0 10px;
+}
+.hex-custom-row p {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+}
+.hex-custom-row .btn {
+    flex-shrink: 0;
+}
+
+/* Edycja inline nazwy/opisu heksu i notatki NPC-a — pole wpisywane wprost w panelu, zamiast
+   window.prompt() (przeglądarki potrafią blokować powtarzalne wyskakujące okienka). Współdzielone
+   przez panels/map.js#renderHexCustomInfo i panels/contacts.js#renderNoteBlock. */
+.hex-inline-edit {
+    margin: 0 0 10px;
+}
+.hex-inline-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+.hex-inline-edit-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
 
 .catalog-group h4 {
     font-family: var(--mono);

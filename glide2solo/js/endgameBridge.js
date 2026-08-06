@@ -1,4 +1,4 @@
-// GLIDE: Part Two — "most" Ścieżki A "Nowa Twarz" (patrz endgame.js#confirmPathA). store.js
+// GLIDE: Part Two — "most" Ścieżki A "Żyjąca Legenda" (patrz endgame.js#confirmPathA). store.js
 // obsługuje tylko jeden podłączony zapis naraz, a w momencie decyzji nowa postać jeszcze nie
 // istnieje (dostanie zapis dopiero po wpisaniu imienia na ekranie startowym) — więc wybraną
 // Cechę Spuścizny przekazujemy między dwoma niezależnymi zapisami przez localStorage zamiast
@@ -13,14 +13,14 @@ export function writePendingBridge(bridge) {
     localStorage.setItem(KEY, JSON.stringify(bridge));
 }
 
-/** Odczyt BEZ konsumpcji — do wyświetlenia adnotacji "Nowa Twarz" w gate.js (patrz showGate),
+/** Odczyt BEZ konsumpcji — do wyświetlenia adnotacji "Żyjąca Legenda" w gate.js (patrz showGate),
  *  zanim faktycznie dojdzie do zastosowania efektu (dopiero przy submitBtn/consumePendingBridge). */
 export function peekPendingBridge() {
     try {
         const raw = localStorage.getItem(KEY);
         return raw ? JSON.parse(raw) : null;
     } catch (err) {
-        console.error("[GLIDE] Nie udało się odczytać mostu Nowej Twarzy z localStorage:", err);
+        console.error("[GLIDE] Nie udało się odczytać mostu Żyjącej Legendy z localStorage:", err);
         return null;
     }
 }
