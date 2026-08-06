@@ -30,7 +30,7 @@
 //   2) później na żądanie, przez przycisk „Zmień postać” w karcie Poszukiwacz (panel character.js).
 
 import { connectSave, getSaveKey, notifyNow, updateState } from "./store.js";
-import { sanitizeNameToKey, clamp } from "./utils.js";
+import { sanitizeNameToKey, clamp, uid, formatTimestamp } from "./utils.js";
 import { applyRole } from "./state.js";
 import { generateName } from "./nameGenerator.js";
 import { logEvent } from "./eventLog.js";
@@ -327,7 +327,28 @@ function applyPendingBridgeIfAny(state) {
         ch.gear[slug] = { owned: true, equipped: !!effect.grantGear.equipped, wear: 0 };
     }
 
+    // Licznik Nowej Gry+ — przenoszony z poprzednika przez most (nie przez saveKey, bo każda
+    // Nowa Twarz to osobny zapis Firebase), patrz state.js#character.generation i odznaka w
+    // panels/character.js.
+    ch.generation = (bridge.generation || 1) + 1;
+    ch.previousCharacterName = bridge.previousName || null;
+
     logEvent(state, "endgame", `Nowa Twarz dziedziczy Cechę Spuścizny: „${trait.name_pl}” (po „${bridge.previousName || "poprzedniku"}”).`);
+
+    // Pierwszy wpis Dziennika Nowej Twarzy — Wynik Dziedzictwa i ciekawostkowe statystyki końcowe
+    // poprzednika (patrz endgame.js#computeLegacySummary). `state.journal` jest tu jeszcze puste
+    // (świeżo utworzona postać, żaden inny kod nie zdążył dopisać wpisu wcześniej), więc ten push
+    // faktycznie ląduje jako pierwszy wpis.
+    const ls = bridge.legacySummary;
+    if (ls) {
+        const text = [
+            `Zamknięta historia poprzednika „${bridge.previousName || "Poszukiwacza"}”.`,
+            `Wynik Dziedzictwa: ${ls.legacyScore} (Sława ${ls.fame} + Poziom Więzi 4 z gildiami: ${ls.guildBondsLevel4} + Poziom Więzi 4 z towarzyszem: ${ls.companionLevel4}).`,
+            `Statystyki końcowe: ${ls.finalDay} dni w grze, ${ls.hexesDiscovered} odkrytych heksów mapy, ${ls.credits} kredytów, ${ls.gearCount} zdobytego sprzętu, ${ls.modsCount} modów glidera.`
+        ].join("\n");
+        if (!state.journal) state.journal = [];
+        state.journal.push({ id: uid(), day: state.day.current, text, ts: formatTimestamp(), at: Date.now() });
+    }
 
     // Pomnik poprzednika na mapie nowej postaci (Sektor 0 — start) — wołane na końcu, bo
     // placeMemorialHex samo woła touch()/notify() (patrz panels/map.js), więc powinno nastąpić

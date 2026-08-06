@@ -59,6 +59,10 @@ function renderSavedContact(c) {
             ${renderFactionLine(c.faction)}
             ${renderOriginLine(c.origin)}
             <p>${(c.keywords ?? []).map(escapeHtml).join(" · ")}</p>
+            ${c.note ? `<p class="placeholder">Notatka: ${escapeHtml(c.note)}</p>` : ""}
+            <div class="counter-controls">
+                <button class="btn btn-sm btn-secondary" data-action="contact-edit-note" data-id="${c.id}">${c.note ? "Edytuj notatkę" : "Dodaj notatkę"}</button>
+            </div>
         </div>
     `;
 }
@@ -130,6 +134,7 @@ function wireEvents(root) {
                 keywords: draft.keywords,
                 location: draft.location,
                 origin: draft.origin,
+                note: "", // swobodna notatka gracza — dodawana/edytowana po zapisaniu, patrz "contact-edit-note" niżej
                 savedAt: Date.now()
             });
             logEvent(state, "contact-added", `Poznano nową postać: ${draft.name}${draft.faction ? ` (${draft.faction.name_pl})` : ""}.`);
@@ -139,6 +144,14 @@ function wireEvents(root) {
             if (!window.confirm("Usunąć tego NPC-a ze Znajomości?")) return;
             const state = getState();
             state.contacts = (state.contacts ?? []).filter(c => c.id !== btn.dataset.id);
+            touch();
+        } else if (action === "contact-edit-note") {
+            const state = getState();
+            const contact = (state.contacts ?? []).find(c => c.id === btn.dataset.id);
+            if (!contact) return;
+            const value = window.prompt("Notatka o tym NPC-u:", contact.note || "");
+            if (value === null) return;
+            contact.note = value.trim();
             touch();
         }
     });

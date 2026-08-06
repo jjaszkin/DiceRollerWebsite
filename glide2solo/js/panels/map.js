@@ -151,7 +151,11 @@ function buildFreshHexEntry(data, roll) {
         levelRoll: null,
         levelGapFallback: false,
         tests: [],
-        explorationCostPaid: false
+        explorationCostPaid: false,
+        customName: null,       // nazwa nadana ręcznie przez gracza (np. "Dolina Księżycowej Rosy"),
+                                 // niezależna od ewentualnej losowanej nazwy Osady/Unikalnej Lokacji
+                                 // (hex.tests[].kind "settlement-name"/"unique") — patrz renderHexCustomInfo.
+        customDescription: null // krótki opis fabularny nadany ręcznie przez gracza — jw.
     };
     if (entry.result === "Unikalna Lokacja") hex.level = 3;
     else if (entry.result === "Teren Nieprzejezdny") hex.level = 0;
@@ -226,7 +230,7 @@ function handleHexClick(coord) {
     const pending = seg.pendingRegion;
     const exists = !!seg.hexes[coord];
     if (pending && coord !== pending.rootId && !exists) {
-        seg.hexes[coord] = { discovered: true, regionRoot: pending.rootId, tests: [] };
+        seg.hexes[coord] = { discovered: true, regionRoot: pending.rootId, tests: [], customName: null, customDescription: null };
         pending.remaining -= 1;
         if (pending.remaining <= 0) seg.pendingRegion = null;
         selectedCoord = coord;
@@ -605,8 +609,12 @@ function renderHexCell(state, coord, col, row) {
         // konkretnym heksie (nie na roocie regionu) — tak samo jak renderHexTests czyta
         // `hex.tests`, bo testy (w tym rzut Nazwy Osady / Unikalnej Lokacji) można wykonać
         // osobno na każdym polu regionu, nie tylko na roocie.
+        // Ręcznie nadana nazwa (patrz renderHexCustomInfo) ma pierwszeństwo przed losowaną nazwą
+        // Osady/Unikalnej Lokacji — to gracz decyduje, jak lokacja faktycznie się nazywa "na mapie".
         let nameText = "";
-        if (typeResult === "Osada") {
+        if (hex.customName) {
+            nameText = ` · „${hex.customName}”`;
+        } else if (typeResult === "Osada") {
             const name = lastTestValue(hex, "settlement-name");
             if (name) nameText = ` · „${name}”`;
         } else if (typeResult === "Unikalna Lokacja") {
@@ -708,6 +716,45 @@ function renderExplorationCostHint(type, cost, hex) {
     return `<p class="placeholder" style="margin:0 0 4px;">Ten rzut kosztuje ${cost} Wytrzymałość.</p>`;
 }
 
+/** Ręcznie nadana nazwa/opis heksu (hex.customName/hex.customDescription) — niezależne od
+ *  ewentualnej losowanej nazwy Osady/Unikalnej Lokacji (hex.tests[]), którą tabela nadal
+ *  zapisuje w historii testów. Pozwala graczowi np. ochrzcić Osadę własną nazwą ("Dolina
+ *  Księżycowej Rosy") i dopisać krótką notatkę fabularną — patrz editHexName/editHexDescription. */
+function renderHexCustomInfo(hex, coord) {
+    return `
+        <div class="hex-custom-info">
+            ${hex.customName ? `<p class="hex-custom-name">„${escapeHtml(hex.customName)}”</p>` : ""}
+            ${hex.customDescription ? `<p class="hex-custom-desc">${escapeHtml(hex.customDescription)}</p>` : ""}
+            <div class="hex-custom-actions">
+                <button class="btn btn-sm btn-secondary" data-action="edit-hex-name" data-coord="${coord}">${hex.customName ? "Zmień nazwę" : "Nadaj nazwę"}</button>
+                <button class="btn btn-sm btn-secondary" data-action="edit-hex-desc" data-coord="${coord}">${hex.customDescription ? "Edytuj opis" : "Dodaj opis"}</button>
+            </div>
+        </div>
+    `;
+}
+
+function editHexName(coord) {
+    const state = getState();
+    const hex = currentSeg(state).hexes[coord];
+    if (!hex) return;
+    const value = window.prompt("Nazwa lokacji:", hex.customName || "");
+    if (value === null) return;
+    hex.customName = value.trim() || null;
+    touch();
+    rerender();
+}
+
+function editHexDescription(coord) {
+    const state = getState();
+    const hex = currentSeg(state).hexes[coord];
+    if (!hex) return;
+    const value = window.prompt("Krótki opis lokacji:", hex.customDescription || "");
+    if (value === null) return;
+    hex.customDescription = value.trim() || null;
+    touch();
+    rerender();
+}
+
 function renderHexActions(coord) {
     return `
         <div class="hex-actions">
@@ -746,6 +793,7 @@ function renderHexDetail(state, data, coord) {
     const parts = [];
     parts.push(`<h3>Heks ${coord}${isPosition ? " · pozycja postaci" : ""}${isMember ? ` · część regionu ${hex.regionRoot}` : ""}</h3>`);
     parts.push(`<p><strong>${root.typeResult}</strong>${isSet(root.level) ? ` — Poziom ${root.level}` : ""}</p>`);
+    parts.push(renderHexCustomInfo(hex, coord));
 
     if (!isMember) {
         if (needsTileRoll(root.tiles) && isUnset(root.tilesTotal)) {
@@ -874,6 +922,8 @@ function wireEvents(root) {
         else if (action === "roll-hex-settlement") rollHexSettlement(coord, btn.dataset.field);
         else if (action === "roll-hex-unique") rollHexUnique(coord);
         else if (action === "delete-hex-test") deleteHexTest(coord, btn.dataset.id);
+        else if (action === "edit-hex-name") editHexName(coord);
+        else if (action === "edit-hex-desc") editHexDescription(coord);
         else if (action === "move-here") moveHere(coord);
         else if (action === "reroll-hex") rerollHex(coord);
         else if (action === "remove-hex") removeHex(coord);

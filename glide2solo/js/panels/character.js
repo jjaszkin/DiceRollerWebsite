@@ -85,6 +85,23 @@ function numberInputRow({ label, abbr, path, value, min = 0, tip = "" }) {
     `;
 }
 
+/** Odznaka "Nowa Gra+" — trwały, widoczny na stałe znacznik pod kartą Postaci, informujący,
+ *  którą z kolei postacią w historii tego zapisu obecnie gramy (patrz state.js#character.generation,
+ *  ustawiane przy konsumpcji mostu Ścieżki A "Nowa Twarz" w gate.js#applyPendingBridgeIfAny).
+ *  Niewidoczna dla pierwszej postaci (generation === 1) — pojawia się dopiero od drugiej. */
+function renderGenerationBadge(ch) {
+    const gen = ch.generation || 1;
+    if (gen <= 1) return "";
+    const tip = ch.previousCharacterName
+        ? `Poprzednik w tej historii: ${ch.previousCharacterName}`
+        : "Poprzednik w tej historii nieznany.";
+    return `
+        <div class="legacy-badge tt" data-tip="${escapeHtml(tip)}" style="margin-top:10px;">
+            NOWA GRA+ · Postać #${gen}
+        </div>
+    `;
+}
+
 export function render(root, { state, data }) {
     const mechanics = data.mechanics;
     const ch = state.character;
@@ -148,6 +165,7 @@ export function render(root, { state, data }) {
                     </label>
                 ` : `<p class="placeholder">Brak wybranej roli.</p>`}
                 <button class="btn btn-sm" data-action="reopen-gate" style="margin-top:10px;">Zmień postać</button>
+                ${renderGenerationBadge(ch)}
             </div>
 
             <div class="card">

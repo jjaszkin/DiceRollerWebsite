@@ -10,7 +10,10 @@
 //   wybór jest zapisywany do localStorage (PENDING_BRIDGE_KEY) jako "most" — dopiero
 //   gate.js#goToRoleOrFinish, po podłączeniu NOWEGO zapisu, odczytuje i konsumuje ten most
 //   (patrz consumePendingBridge tam), stosując efekt Cechy Spuścizny na świeżo utworzonej
-//   postaci oraz umieszczając Pomnik poprzednika na jej mapie (panels/map.js#placeMemorialHex).
+//   postaci, ustawiając licznik Nowej Gry+ (character.generation, patrz panels/character.js —
+//   odznaka pod kartą Postaci), dopisując pierwszy wpis Dziennika z Wynikiem Dziedzictwa i
+//   statystykami końcowymi poprzednika (bridge.legacySummary, patrz computeLegacySummary niżej)
+//   oraz umieszczając Pomnik poprzednika na mapie (panels/map.js#placeMemorialHex).
 //
 //   Ścieżka B "Kontynuacja" — ta sama postać gra dalej. W zamian Sława resetuje się do 0
 //   (mechanics.json#end_game.path_b_trade_in.clean_slate), a gracz wybiera dokładnie 2 z 4
@@ -21,6 +24,7 @@ import { escapeHtml } from "./utils.js";
 import { logEvent } from "./eventLog.js";
 import { showGate } from "./gate.js";
 import { writePendingBridge } from "./endgameBridge.js";
+import { bondLevelFromPoints } from "./state.js";
 
 const overlayEl = document.getElementById("endgameOverlay");
 const appEl = document.getElementById("app");
@@ -189,6 +193,39 @@ function spawnStarBurst() {
 
 // ── Ścieżka A: Nowa Twarz ────────────────────────────────────────────────
 
+/** Wynik Dziedzictwa (własna treść, patrz mechanics.json#end_game.legacy_score_formula) = Sława
+ *  na koniec gry + liczba Poziom Więzi 4 z gildiami + liczba Poziom Więzi 4 z towarzyszem (0 albo
+ *  1 — w tej grze solo jest tylko jeden towarzysz naraz). Do tego kilka ciekawostkowych statystyk
+ *  końcowych postaci — całość trafia do bridge.legacySummary i jest zapisywana jako pierwszy wpis
+ *  Dziennika Nowej Twarzy (patrz gate.js#applyPendingBridgeIfAny). Liczone tu, PRZED przełączeniem
+ *  na nowy zapis, bo to ostatni moment, w którym `state` wciąż wskazuje na kończącą historię postać. */
+function computeLegacySummary(state) {
+    const ch = state.character;
+    const fame = ch.resources.fame;
+    const guildBondsLevel4 = Object.values(state.guildBonds || {})
+        .filter(b => bondLevelFromPoints(b.points) === 4).length;
+    const companionLevel4 = (ch.companion?.key && bondLevelFromPoints(ch.companion.bondPoints) === 4) ? 1 : 0;
+
+    let hexesDiscovered = 0;
+    for (const seg of Object.values(state.map?.segments || {})) {
+        hexesDiscovered += Object.values(seg.hexes || {}).filter(h => h.discovered).length;
+    }
+    const gearCount = Object.values(ch.gear || {}).filter(g => g.owned).length;
+    const modsCount = Object.values(ch.glider?.mods || {}).filter(m => m.owned).length;
+
+    return {
+        legacyScore: fame + guildBondsLevel4 + companionLevel4,
+        fame,
+        guildBondsLevel4,
+        companionLevel4,
+        finalDay: state.day.current,
+        hexesDiscovered,
+        credits: ch.resources.credits,
+        gearCount,
+        modsCount
+    };
+}
+
 function confirmPathA() {
     const state = getState();
     const ch = state.character;
@@ -206,6 +243,8 @@ function confirmPathA() {
         traitId: trait.id,
         traitName: trait.name_pl,
         subChoice: selectedSubChoice || null,
+        generation: ch.generation || 1,
+        legacySummary: computeLegacySummary(state),
         createdAt: Date.now()
     };
     try {
