@@ -33,10 +33,15 @@
             <div id="gateStepPin" style="display:none;">
                 <p class="gate-sub" id="gateSubPin">Ten zapis jest zabezpieczony PIN-em</p>
 
-                <label class="gate-field">
+                <div class="gate-field">
                     <span>PIN (4 cyfry)</span>
-                    <input type="password" id="gatePin" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="••••" autocomplete="off">
-                </label>
+                    <div class="pin-digits" id="gatePinInputs">
+                        <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                        <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                        <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                        <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                    </div>
+                </div>
 
                 <p class="gate-error" id="gatePinError" style="display:none;"></p>
 
@@ -58,10 +63,15 @@
 
                 <div id="gateRolePreview"></div>
 
-                <label class="gate-field" id="gateSetPinField">
+                <div class="gate-field" id="gateSetPinField">
                     <span>Ustaw PIN (4 cyfry) — zabezpiecza ten zapis przed wczytaniem po samym imieniu</span>
-                    <input type="password" id="gateSetPin" maxlength="4" inputmode="numeric" pattern="[0-9]*" placeholder="np. 4271" autocomplete="off">
-                </label>
+                    <div class="pin-digits" id="gateSetPinInputs">
+                        <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                        <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                        <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                        <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                    </div>
+                </div>
 
                 <p class="gate-error" id="gateRoleError" style="display:none;"></p>
 

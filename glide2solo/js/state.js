@@ -46,7 +46,8 @@ export function createDefaultState(gameData) {
                        // slug = sanitizeNameToKey(nazwa); wear domyślne/max liczone z mechanics.resources.gear.wear_per_item
 
             glider: {
-                wear: { cur: 5, max: 5 },
+                wear: { cur: 0, max: 5 }, // 0 = fresh/nieuszkodzony, licznik rośnie w stronę max (= zniszczony) —
+                                          // patrz mechanics.json#glider.wear.on_max i panels/map.js#renderGliderLimitBanner.
                 supply: { cur: 6, max: 6 },
                 speed: { cur: 2, max: 5 },
                 cargoSlots: 3,
@@ -138,7 +139,9 @@ export function migrateLoadedState(loaded) {
                 map[sanitizeNameToKey(slot.name)] = {
                     owned: true,
                     equipped: true,
-                    wear: typeof slot.wear === "number" ? slot.wear : (slot.maxWear ?? 3)
+                    // Stary format nie miał ustalonego kierunku licznika — traktujemy brak wartości
+                    // jako "świeży" (0), zgodnie z aktualnym kierunkiem (0 = brak zużycia, rośnie do max).
+                    wear: typeof slot.wear === "number" ? slot.wear : 0
                 };
             }
             ch.gear = map;

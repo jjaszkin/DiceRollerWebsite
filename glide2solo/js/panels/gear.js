@@ -24,7 +24,7 @@ function renderCard(item, itemState, canEquipMore, wearPerItem) {
     // niezależnie od tego, czy limit Sprzęt jest już wyczerpany.
     const isBackpack = item.slug === EXPLORERS_BACKPACK_SLUG;
     const disabledEquip = !owned || (!equipped && !canEquipMore && !isBackpack);
-    const wear = itemState.wear ?? wearPerItem;
+    const wear = itemState.wear ?? 0;
     return `
         <div class="item-card tt ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}" data-tip="${escapeHtml(item.effect || "")}">
             <div class="item-card-head">
@@ -46,11 +46,11 @@ function renderCard(item, itemState, canEquipMore, wearPerItem) {
                     <div class="counter-label">Zużycie</div>
                     <div class="counter-controls">
                         <button class="btn btn-sm btn-icon" data-action="adjust-gear-wear" data-slug="${item.slug}" data-delta="-1">−</button>
-                        <span class="counter-value ${wear === 0 ? "max" : ""}">${wear} <span class="max">/ ${wearPerItem}</span></span>
+                        <span class="counter-value ${wear === wearPerItem ? "max" : ""}">${wear} <span class="max">/ ${wearPerItem}</span></span>
                         <button class="btn btn-sm btn-icon" data-action="adjust-gear-wear" data-slug="${item.slug}" data-delta="1">+</button>
                     </div>
                 </div>
-                ${wear === 0 ? `<p class="placeholder" style="margin:0;">NIEUŻYWALNY (0 Zużycie)</p>` : ""}
+                ${wear === wearPerItem ? `<p class="placeholder" style="margin:0;">NIEUŻYWALNY (Zużycie ${wearPerItem}/${wearPerItem})</p>` : ""}
             ` : ""}
         </div>
     `;
@@ -62,7 +62,7 @@ function renderCard(item, itemState, canEquipMore, wearPerItem) {
 function renderRewardCard(item, itemState, canEquipMore, wearPerItem) {
     const equipped = !!itemState.equipped;
     const disabledEquip = !equipped && !canEquipMore;
-    const wear = itemState.wear ?? wearPerItem;
+    const wear = itemState.wear ?? 0;
     return `
         <div class="item-card tt owned ${equipped ? "equipped" : ""}" data-tip="${escapeHtml(item.effect || "")}">
             <div class="item-card-head">
@@ -84,11 +84,11 @@ function renderRewardCard(item, itemState, canEquipMore, wearPerItem) {
                     <div class="counter-label">Zużycie</div>
                     <div class="counter-controls">
                         <button class="btn btn-sm btn-icon" data-action="adjust-gear-wear" data-slug="${item.slug}" data-delta="-1">−</button>
-                        <span class="counter-value ${wear === 0 ? "max" : ""}">${wear} <span class="max">/ ${wearPerItem}</span></span>
+                        <span class="counter-value ${wear === wearPerItem ? "max" : ""}">${wear} <span class="max">/ ${wearPerItem}</span></span>
                         <button class="btn btn-sm btn-icon" data-action="adjust-gear-wear" data-slug="${item.slug}" data-delta="1">+</button>
                     </div>
                 </div>
-                ${wear === 0 ? `<p class="placeholder" style="margin:0;">NIEUŻYWALNY (0 Zużycie)</p>` : ""}
+                ${wear === wearPerItem ? `<p class="placeholder" style="margin:0;">NIEUŻYWALNY (Zużycie ${wearPerItem}/${wearPerItem})</p>` : ""}
             ` : ""}
         </div>
     `;
@@ -152,7 +152,7 @@ function wireEvents(root) {
 
         if (action === "toggle-gear-owned") {
             if (el.checked) {
-                if (!gear[slug]) gear[slug] = { owned: true, equipped: false, wear: wearPerItem };
+                if (!gear[slug]) gear[slug] = { owned: true, equipped: false, wear: 0 };
                 else gear[slug].owned = true;
                 const item = flattenGear(data.gear).find(g => g.slug === slug);
                 logEvent(state, "item-gained", `Zdobyto sprzęt: "${item?.name ?? slug}".`);
@@ -172,9 +172,9 @@ function wireEvents(root) {
             // Auto-vivify: nagrody gildii (Sprzęt) nie mają wpisu w gear[] dopóki gracz sam
             // czegoś tu nie przełączy — nie są "kupowane" ręcznie, tylko odblokowywane
             // przez Poziom Więzi (patrz renderRewardCard/unlockedGuildItemRewards).
-            if (!gear[slug]) gear[slug] = { owned: true, equipped: false, wear: wearPerItem };
+            if (!gear[slug]) gear[slug] = { owned: true, equipped: false, wear: 0 };
             gear[slug].equipped = el.checked;
-            if (el.checked && gear[slug].wear === undefined) gear[slug].wear = wearPerItem;
+            if (el.checked && gear[slug].wear === undefined) gear[slug].wear = 0;
             // Trwałe bonusy do statystyk (Szyfrowana Księga, Soczewki Termiczne, Egzoszkielet —
             // patrz gearData.js#KNOWN_STAT_BONUS_ITEMS) są "equipped"-triggered: aktywne tylko,
             // gdy przedmiot jest założony, tak jak reszta efektów Sprzęt.
@@ -193,7 +193,7 @@ function wireEvents(root) {
         const delta = parseInt(btn.dataset.delta, 10);
         const item = state.character.gear[slug];
         if (!item) return;
-        item.wear = Math.max(0, Math.min(wearPerItem, (item.wear ?? wearPerItem) + delta));
+        item.wear = Math.max(0, Math.min(wearPerItem, (item.wear ?? 0) + delta));
         touch();
     });
 }

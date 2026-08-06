@@ -1,7 +1,7 @@
 {
   "_meta": {
     "title": "GLIDE 2 - Rozdroże (Endgame Decision)",
-    "notes": "Własna treść (nie z podręcznika) — obsługuje ekran „Zdecyduj co dalej” pokazywany po osiągnięciu progu Fame (mechanics.json#resources.fame.end_game_threshold), patrz panels/character.js (przycisk) i js/endgame.js (logika/overlay). Dwie ścieżki: A) Nowa Twarz — kończysz historię tej postaci i zaczynasz nową, wybierając 1 z 4 legacy_traits jako spuściznę; B) Kontynuacja — postać gra dalej, w zamian oddając (odznacza jako spożytkowane) 2 ze swoich Punktów Fame za dokładnie 2 z 4 trade_in_rewards. Pola `effect` są ustrukturyzowane pod bezpośrednie zastosowanie w kodzie (js/endgame.js), nie tylko pod wyświetlenie opisu."
+    "notes": "Własna treść (nie z podręcznika) — obsługuje ekran „Zdecyduj co dalej” pokazywany po osiągnięciu progu Fame (mechanics.json#resources.fame.end_game_threshold), patrz panels/character.js (przycisk) i js/endgame.js (logika/overlay). Dwie ścieżki: A) Nowa Twarz — kończysz historię tej postaci i zaczynasz nową, wybierając 1 z 4 legacy_traits jako spuściznę; B) Kontynuacja — postać gra dalej, Fame resetuje się do 0 (mechanics.json#end_game.path_b_trade_in.clean_slate) w zamian za dokładnie 2 z 4 trade_in_rewards. Pola `effect` są ustrukturyzowane pod bezpośrednie zastosowanie w kodzie (js/endgame.js), nie tylko pod wyświetlenie opisu."
   },
 
   "legacy_traits": [

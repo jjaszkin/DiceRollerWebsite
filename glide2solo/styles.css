@@ -291,7 +291,7 @@ body {
 
 /* ── Forms ──────────────────────────────────────────────────────────── */
 
-select, input[type="text"], input[type="number"], textarea {
+select, input[type="text"], input[type="number"], input[type="password"], textarea {
     background: var(--bg-2);
     border: 1px solid var(--line);
     color: var(--fg-0);
@@ -401,9 +401,26 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     letter-spacing: 0.06em;
 }
 
-.gate-field input, .gate-field select { width: 100%; }
+.gate-field input:not(.pin-digit), .gate-field select { width: 100%; }
 
 #gateRandomName { margin-bottom: 14px; }
+
+/* PIN jako 4 osobne pola cyfr (jedno wejście logicznie, patrz gate.js#createPinDigitGroup) —
+   każde pole to zwykły input[type=password] (ostylowany jak reszta pól, patrz reguła
+   select/input/textarea wyżej), tylko węższy i wyśrodkowany, żeby wyglądał jak "kratka" na cyfrę. */
+.pin-digits {
+    display: flex;
+    gap: 10px;
+}
+
+.pin-digit {
+    width: 3em;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 8px 0;
+}
 
 .gate-role-preview {
     background: var(--bg-2);

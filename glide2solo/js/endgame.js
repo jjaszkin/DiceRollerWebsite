@@ -12,10 +12,10 @@
 //   (patrz consumePendingBridge tam), stosując efekt Cechy Spuścizny na świeżo utworzonej
 //   postaci oraz umieszczając Pomnik poprzednika na jej mapie (panels/map.js#placeMemorialHex).
 //
-//   Ścieżka B "Kontynuacja" — ta sama postać gra dalej. W zamian za 2 Punkty Sławy gracz
-//   wybiera dokładnie 2 z 4 trade_in_rewards (data/endgame.json), których efekty stosujemy
-//   od razu na aktualnym stanie. Brak mostu do gate.js — to czysto lokalna operacja na
-//   bieżącym zapisie.
+//   Ścieżka B "Kontynuacja" — ta sama postać gra dalej. W zamian Sława resetuje się do 0
+//   (mechanics.json#end_game.path_b_trade_in.clean_slate), a gracz wybiera dokładnie 2 z 4
+//   trade_in_rewards (data/endgame.json), których efekty stosujemy od razu na aktualnym
+//   stanie. Brak mostu do gate.js — to czysto lokalna operacja na bieżącym zapisie.
 import { getState, touch } from "./store.js";
 import { escapeHtml } from "./utils.js";
 import { logEvent } from "./eventLog.js";
@@ -65,7 +65,7 @@ function renderChoiceStep(ch) {
             </div>
             <div class="card endgame-choice-card">
                 <h3>Ścieżka B — Kontynuacja</h3>
-                <p>Ta postać gra dalej. W zamian za 2 Punkty Sławy wybierz dokładnie 2 z 4 nagród za wymianę.</p>
+                <p>Ta postać gra dalej. Twoja Sława resetuje się do 0, a w zamian wybierz dokładnie 2 z 4 nagród za wymianę.</p>
                 <button class="btn btn-primary" data-action="endgame-goto-path-b">Wybierz Kontynuację →</button>
             </div>
         </div>
@@ -129,10 +129,10 @@ function renderPathAStep(data, ch) {
 function renderPathBStep(data, ch) {
     const rewards = data.endgame?.trade_in_rewards ?? [];
     const fame = ch.resources.fame;
-    const canConfirm = selectedRewardIds.length === 2 && fame >= 2;
+    const canConfirm = selectedRewardIds.length === 2;
     return `
         <h1>KONTYNUACJA</h1>
-        <p class="gate-sub">Wybierz dokładnie 2 z 4 nagród za wymianę — kosztują 2 Punkty Sławy (obecnie: ${fame}).</p>
+        <p class="gate-sub">Wybierz dokładnie 2 z 4 nagród za wymianę — Twoja Sława (obecnie: ${fame}) resetuje się do 0.</p>
         <div class="endgame-trait-list">
             ${rewards.map(r => {
                 const checked = selectedRewardIds.includes(r.id);
@@ -245,19 +245,20 @@ function applyTradeInReward(state, effect) {
 function confirmPathB() {
     const state = getState();
     const ch = state.character;
-    if (selectedRewardIds.length !== 2 || ch.resources.fame < 2) return;
+    if (selectedRewardIds.length !== 2) return;
 
     const rewards = currentData.endgame?.trade_in_rewards ?? [];
     const chosen = selectedRewardIds.map(id => rewards.find(r => r.id === id)).filter(Boolean);
     if (chosen.length !== 2) return;
 
-    if (!window.confirm(`Potwierdź: wydaj 2 Punkty Sławy na „${chosen[0].name_pl}” i „${chosen[1].name_pl}”?`)) {
+    const fameBefore = ch.resources.fame;
+    if (!window.confirm(`Potwierdź: Twoja Sława (${fameBefore}) zresetuje się do 0 w zamian za „${chosen[0].name_pl}” i „${chosen[1].name_pl}”?`)) {
         return;
     }
 
     for (const r of chosen) applyTradeInReward(state, r.effect);
-    ch.resources.fame = Math.max(0, ch.resources.fame - 2);
-    logEvent(state, "endgame", `Kontynuacja: wymieniono 2 Sława na „${chosen[0].name_pl}” i „${chosen[1].name_pl}”.`);
+    ch.resources.fame = 0;
+    logEvent(state, "endgame", `Kontynuacja: Sława zresetowana do 0 (było: ${fameBefore}) w zamian za „${chosen[0].name_pl}” i „${chosen[1].name_pl}”.`);
     touch();
 
     spawnStarBurst();

@@ -64,11 +64,14 @@ function renderCampResultBox() {
         campResultBox.innerHTML = "";
         return;
     }
-    const { roll, entry, recoveryText } = lastCampResult;
+    const { rolls, recoveryText } = lastCampResult;
     campResultBox.style.display = "block";
-    campResultBox.innerHTML = `
+    const rollsHtml = rolls.map(({ roll, entry }) => `
         <h2>Wydarzenie Obozowe (d100 = ${roll})</h2>
         <p>${entry ? entry.effect : "Brak dopasowania w tabeli."}</p>
+    `).join("");
+    campResultBox.innerHTML = `
+        ${rollsHtml}
         <p class="placeholder">${recoveryText}</p>
         <button class="btn btn-sm" id="campResultDismiss">Zamknij</button>
     `;
@@ -106,15 +109,70 @@ function setupSaveIndicator() {
     });
 }
 
+/** Rzuca Wydarzenie Obozowe (d100). Wpis "97-100" (Rzuć dwa razy) rozwiązuje się od razu na
+ *  DWA dodatkowe rzuty (effects.rollTwice), ale nie rekurencyjnie — "maks. raz na akcję Obóz"
+ *  z treści wpisu, więc kolejne trafienie 97-100 na jednym z tych dwóch dorzutów już się nie
+ *  powiela. Zwraca tablicę { roll, entry } (1 wpis normalnie, 3 przy Rzuć dwa razy). */
+function rollCampingEvents(table) {
+    const { total: roll } = rollD100();
+    const entry = findInRangeTable(table, roll, "roll");
+    const results = [{ roll, entry }];
+    if (entry?.effects?.rollTwice) {
+        for (let i = 0; i < 2; i++) {
+            const { total: extraRoll } = rollD100();
+            results.push({ roll: extraRoll, entry: findInRangeTable(table, extraRoll, "roll") });
+        }
+    }
+    return results;
+}
+
+/** Nakłada strukturalny efekt jednego wpisu Wydarzenia Obozowego (mechanics.json#
+ *  camping_events_table_d100[].effects) na stan postaci. Wytrzymałość jest CELOWO nieprzycięta
+ *  do zwykłego max przy dodatnim bonusie ("+1 Wytrzymałość ponad limit na następny dzień") —
+ *  ale wciąż nie może spaść poniżej 0. Pozostałe zasoby (Rozpęd/Zasoby/Relikty) trzymają się
+ *  zwykłego przycięcia [0, max], tak jak reszta stanu (patrz travelEvents.js). Zwraca listę
+ *  opisowych fragmentów "Pole: przed → po" do wyświetlenia graczowi. */
+function applyCampingEventEffects(state, effects) {
+    if (!effects) return [];
+    const ch = state.character;
+    const parts = [];
+    if (typeof effects.stamina === "number") {
+        const stam = ch.resources.stamina;
+        const before = stam.cur;
+        stam.cur = Math.max(0, stam.cur + effects.stamina);
+        parts.push(`Wytrzymałość: ${before} → ${stam.cur}`);
+    }
+    if (typeof effects.momentum === "number") {
+        const mm = ch.resources.momentum;
+        const before = mm.cur;
+        mm.cur = clamp(mm.cur + effects.momentum, 0, mm.max);
+        parts.push(`Rozpęd: ${before} → ${mm.cur}`);
+    }
+    if (typeof effects.supply === "number") {
+        const sup = ch.glider.supply;
+        const before = sup.cur;
+        sup.cur = clamp(sup.cur + effects.supply, 0, sup.max);
+        parts.push(`Zasoby: ${before} → ${sup.cur}`);
+    }
+    if (typeof effects.relics === "number") {
+        const rel = ch.glider.relics;
+        const before = rel.cur;
+        rel.cur = clamp(rel.cur + effects.relics, 0, rel.max);
+        parts.push(`Relikty: ${before} → ${rel.cur}`);
+    }
+    return parts;
+}
+
 function setupCampButton() {
-    // Akcja Obóz: rzuca Wydarzenie Obozowe (d100), przywraca bazową Staminę (Poszukiwaczowi i towarzyszowi,
-    // jeśli obecny) wg camping_base_recovery z mechanics.json, po czym przechodzi do kolejnego dnia.
+    // Akcja Obóz: rzuca Wydarzenie Obozowe (d100, patrz rollCampingEvents — może dać 3 wyniki
+    // przy "Rzuć dwa razy"), nakłada jego strukturalny efekt (applyCampingEventEffects) NA
+    // WIERZCH bazowej regeneracji Staminy (Poszukiwaczowi i towarzyszowi, jeśli obecny) wg
+    // camping_base_recovery z mechanics.json, po czym przechodzi do kolejnego dnia.
     campButton.addEventListener("click", () => {
         const data = getData();
         const table = data?.mechanics?.camping_events_table_d100 ?? [];
         const rec = data?.mechanics?.camping_base_recovery ?? { seeker_stamina: 0, companion_stamina: 0 };
-        const { total: roll } = rollD100();
-        const entry = findInRangeTable(table, roll, "roll");
+        const rolls = rollCampingEvents(table);
 
         const recoveryParts = [];
 
@@ -130,10 +188,16 @@ function setupCampButton() {
                 cstam.cur = clamp(cstam.cur + (rec.companion_stamina || 0), 0, cstam.max);
                 recoveryParts.push(`Wytrzymałość towarzysza: ${cBefore} → ${cstam.cur}`);
             }
+
+            for (const { entry } of rolls) {
+                recoveryParts.push(...applyCampingEventEffects(state, entry?.effects));
+            }
         });
 
-        // Zaloguj rzut pod dniem, w którym nastąpił Obóz, zanim przejdziemy do kolejnego dnia.
-        logRoll("Wydarzenie Obozowe (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
+        // Zaloguj rzut(y) pod dniem, w którym nastąpił Obóz, zanim przejdziemy do kolejnego dnia.
+        for (const { roll, entry } of rolls) {
+            logRoll("Wydarzenie Obozowe (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
+        }
 
         updateState((state) => {
             // Inkrementacja PRZED zalogowaniem podsumowania, żeby wpis otagował się nowym
@@ -142,7 +206,7 @@ function setupCampButton() {
             logEvent(state, "day-summary", buildDaySummaryText(state));
         });
 
-        lastCampResult = { roll, entry, recoveryText: recoveryParts.join(" · ") };
+        lastCampResult = { rolls, recoveryText: recoveryParts.join(" · ") };
         renderAll();
     });
 }
