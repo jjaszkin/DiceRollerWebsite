@@ -26,11 +26,11 @@ export function createDefaultState(gameData) {
                        // niepożądanym wczytaniem cudzego zapisu po samym imieniu, patrz gate.js#showPinStep.
                        // To NIE jest prawdziwe zabezpieczenie bazy (reguły Firebase pod GlidePartTwoSolo są
                        // otwarte, patrz firebase.js) — tylko bramka po stronie aplikacji.
-            generation: 1, // 1 = pierwsza postać w tej historii; rośnie przy każdej Ścieżce A "Nowa Twarz"
+            generation: 1, // 1 = pierwsza postać w tej historii; rośnie przy każdej Ścieżce A "Żyjąca Legenda"
                            // w Rozdrożu (patrz endgame.js#confirmPathA i gate.js#applyPendingBridgeIfAny) —
-                           // przenoszone przez most (endgameBridge.js), NIE przez saveKey (każda Nowa Twarz
-                           // to osobny zapis Firebase pod nowym imieniem). Używane do odznaki "Nowa Gra+"
-                           // w panels/character.js.
+                           // przenoszone przez most (endgameBridge.js), NIE przez saveKey (każdy następca po
+                           // Żyjącej Legendzie to osobny zapis Firebase pod nowym imieniem). Używane do
+                           // odznaki "Nowa Gra+" w panels/character.js.
             previousCharacterName: null, // imię bezpośredniego poprzednika (ustawiane razem z generation),
                                           // albo null dla pierwszej postaci w historii — tylko UI (tooltip odznaki).
             stats: { H: 0, K: 0, R: 0, C: 0, F: 0 },

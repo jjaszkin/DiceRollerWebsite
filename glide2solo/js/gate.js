@@ -285,7 +285,7 @@ function checkPin() {
     }
 }
 
-/** Konsumuje (odczytuje + usuwa z localStorage) ewentualny most Nowej Twarzy i stosuje jego
+/** Konsumuje (odczytuje + usuwa z localStorage) ewentualny most Żyjącej Legendy i stosuje jego
  *  efekt (Cecha Spuścizny, patrz data/endgame.json#legacy_traits) na świeżo utworzonej postaci
  *  `state`, tuż po applyRole() w submitBtn handlerze niżej — to jedyne miejsce, w którym most
  *  jest w ogóle konsumowany, więc efekt aplikuje się dokładnie raz, niezależnie od tego, ile razy
@@ -297,9 +297,10 @@ function applyPendingBridgeIfAny(state) {
     if (!bridge || bridge.type !== "new-face") return;
 
     // Zabezpieczenie: most jest przeznaczony dla NOWEJ postaci. Jeśli gracz zignorował adnotację
-    // (patrz showGate) i wpisał to samo imię co poprzednik, NIE aplikujemy efektu — to nie byłaby
-    // Nowa Twarz, tylko przypadkowo nadpisana rola tej samej, starej postaci. Most i tak został
-    // już skonsumowany (usunięty) wyżej, więc nie zaaplikuje się przy kolejnej, właściwej próbie —
+    // (patrz showGate) i wpisał to samo imię co poprzednik, NIE aplikujemy efektu — to nie byłby
+    // prawdziwy następca Żyjącej Legendy, tylko przypadkowo nadpisana rola tej samej, starej
+    // postaci. Most i tak został już skonsumowany (usunięty) wyżej, więc nie zaaplikuje się
+    // przy kolejnej, właściwej próbie —
     // gracz musiałby ponownie przejść przez ekran Rozdroża, co jest akceptowalne dla tego rzadkiego
     // przypadku świadomego zignorowania instrukcji.
     if (bridge.previousName && sanitizeNameToKey(bridge.previousName) === getSaveKey()) return;
@@ -327,15 +328,15 @@ function applyPendingBridgeIfAny(state) {
         ch.gear[slug] = { owned: true, equipped: !!effect.grantGear.equipped, wear: 0 };
     }
 
-    // Licznik Nowej Gry+ — przenoszony z poprzednika przez most (nie przez saveKey, bo każda
-    // Nowa Twarz to osobny zapis Firebase), patrz state.js#character.generation i odznaka w
-    // panels/character.js.
+    // Licznik Nowej Gry+ — przenoszony z poprzednika przez most (nie przez saveKey, bo każdy
+    // następca po Żyjącej Legendzie to osobny zapis Firebase), patrz state.js#character.generation
+    // i odznaka w panels/character.js.
     ch.generation = (bridge.generation || 1) + 1;
     ch.previousCharacterName = bridge.previousName || null;
 
-    logEvent(state, "endgame", `Nowa Twarz dziedziczy Cechę Spuścizny: „${trait.name_pl}” (po „${bridge.previousName || "poprzedniku"}”).`);
+    logEvent(state, "endgame", `Nowa postać dziedziczy Cechę Spuścizny: „${trait.name_pl}” (po „${bridge.previousName || "poprzedniku"}”, który stał się Żyjącą Legendą).`);
 
-    // Pierwszy wpis Dziennika Nowej Twarzy — Wynik Dziedzictwa i ciekawostkowe statystyki końcowe
+    // Pierwszy wpis Dziennika nowej postaci — Wynik Dziedzictwa i ciekawostkowe statystyki końcowe
     // poprzednika (patrz endgame.js#computeLegacySummary). `state.journal` jest tu jeszcze puste
     // (świeżo utworzona postać, żaden inny kod nie zdążył dopisać wpisu wcześniej), więc ten push
     // faktycznie ląduje jako pierwszy wpis.
@@ -443,13 +444,13 @@ export function showGate(data, { initialName = "", allowCancel = false, onDone =
     nameErrorEl.style.display = "none";
     cancelBtn.style.display = allowCancel ? "inline-block" : "none";
 
-    // Adnotacja "Nowa Twarz": jeśli czeka most z endgame.js (Ścieżka A, patrz endgameBridge.js),
+    // Adnotacja "Żyjąca Legenda": jeśli czeka most z endgame.js (Ścieżka A, patrz endgameBridge.js),
     // informujemy gracza, że wpisywane tu imię tworzy następcę, który odziedziczy Cechę Spuścizny
     // — most sam w sobie jest konsumowany dopiero przy faktycznym utworzeniu postaci (patrz
     // submitBtn handler niżej), więc samo jego istnienie tu tylko czytamy (peek), nie usuwamy.
     const pendingBridge = peekPendingBridge();
     subNameEl.textContent = (pendingBridge && pendingBridge.type === "new-face")
-        ? `Nowa Twarz — poprzednia postać: ${pendingBridge.previousName || "?"}. Podaj imię nowej postaci, żeby przejęła Cechę Spuścizny: „${pendingBridge.traitName || "?"}”.`
+        ? `Żyjąca Legenda — poprzednia postać: ${pendingBridge.previousName || "?"}. Podaj imię nowej postaci, żeby przejęła Cechę Spuścizny: „${pendingBridge.traitName || "?"}”.`
         : "Wpisz imię Poszukiwacza, żeby rozpocząć nową grę albo wczytać istniejący zapis";
 
     updateNameNextState();

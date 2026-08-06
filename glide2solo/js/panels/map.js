@@ -515,7 +515,7 @@ function gotoPositionSegment() {
 
 /** Wybiera losowe nieodkryte pole w Sektorze `segmentId` (tworząc go leniwie, jeśli jeszcze nie
  *  istnieje) i umieszcza tam Pomnik — specjalną, zawsze Poziom 0 Unikalną Lokację nazwaną
- *  imieniem Poszukiwacza. Używane przez js/endgame.js (Ścieżka A "Nowa Twarz"), żeby upamiętnić
+ *  imieniem Poszukiwacza. Używane przez js/endgame.js (Ścieżka A "Żyjąca Legenda"), żeby upamiętnić
  *  poprzednią postać na mapie kontynuowanej gry solo. W przeciwieństwie do zwykłych Unikalnych
  *  Lokacji (zawsze Poziom 3, patrz buildFreshHexEntry) Pomnik jest celowo Poziom 0 — to czysto
  *  fabularny znacznik, nie licznik dla żadnego Wyzwania. Zwraca umieszczony coordId, albo null,

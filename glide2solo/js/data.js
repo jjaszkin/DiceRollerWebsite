@@ -1,6 +1,6 @@
 // GLIDE: Part Two — statyczne dane gry (10 plików JSON wyekstrahowanych z podręcznika + 2 pliki
 // własnej treści — npc_flavor.json, ręcznie dobrana pula imion/cech, patrz jego _meta.notes;
-// endgame.json, spuścizny Nowej Twarzy i nagrody za wymianę Fame, patrz jego _meta.notes).
+// endgame.json, Cechy Spuścizny Żyjącej Legendy i nagrody za wymianę Fame, patrz jego _meta.notes).
 // Ładowane raz przy starcie przez fetch (brak bundlera w tym repo — spójnie z resztą projektu).
 
 const FILES = [

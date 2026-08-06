@@ -448,7 +448,7 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     justify-content: flex-end;
 }
 
-/* ── Endgame (Rozdroże: Nowa Twarz / Kontynuacja) ──────────────────────── */
+/* ── Endgame (Rozdroże: Żyjąca Legenda / Nowa Twarz) ────────────────────── */
 /* Reużywa .gate/.gate-card (patrz wyżej) — #endgameOverlay to drugi, niezależny
    pełnoekranowy overlay obok #characterGate, sterowany tymi samymi klasami
    (.active pokazuje, .hidden na #app chowa dashboard pod spodem). */

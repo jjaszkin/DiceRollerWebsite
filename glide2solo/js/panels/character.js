@@ -87,7 +87,7 @@ function numberInputRow({ label, abbr, path, value, min = 0, tip = "" }) {
 
 /** Odznaka "Nowa Gra+" — trwały, widoczny na stałe znacznik pod kartą Postaci, informujący,
  *  którą z kolei postacią w historii tego zapisu obecnie gramy (patrz state.js#character.generation,
- *  ustawiane przy konsumpcji mostu Ścieżki A "Nowa Twarz" w gate.js#applyPendingBridgeIfAny).
+ *  ustawiane przy konsumpcji mostu Ścieżki A "Żyjąca Legenda" w gate.js#applyPendingBridgeIfAny).
  *  Niewidoczna dla pierwszej postaci (generation === 1) — pojawia się dopiero od drugiej. */
 function renderGenerationBadge(ch) {
     const gen = ch.generation || 1;
