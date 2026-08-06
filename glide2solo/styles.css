@@ -574,6 +574,23 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     margin: 0 0 10px;
 }
 
+/* Edycja inline nazwy/opisu heksu i notatki NPC-a — pole wpisywane wprost w panelu, zamiast
+   window.prompt() (przeglądarki potrafią blokować powtarzalne wyskakujące okienka). Współdzielone
+   przez panels/map.js#renderHexCustomInfo i panels/contacts.js#renderNoteBlock. */
+.hex-inline-edit {
+    margin: 0 0 10px;
+}
+.hex-inline-input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+.hex-inline-edit-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
 .catalog-group h4 {
     font-family: var(--mono);
     font-size: 0.72rem;
