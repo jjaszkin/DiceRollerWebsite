@@ -59,7 +59,9 @@ const ui = {
     settlementAction: {
         guildId: null, // wybrana gildia dla akcji Osady kierowanych do gildii (donacje, poprawa relacji)
         scrapQty: 1,   // liczba sztuk Złomu do sprzedaży/zakupu w jednej transakcji (dla bonusu/rabatu 3+)
-        supplyQty: 1   // liczba sztuk Zasobów do zakupu w jednej transakcji (bez rabatu — Zasoby go nie mają)
+        supplyQty: 1,  // liczba sztuk Zasobów do zakupu w jednej transakcji (bez rabatu — Zasoby go nie mają)
+        message: null  // ostatni komunikat blokady transakcji (za mało Kredytów/zasobów, magazyn pełny) —
+                        // ten sam wzorzec co ui.oddJobs.blockedMsg, patrz renderSettlementActionsReference
     }
 };
 
@@ -374,6 +376,8 @@ function renderSettlementActionsReference(actions, data) {
         </div>
     ` : "";
 
+    const messageHtml = ui.settlementAction.message ? `<p class="placeholder">${escapeHtml(ui.settlementAction.message)}</p>` : "";
+
     const catsHtml = Object.entries(actions).map(([catKey, cat]) => {
         if (catKey === "scrap") return renderScrapActions(cat);
         if (catKey === "supply") return renderSupplyActions(cat);
@@ -389,7 +393,7 @@ function renderSettlementActionsReference(actions, data) {
         `;
     }).join("");
 
-    return guildSelectHtml + catsHtml;
+    return guildSelectHtml + messageHtml + catsHtml;
 }
 
 /** Render kandydata z Tabeli Towarzyszy — z przyciskiem naboru (chyba że to już aktualny towarzysz). */
@@ -1015,43 +1019,82 @@ function getQty(field) {
 
 function sellScrap() {
     const state = getState();
-    const qty = getQty("scrapQty");
+    const scrap = state.character.glider.scrap;
+    const owned = scrap.cur;
+    if (owned <= 0) {
+        ui.settlementAction.message = "Nie masz Złomu do sprzedania.";
+        rerender();
+        return;
+    }
+    const requestedQty = getQty("scrapQty");
+    const qty = Math.min(requestedQty, owned);
     const rolls = Array.from({ length: qty }, () => rollD5());
     const rollSum = rolls.reduce((a, b) => a + b, 0);
     const bonus = qty >= 3 ? qty : 0; // "Sprzedaż 3+ Złom w jednej transakcji: bonus 1 Kredyt za każdy sprzedany Złom."
     const gained = rollSum + bonus;
+    ui.settlementAction.message = null;
     state.character.resources.credits += gained;
-    const scrap = state.character.glider.scrap;
     scrap.cur = clamp(scrap.cur - qty, 0, scrap.max);
-    logEvent(state, "settlement-action", `Sprzedano ${qty} Złom za ${gained} Kredytów (d5: ${rolls.join("+")}=${rollSum}${bonus ? `, bonus 3+: +${bonus}` : ""}).`);
+    const cappedNote = qty < requestedQty ? ` (ograniczono do ${qty} — tyle miałeś)` : "";
+    logEvent(state, "settlement-action", `Sprzedano ${qty} Złom za ${gained} Kredytów (d5: ${rolls.join("+")}=${rollSum}${bonus ? `, bonus 3+: +${bonus}` : ""})${cappedNote}.`);
     touch();
     rerender();
 }
 
 function buyScrap() {
     const state = getState();
-    const qty = getQty("scrapQty");
+    const scrap = state.character.glider.scrap;
+    const headroom = scrap.max - scrap.cur;
+    if (headroom <= 0) {
+        ui.settlementAction.message = "Magazyn Złomu jest pełny — nie możesz kupić więcej.";
+        rerender();
+        return;
+    }
+    const requestedQty = getQty("scrapQty");
+    const qty = Math.min(requestedQty, headroom);
     const rolls = Array.from({ length: qty }, () => rollD10());
     const rollSum = rolls.reduce((a, b) => a + b, 0) + qty; // 1d10+1 za sztukę
     const discount = qty >= 3 ? qty : 0; // "Zakup 3+ Złom w jednej transakcji: rabat 1 Kredyt na każdy Złom."
     const cost = rollSum - discount;
+    const credits = state.character.resources.credits;
+    if (credits < cost) {
+        ui.settlementAction.message = `Za mało Kredytów — masz ${credits}, transakcja kosztowałaby ${cost}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     state.character.resources.credits -= cost;
-    const scrap = state.character.glider.scrap;
     scrap.cur = clamp(scrap.cur + qty, 0, scrap.max);
-    logEvent(state, "settlement-action", `Kupiono ${qty} Złom za ${cost} Kredytów (d10: ${rolls.join("+")}, +${qty} za sztuki${discount ? `, rabat 3+: -${discount}` : ""}).`);
+    const cappedNote = qty < requestedQty ? ` (ograniczono do ${qty} — limit magazynu)` : "";
+    logEvent(state, "settlement-action", `Kupiono ${qty} Złom za ${cost} Kredytów (d10: ${rolls.join("+")}, +${qty} za sztuki${discount ? `, rabat 3+: -${discount}` : ""})${cappedNote}.`);
     touch();
     rerender();
 }
 
 function buySupply() {
     const state = getState();
-    const qty = getQty("supplyQty");
+    const supply = state.character.glider.supply;
+    const headroom = supply.max - supply.cur;
+    if (headroom <= 0) {
+        ui.settlementAction.message = "Magazyn Zasobów jest pełny — nie możesz kupić więcej.";
+        rerender();
+        return;
+    }
+    const requestedQty = getQty("supplyQty");
+    const qty = Math.min(requestedQty, headroom);
     const rolls = Array.from({ length: qty }, () => rollD5());
     const cost = rolls.reduce((a, b) => a + b, 0);
+    const credits = state.character.resources.credits;
+    if (credits < cost) {
+        ui.settlementAction.message = `Za mało Kredytów — masz ${credits}, transakcja kosztowałaby ${cost}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     state.character.resources.credits -= cost;
-    const supply = state.character.glider.supply;
     supply.cur = clamp(supply.cur + qty, 0, supply.max);
-    logEvent(state, "settlement-action", `Kupiono ${qty} Zasób(y) za ${cost} Kredytów (d5: ${rolls.join("+")}).`);
+    const cappedNote = qty < requestedQty ? ` (ograniczono do ${qty} — limit magazynu)` : "";
+    logEvent(state, "settlement-action", `Kupiono ${qty} Zasób(y) za ${cost} Kredytów (d5: ${rolls.join("+")})${cappedNote}.`);
     touch();
     rerender();
 }
@@ -1059,6 +1102,13 @@ function buySupply() {
 function restRecoverStamina() {
     const state = getState();
     const cost = 3;
+    const credits = state.character.resources.credits;
+    if (credits < cost) {
+        ui.settlementAction.message = `Za mało Kredytów — masz ${credits}, odpoczynek kosztuje ${cost}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     state.character.resources.credits -= cost;
     const stam = state.character.resources.stamina;
     stam.cur = clamp(stam.cur + 1, 0, stam.max);
@@ -1069,10 +1119,16 @@ function restRecoverStamina() {
 
 function sellRelic() {
     const state = getState();
+    const relics = state.character.glider.relics;
+    if (relics.cur <= 0) {
+        ui.settlementAction.message = "Nie masz Reliktów do sprzedania.";
+        rerender();
+        return;
+    }
     const d10 = rollD10();
     const gained = d10 * 5;
+    ui.settlementAction.message = null;
     state.character.resources.credits += gained;
-    const relics = state.character.glider.relics;
     relics.cur = clamp(relics.cur - 1, 0, relics.max);
     logEvent(state, "settlement-action", `Sprzedano 1 Relikt za ${gained} Kredytów (d10=${d10}×5).`);
     touch();
@@ -1082,6 +1138,12 @@ function sellRelic() {
 function donateRelicCompanion() {
     const state = getState();
     const relics = state.character.glider.relics;
+    if (relics.cur <= 0) {
+        ui.settlementAction.message = "Nie masz Reliktów do oddania.";
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     relics.cur = clamp(relics.cur - 1, 0, relics.max);
     state.character.companion.bondPoints = (state.character.companion.bondPoints || 0) + 2;
     logEvent(state, "settlement-action", `Oddano 1 Relikt Towarzyszowi za +2 Punkty Więzi.`);
@@ -1094,6 +1156,12 @@ function donateRelicGuild(data) {
     const guild = getSelectedGuild(data);
     if (!guild) return;
     const relics = state.character.glider.relics;
+    if (relics.cur <= 0) {
+        ui.settlementAction.message = "Nie masz Reliktów do oddania.";
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     relics.cur = clamp(relics.cur - 1, 0, relics.max);
     if (!state.guildBonds[guild.id]) state.guildBonds[guild.id] = { points: 0 };
     state.guildBonds[guild.id].points += 3;
@@ -1105,6 +1173,12 @@ function donateRelicGuild(data) {
 function donateRelicsForFame() {
     const state = getState();
     const relics = state.character.glider.relics;
+    if (relics.cur < 3) {
+        ui.settlementAction.message = `Potrzebujesz 3 Reliktów, masz ${relics.cur}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     relics.cur = clamp(relics.cur - 3, 0, relics.max);
     state.character.resources.fame = (state.character.resources.fame || 0) + 1;
     logEvent(state, "settlement-action", `Oddano 3 Relikty za +1 Sława.`);
@@ -1114,10 +1188,22 @@ function donateRelicsForFame() {
 
 function buyIntel() {
     const state = getState();
+    const intel = state.character.resources.intel;
+    if (intel.cur >= intel.max) {
+        ui.settlementAction.message = "Masz już maksymalną liczbę Informacji.";
+        rerender();
+        return;
+    }
     const d10 = rollD10();
     const cost = d10 * 2;
+    const credits = state.character.resources.credits;
+    if (credits < cost) {
+        ui.settlementAction.message = `Za mało Kredytów — masz ${credits}, transakcja kosztowałaby ${cost}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     state.character.resources.credits -= cost;
-    const intel = state.character.resources.intel;
     intel.cur = clamp(intel.cur + 1, 0, intel.max);
     logEvent(state, "settlement-action", `Kupiono 1 Informację za ${cost} Kredytów (d10=${d10}×2).`);
     touch();
@@ -1126,9 +1212,15 @@ function buyIntel() {
 
 function sellIntel() {
     const state = getState();
-    const d10 = rollD10();
-    state.character.resources.credits += d10;
     const intel = state.character.resources.intel;
+    if (intel.cur <= 0) {
+        ui.settlementAction.message = "Nie masz Informacji do sprzedania.";
+        rerender();
+        return;
+    }
+    const d10 = rollD10();
+    ui.settlementAction.message = null;
+    state.character.resources.credits += d10;
     intel.cur = clamp(intel.cur - 1, 0, intel.max);
     logEvent(state, "settlement-action", `Sprzedano 1 Informację za ${d10} Kredytów (d10=${d10}×1).`);
     touch();
@@ -1138,8 +1230,19 @@ function sellIntel() {
 function tradeIntelForScrap() {
     const state = getState();
     const intel = state.character.resources.intel;
-    intel.cur = clamp(intel.cur - 1, 0, intel.max);
     const scrap = state.character.glider.scrap;
+    if (intel.cur <= 0) {
+        ui.settlementAction.message = "Nie masz Informacji do wymiany.";
+        rerender();
+        return;
+    }
+    if (scrap.cur >= scrap.max) {
+        ui.settlementAction.message = "Magazyn Złomu jest pełny — nie możesz wymienić.";
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
+    intel.cur = clamp(intel.cur - 1, 0, intel.max);
     scrap.cur = clamp(scrap.cur + 2, 0, scrap.max);
     logEvent(state, "settlement-action", `Wymieniono 1 Informację na 2 Złom.`);
     touch();
@@ -1151,6 +1254,12 @@ function donateIntelGuild(data) {
     const guild = getSelectedGuild(data);
     if (!guild) return;
     const intel = state.character.resources.intel;
+    if (intel.cur < 3) {
+        ui.settlementAction.message = `Potrzebujesz 3 Informacji, masz ${intel.cur}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     intel.cur = clamp(intel.cur - 3, 0, intel.max);
     if (!state.guildBonds[guild.id]) state.guildBonds[guild.id] = { points: 0 };
     state.guildBonds[guild.id].points += 1;
@@ -1162,6 +1271,12 @@ function donateIntelGuild(data) {
 function donateIntelCompanion() {
     const state = getState();
     const intel = state.character.resources.intel;
+    if (intel.cur < 3) {
+        ui.settlementAction.message = `Potrzebujesz 3 Informacji, masz ${intel.cur}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     intel.cur = clamp(intel.cur - 3, 0, intel.max);
     state.character.companion.bondPoints = (state.character.companion.bondPoints || 0) + 2;
     logEvent(state, "settlement-action", `Oddano 3 Informacje Towarzyszowi za +2 Punkty Więzi.`);
@@ -1173,6 +1288,13 @@ function improveRelationsCompanion() {
     const state = getState();
     const d10 = rollD10();
     const cost = d10 * 5;
+    const credits = state.character.resources.credits;
+    if (credits < cost) {
+        ui.settlementAction.message = `Za mało Kredytów — masz ${credits}, transakcja kosztowałaby ${cost}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     state.character.resources.credits -= cost;
     state.character.companion.bondPoints = (state.character.companion.bondPoints || 0) + 2;
     logEvent(state, "settlement-action", `Poprawiono relacje z Towarzyszem za ${cost} Kredytów (d10=${d10}×5): +2 Punkty Więzi.`);
@@ -1186,6 +1308,13 @@ function improveRelationsGuild(data) {
     if (!guild) return;
     const d10 = rollD10();
     const cost = d10 * 5;
+    const credits = state.character.resources.credits;
+    if (credits < cost) {
+        ui.settlementAction.message = `Za mało Kredytów — masz ${credits}, transakcja kosztowałaby ${cost}.`;
+        rerender();
+        return;
+    }
+    ui.settlementAction.message = null;
     state.character.resources.credits -= cost;
     if (!state.guildBonds[guild.id]) state.guildBonds[guild.id] = { points: 0 };
     state.guildBonds[guild.id].points += 2;
