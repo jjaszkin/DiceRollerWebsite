@@ -8,7 +8,7 @@
 // postaci).
 import { getState, touch } from "../store.js";
 import { generateNpc } from "../npcGenerator.js";
-import { uid, escapeHtml } from "../utils.js";
+import { uid, escapeHtml, preserveScroll } from "../utils.js";
 import { logEvent } from "../eventLog.js";
 
 let draft = null; // aktualnie wylosowany, jeszcze niezapisany NPC (albo null)
@@ -22,7 +22,7 @@ let currentData = null;
 let editingNoteId = null;
 
 function rerender() {
-    if (currentRoot) render(currentRoot, { state: getState(), data: currentData });
+    if (currentRoot) preserveScroll(() => render(currentRoot, { state: getState(), data: currentData }));
 }
 
 function renderFactionLine(faction) {

@@ -2,7 +2,7 @@
 // Faza 4: Pustynia/Ruiny/Zieleń (punkty orientacyjne+wydarzenia), Unikalne Lokacje, tabele osady, Wydarzenia Podróży/Hulanki.
 // Faza 5: Tabela Towarzyszy, Tabela Fuch, narzędzia Wyroczni (Glide + 4 biomowe).
 import { getState, touch } from "../store.js";
-import { rollDie, rollD2, rollD5, rollD10, rollD100, findInRangeTable, parseRange, clamp, uid, escapeHtml } from "../utils.js";
+import { rollDie, rollD2, rollD5, rollD10, rollD100, findInRangeTable, parseRange, clamp, uid, escapeHtml, preserveScroll } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
 import { applyTravelEventEffects, renderTravelEventEffects } from "../travelEvents.js";
@@ -67,7 +67,7 @@ let currentRoot = null;
 let currentData = null;
 
 function rerender() {
-    if (currentRoot) render(currentRoot, { state: getState(), data: currentData });
+    if (currentRoot) preserveScroll(() => render(currentRoot, { state: getState(), data: currentData }));
 }
 
 // Eksportowane niżej (rollTiles, needsTileRoll, resolveLocationLevel, rollD100Table,

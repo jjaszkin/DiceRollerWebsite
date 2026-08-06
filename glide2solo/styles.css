@@ -573,6 +573,25 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     gap: 8px;
     margin: 0 0 10px;
 }
+/* Nazwa/opis heksu obok przycisku "Zmień nazwę"/"Edytuj opis" (a nie pod nim) — patrz
+   panels/map.js#renderHexCustomInfo. Przycisk nie kurczy się (flex-shrink: 0), tekst może
+   się zawijać i wypełnia resztę szerokości; margines akapitu wyzerowany, żeby wyrównać go
+   pionowo do środka razem z przyciskiem. */
+.hex-custom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 6px 0 10px;
+}
+.hex-custom-row p {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+}
+.hex-custom-row .btn {
+    flex-shrink: 0;
+}
 
 /* Edycja inline nazwy/opisu heksu i notatki NPC-a — pole wpisywane wprost w panelu, zamiast
    window.prompt() (przeglądarki potrafią blokować powtarzalne wyskakujące okienka). Współdzielone

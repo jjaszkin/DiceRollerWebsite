@@ -8,7 +8,7 @@
 // data/desert.json, data/ruins.json, data/green_space.json, data/economy.json i
 // data/unique_locations.json (te same, z których korzysta panels/roller.js).
 import { getState, touch } from "../store.js";
-import { rollDie, uid, formatTimestamp, findInRangeTable, escapeHtml, clamp } from "../utils.js";
+import { rollDie, uid, formatTimestamp, findInRangeTable, escapeHtml, clamp, preserveScroll } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
 import { applyTravelEventEffects, renderTravelEventEffects } from "../travelEvents.js";
@@ -126,7 +126,7 @@ let lastTravelCheck = null;
 let editingHexField = null;
 
 function rerender() {
-    if (currentRoot) render(currentRoot, { state: getState(), data: currentData });
+    if (currentRoot) preserveScroll(() => render(currentRoot, { state: getState(), data: currentData }));
 }
 
 /** Zwraca heks-roota dla podanych współrzędnych (samego siebie, jeśli to root/samodzielny heks,
@@ -743,8 +743,8 @@ function renderHexCustomInfo(hex, coord) {
             </div>
         `
         : `
-            ${hex.customName ? `<p class="hex-custom-name">„${escapeHtml(hex.customName)}”</p>` : ""}
-            <div class="hex-custom-actions">
+            <div class="hex-custom-row">
+                ${hex.customName ? `<p class="hex-custom-name">„${escapeHtml(hex.customName)}”</p>` : ""}
                 <button class="btn btn-sm btn-secondary" data-action="edit-hex-name" data-coord="${coord}">${hex.customName ? "Zmień nazwę" : "Nadaj nazwę"}</button>
             </div>
         `;
@@ -761,8 +761,8 @@ function renderHexCustomInfo(hex, coord) {
             </div>
         `
         : `
-            ${hex.customDescription ? `<p class="hex-custom-desc">${escapeHtml(hex.customDescription)}</p>` : ""}
-            <div class="hex-custom-actions">
+            <div class="hex-custom-row">
+                ${hex.customDescription ? `<p class="hex-custom-desc">${escapeHtml(hex.customDescription)}</p>` : ""}
                 <button class="btn btn-sm btn-secondary" data-action="edit-hex-desc" data-coord="${coord}">${hex.customDescription ? "Edytuj opis" : "Dodaj opis"}</button>
             </div>
         `;
