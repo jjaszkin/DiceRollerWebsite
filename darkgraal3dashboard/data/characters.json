@@ -1,0 +1,109 @@
+[
+    {
+        "key": "gaven",
+        "aliasName": "Thorgalson",
+        "type": "Bestia",
+        "name": "Sir Gaven",
+        "epithet": "The Grey",
+        "archetypes": {
+            "rycerz": { "base": 3, "woundDice": 1, "modifiers": [] },
+            "lowczy": { "base": 7, "woundDice": 0, "modifiers": [] },
+            "lotr": { "base": 5, "woundDice": 0, "modifiers": [] },
+            "kaplan": { "base": 2, "woundDice": 2, "modifiers": [] },
+            "czarownik": { "base": 1, "woundDice": 1, "modifiers": [] }
+        },
+        "despair": { "current": 2 },
+        "blessing": true,
+        "equipment": [
+            "łuk", "kusza ręczna", "toporek", "bransoleta", "stara skórznia",
+            "worek ziarna", "złoty łańcuszek z kłódką", "żołędzie z dębu Merlina (3)",
+            "5 czaszek czarnych impów", "mięso \"borsuka\"", "2 porcje zwykłych ziół",
+            "medalik Sir Beorna"
+        ],
+        "legendaryItemKeys": ["łza-merlina", "zioła-merlina", "czarny-luk-robina"]
+    },
+    {
+        "key": "palanore",
+        "aliasName": "Zuryk",
+        "type": "Demon",
+        "name": "Sir Palanore",
+        "epithet": null,
+        "archetypes": {
+            "rycerz": { "base": 6, "woundDice": 1, "modifiers": [] },
+            "lowczy": { "base": 1, "woundDice": 0, "modifiers": [] },
+            "lotr": { "base": 2, "woundDice": 1, "modifiers": [] },
+            "kaplan": { "base": 2, "woundDice": 1, "modifiers": [] },
+            "czarownik": { "base": 7, "woundDice": 0, "modifiers": [] }
+        },
+        "despair": { "current": 3 },
+        "blessing": false,
+        "equipment": [
+            "księga omenów", "królicza wątroba", "pogański symbol", "sakiewka z solą",
+            "kawałek węgla", "krzemienny rytualny nóż",
+            "lusterko \"oka\" Glacivère (Miecz) i Ashenvach (Kostur)",
+            "kawałek lusterka z runą Oka", "fiolka z esencją Sir Kay'a"
+        ],
+        "legendaryItemKeys": ["serce-ginewry-zimowy-szept", "serce-ginewry-lodowy-dotyk", "popioly-guinevak"]
+    },
+    {
+        "key": "cadwyn",
+        "aliasName": "Braxios",
+        "type": "Nieumarły",
+        "name": "Sir Cadwyn",
+        "epithet": null,
+        "archetypes": {
+            "rycerz": {
+                "base": 7, "woundDice": 0,
+                "modifiers": [
+                    { "id": "excalibur-w-dloni", "label": "Excalibur w dłoni", "delta": 1, "tooltip": "Aktywny, gdy Cadwyn dzierży Excalibur.", "active": true }
+                ]
+            },
+            "lowczy": {
+                "base": 5, "woundDice": 0,
+                "modifiers": [
+                    { "id": "posilenie-krwia", "label": "Posilenie krwią", "delta": 1, "tooltip": "Bonus po posileniu się krwią - MG wybiera Archetyp.", "active": true }
+                ]
+            },
+            "lotr": { "base": 3, "woundDice": 1, "modifiers": [] },
+            "kaplan": { "base": 3, "woundDice": 1, "modifiers": [] },
+            "czarownik": { "base": 1, "woundDice": 1, "modifiers": [] }
+        },
+        "despair": { "current": 1 },
+        "blessing": true,
+        "equipment": [
+            "włócznia", "zdrowy Koń", "latarnia", "krzesiwo", "woreczek wosku",
+            "trofeum z dzika (szable)", "płaszcz z dzika z sygnetem Gavena",
+            "naprawiony pancerz", "kawałek lusterka z runą Oka"
+        ],
+        "legendaryItemKeys": ["excalibur", "tarcza-wiecznego-debu", "swiatlosc-w-mroku"]
+    },
+    {
+        "key": "brandon",
+        "aliasName": "Varikhem",
+        "type": "Nieumarły",
+        "name": "Sir Brandon",
+        "epithet": null,
+        "archetypes": {
+            "rycerz": {
+                "base": 5, "woundDice": 0,
+                "modifiers": [
+                    { "id": "wplyw-sholloth", "label": "Wpływ Sholloth", "delta": -1, "tooltip": "Wpływ zauroczenia Lady z Shallot (wypaczonym Sholloth) - rozprasza Brandona i odsłania go na jej zew. MG może zwiększać tę wartość w kolejnych sesjach.", "active": true },
+                    { "id": "posilenie-krwia", "label": "Posilenie krwią", "delta": 1, "tooltip": "Bonus po posileniu się krwią - MG wybiera Archetyp.", "active": true }
+                ]
+            },
+            "lowczy": { "base": 1, "woundDice": 0, "modifiers": [] },
+            "lotr": { "base": 3, "woundDice": 0, "modifiers": [] },
+            "kaplan": { "base": 6, "woundDice": 2, "modifiers": [] },
+            "czarownik": { "base": 3, "woundDice": 2, "modifiers": [] }
+        },
+        "despair": { "current": 2 },
+        "blessing": false,
+        "equipment": [
+            "modlitewnik", "krzyż", "stuła", "świeca", "krzesiwo", "czerstwy chleb",
+            "buzdygan", "kadzidło i mirra", "ciężki różaniec (przerwany)",
+            "2 buteleczki wody święconej", "skóry z krwią przemienionego niedźwiedzia",
+            "czarny woal z wieży na rzece", "bukłak z czarną wodą"
+        ],
+        "legendaryItemKeys": []
+    }
+]
