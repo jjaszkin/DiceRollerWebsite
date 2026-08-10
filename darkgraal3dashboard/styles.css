@@ -1,0 +1,827 @@
+/* Dark Graal III - Dashboard Solo (MG)
+   Motyw czarno-złoty: głęboka czerń + spalona bursztynowo-złota linia (jak stary, zniszczony
+   grymuar przy świetle świecy). Struktura CSS wzorowana 1:1 na glide2solo/styles.css (te same
+   nazwy zmiennych --bg/--fg/--line, ten sam .card/.btn/.tabs/.gate szkielet), tylko paleta
+   przemalowana z monochromatycznej szarości na czerń + złoto. */
+
+:root {
+    --bg-0: #0a0806;
+    --bg-1: #14100b;
+    --bg-2: #1e1712;
+    --bg-3: #2a2019;
+    --line: #3d2f1f;
+    --line-strong: #6b5330;
+    --gold: #c9a227;
+    --gold-bright: #e8c34a;
+    --gold-dim: #8a712c;
+    --fg-0: #f2e9d8;
+    --fg-1: #d8c9a8;
+    --fg-2: #a89878;
+    --fg-dim: #6b5f4a;
+    --danger: #8a2f2f;
+    --mono: "SFMono-Regular", ui-monospace, "JetBrains Mono", "Consolas", "Courier New", monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --radius: 3px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-0);
+    color: var(--fg-0);
+    font-family: var(--sans);
+}
+
+body {
+    min-height: 100vh;
+    letter-spacing: 0.01em;
+}
+
+.app {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 16px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* -- Header -------------------------------------------------------------- */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+}
+
+.app-header h1 {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    letter-spacing: 0.18em;
+    margin: 0;
+    color: var(--gold-bright);
+    font-weight: 600;
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.save-indicator {
+    font-size: 0.8rem;
+    color: var(--fg-dim);
+    transition: color 0.2s;
+}
+.save-indicator.saving { color: var(--gold); }
+.save-indicator.saved { color: var(--fg-dim); }
+.save-indicator.error { color: var(--danger); text-decoration: underline wavy; }
+
+/* -- Tabs ------------------------------------------------------------------ */
+
+.tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--line);
+}
+
+.tab-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-bottom: none;
+    color: var(--fg-2);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: var(--radius) var(--radius) 0 0;
+    text-transform: uppercase;
+}
+
+.tab-btn:hover { color: var(--gold-bright); background: var(--bg-1); }
+
+.tab-btn.active {
+    color: var(--gold-bright);
+    background: var(--bg-2);
+    border-color: var(--line);
+    border-bottom: 1px solid var(--bg-2);
+    margin-bottom: -1px;
+}
+
+.tab-panels {
+    display: block;
+    padding-top: 12px;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.placeholder { color: var(--fg-dim); font-style: italic; }
+
+/* -- Generic building blocks ---------------------------------------------- */
+
+.card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+}
+
+.card + .card { margin-top: 12px; }
+
+h2, h3, h4 {
+    font-family: var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 18px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+}
+h2:first-child, h3:first-child, h4:first-child { margin-top: 0; }
+h2 { font-size: 1rem; }
+h3 { font-size: 0.85rem; }
+h4 { font-size: 0.75rem; color: var(--fg-2); }
+
+.card h2, .card h3 { margin-top: 0; }
+
+/* -- Buttons ---------------------------------------------------------------- */
+
+.btn {
+    font-family: var(--mono);
+    background: var(--bg-2);
+    color: var(--fg-0);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn:hover { background: var(--bg-3); border-color: var(--gold-dim); color: var(--gold-bright); }
+.btn:active { background: var(--bg-0); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary {
+    background: var(--gold);
+    color: var(--bg-0);
+    border-color: var(--gold);
+    font-weight: 700;
+}
+.btn-primary:hover { background: var(--gold-bright); color: var(--bg-0); border-color: var(--gold-bright); }
+
+.btn-secondary { background: var(--bg-2); }
+
+.btn-gold {
+    background: var(--bg-2);
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    font-weight: 700;
+}
+.btn-gold:hover { background: var(--gold); color: var(--bg-0); }
+
+.btn-sm {
+    padding: 3px 10px;
+    font-size: 0.8rem;
+}
+
+.btn-xs {
+    padding: 2px 8px;
+    font-size: 0.75rem;
+}
+
+.btn-icon {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+/* -- Forms ------------------------------------------------------------------ */
+
+select, input[type="text"], input[type="number"], input[type="password"], textarea {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--fg-0);
+    font-family: var(--sans);
+    border-radius: var(--radius);
+    padding: 7px 10px;
+    font-size: 0.9rem;
+}
+
+select:focus, input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+}
+
+textarea { width: 100%; resize: vertical; font-family: var(--sans); line-height: 1.5; display: block; margin: 6px 0; }
+
+label { font-size: 0.8rem; color: var(--fg-2); }
+
+.inline-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.char-picker {
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+/* -- Karta postaci (nagłówek) ---------------------------------------------- */
+
+.character-sheet { display: flex; flex-direction: column; gap: 12px; }
+
+.character-sheet-head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 10px;
+    margin-bottom: 4px;
+}
+
+.character-sheet-head h2 {
+    margin: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.character-sub {
+    margin: 0;
+    color: var(--fg-2);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* -- Stat rows (Rozpacz / Rany / Błogosławieństwo, Kości Graala, Wiatr Camelotu) -------------- */
+
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.stat-box {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+}
+
+.stat-box label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 6px;
+}
+
+.stat-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: var(--fg-0);
+}
+
+.mg-quick-add {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+.mg-quick-add input { width: 4.5em; }
+
+/* -- Archetypy ---------------------------------------------------------------- */
+
+.archetype-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.archetype-row {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+}
+
+.archetype-row-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.archetype-name {
+    font-weight: 700;
+    color: var(--gold-bright);
+    min-width: 90px;
+}
+
+.archetype-value {
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--fg-0);
+}
+
+.archetype-base {
+    font-size: 0.78rem;
+    color: var(--fg-dim);
+}
+
+.archetype-flavor {
+    font-size: 0.82rem;
+    color: var(--fg-1);
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.archetype-mods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.mod-chip {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 3px 8px;
+    background: var(--bg-2);
+    color: var(--fg-1);
+}
+.mod-chip.mod-active { border-color: var(--gold-dim); color: var(--gold-bright); }
+.mod-chip.mod-inactive { opacity: 0.5; text-decoration: line-through; }
+
+/* -- Ekwipunek ------------------------------------------------------------------ */
+
+.equipment-block { display: flex; flex-direction: column; gap: 10px; }
+
+.equipment-legendary, .equipment-plain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.item-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    color: var(--fg-1);
+}
+
+.item-chip.legendary {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+    background: var(--bg-1);
+    cursor: pointer;
+    font-weight: 600;
+}
+.item-chip.legendary:hover { background: var(--bg-3); }
+
+.chip-remove {
+    background: none;
+    border: none;
+    color: var(--fg-dim);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0 0 0 4px;
+}
+.chip-remove:hover { color: var(--danger); }
+
+/* -- Modal (Legendarny przedmiot) ------------------------------------------------ */
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+
+.modal {
+    background: var(--bg-1);
+    border: 1px solid var(--gold-dim);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.modal h2 { color: var(--gold-bright); margin-top: 0; }
+.modal h3 { color: var(--gold); font-size: 0.8rem; margin: 14px 0 4px; border-bottom: none; padding-bottom: 0; }
+.modal p { color: var(--fg-1); line-height: 1.55; font-size: 0.88rem; }
+
+.item-tooltip {
+    color: var(--fg-2);
+    font-style: italic;
+}
+
+/* -- Cechy Przemiany i Moce -------------------------------------------------------- */
+
+.transformation-block { margin-top: 8px; }
+
+.traits-list {
+    margin: 0 0 10px;
+    padding-left: 18px;
+    color: var(--fg-1);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.powers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.power-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+}
+
+.power-card.power-used { opacity: 0.55; }
+
+.power-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+}
+.power-head strong { color: var(--gold-bright); }
+
+.power-usage {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--fg-dim);
+}
+
+.power-card p { margin: 6px 0; font-size: 0.85rem; color: var(--fg-1); }
+
+.powers-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.power-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--fg-1);
+    cursor: pointer;
+}
+.power-check input { margin-top: 3px; }
+
+/* -- Roller (Test) ------------------------------------------------------------------- */
+
+.roller-panel { display: flex; flex-direction: column; gap: 4px; }
+
+.roller-setup,
+.roller-result {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+}
+
+.archetype-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.archetype-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    color: var(--fg-1);
+    cursor: pointer;
+    font-family: var(--sans);
+}
+.archetype-chip:hover { border-color: var(--gold-dim); }
+.archetype-chip.archetype-chip-active {
+    border-color: var(--gold);
+    background: var(--bg-2);
+    color: var(--gold-bright);
+}
+
+.archetype-chip-value {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.roller-pool-summary {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin: 12px 0;
+}
+
+.dice-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.die-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4em;
+    height: 2.4em;
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: var(--radius);
+    border: 1px solid var(--line-strong);
+    background: var(--bg-2);
+    color: var(--fg-0);
+}
+
+.die-chip.die-chip-sm {
+    width: 1.8em;
+    height: 1.8em;
+    font-size: 0.9rem;
+}
+
+.die-chip.die-removed { opacity: 0.35; text-decoration: line-through; border-color: var(--line); }
+.die-chip.die-complication { color: var(--fg-1); border-color: var(--line-strong); }
+.die-chip.die-success { color: var(--gold-bright); border-color: var(--gold-dim); }
+.die-chip.die-full { background: var(--gold); color: var(--bg-0); border-color: var(--gold-bright); }
+
+.roll-note-label {
+    display: block;
+    margin-top: 10px;
+}
+
+.roll-note-input { margin-top: 6px; }
+
+.roller-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+/* -- Panel MG ------------------------------------------------------------------------ */
+
+.mg-panel { display: flex; flex-direction: column; gap: 4px; }
+
+.mg-global-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.mg-archetype-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mg-archetype-edit {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+}
+
+.mg-inline-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--fg-dim);
+}
+
+.mg-input-num {
+    width: 4.5em;
+}
+
+.mg-modifiers {
+    margin: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mod-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mg-add-modifier, .mg-add-equipment {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+}
+.mg-add-modifier input { flex: 1 1 120px; }
+.mg-mod-delta { width: 4.5em; flex: 0 0 auto; }
+
+.mg-equipment-input { flex: 1 1 220px; }
+
+/* -- Dziennik --------------------------------------------------------------------------- */
+
+.journal-clear-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.journal-list-card { padding: 10px; }
+
+.entry-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.entry {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    background: var(--bg-1);
+    font-size: 0.88rem;
+}
+
+.entry.entry-event { border-left: 2px solid var(--gold-dim); }
+.entry.entry-roll { border-left: 2px solid var(--gold); }
+
+.entry-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--fg-dim);
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.entry-result { color: var(--fg-1); }
+.entry-result strong { color: var(--gold-bright); }
+
+.entry-meta-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* -- Gate (ekran startowy: MG / Gracz + wybór postaci) ------------------------------------- */
+
+.hidden { display: none !important; }
+
+.gate {
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+}
+
+.gate.active { display: flex; }
+
+.gate-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg-1);
+    border: 1px solid var(--gold-dim);
+    border-radius: var(--radius);
+    padding: 24px 24px 28px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.gate-card h1 {
+    font-family: var(--mono);
+    font-size: 1.2rem;
+    letter-spacing: 0.18em;
+    margin: 0 0 4px;
+    color: var(--gold-bright);
+    font-weight: 600;
+    text-align: center;
+}
+
+.gate-sub {
+    text-align: center;
+    color: var(--fg-dim);
+    font-style: italic;
+    font-size: 0.85rem;
+    margin: 0 0 20px;
+}
+
+.gate-field { display: block; margin-bottom: 14px; }
+
+.gate-field span {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    color: var(--fg-2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.gate-field select { width: 100%; }
+
+.gate-error {
+    color: var(--fg-0);
+    background: var(--bg-2);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+}
+
+.gate-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.gate-actions-role {
+    flex-direction: column;
+}
+.gate-actions-role .btn { width: 100%; }
+
+/* -- Footer -------------------------------------------------------------------------------- */
+
+.app-footer {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--fg-dim);
+    padding-top: 8px;
+}
+
+/* -- Scrollbar (webkit, subtle) -------------------------------------------------------------- */
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-0); }
+::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: var(--radius); }
+::-webkit-scrollbar-thumb:hover { background: var(--line-strong); }
+
+@media (max-width: 640px) {
+    .app-header h1 { font-size: 0.95rem; }
+    .header-status { width: 100%; justify-content: space-between; }
+    .archetype-row-head { flex-direction: column; align-items: flex-start; }
+}

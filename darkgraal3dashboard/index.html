@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Dark Graal III - Dashboard Solo (MG)</title>
+</head>
+<body>
+    <div class="gate" id="characterGate">
+        <div class="gate-card">
+            <h1>DARK GRAAL III</h1>
+            <p class="gate-sub">Wspólna kampania - powiedz nam, kto patrzy.</p>
+
+            <div id="gateStepRole">
+                <p class="gate-sub">Kim jesteś?</p>
+                <div class="gate-actions gate-actions-role">
+                    <button type="button" class="btn btn-primary" id="gateRoleMg">Jestem Mistrzem Gry</button>
+                    <button type="button" class="btn btn-secondary" id="gateRolePlayer">Jestem Graczem</button>
+                </div>
+            </div>
+
+            <div id="gateStepCharacter" style="display:none;">
+                <p class="gate-sub">Wybierz swoją postać</p>
+
+                <label class="gate-field">
+                    <span>Postać</span>
+                    <select id="gateCharacterSelect"></select>
+                </label>
+
+                <p class="gate-error" id="gateCharacterError" style="display:none;"></p>
+
+                <div class="gate-actions">
+                    <button class="btn btn-secondary" id="gateCharacterBack">Wstecz</button>
+                    <button class="btn btn-primary" id="gateCharacterNext">Wejdź do gry</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app hidden" id="app">
+
+        <header class="app-header">
+            <h1>DARK GRAAL III</h1>
+            <div class="header-status">
+                <span class="save-indicator" id="saveIndicator" title="Stan zapisu">●</span>
+            </div>
+        </header>
+
+        <nav class="tabs" id="mainTabs">
+            <button class="tab-btn active" data-tab="character">Postać</button>
+            <button class="tab-btn" data-tab="roller">Test</button>
+            <button class="tab-btn" data-tab="journal">Dziennik</button>
+            <button class="tab-btn" data-tab="mg">MG</button>
+        </nav>
+
+        <main class="tab-panels">
+            <section id="panel-character" class="tab-panel active">
+                <p class="placeholder">Ładowanie karty postaci...</p>
+            </section>
+
+            <section id="panel-roller" class="tab-panel">
+                <p class="placeholder">Ładowanie testu...</p>
+            </section>
+
+            <section id="panel-journal" class="tab-panel">
+                <p class="placeholder">Ładowanie dziennika...</p>
+            </section>
+
+            <section id="panel-mg" class="tab-panel">
+                <p class="placeholder">Ładowanie zaplecza MG...</p>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <span id="bootStatus">Inicjalizacja...</span>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

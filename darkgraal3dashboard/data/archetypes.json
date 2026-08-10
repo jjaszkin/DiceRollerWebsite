@@ -1,0 +1,7 @@
+[
+    { "key": "rycerz", "label": "Rycerz", "flavor": "honor, miecz, buzdygan, lance, włócznie, zapasy, jeździectwo" },
+    { "key": "lowczy", "label": "Łowczy", "flavor": "przetrwanie, tropy, łuki, kusze, medycyna, tropienie" },
+    { "key": "lotr", "label": "Łotr", "flavor": "okradanie, szybkość, rzucanie, akrobatyka, blef, zastraszanie" },
+    { "key": "kaplan", "label": "Kapłan", "flavor": "modlitwa, demony, święte leczenie, znajomości, folklor" },
+    { "key": "czarownik", "label": "Czarownik", "flavor": "czarostwo, okultyzm, historia, języki, balsamy, strzygonie" }
+]

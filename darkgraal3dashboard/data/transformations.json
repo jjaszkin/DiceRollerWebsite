@@ -1,0 +1,198 @@
+{
+    "gaven": {
+        "type": "Bestia",
+        "traits": [
+            "Możesz widzieć w ciemności.",
+            "Małe porcje futra wyrastają z twojego ciała.",
+            "Twój zmysł węchu jest wzmocniony.",
+            "Jesz tylko surowe mięso.",
+            "Emitujesz nieprzyjemny zapach.",
+            "Twoja twarz jest wykrzywiona, kły wystają z twojej szczęki.",
+            "Normalni ludzie boją się ciebie, ale jesteś silniejszy.",
+            "Dodaj jedną kość podczas bijatyki.",
+            "Zmniejsz kostkę, gdy próbujesz zrobić cokolwiek, co wiąże się z naturalną charyzmą.",
+            "Masz wielką żądzę krwi, którą musisz zaspokoić.",
+            "Musisz udać się na pustkowie na 1k3 dni i pożreć zwierzęta.",
+            "Twoje ciało pokrywają twarde, kościste wypustki i narośla.",
+            "Otrzymujesz dodatkową ochronę, ale nie możesz nosić zwykłej zbroi ani ubrań.",
+            "Możesz wyczuć emocje strachu i złości w promieniu mili.",
+            "Twoja furia przejmuje nad tobą kontrolę, gdy wyczujesz słabość przeciwnika."
+        ],
+        "powers": [
+            {
+                "id": "wladca-dziczy",
+                "name": "Władca dziczy",
+                "description": "Twoje wycie może przywołać drapieżne zwierzęta z okolicy, które będą cię chronić, ale tracisz kontrolę, gdy wejdziesz w stan szału.",
+                "effect": { "type": "narrative", "usage": "narrative" }
+            },
+            {
+                "id": "instynkt-lowcy",
+                "name": "Instynkt Łowcy",
+                "description": "Raz na sesję możesz ogłosić, że „czujesz ofiarę” – następny rzut związany ze śledzeniem lub atakiem wręcz dostaje +4 kości.",
+                "effect": { "type": "bonus_dice", "amount": 4, "usage": "session", "conditionText": "następny rzut związany ze śledzeniem lub atakiem wręcz" }
+            },
+            {
+                "id": "zew-krwi",
+                "name": "Zew krwi",
+                "description": "Kiedy twoje ciało poczuje zapach świeżej krwi, możesz przerzucić dwie „1”.",
+                "effect": { "type": "reroll_ones", "amount": 2, "usage": "narrative", "conditionText": "gdy w pobliżu jest świeża krew" }
+            },
+            {
+                "id": "kosciana-sila",
+                "name": "Kościana siła",
+                "description": "Gdy twoja najniższa kość wynosi 1 lub 2, dodaj do niej +2.",
+                "effect": { "type": "raise_lowest_die", "amount": 2, "usage": "passive", "conditionText": "najniższa kość w rzucie ≤ 2" }
+            }
+        ]
+    },
+    "palanore": {
+        "type": "Demon",
+        "traits": [
+            "Podąża za Tobą delikatny zapach siarki.",
+            "Przekroczenie progu kaplicy zadaje Ci Mniejszą Ranę.",
+            "Zdobądź dodatkową kość, próbując kłamać lub uwodzić.",
+            "Krótkie skrzydła wyrastają z twoich pleców, dzięki czemu możesz latać przez minutę.",
+            "Woda święcona zadaje ci Mniejsze Rany.",
+            "Twoje skrzydła są w pełnej rozpiętości, co pozwala latać w nieskończoność.",
+            "Na twojej głowie tworzą się rogi.",
+            "Ludzie unikają cię jak zarazy.",
+            "Posiadasz aurę strachu, która osłabia innych wokół ciebie, ale twoje ciało zyskuje podatność na poświęcone przedmioty i symbole.",
+            "Możesz spopielać małe przedmioty lub ranisz przeciwnika samym spojrzeniem.",
+            "Jednakże, każde użycie tej mocy pogłębia twoje demoniczne cechy."
+        ],
+        "powers": [
+            {
+                "id": "brama-piekiel",
+                "name": "Brama piekieł",
+                "description": "Możesz otworzyć tymczasowy portal do zaświatów, by sprowadzać demoniczne sługi na pomoc. Jednak każdy portal oddala cię coraz bardziej od ludzkiej rzeczywistości.",
+                "effect": { "type": "narrative", "usage": "narrative" }
+            },
+            {
+                "id": "plonaca-obecnosc",
+                "name": "Płonąca obecność",
+                "description": "Raz na walkę, jeśli w rzucie wypadnie przynajmniej jedna „6”, najniższą kość możesz podnieść o +2.",
+                "effect": { "type": "raise_lowest_die", "amount": 2, "usage": "combat", "conditionText": "w rzucie wypadła przynajmniej jedna „6”" }
+            },
+            {
+                "id": "szept-otchlani",
+                "name": "Szept otchłani",
+                "description": "Gdy kłamiesz, uwodzisz lub rzucasz urok, możesz przerzucić dwie „1”.",
+                "effect": { "type": "reroll_ones", "amount": 2, "usage": "narrative", "conditionText": "kłamiesz, uwodzisz lub rzucasz urok" }
+            },
+            {
+                "id": "symbol-piekiel",
+                "name": "Symbol Piekieł",
+                "description": "Raz na scenę możesz wybrać osobę (sojusznika lub wroga). Do końca sceny dostajesz +1 kość przeciwko niemu – ale po scenie twoje ciało przejawia nową demoniczną skazę.",
+                "effect": {
+                    "type": "bonus_dice", "amount": 1, "usage": "scene",
+                    "conditionText": "przeciwko wybranej osobie, do końca sceny",
+                    "secondaryEffectText": "Po zakończeniu sceny ciało przejawia nową, trwałą demoniczną skazę (MG opisuje efekt)."
+                }
+            }
+        ]
+    },
+    "cadwyn": {
+        "type": "Nieumarły",
+        "traits": [
+            "Twoja skóra jest poszarzała, a włosy wypadają.",
+            "W dziąsłach rozwijają się kły.",
+            "Musisz spuszczać krew ze zwierzęcia trzy razy dziennie lub odjąć kość Archetypu za każdy pominięty posiłek.",
+            "Twoje oczy są zapadnięte.",
+            "Kroplę krwi możesz wyczuć z odległości mili.",
+            "Przez godzinę po nakarmieniu zyskujesz dodatkową kość w dowolnym Archetypie.",
+            "W nocy twoje zmysły wyostrzają się i zyskujesz dodatkową kość podczas walki bez broni.",
+            "Twoje ciało staje się częściowo rozkładające, pokryte ropą i wysuszonymi tkankami.",
+            "Uzyskujesz odporność na cięcia i kłucia, ale ludzie czują obrzydzenie i strach, gdy zbliżasz się do nich.",
+            "Możesz wykryć obecność żywych istot i wrażeń, które były częścią śmierci w danym miejscu.",
+            "Możesz zadać dodatkowe obrażenia duchom i innym umarłym."
+        ],
+        "powers": [
+            {
+                "id": "krwawa-ofiara",
+                "name": "Krwawa ofiara",
+                "description": "Kiedy złożysz ofiarę z krwi innych istot, możesz tymczasowo odzyskać częściową ludzką formę na kilka godzin, ale im więcej ofiar składasz, tym bardziej to pragnienie przejmuje nad tobą kontrolę.",
+                "effect": { "type": "narrative", "usage": "narrative" }
+            },
+            {
+                "id": "glos-excalibura",
+                "name": "Głos Excalibura",
+                "description": "Podczas walki, kiedy w rzucie pojawi się przynajmniej jedna „6”, podnieś najniższą kość o +3. Excalibur szepcze ci słowa, których inni nie słyszą, ale jego wpływ cię obciąża.",
+                "effect": {
+                    "type": "raise_lowest_die", "amount": 3, "usage": "combat",
+                    "conditionText": "w rzucie wypadła przynajmniej jedna „6”",
+                    "secondaryEffectText": "Do końca tej walki masz -1 kość (MG odnotowuje ręcznie)."
+                }
+            },
+            {
+                "id": "krol-bez-krolestwa",
+                "name": "Król bez królestwa",
+                "description": "Kiedy walczysz z Excaliburem w ręku, możesz przerzucić dwie „1”. Jeśli jednak nie walczysz Excaliburem, zawsze tracisz 2 kości.",
+                "effect": {
+                    "type": "reroll_ones", "amount": 2, "usage": "narrative",
+                    "conditionText": "walczysz z Excaliburem w ręku",
+                    "secondaryEffectText": "Jeśli Cadwyn nie walczy Excaliburem, zawsze traci 2 kości (efekt stały, MG odnotowuje ręcznie)."
+                }
+            },
+            {
+                "id": "cierniowa-korona",
+                "name": "Cierniowa korona",
+                "description": "Raz na scenę możesz przemówić jak władca – wszyscy sojusznicy w zasięgu głosu dostają +1 kość do następnego testu, ale ty tracisz 1 kość w kolejnej akcji (przez duchowe zmęczenie).",
+                "effect": {
+                    "type": "party_bonus_dice", "amount": 1, "usage": "scene",
+                    "conditionText": "wszyscy sojusznicy w zasięgu głosu, do następnego testu",
+                    "secondaryEffectText": "Cadwyn traci 1 kość w swojej kolejnej akcji (MG odnotowuje ręcznie)."
+                }
+            }
+        ]
+    },
+    "brandon": {
+        "type": "Nieumarły",
+        "traits": [
+            "Twoja skóra jest poszarzała, a włosy wypadają.",
+            "W dziąsłach rozwijają się kły.",
+            "Musisz spuszczać krew ze zwierzęcia trzy razy dziennie lub odjąć kość Archetypu za każdy pominięty posiłek.",
+            "Twoje oczy są zapadnięte.",
+            "Kroplę krwi możesz wyczuć z odległości mili.",
+            "Przez godzinę po nakarmieniu zyskujesz dodatkową kość w dowolnym Archetypie.",
+            "W nocy twoje zmysły wyostrzają się i zyskujesz dodatkową kość podczas walki bez broni.",
+            "Twoje ciało staje się częściowo rozkładające, pokryte ropą i wysuszonymi tkankami.",
+            "Uzyskujesz odporność na cięcia i kłucia, ale ludzie czują obrzydzenie i strach, gdy zbliżasz się do nich.",
+            "Możesz wykryć obecność żywych istot i wrażeń, które były częścią śmierci w danym miejscu.",
+            "Możesz zadać dodatkowe obrażenia duchom i innym umarłym."
+        ],
+        "powers": [
+            {
+                "id": "krwawa-ofiara",
+                "name": "Krwawa ofiara",
+                "description": "Kiedy złożysz ofiarę z krwi innych istot, możesz tymczasowo odzyskać częściową ludzką formę na kilka godzin, ale im więcej ofiar składasz, tym bardziej to pragnienie przejmuje nad tobą kontrolę.",
+                "effect": { "type": "narrative", "usage": "narrative" }
+            },
+            {
+                "id": "milczenie-boga",
+                "name": "Milczenie boga",
+                "description": "Raz na scenę możesz wywołać aurę grozy i świętości jednocześnie – wszyscy wrogowie w zasięgu słyszą twoje słowa jakby przez pogłos. Dostajesz +1 kość do zastraszania/egzorcyzmów, ale sojusznicy obok ciebie czują chłód i nieufność.",
+                "effect": {
+                    "type": "bonus_dice", "amount": 1, "usage": "scene",
+                    "conditionText": "testy zastraszania lub egzorcyzmu, do końca sceny",
+                    "secondaryEffectText": "Sojusznicy w pobliżu czują chłód i nieufność (efekt narracyjny)."
+                }
+            },
+            {
+                "id": "puste-sakramenty",
+                "name": "Puste sakramenty",
+                "description": "Kiedy odwołujesz się do wiary (kazanie, modlitwa, rytuał), możesz przerzucić wszystkie „1”, ale jeśli w rzucie nie padnie żadna „6”, tracisz 1 kość do końca sesji.",
+                "effect": {
+                    "type": "reroll_all_ones", "usage": "narrative",
+                    "conditionText": "odwołujesz się do wiary (kazanie, modlitwa, rytuał)",
+                    "secondaryEffectText": "Jeśli w przerzuconym rzucie nie padnie żadna „6”, Brandon traci 1 kość do końca sesji (MG odnotowuje ręcznie)."
+                }
+            },
+            {
+                "id": "glod-duszy",
+                "name": "Głód duszy",
+                "description": "Jeśli poświęcisz krew (zwierzęcia lub człowieka), możesz podnieść najniższą kość o +2. Ale im częściej to robisz, tym trudniej zatrzymać się przed kolejnym głodem.",
+                "effect": { "type": "raise_lowest_die", "amount": 2, "usage": "narrative", "conditionText": "poświęcisz krew (zwierzęcia lub człowieka)" }
+            }
+        ]
+    }
+}
