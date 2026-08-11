@@ -12,17 +12,13 @@ import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
 import * as mgPanel from "./panels/mg.js";
 
+// Zakładki ("Postać"/"Rzuty") istnieją WYŁĄCZNIE dla Graczy - MG w ogóle ich nie widzi (patrz
+// applyRoleVisibility()) i ma zamiast nich jeden własny, nietabowy widok #mgUnifiedRoot
+// (panels/mg.js - siatka 12 kolumn: nawigacja po postaciach + karty postaci + panel rzutów MG).
 const PANELS = {
     character: characterPanel,
-    roller: rollerPanel,
-    mg: mgPanel
+    roller: rollerPanel
 };
-
-// Zakładki widoczne WYŁĄCZNIE dla MG (chowane graczom) i wyłącznie dla Gracza (chowane MG) - MG ma
-// tylko "MG" + "Rzuty", Gracz ma tylko "Postać" + "Rzuty" (panele MG mają dodatkowo własny
-// defensywny guard na session.role, patrz panels/mg.js).
-const MG_ONLY_TABS = new Set(["mg"]);
-const PLAYER_ONLY_TABS = new Set(["character"]);
 
 const bootStatus = document.getElementById("bootStatus");
 const saveIndicator = document.getElementById("saveIndicator");
@@ -39,6 +35,12 @@ function renderAll() {
     const state = getState();
     const data = getData();
     if (!state || !session) return;
+
+    if (session.role === "mg") {
+        const mgRoot = document.getElementById("mgUnifiedRoot");
+        if (mgRoot && mgPanel.render) mgPanel.render(mgRoot, { state, data, session });
+        return;
+    }
 
     for (const [tab, mod] of Object.entries(PANELS)) {
         const root = document.getElementById(`panel-${tab}`);
@@ -58,20 +60,25 @@ function setupTabs() {
     });
 }
 
+/** MG i Gracz mają teraz całkowicie odrębne "powłoki" UI: Gracz widzi zakładki "Postać"/"Rzuty"
+ *  (#mainTabs + #panel-*), MG widzi jeden nietabowy widok (#mgUnifiedRoot, patrz panels/mg.js) -
+ *  ta funkcja przełącza między nimi całymi sekcjami zamiast pojedynczymi zakładkami. */
 function applyRoleVisibility() {
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-        const tab = btn.dataset.tab;
-        const hidden = (MG_ONLY_TABS.has(tab) && session.role !== "mg") ||
-            (PLAYER_ONLY_TABS.has(tab) && session.role === "mg");
-        btn.style.display = hidden ? "none" : "";
-    });
-    // Jeśli aktualnie aktywna zakładka właśnie zniknęła (np. zmiana roli przez "Zmień postać" w
-    // trakcie sesji), przełącz na pierwszą widoczną zamiast zostawiać pusty panel.
-    const buttons = Array.from(document.querySelectorAll(".tab-btn"));
-    const activeBtn = buttons.find(b => b.classList.contains("active"));
-    if (!activeBtn || activeBtn.style.display === "none") {
-        const firstVisible = buttons.find(b => b.style.display !== "none");
-        if (firstVisible) firstVisible.click();
+    const isMg = session.role === "mg";
+    const tabsEl = document.getElementById("mainTabs");
+    const tabPanelsEl = document.querySelector(".tab-panels");
+    const mgRoot = document.getElementById("mgUnifiedRoot");
+
+    if (tabsEl) tabsEl.classList.toggle("hidden", isMg);
+    if (tabPanelsEl) tabPanelsEl.classList.toggle("hidden", isMg);
+    if (mgRoot) mgRoot.classList.toggle("hidden", !isMg);
+
+    if (!isMg) {
+        // Jeśli żadna zakładka Gracza nie jest aktywna (np. świeże wejście albo powrót z roli MG),
+        // upewnij się, że coś jest wybrane zamiast zostawiać pusty panel.
+        const buttons = Array.from(document.querySelectorAll(".tab-btn"));
+        const activeBtn = buttons.find(b => b.classList.contains("active"));
+        if (!activeBtn && buttons[0]) buttons[0].click();
     }
 }
 

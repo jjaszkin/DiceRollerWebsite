@@ -13,10 +13,9 @@
     <div class="gate" id="characterGate">
         <div class="gate-card">
             <img class="gate-logo" src="images/Logo.png" alt="Dark Graal III">
-            <p class="gate-sub">Wspólna kampania - powiedz nam, kto patrzy.</p>
+            <p class="gate-sub">Powiedz mi, kto patrzy.</p>
 
             <div id="gateStepRole">
-                <p class="gate-sub">Kim jesteś?</p>
                 <div class="gate-actions gate-actions-role">
                     <button type="button" class="btn btn-primary" id="gateRoleMg">Jestem Mistrzem Gry</button>
                     <button type="button" class="btn btn-secondary" id="gateRolePlayer">Jestem Graczem</button>
@@ -74,7 +73,6 @@
         <nav class="tabs" id="mainTabs">
             <button class="tab-btn active" data-tab="character">Postać</button>
             <button class="tab-btn" data-tab="roller">Rzuty</button>
-            <button class="tab-btn" data-tab="mg">MG</button>
         </nav>
 
         <main class="tab-panels">
@@ -85,16 +83,18 @@
             <section id="panel-roller" class="tab-panel">
                 <p class="placeholder">Ładowanie testu...</p>
             </section>
-
-            <section id="panel-mg" class="tab-panel">
-                <p class="placeholder">Ładowanie zaplecza MG...</p>
-            </section>
         </main>
+
+        <div id="mgUnifiedRoot" class="hidden">
+            <p class="placeholder">Ładowanie zaplecza MG...</p>
+        </div>
 
         <footer class="app-footer">
             <span id="bootStatus">Inicjalizacja...</span>
         </footer>
     </div>
+
+    <div class="toast-container" id="toastContainer"></div>
 
     <script type="module" src="js/main.js"></script>
 </body>
