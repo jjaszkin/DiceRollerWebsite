@@ -8,9 +8,10 @@
 // jest lokalny (nie zapisywany do Firebase) wybór w `ui.selectedCharacterKey`.
 
 import { updateState } from "../store.js";
-import { archetypeCurrent, despairMax } from "../state.js";
+import { archetypeCurrent, despairMax, resolveItemTooltip } from "../state.js";
 import { logEvent } from "../eventLog.js";
 import { escapeHtml, clamp, preserveScroll } from "../utils.js";
+import { showToast } from "../toast.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -60,7 +61,7 @@ function renderArchetypeRow(data, key, archetype) {
     `;
 }
 
-function renderEquipment(character, data) {
+function renderEquipment(character, data, state) {
     const disabledLegendary = new Set(character.disabledItemKeys || []);
     const legendaryHtml = (character.legendaryItemKeys || []).map(key => {
         const item = data.items[key];
@@ -68,7 +69,7 @@ function renderEquipment(character, data) {
         const disabled = disabledLegendary.has(key);
         return `
             <button class="item-chip legendary ${disabled ? "item-disabled" : ""}" data-action="open-item" data-key="${key}"
-                title="${escapeHtml(item.shortTooltip || "")}">
+                title="${escapeHtml(resolveItemTooltip(state, data, key))}">
                 ${escapeHtml(item.name)}${disabled ? " (wygaszony)" : ""}
             </button>
         `;
@@ -112,7 +113,7 @@ function renderUsableButton(itemKey, section, character, itemDisabled) {
     `;
 }
 
-function renderItemModal(data, character) {
+function renderItemModal(data, character, state) {
     const itemKey = ui.openItemKey;
     const item = itemKey ? data.items[itemKey] : null;
     if (!item || !character) return "";
@@ -127,7 +128,7 @@ function renderItemModal(data, character) {
             <div class="modal">
                 <h2>${escapeHtml(item.name)}</h2>
                 ${disabled ? `<p class="item-disabled-note">Ten przedmiot jest obecnie wygaszony przez MG.</p>` : ""}
-                <p class="item-tooltip">${escapeHtml(item.shortTooltip || "")}</p>
+                <p class="item-tooltip">${escapeHtml(resolveItemTooltip(state, data, itemKey))}</p>
                 ${sections}
                 <div class="modal-actions">
                     <button class="btn btn-sm btn-gold" data-action="use-item" data-item-key="${itemKey}" ${disabled ? "disabled" : ""}>Użyj przedmiotu</button>
@@ -147,9 +148,21 @@ function powerUsageNote(power) {
     return "narracyjna";
 }
 
-function renderPowers(character, transformation) {
+/** Cechy Przemiany - przeniesione do kolumny 1 (pod portret + Wiatr Camelotu), żeby "Moce" w
+ *  kolumnie 3 zaczynały się wyżej i nie wymagały scrolla. */
+function renderTraits(transformation) {
     if (!transformation) return "";
     const traitsHtml = (transformation.traits || []).map(t => `<li>${escapeHtml(t)}</li>`).join("");
+    return `
+        <div class="transformation-block traits-block">
+            <h3>Cechy Przemiany (${escapeHtml(transformation.type)})</h3>
+            <ul class="traits-list">${traitsHtml}</ul>
+        </div>
+    `;
+}
+
+function renderPowers(character, transformation) {
+    if (!transformation) return "";
     const powersHtml = (transformation.powers || []).map(p => {
         const used = !!character.usedPowers?.[p.id];
         return `
@@ -166,8 +179,6 @@ function renderPowers(character, transformation) {
     }).join("");
     return `
         <div class="transformation-block">
-            <h3>Cechy Przemiany (${escapeHtml(transformation.type)})</h3>
-            <ul class="traits-list">${traitsHtml}</ul>
             <h3>Moce</h3>
             <div class="powers-list">${powersHtml}</div>
         </div>
@@ -210,7 +221,7 @@ function buildHtml(ctx) {
         <div class="character-sheet">
             <header class="character-sheet-head">
                 <h2 class="character-name-big">${escapeHtml(character.name)}${character.epithet ? " " + escapeHtml(character.epithet) : ""}</h2>
-                <p class="character-player">Gracz: ${escapeHtml(character.aliasName)}</p>
+                <p class="character-player">${escapeHtml(character.aliasName)}</p>
             </header>
 
             <div class="character-sheet-grid">
@@ -221,6 +232,7 @@ function buildHtml(ctx) {
                         <label>Wiatr Camelotu</label>
                         <div class="camp-wind-value">${campWind.current} <span class="camp-wind-scale">/ ${campWind.scale}</span></div>
                     </div>
+                    ${renderTraits(transformation)}
                 </div>
 
                 <div class="character-col character-col-stats">
@@ -236,7 +248,7 @@ function buildHtml(ctx) {
                         <div class="stat-box">
                             <label>Błogosławieństwo Merlina</label>
                             <button class="btn btn-sm ${character.blessing ? "btn-gold" : ""}" data-action="toggle-blessing">
-                                ${character.blessing ? "Aktywne" : "Nieaktywne"}
+                                ${character.blessing ? "Dostępne" : "Wykorzystane"}
                             </button>
                         </div>
                     </div>
@@ -247,7 +259,7 @@ function buildHtml(ctx) {
                     </div>
 
                     <h3>Ekwipunek</h3>
-                    ${renderEquipment(character, data)}
+                    ${renderEquipment(character, data, state)}
                 </div>
 
                 <div class="character-col character-col-powers">
@@ -255,7 +267,7 @@ function buildHtml(ctx) {
                 </div>
             </div>
         </div>
-        ${renderItemModal(data, character)}
+        ${renderItemModal(data, character, state)}
     `;
 }
 
@@ -323,11 +335,14 @@ function wireEvents(root) {
 
         if (action === "use-equipment") {
             const itemId = btn.dataset.itemId;
+            let used = false;
             withActiveCharacter(root, (character, state) => {
                 const item = (character.equipment || []).find(e => e.id === itemId);
                 if (!item || item.disabled) return;
+                used = true;
                 logEvent(state, "equipment-used", `${character.name} użył ${item.name}.`);
             });
+            if (used) showToast("Użyłeś przedmiotu");
         }
 
         if (action === "use-item") {
@@ -335,10 +350,13 @@ function wireEvents(root) {
             const { data } = root._ctx;
             const item = data.items[itemKey];
             if (!item) return;
+            let used = false;
             withActiveCharacter(root, (character, state) => {
                 if ((character.disabledItemKeys || []).includes(itemKey)) return;
+                used = true;
                 logEvent(state, "equipment-used", `${character.name} użył ${item.name}.`);
             });
+            if (used) showToast("Użyłeś przedmiotu");
         }
 
         if (action === "use-item-power") {
@@ -350,14 +368,17 @@ function wireEvents(root) {
             const { data } = root._ctx;
             const item = data.items[itemKey];
             if (!item) return;
+            let used = false;
             withActiveCharacter(root, (character, state) => {
                 if ((character.disabledItemKeys || []).includes(itemKey)) return;
                 if (tracked) {
                     if (character.usedPowers[powerId]) return;
                     character.usedPowers[powerId] = true;
                 }
+                used = true;
                 logEvent(state, "item-power-used", `${character.name} użył mocy „${powerTitle}” (${item.name}).${cost ? " " + cost : ""}`);
             });
+            if (used) showToast("Użyłeś przedmiotu");
         }
     });
 }

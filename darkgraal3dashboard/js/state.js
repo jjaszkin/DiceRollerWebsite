@@ -83,8 +83,13 @@ export function createDefaultState(gameData) {
 
         rollHistory: [], // [{ id, characterKey, archetypeKey, dice, tier, note, ts, at }] - patrz rollLog.js
         events: [],      // [{ id, type, text, ts, at }] - patrz eventLog.js
-        journal: []      // [{ id, text, ts, at }] - zachowane wyłącznie jako "duchy" starych wpisów z
+        journal: [],     // [{ id, text, ts, at }] - zachowane wyłącznie jako "duchy" starych wpisów z
                           // testów (usuwalne przez MG) - UI dodawania nowych notatek zostało usunięte.
+
+        // Nadpisania opisów Przedmiotów Legendarnych wprowadzane na żywo przez MG z panelu MG
+        // (panels/mg.js - globalny katalog "Przedmioty Legendarne"), BEZ modyfikowania statycznego
+        // katalogu data/items.json. { [itemKey]: { tooltip: string } } - patrz resolveItemTooltip().
+        itemOverrides: {}
     };
 }
 
@@ -169,4 +174,15 @@ export function removeModifier(archetype, modifierId) {
 export function toggleModifier(archetype, modifierId) {
     const mod = archetype.modifiers.find(m => m.id === modifierId);
     if (mod) mod.active = !mod.active;
+}
+
+/** Zwraca efektywny (widoczny dla graczy) krótki opis Przedmiotu Legendarnego: nadpisanie MG z
+ *  state.itemOverrides, jeśli istnieje, inaczej `shortTooltip` ze statycznego katalogu (data/items.json).
+ *  Używane wszędzie tam, gdzie wyświetlany jest krótki opis przedmiotu (chip ekwipunku i modal na
+ *  karcie postaci - panels/character.js, katalog i modal w panelu MG - panels/mg.js), żeby edycja
+ *  opisu przez MG była widoczna spójnie w obu rolach. */
+export function resolveItemTooltip(state, data, itemKey) {
+    const override = state?.itemOverrides?.[itemKey];
+    if (override && typeof override.tooltip === "string") return override.tooltip;
+    return data?.items?.[itemKey]?.shortTooltip || "";
 }

@@ -1,26 +1,190 @@
-// Dark Graal III - Dashboard Solo (MG). Panel "MG" - zaplecze widoczne wyłącznie dla Mistrza Gry
-// (main.js chowa tę zakładkę graczom; poniższy guard na session.role === "mg" jest tylko
-// zabezpieczeniem defensywnym, na wypadek bezpośredniego wejścia w routing).
+// Dark Graal III - Dashboard Solo (MG). Widok MG - NIE jest już zakładką w środku #mainTabs (MG w
+// ogóle nie widzi zakładek "Postać"/"Rzuty", patrz main.js#applyRoleVisibility) - to jeden, samo-
+// wystarczalny nietabowy widok osadzony w #mgUnifiedRoot, w układzie siatki 12 kolumn:
+//   - Wiatr Camelotu na pełną szerokość, u góry (1.5x większy niż na karcie Gracza).
+//   - kol. 1-2: sticky nawigacja ("spis treści") z linkami-kotwicami do każdej postaci.
+//   - kol. 3-8: moduł "Dodaj modyfikator" (globalny, jeden dla wszystkich postaci/Archetypów),
+//     globalny katalog "Przedmioty Legendarne" (klik -> modal z przypisaniem/wygaszeniem/edycją
+//     opisu), a pod nimi wszystkie 4 postacie w pełnej karcie MG, jedna pod drugą (Rozpacz,
+//     Błogosławieństwo, Archetypy z bazą/kośćmi ran/modyfikatorami, ekwipunek zwykły, posiadane
+//     Przedmioty Legendarne (tylko odczyt - edycja przez katalog wyżej), reset zużytych Mocy).
+//   - kol. 9-12: samodzielny rzut MG (dowolna liczba kości + osobna, nielimitowana pula Kości
+//     Graala - MG nie rzuca "jako postać" ani "jako Archetyp") + osadzony Dziennik kampanii.
 //
-// Podstawowe liczniki bojowe (Rozpacz/Błogosławieństwo) MG edytuje już z poziomu panelu Postać
-// (panels/character.js działa tak samo dla MG jak dla gracza, tylko z selektorem postaci) - tu żyje
-// wszystko, czego NIE ma w panelu Postać: edycja bazowych wartości Archetypów i kości ran,
-// zarządzanie freeform modyfikatorami, edycja ekwipunku (zwykłego - w tym tooltipów - i
-// Legendarnego, w tym "wygaszania"), licznik Wiatru Camelotu oraz zbiorczy reset zużytych Mocy
-// (nowa scena/sesja/walka). Wszystkie 4 postacie są widoczne NARAZ, obok siebie (4 kolumny), bez
-// przełącznika/dropdownu - stąd każda kontrolka niesie `data-character="{key}"`, żeby handler
-// wiedział, którą postać zmienić.
+// Poprzednia wersja tego panelu (4 kolumny obok siebie, po jednej na postać, z osobnym formularzem
+// dodawania modyfikatora POD KAŻDYM Archetypem KAŻDEJ postaci i checkboxem dla KAŻDEGO Przedmiotu
+// Legendarnego w KAŻDEJ kolumnie) była zbyt ciasna/rozdrobniona przy 4 postaciach - stąd ten układ.
 
 import { updateState } from "../store.js";
 import { logEvent } from "../eventLog.js";
-import { archetypeCurrent, addModifier, removeModifier, toggleModifier } from "../state.js";
-import { escapeHtml, clamp, preserveScroll } from "../utils.js";
+import { logRoll } from "../rollLog.js";
+import {
+    archetypeCurrent, despairMax, addModifier, removeModifier, toggleModifier, resolveItemTooltip
+} from "../state.js";
+import {
+    escapeHtml, clamp, preserveScroll, annotateDice, rollTestPool, TEST_TIER_LABELS
+} from "../utils.js";
+import { buildJournalHtml, handleJournalAction } from "./journal.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
+
+const DIE_STATE_CLASS = {
+    one: "die-removed",
+    cancelled: "die-cancelled",
+    full: "die-full",
+    success: "die-success",
+    complication: "die-complication"
+};
+
+// Stan czysto lokalny UI panelu MG (nie zapisywany do Firebase) - który modal Przedmiotu
+// Legendarnego jest otwarty, ostatni wybór w module "Dodaj modyfikator" (żeby nie resetował się po
+// każdym dodaniu) i podgląd rzutu MG do zatwierdzenia (analogicznie do panels/roller.js#ui.pendingRoll).
+const ui = {
+    openLegendaryKey: null,
+    modAddCharacterKey: null,
+    modAddArchetypeKey: "rycerz",
+    rollDiceCount: 3,
+    rollGraalDice: 0,
+    pendingRoll: null
+};
 
 function archetypeLabel(data, key) {
     return data.archetypes.find(a => a.key === key)?.label || key;
 }
+
+function findOwnerKey(state, itemKey) {
+    for (const c of Object.values(state.characters || {})) {
+        if ((c.legendaryItemKeys || []).includes(itemKey)) return c.key;
+    }
+    return null;
+}
+
+function diceChipsHtml(dice) {
+    return annotateDice(dice || []).map(({ value, state: dieState }) =>
+        `<span class="die-chip ${DIE_STATE_CLASS[dieState] || ""}">${value}</span>`
+    ).join("");
+}
+
+/* -- Wiatr Camelotu (pełna szerokość) ------------------------------------------------------- */
+
+function renderCampWindFull(state) {
+    const campWind = state.campWind || { current: 0, scale: 10 };
+    return `
+        <div class="mg-camp-wind-full">
+            <label>Wiatr Camelotu</label>
+            <div class="stat-controls">
+                <button class="btn btn-xs" data-action="wind-dec">−</button>
+                <span class="camp-wind-value">${campWind.current} <span class="camp-wind-scale">/ ${campWind.scale}</span></span>
+                <button class="btn btn-xs" data-action="wind-inc">+</button>
+            </div>
+        </div>
+    `;
+}
+
+/* -- Moduł "Dodaj modyfikator" (globalny) --------------------------------------------------- */
+
+function renderModifierModule(ctx) {
+    const { state, data } = ctx;
+    const characters = Object.values(state.characters || {});
+    if (!ui.modAddCharacterKey || !state.characters[ui.modAddCharacterKey]) {
+        ui.modAddCharacterKey = characters[0]?.key || null;
+    }
+    return `
+        <div class="card mg-modifier-module">
+            <h3>Dodaj modyfikator</h3>
+            <div class="mg-modifier-form">
+                <select id="mgModCharacter">
+                    ${characters.map(c => `<option value="${c.key}" ${c.key === ui.modAddCharacterKey ? "selected" : ""}>${escapeHtml(c.name)}</option>`).join("")}
+                </select>
+                <select id="mgModArchetype">
+                    ${ARCHETYPE_ORDER.map(k => `<option value="${k}" ${k === ui.modAddArchetypeKey ? "selected" : ""}>${escapeHtml(archetypeLabel(data, k))}</option>`).join("")}
+                </select>
+                <input type="text" id="mgModLabel" placeholder="Etykieta">
+                <input type="number" id="mgModDelta" class="mg-mod-delta" value="1">
+                <input type="text" id="mgModTooltip" placeholder="Tooltip (opcjonalnie)">
+                <button class="btn btn-sm btn-gold" data-action="add-modifier-global">Dodaj modyfikator</button>
+            </div>
+        </div>
+    `;
+}
+
+/* -- Katalog "Przedmioty Legendarne" (globalny, klik -> modal) ------------------------------ */
+
+function renderLegendaryCatalog(ctx) {
+    const { state, data } = ctx;
+    const entries = Object.entries(data.items || {});
+    const chipsHtml = entries.map(([key, item]) => {
+        const ownerKey = findOwnerKey(state, key);
+        const owner = ownerKey ? state.characters[ownerKey] : null;
+        const disabled = owner ? (owner.disabledItemKeys || []).includes(key) : false;
+        return `
+            <button class="item-chip legendary ${disabled ? "item-disabled" : ""}" data-action="open-legendary" data-key="${key}">
+                ${escapeHtml(item.name)}${owner ? `<span class="mg-legendary-chip-owner">(${escapeHtml(owner.aliasName)})</span>` : ""}${disabled ? " (wygaszony)" : ""}
+            </button>
+        `;
+    }).join("");
+    return `
+        <div class="card mg-legendary-module">
+            <h3>Przedmioty Legendarne</h3>
+            <div class="mg-legendary-catalog">${chipsHtml || `<span class="placeholder">Brak Przedmiotów Legendarnych w katalogu.</span>`}</div>
+        </div>
+    `;
+}
+
+function renderLegendaryModal(ctx) {
+    const { state, data } = ctx;
+    const key = ui.openLegendaryKey;
+    if (!key) return "";
+    const item = data.items[key];
+    if (!item) return "";
+    const characters = Object.values(state.characters || {});
+    const ownerKey = findOwnerKey(state, key);
+    const owner = ownerKey ? state.characters[ownerKey] : null;
+    const disabled = owner ? (owner.disabledItemKeys || []).includes(key) : false;
+    const sections = (item.richDescription || []).map(s => `
+        <h3>${escapeHtml(s.title)}</h3>
+        <p>${escapeHtml(s.text)}</p>
+    `).join("");
+
+    return `
+        <div class="modal-backdrop" data-action="close-legendary">
+            <div class="modal">
+                <h2>${escapeHtml(item.name)}</h2>
+                ${owner && disabled ? `<p class="item-disabled-note">Ten przedmiot jest obecnie wygaszony.</p>` : ""}
+                ${sections}
+
+                <div class="mg-legendary-modal-field">
+                    <label>Przypisana postać</label>
+                    <select data-action="assign-legendary" data-key="${key}">
+                        <option value="">- nieprzypisany -</option>
+                        ${characters.map(c => `<option value="${c.key}" ${ownerKey === c.key ? "selected" : ""}>${escapeHtml(c.name)}</option>`).join("")}
+                    </select>
+                </div>
+
+                ${owner ? `
+                    <div class="mg-legendary-modal-field">
+                        <label class="inline-check">
+                            <input type="checkbox" data-action="toggle-legendary-disabled-modal" data-key="${key}" ${disabled ? "checked" : ""}>
+                            Wygaszony
+                        </label>
+                    </div>
+                ` : ""}
+
+                <div class="mg-legendary-modal-field">
+                    <label>Opis (widoczny dla graczy)</label>
+                    <textarea id="mgLegendaryTooltipInput" rows="3">${escapeHtml(resolveItemTooltip(state, data, key))}</textarea>
+                    <button class="btn btn-sm" data-action="save-legendary-tooltip" data-key="${key}">Zapisz opis</button>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-sm" data-action="close-legendary">Zamknij</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/* -- Karta postaci (Archetypy, ekwipunek, Przedmioty Legendarne (odczyt), reset Mocy) -------- */
 
 function renderModifierRow(characterKey, archetypeKey, m) {
     return `
@@ -53,31 +217,17 @@ function renderArchetypeEditor(data, characterKey, key, archetype) {
             <div class="mg-modifiers">
                 ${modifiersHtml || `<span class="placeholder">Brak modyfikatorów.</span>`}
             </div>
-            <div class="mg-add-modifier">
-                <input type="text" class="mg-mod-label" placeholder="Etykieta modyfikatora">
-                <input type="number" class="mg-mod-delta" placeholder="Δ" value="1">
-                <input type="text" class="mg-mod-tooltip" placeholder="Tooltip (opcjonalnie)">
-                <button class="btn btn-xs" data-action="add-modifier" data-character="${characterKey}" data-archetype="${key}">Dodaj modyfikator</button>
-            </div>
         </div>
     `;
 }
 
-function legendaryTooltip(item) {
-    return [item.shortTooltip, ...(item.richDescription || []).map(s => `${s.title}: ${s.text}`)]
-        .filter(Boolean).join(" | ");
-}
-
-function renderEquipmentEditor(character, data) {
+function renderEquipmentEditor(character) {
     const key = character.key;
-    const legendarySet = new Set(character.legendaryItemKeys || []);
-    const disabledLegendary = new Set(character.disabledItemKeys || []);
-
     const plainHtml = (character.equipment || []).map(item => `
         <div class="mg-equipment-row ${item.disabled ? "item-disabled" : ""}">
             <input type="text" class="mg-equipment-name" data-action="edit-equipment-name"
                 data-character="${key}" data-item-id="${item.id}" value="${escapeHtml(item.name)}">
-            <input type="text" class="mg-equipment-tooltip" placeholder="Tooltip..." data-action="edit-equipment-tooltip"
+            <input type="text" class="mg-equipment-tooltip-input" placeholder="Tooltip..." data-action="edit-equipment-tooltip"
                 data-character="${key}" data-item-id="${item.id}" value="${escapeHtml(item.tooltip || "")}">
             <label class="inline-check">
                 <input type="checkbox" data-action="toggle-equipment-disabled" data-character="${key}" data-item-id="${item.id}" ${item.disabled ? "checked" : ""}>
@@ -87,35 +237,13 @@ function renderEquipmentEditor(character, data) {
         </div>
     `).join("");
 
-    const legendaryHtml = Object.entries(data.items || {}).map(([itemKey, item]) => {
-        const owned = legendarySet.has(itemKey);
-        return `
-            <div class="mg-legendary-row">
-                <label class="power-check" title="${escapeHtml(legendaryTooltip(item))}">
-                    <input type="checkbox" data-action="toggle-legendary" data-character="${key}" data-item-key="${itemKey}" ${owned ? "checked" : ""}>
-                    ${escapeHtml(item.name)}
-                </label>
-                ${owned ? `
-                    <label class="inline-check mg-legendary-disable">
-                        <input type="checkbox" data-action="toggle-legendary-disabled" data-character="${key}" data-item-key="${itemKey}" ${disabledLegendary.has(itemKey) ? "checked" : ""}>
-                        Wygaszony
-                    </label>
-                ` : ""}
-            </div>
-        `;
-    }).join("");
-
     return `
-        <h4>Ekwipunek zwykły</h4>
         <div class="mg-equipment-list">${plainHtml || `<span class="placeholder">Brak.</span>`}</div>
         <div class="mg-add-equipment">
             <input type="text" class="mg-equipment-input" placeholder="Nowy przedmiot...">
             <input type="text" class="mg-equipment-tooltip-input" placeholder="Tooltip (opcjonalnie)">
             <button class="btn btn-xs" data-action="add-equipment" data-character="${key}">Dodaj</button>
         </div>
-
-        <h4>Przedmioty Legendarne</h4>
-        <div class="mg-legendary-list">${legendaryHtml}</div>
     `;
 }
 
@@ -133,38 +261,115 @@ function renderPowerReset(character, transformation) {
     `;
 }
 
-function renderCharacterColumn(character, data) {
-    const transformation = data.transformations[character.key];
+function renderCharacterBlock(character, ctx) {
+    const { data } = ctx;
+    const key = character.key;
+    const transformation = data.transformations[key];
+    const dMax = despairMax(character);
+    const legendarySet = new Set(character.legendaryItemKeys || []);
+    const disabledLegendary = new Set(character.disabledItemKeys || []);
+
+    const ownedLegendaryHtml = [...legendarySet].map(itemKey => {
+        const item = data.items[itemKey];
+        if (!item) return "";
+        const disabled = disabledLegendary.has(itemKey);
+        return `
+            <button class="item-chip legendary ${disabled ? "item-disabled" : ""}" data-action="open-legendary" data-key="${itemKey}">
+                ${escapeHtml(item.name)}${disabled ? " (wygaszony)" : ""}
+            </button>
+        `;
+    }).join("");
+
     return `
-        <div class="mg-character-col">
-            <h3 class="mg-character-col-title">${escapeHtml(character.name)} <span class="placeholder">(${escapeHtml(character.aliasName)})</span></h3>
+        <section class="mg-character-block" id="mg-char-${key}">
+            <h3 class="mg-character-block-title">${escapeHtml(character.name)} <span class="placeholder">(${escapeHtml(character.aliasName)})</span></h3>
+
+            <div class="stat-row">
+                <div class="stat-box">
+                    <label>Rozpacz</label>
+                    <div class="stat-controls">
+                        <button class="btn btn-xs" data-action="despair-dec" data-character="${key}">−</button>
+                        <span>${character.despair.current} / ${dMax}</span>
+                        <button class="btn btn-xs" data-action="despair-inc" data-character="${key}">+</button>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <label>Błogosławieństwo Merlina</label>
+                    <button class="btn btn-sm ${character.blessing ? "btn-gold" : ""}" data-action="toggle-blessing" data-character="${key}">
+                        ${character.blessing ? "Dostępne" : "Wykorzystane"}
+                    </button>
+                </div>
+            </div>
 
             <h4>Archetypy</h4>
             <div class="mg-archetype-list">
-                ${ARCHETYPE_ORDER.map(key => renderArchetypeEditor(data, character.key, key, character.archetypes[key])).join("")}
+                ${ARCHETYPE_ORDER.map(k => renderArchetypeEditor(data, key, k, character.archetypes[k])).join("")}
             </div>
 
-            ${renderEquipmentEditor(character, data)}
+            <h4>Ekwipunek zwykły</h4>
+            ${renderEquipmentEditor(character)}
+
+            <h4>Przedmioty Legendarne (posiadane)</h4>
+            <div class="equipment-legendary">
+                ${ownedLegendaryHtml || `<span class="placeholder">Brak.</span>`}
+            </div>
 
             ${renderPowerReset(character, transformation)}
-        </div>
+        </section>
     `;
 }
 
-function renderGlobalControls(state) {
+/* -- Rzut MG (niezależny od Archetypów/postaci) ---------------------------------------------- */
+
+function buildMgPendingRollHtml() {
+    const pr = ui.pendingRoll;
     return `
-        <div class="mg-global-controls">
-            <div class="stat-box">
-                <label>Wiatr Camelotu</label>
-                <div class="stat-controls">
-                    <button class="btn btn-xs" data-action="wind-dec">−</button>
-                    <span>${state.campWind.current} / ${state.campWind.scale}</span>
-                    <button class="btn btn-xs" data-action="wind-inc">+</button>
+        <div class="card roller-panel">
+            <h2>Rzut MG</h2>
+            <div class="roller-result">
+                <h3>Wynik: ${escapeHtml(pr.tierLabel)}</h3>
+                <div class="dice-row">${diceChipsHtml(pr.dice)}</div>
+                <p class="placeholder">Jedynki: ${pr.oneIndices.length} (anulowały ${pr.cancelledIndices.length} najwyższych kości)</p>
+                <div class="roller-actions">
+                    <button class="btn btn-gold" data-action="mg-finalize-roll">Zatwierdź i zapisz do dziennika</button>
+                    <button class="btn btn-sm" data-action="mg-cancel-roll">Odrzuć rzut</button>
                 </div>
             </div>
         </div>
     `;
 }
+
+function buildMgRollerHtml() {
+    if (ui.pendingRoll) return buildMgPendingRollHtml();
+    const poolTotal = ui.rollDiceCount + ui.rollGraalDice;
+    return `
+        <div class="card roller-panel">
+            <h2>Rzut MG</h2>
+            <div class="roller-setup">
+                <h3>Kości</h3>
+                <label class="mg-inline-field">Liczba kości
+                    <input type="number" min="1" class="mg-input-num" id="mgRollDiceCount" value="${ui.rollDiceCount}">
+                </label>
+
+                <h3>Kości Graala</h3>
+                <p class="placeholder">Pula MG jest niezależna od Archetypów postaci i nielimitowana.</p>
+                <div class="stat-controls">
+                    <button class="btn btn-xs" data-action="mg-graal-dec">−</button>
+                    <span>${ui.rollGraalDice}</span>
+                    <button class="btn btn-xs" data-action="mg-graal-inc">+</button>
+                </div>
+
+                <div class="roller-pool-summary">
+                    Pula testu: <strong>${poolTotal}</strong>
+                </div>
+
+                <button class="btn btn-gold" data-action="mg-do-roll">Rzuć kośćmi</button>
+            </div>
+        </div>
+    `;
+}
+
+/* -- Złożenie całości ------------------------------------------------------------------------ */
 
 function buildHtml(ctx) {
     const { state, data, session } = ctx;
@@ -174,15 +379,28 @@ function buildHtml(ctx) {
     if (!characters.length) return `<p class="placeholder">Brak postaci w kampanii.</p>`;
 
     return `
-        <div class="mg-panel">
-            <h2>Zaplecze MG</h2>
-            ${renderGlobalControls(state)}
+        <div class="mg-unified-wrap">
+            ${renderCampWindFull(state)}
 
-            <h2>Postacie</h2>
-            <div class="mg-character-grid">
-                ${characters.map(c => renderCharacterColumn(c, data)).join("")}
+            <div class="mg-grid-12">
+                <nav class="mg-toc">
+                    <h4>Postacie</h4>
+                    ${characters.map(c => `<a href="#mg-char-${c.key}">${escapeHtml(c.name)}</a>`).join("")}
+                </nav>
+
+                <div class="mg-characters-col">
+                    ${renderModifierModule(ctx)}
+                    ${renderLegendaryCatalog(ctx)}
+                    ${characters.map(c => renderCharacterBlock(c, ctx)).join("")}
+                </div>
+
+                <div class="mg-roller-col">
+                    ${buildMgRollerHtml()}
+                    <div class="card">${buildJournalHtml(ctx)}</div>
+                </div>
             </div>
         </div>
+        ${renderLegendaryModal(ctx)}
     `;
 }
 
@@ -208,6 +426,10 @@ function wireEvents(root) {
         const { session } = root._ctx;
         if (session.role !== "mg") return;
         const el = e.target;
+
+        if (el.id === "mgModCharacter") { ui.modAddCharacterKey = el.value; return; }
+        if (el.id === "mgModArchetype") { ui.modAddArchetypeKey = el.value; return; }
+
         const action = el.dataset.action;
         const characterKey = el.dataset.character;
 
@@ -225,33 +447,6 @@ function wireEvents(root) {
                     archetype.woundDice = value;
                     logEvent(state, "character-edited", `${character.name}: kości ran Archetypu "${archetypeKey}" ${before} → ${value}.`);
                 }
-            });
-            return;
-        }
-
-        if (action === "toggle-legendary") {
-            const itemKey = el.dataset.itemKey;
-            withCharacter(root, characterKey, (character, state) => {
-                const has = character.legendaryItemKeys.includes(itemKey);
-                if (has) {
-                    character.legendaryItemKeys = character.legendaryItemKeys.filter(k => k !== itemKey);
-                    character.disabledItemKeys = (character.disabledItemKeys || []).filter(k => k !== itemKey);
-                } else {
-                    character.legendaryItemKeys.push(itemKey);
-                }
-                logEvent(state, "equipment-change", `${character.name}: Legendarny przedmiot "${itemKey}" ${has ? "usunięty" : "dodany"}.`);
-            });
-            return;
-        }
-
-        if (action === "toggle-legendary-disabled") {
-            const itemKey = el.dataset.itemKey;
-            withCharacter(root, characterKey, (character, state) => {
-                if (!character.disabledItemKeys) character.disabledItemKeys = [];
-                const isDisabled = character.disabledItemKeys.includes(itemKey);
-                if (isDisabled) character.disabledItemKeys = character.disabledItemKeys.filter(k => k !== itemKey);
-                else character.disabledItemKeys.push(itemKey);
-                logEvent(state, "equipment-disabled", `${character.name}: Legendarny przedmiot "${itemKey}" ${isDisabled ? "przywrócony" : "wygaszony"}.`);
             });
             return;
         }
@@ -302,25 +497,93 @@ function wireEvents(root) {
             });
             return;
         }
+
+        if (action === "assign-legendary") {
+            const itemKey = el.dataset.key;
+            const newOwnerKey = el.value || null;
+            withState(root, (state) => {
+                let previousOwnerName = null;
+                for (const c of Object.values(state.characters)) {
+                    if ((c.legendaryItemKeys || []).includes(itemKey)) {
+                        previousOwnerName = c.name;
+                        c.legendaryItemKeys = c.legendaryItemKeys.filter(k => k !== itemKey);
+                        c.disabledItemKeys = (c.disabledItemKeys || []).filter(k => k !== itemKey);
+                    }
+                }
+                let newOwnerName = null;
+                if (newOwnerKey && state.characters[newOwnerKey]) {
+                    state.characters[newOwnerKey].legendaryItemKeys.push(itemKey);
+                    newOwnerName = state.characters[newOwnerKey].name;
+                }
+                logEvent(state, "equipment-change",
+                    `Przedmiot Legendarny "${itemKey}" przypisany: ${previousOwnerName || "brak"} → ${newOwnerName || "brak"}.`);
+            });
+            return;
+        }
+
+        if (action === "toggle-legendary-disabled-modal") {
+            const itemKey = el.dataset.key;
+            withState(root, (state) => {
+                const ownerKey = findOwnerKey(state, itemKey);
+                if (!ownerKey) return;
+                const character = state.characters[ownerKey];
+                if (!character.disabledItemKeys) character.disabledItemKeys = [];
+                const isDisabled = character.disabledItemKeys.includes(itemKey);
+                if (isDisabled) character.disabledItemKeys = character.disabledItemKeys.filter(k => k !== itemKey);
+                else character.disabledItemKeys.push(itemKey);
+                logEvent(state, "equipment-disabled", `${character.name}: Legendarny przedmiot "${itemKey}" ${isDisabled ? "przywrócony" : "wygaszony"}.`);
+            });
+            return;
+        }
     });
 
     root.addEventListener("click", (e) => {
         const { session } = root._ctx;
         if (session.role !== "mg") return;
 
+        if (e.target.classList.contains("modal-backdrop")) {
+            ui.openLegendaryKey = null;
+            rerender(root);
+            return;
+        }
+
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
         const action = btn.dataset.action;
         const characterKey = btn.dataset.character;
 
-        if (action === "add-modifier") {
-            const archetypeKey = btn.dataset.archetype;
-            const wrap = btn.closest(".mg-add-modifier");
-            const label = wrap.querySelector(".mg-mod-label").value.trim();
-            const delta = parseInt(wrap.querySelector(".mg-mod-delta").value, 10) || 0;
-            const tooltip = wrap.querySelector(".mg-mod-tooltip").value.trim();
-            if (!label) return;
+        if (action === "despair-inc" || action === "despair-dec") {
             withCharacter(root, characterKey, (character, state) => {
+                const dMax = despairMax(character);
+                const before = character.despair.current;
+                character.despair.current = clamp(before + (action === "despair-inc" ? 1 : -1), 0, dMax);
+                if (character.despair.current !== before) {
+                    logEvent(state, "despair-change", `${character.name}: Rozpacz ${before} → ${character.despair.current}.`);
+                }
+            });
+            return;
+        }
+
+        if (action === "toggle-blessing") {
+            withCharacter(root, characterKey, (character, state) => {
+                character.blessing = !character.blessing;
+                logEvent(state, "blessing-change", `${character.name}: Błogosławieństwo Merlina ${character.blessing ? "aktywowane" : "utracone"}.`);
+            });
+            return;
+        }
+
+        if (action === "add-modifier-global") {
+            const charSelect = document.getElementById("mgModCharacter");
+            const archSelect = document.getElementById("mgModArchetype");
+            const targetCharacterKey = charSelect?.value || ui.modAddCharacterKey;
+            const archetypeKey = archSelect?.value || ui.modAddArchetypeKey;
+            const label = document.getElementById("mgModLabel")?.value.trim();
+            const delta = parseInt(document.getElementById("mgModDelta")?.value, 10) || 0;
+            const tooltip = document.getElementById("mgModTooltip")?.value.trim();
+            if (!targetCharacterKey || !archetypeKey || !label) return;
+            ui.modAddCharacterKey = targetCharacterKey;
+            ui.modAddArchetypeKey = archetypeKey;
+            withCharacter(root, targetCharacterKey, (character, state) => {
                 addModifier(character.archetypes[archetypeKey], { label, delta, tooltip });
                 logEvent(state, "modifier-added", `${character.name}: dodano modyfikator "${label}" (${delta >= 0 ? "+" : ""}${delta}) do Archetypu "${archetypeKey}".`);
             });
@@ -379,6 +642,87 @@ function wireEvents(root) {
                     logEvent(state, "camp-wind-change", `Wiatr Camelotu: ${before} → ${state.campWind.current}.`);
                 }
             });
+            return;
+        }
+
+        if (action === "open-legendary") {
+            ui.openLegendaryKey = btn.dataset.key;
+            rerender(root);
+            return;
+        }
+
+        if (action === "close-legendary") {
+            ui.openLegendaryKey = null;
+            rerender(root);
+            return;
+        }
+
+        if (action === "save-legendary-tooltip") {
+            const itemKey = btn.dataset.key;
+            const textarea = document.getElementById("mgLegendaryTooltipInput");
+            const value = textarea ? textarea.value.trim() : "";
+            withState(root, (state) => {
+                if (!state.itemOverrides) state.itemOverrides = {};
+                state.itemOverrides[itemKey] = { tooltip: value };
+                logEvent(state, "equipment-change", `Zaktualizowano opis Przedmiotu Legendarnego "${itemKey}".`);
+            });
+            return;
+        }
+
+        if (action === "mg-graal-inc" || action === "mg-graal-dec") {
+            ui.rollGraalDice = clamp(ui.rollGraalDice + (action === "mg-graal-inc" ? 1 : -1), 0, 999);
+            rerender(root);
+            return;
+        }
+
+        if (action === "mg-do-roll") {
+            const diceInput = document.getElementById("mgRollDiceCount");
+            const diceCount = Math.max(1, parseInt(diceInput?.value, 10) || 1);
+            ui.rollDiceCount = diceCount;
+            const poolTotal = diceCount + ui.rollGraalDice;
+            const result = rollTestPool(poolTotal);
+            ui.pendingRoll = {
+                diceCount,
+                graalDice: ui.rollGraalDice,
+                dice: result.dice,
+                oneIndices: result.oneIndices,
+                cancelledIndices: result.cancelledIndices,
+                tier: result.tier,
+                tierLabel: TEST_TIER_LABELS[result.tier] || result.tier
+            };
+            rerender(root);
+            return;
+        }
+
+        if (action === "mg-finalize-roll") {
+            const pr = ui.pendingRoll;
+            if (!pr) return;
+            logRoll({
+                characterKey: null,
+                characterName: "MG",
+                archetypeKey: "",
+                archetypeLabel: "",
+                archetypeDice: pr.diceCount,
+                graalDice: pr.graalDice,
+                dice: pr.dice,
+                tier: pr.tier,
+                note: ""
+            });
+            ui.pendingRoll = null;
+            ui.rollGraalDice = 0;
+            rerender(root);
+            return;
+        }
+
+        if (action === "mg-cancel-roll") {
+            ui.pendingRoll = null;
+            rerender(root);
+            return;
+        }
+
+        // Akcje dziennika (usuwanie wpisów/czyszczenie historii) - patrz panels/journal.js.
+        if (handleJournalAction(action, btn, root._ctx)) {
+            rerender(root);
             return;
         }
     });

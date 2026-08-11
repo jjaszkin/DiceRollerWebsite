@@ -47,7 +47,7 @@ function renderEntry(e, canDelete) {
         return `
             <li class="entry entry-roll">
                 <div class="entry-meta">
-                    <span>${escapeHtml(e.characterName)} - ${escapeHtml(e.archetypeLabel)}${e.graalDice ? ` (+${e.graalDice} Graala)` : ""}</span>
+                    <span>${escapeHtml(e.characterName)}${e.archetypeLabel ? ` - ${escapeHtml(e.archetypeLabel)}` : ""}${e.graalDice ? ` (+${e.graalDice} Graala)` : ""}</span>
                     ${rightMeta}
                 </div>
                 <div class="entry-result">
