@@ -2,18 +2,20 @@
 // ogóle nie widzi zakładek "Postać"/"Rzuty", patrz main.js#applyRoleVisibility) - to jeden, samo-
 // wystarczalny nietabowy widok osadzony w #mgUnifiedRoot, w układzie siatki 12 kolumn:
 //   - Wiatr Camelotu na pełną szerokość, u góry (1.5x większy niż na karcie Gracza).
-//   - kol. 1-2: sticky nawigacja ("spis treści") z linkami-kotwicami do każdej postaci.
-//   - kol. 3-8: moduł "Dodaj modyfikator" (globalny, jeden dla wszystkich postaci/Archetypów),
+//   - kol. 1-8: moduł "Dodaj modyfikator" (globalny, jeden dla wszystkich postaci/Archetypów),
 //     globalny katalog "Przedmioty Legendarne" (klik -> modal z przypisaniem/wygaszeniem/edycją
-//     opisu), a pod nimi wszystkie 4 postacie w pełnej karcie MG, jedna pod drugą (Rozpacz,
+//     opisu), a pod nimi TABY wyboru postaci (Sir Gaven / Sir Palanore / Sir Cadwyn / Sir Brandon -
+//     patrz renderCharacterTabs()) i pełna karta MG WYŁĄCZNIE aktualnie wybranej postaci (Rozpacz,
 //     Błogosławieństwo, Archetypy z bazą/kośćmi ran/modyfikatorami, ekwipunek zwykły, posiadane
 //     Przedmioty Legendarne (tylko odczyt - edycja przez katalog wyżej), reset zużytych Mocy).
 //   - kol. 9-12: samodzielny rzut MG (dowolna liczba kości + osobna, nielimitowana pula Kości
-//     Graala - MG nie rzuca "jako postać" ani "jako Archetyp") + osadzony Dziennik kampanii.
+//     Graala - MG nie rzuca "jako postać" ani "jako Archetyp") + osadzony Dziennik kampanii -
+//     ZAWSZE widoczny, niezależnie od tego, która postać jest aktualnie wybrana w tabach.
 //
-// Poprzednia wersja tego panelu (4 kolumny obok siebie, po jednej na postać, z osobnym formularzem
-// dodawania modyfikatora POD KAŻDYM Archetypem KAŻDEJ postaci i checkboxem dla KAŻDEGO Przedmiotu
-// Legendarnego w KAŻDEJ kolumnie) była zbyt ciasna/rozdrobniona przy 4 postaciach - stąd ten układ.
+// Poprzednie wersje tego panelu próbowały pokazać wszystkie 4 postacie naraz (albo w 4 kolumnach
+// obok siebie, albo jedna pod drugą ze sticky spisem treści) - w obu przypadkach robiło się zbyt
+// długie/rozdrobnione przy realnym użyciu przy stole, stąd taby: jedna postać na raz, przeklik jak
+// w zakładkach Gracza, ale panel Rzutów MG NIE jest częścią tabów - zostaje zawsze widoczny obok.
 
 import { updateState } from "../store.js";
 import { logEvent } from "../eventLog.js";
@@ -38,11 +40,13 @@ const DIE_STATE_CLASS = {
 
 // Stan czysto lokalny UI panelu MG (nie zapisywany do Firebase) - który modal Przedmiotu
 // Legendarnego jest otwarty, ostatni wybór w module "Dodaj modyfikator" (żeby nie resetował się po
-// każdym dodaniu) i podgląd rzutu MG do zatwierdzenia (analogicznie do panels/roller.js#ui.pendingRoll).
+// każdym dodaniu), która postać jest aktualnie wybrana w tabach (patrz renderCharacterTabs()) i
+// podgląd rzutu MG do zatwierdzenia (analogicznie do panels/roller.js#ui.pendingRoll).
 const ui = {
     openLegendaryKey: null,
     modAddCharacterKey: null,
     modAddArchetypeKey: "rycerz",
+    activeCharacterKey: null,
     rollDiceCount: 3,
     rollGraalDice: 0,
     pendingRoll: null
@@ -50,6 +54,27 @@ const ui = {
 
 function archetypeLabel(data, key) {
     return data.archetypes.find(a => a.key === key)?.label || key;
+}
+
+/** Zwraca klucz aktualnie wybranej w tabach postaci - domyślnie pierwsza w kolejności z danych,
+ *  chyba że coś już wybrano (i nadal istnieje - postać nie mogła zniknąć, ale defensywnie). */
+function resolveActiveCharacterKey(state) {
+    if (ui.activeCharacterKey && state.characters[ui.activeCharacterKey]) return ui.activeCharacterKey;
+    const keys = Object.keys(state.characters || {});
+    ui.activeCharacterKey = keys[0] || null;
+    return ui.activeCharacterKey;
+}
+
+function renderCharacterTabs(characters, activeKey) {
+    return `
+        <nav class="tabs mg-character-tabs">
+            ${characters.map(c => `
+                <button type="button" class="tab-btn ${c.key === activeKey ? "active" : ""}" data-action="mg-select-character" data-key="${c.key}">
+                    ${escapeHtml(c.name)}
+                </button>
+            `).join("")}
+        </nav>
+    `;
 }
 
 function findOwnerKey(state, itemKey) {
@@ -281,7 +306,7 @@ function renderCharacterBlock(character, ctx) {
     }).join("");
 
     return `
-        <section class="mg-character-block" id="mg-char-${key}">
+        <section class="mg-character-block">
             <h3 class="mg-character-block-title">${escapeHtml(character.name)} <span class="placeholder">(${escapeHtml(character.aliasName)})</span></h3>
 
             <div class="stat-row">
@@ -378,20 +403,19 @@ function buildHtml(ctx) {
     const characters = Object.values(state.characters || {});
     if (!characters.length) return `<p class="placeholder">Brak postaci w kampanii.</p>`;
 
+    const activeKey = resolveActiveCharacterKey(state);
+    const activeCharacter = activeKey ? state.characters[activeKey] : null;
+
     return `
         <div class="mg-unified-wrap">
             ${renderCampWindFull(state)}
 
             <div class="mg-grid-12">
-                <nav class="mg-toc">
-                    <h4>Postacie</h4>
-                    ${characters.map(c => `<a href="#mg-char-${c.key}">${escapeHtml(c.name)}</a>`).join("")}
-                </nav>
-
                 <div class="mg-characters-col">
                     ${renderModifierModule(ctx)}
                     ${renderLegendaryCatalog(ctx)}
-                    ${characters.map(c => renderCharacterBlock(c, ctx)).join("")}
+                    ${renderCharacterTabs(characters, activeKey)}
+                    ${activeCharacter ? renderCharacterBlock(activeCharacter, ctx) : `<p class="placeholder">Brak wybranej postaci.</p>`}
                 </div>
 
                 <div class="mg-roller-col">
@@ -551,6 +575,12 @@ function wireEvents(root) {
         if (!btn) return;
         const action = btn.dataset.action;
         const characterKey = btn.dataset.character;
+
+        if (action === "mg-select-character") {
+            ui.activeCharacterKey = btn.dataset.key;
+            rerender(root);
+            return;
+        }
 
         if (action === "despair-inc" || action === "despair-dec") {
             withCharacter(root, characterKey, (character, state) => {

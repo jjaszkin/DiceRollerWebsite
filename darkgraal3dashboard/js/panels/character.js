@@ -173,7 +173,7 @@ function renderPowers(character, transformation) {
                 </div>
                 <p>${escapeHtml(p.description)}</p>
                 ${p.effect?.secondaryEffectText ? `<p class="placeholder">${escapeHtml(p.effect.secondaryEffectText)}</p>` : ""}
-                ${power_toggle_button(p, used)}
+                ${power_use_button(p, used)}
             </div>
         `;
     }).join("");
@@ -185,13 +185,19 @@ function renderPowers(character, transformation) {
     `;
 }
 
-function power_toggle_button(power, used) {
+/** Mocy pasywnych/narracyjnych nie da się "użyć" (nie mają jednorazowego efektu do odhaczenia) -
+ *  dla nich nie pokazujemy żadnego przycisku. Pozostałe dostają duży przycisk "Użyj mocy", który
+ *  od razu oznacza moc jako użytą + loguje zdarzenie + pokazuje toast (spójnie z use-equipment/
+ *  use-item), a gdy moc jest już użyta - mały, przygaszony przycisk "Cofnij użycie" na wypadek
+ *  pomyłki (zamiast dotychczasowego jednego przełącznika bez żadnej reakcji poza stanem karty). */
+function power_use_button(power, used) {
     if (power.effect?.type === "narrative" || power.effect?.usage === "passive" || power.effect?.usage === "narrative") {
         return "";
     }
-    return `<button class="btn btn-xs" data-action="toggle-power-used" data-power-id="${power.id}">
-        ${used ? "Oznacz jako dostępną" : "Oznacz jako użytą"}
-    </button>`;
+    if (used) {
+        return `<button class="btn btn-xs" data-action="unuse-power" data-power-id="${power.id}" data-power-name="${escapeHtml(power.name)}">Cofnij użycie</button>`;
+    }
+    return `<button class="btn btn-xs btn-gold" data-action="use-power" data-power-id="${power.id}" data-power-name="${escapeHtml(power.name)}">Użyj mocy</button>`;
 }
 
 function portraitUrl(character) {
@@ -323,13 +329,26 @@ function wireEvents(root) {
             });
         }
 
-        if (action === "toggle-power-used") {
+        if (action === "use-power") {
+            const id = btn.dataset.powerId;
+            const name = btn.dataset.powerName || id;
+            let used = false;
             withActiveCharacter(root, (character, state) => {
-                const id = btn.dataset.powerId;
-                const wasUsed = !!character.usedPowers[id];
-                if (wasUsed) delete character.usedPowers[id];
-                else character.usedPowers[id] = true;
-                logEvent(state, "power-used", `${character.name}: moc „${id}” oznaczona jako ${wasUsed ? "dostępna" : "użyta"}.`);
+                if (character.usedPowers[id]) return;
+                character.usedPowers[id] = true;
+                used = true;
+                logEvent(state, "power-used", `${character.name}: moc „${name}” użyta.`);
+            });
+            if (used) showToast("Użyłeś mocy");
+        }
+
+        if (action === "unuse-power") {
+            const id = btn.dataset.powerId;
+            const name = btn.dataset.powerName || id;
+            withActiveCharacter(root, (character, state) => {
+                if (!character.usedPowers[id]) return;
+                delete character.usedPowers[id];
+                logEvent(state, "power-used", `${character.name}: moc „${name}” oznaczona jako ponownie dostępna.`);
             });
         }
 
