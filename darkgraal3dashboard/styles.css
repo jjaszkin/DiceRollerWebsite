@@ -41,6 +41,12 @@ html, body {
 body {
     min-height: 100vh;
     letter-spacing: 0.01em;
+    /* Tło Camelotu na całą stronę - przyciemnione podwójnym gradientem, żeby karty/tekst (które same
+       w sobie są w pełni kryjące, patrz .card/.gate-card) zostały czytelne, a obrazek był widoczny
+       tylko w marginesach/szczelinach layoutu, nie jako jaskrawe tło pod treścią. */
+    background:
+        linear-gradient(180deg, rgba(10, 8, 6, 0.86), rgba(10, 8, 6, 0.92)),
+        url("images/Camelot bg.png") center center / cover no-repeat fixed;
 }
 
 .app {
@@ -65,7 +71,7 @@ body {
 }
 
 .app-header h1 {
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 1.1rem;
     letter-spacing: 0.18em;
     margin: 0;
@@ -150,7 +156,7 @@ body {
 .card + .card { margin-top: 12px; }
 
 h2, h3, h4 {
-    font-family: var(--mono);
+    font-family: var(--sans);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--gold);
@@ -159,9 +165,9 @@ h2, h3, h4 {
     border-bottom: 1px solid var(--line);
 }
 h2:first-child, h3:first-child, h4:first-child { margin-top: 0; }
-h2 { font-size: 1rem; }
-h3 { font-size: 0.85rem; }
-h4 { font-size: 0.75rem; color: var(--fg-2); }
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1.05rem; }
+h4 { font-size: 0.9rem; color: var(--fg-2); }
 
 .card h2, .card h3 { margin-top: 0; }
 
@@ -316,11 +322,16 @@ input[type="checkbox"] {
 }
 
 .character-portrait {
+    display: block;
     width: 100%;
+    height: auto;
+    max-width: 100%;
     object-fit: contain;
-    border-radius: var(--radius);
-    background: var(--bg-2);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    background: none;
+    /* Portret ma już wypalony okrągły medalion + przezroczyste tło we własnym pliku PNG (patrz
+       images/*.png) - żadnego tła/ramki/przycinania z CSS, tylko poświata podążająca za sylwetką
+       (drop-shadow, w odróżnieniu od box-shadow, respektuje kanał alfa zamiast rysować prostokąt). */
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55));
 }
 
 .camp-wind-box {
@@ -334,7 +345,7 @@ input[type="checkbox"] {
 
 .camp-wind-box label {
     display: block;
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 1.125rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -346,8 +357,8 @@ input[type="checkbox"] {
     font-family: var(--mono);
     font-size: 2.85rem;
     font-weight: 700;
-    color: var(--gold-bright);
-    text-shadow: 0 0 12px rgba(232, 195, 74, 0.35);
+    color: var(--gold);
+    text-shadow: 0 0 16px rgba(232, 184, 61, 0.5), 0 0 32px rgba(232, 184, 61, 0.25);
 }
 
 .camp-wind-scale {
@@ -369,25 +380,25 @@ input[type="checkbox"] {
     background: var(--bg-1);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 10px 12px;
+    padding: 14px 16px;
 }
 
 .stat-box label {
     display: block;
-    font-family: var(--mono);
-    font-size: 0.7rem;
+    font-family: var(--sans);
+    font-size: 0.8rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--fg-dim);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .stat-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-family: var(--mono);
-    font-size: 1rem;
+    font-size: 1.4rem;
     color: var(--fg-0);
 }
 
@@ -473,7 +484,7 @@ input[type="checkbox"] {
 }
 
 .mod-chip {
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 0.72rem;
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
@@ -571,8 +582,19 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 }
 
 .modal h2 { color: var(--gold-bright); margin-top: 0; }
-.modal h3 { color: var(--gold); font-size: 0.8rem; margin: 14px 0 4px; border-bottom: none; padding-bottom: 0; }
+.modal h3 { color: var(--gold); font-size: 1.05rem; margin: 14px 0 4px; border-bottom: none; padding-bottom: 0; }
 .modal p { color: var(--fg-1); line-height: 1.55; font-size: 0.88rem; }
+
+/* Artwork przedmiotu legendarnego w modalu - alfa-przezroczyste PNG, bez tła/ramki, ta sama
+   konwencja poświaty co .character-portrait (patrz wyżej). */
+.item-modal-image {
+    display: block;
+    max-width: 100%;
+    max-height: 220px;
+    margin: 0 auto 14px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55));
+}
 
 .item-tooltip {
     color: var(--fg-2);
@@ -621,10 +643,10 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
     align-items: baseline;
     gap: 8px;
 }
-.power-head strong { color: var(--gold-bright); }
+.power-head strong { color: var(--gold-bright); font-size: 1.05rem; }
 
 .power-usage {
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -736,6 +758,29 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 .die-chip.die-success { color: var(--gold-bright); border-color: var(--gold-dim); }
 .die-chip.die-full { background: var(--gold); color: var(--bg-0); border-color: var(--gold-bright); }
 
+/* Kość z puli Kości Graala (dorzucona do puli, patrz utils.js#rollTestPool wywołanie w roller.js/
+   mg.js) - odznaczona małym okrągłym znacznikiem "G" w rogu, NIEZALEŻNIE od koloru tier'u powyżej
+   (jedynka/sukces/pełny sukces Graalowej kości nadal liczy się tak samo, to tylko oznaczenie
+   pochodzenia kości w puli, nie osobny wynik). */
+.die-chip.die-graal { position: relative; }
+.die-chip.die-graal::after {
+    content: "G";
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 1.15em;
+    height: 1.15em;
+    font-family: var(--sans);
+    font-size: 0.5rem;
+    font-weight: 700;
+    line-height: 1.15em;
+    text-align: center;
+    background: var(--gold);
+    color: var(--bg-0);
+    border-radius: 50%;
+    border: 1px solid var(--bg-0);
+}
+
 .roller-actions {
     display: flex;
     gap: 10px;
@@ -761,7 +806,7 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 }
 
 .mg-camp-wind-full label {
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 1.125rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -778,40 +823,18 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
     align-items: start;
 }
 
-.mg-toc {
-    grid-column: span 2;
-    position: sticky;
-    top: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    background: var(--bg-1);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 10px 12px;
-    max-height: calc(100vh - 24px);
-    overflow-y: auto;
-}
-
-.mg-toc h4 { margin: 0 0 4px; padding-bottom: 4px; }
-
-.mg-toc a {
-    color: var(--fg-1);
-    text-decoration: none;
-    font-family: var(--sans);
-    font-size: 0.85rem;
-    padding: 4px 6px;
-    border-radius: var(--radius);
-}
-.mg-toc a:hover { background: var(--bg-2); color: var(--gold-bright); }
-
+/* Kol. 1-8: taby wyboru postaci (Sir Gaven/Palanore/Cadwyn/Brandon - patrz mg.js#renderCharacterTabs)
+   + globalne moduły (modyfikator/katalog Legendarnych) + karta JEDNEJ aktualnie wybranej postaci.
+   Kol. 9-12: samodzielny rzut MG + Dziennik - ZAWSZE widoczny, niezależny od wyboru zakładki. */
 .mg-characters-col {
-    grid-column: span 6;
+    grid-column: span 8;
     display: flex;
     flex-direction: column;
     gap: 16px;
     min-width: 0;
 }
+
+.mg-character-tabs { margin-bottom: 0; }
 
 .mg-roller-col {
     grid-column: span 4;
@@ -826,14 +849,13 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 14px 16px;
-    scroll-margin-top: 12px;
 }
 
 .mg-character-block-title {
-    font-family: var(--mono);
+    font-family: var(--sans);
     color: var(--gold-bright);
-    font-size: 1.1rem;
-    letter-spacing: 0.06em;
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
     margin: 0 0 10px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--line);
@@ -1012,7 +1034,7 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 .entry-meta {
     display: flex;
     justify-content: space-between;
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 0.72rem;
     color: var(--fg-dim);
     margin-bottom: 4px;
@@ -1054,7 +1076,7 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 }
 
 .gate-card h1 {
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 1.2rem;
     letter-spacing: 0.18em;
     margin: 0 0 4px;
@@ -1137,7 +1159,7 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 
 .app-footer {
     text-align: center;
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 0.72rem;
     color: var(--fg-dim);
     padding-top: 8px;
@@ -1152,7 +1174,6 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 
 @media (max-width: 1100px) {
     .mg-grid-12 { grid-template-columns: repeat(6, 1fr); }
-    .mg-toc { grid-column: span 6; position: static; max-height: none; flex-direction: row; flex-wrap: wrap; }
     .mg-characters-col { grid-column: span 6; }
     .mg-roller-col { grid-column: span 6; }
 }
@@ -1169,5 +1190,5 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
     .archetype-row-head { flex-direction: column; align-items: flex-start; }
     .character-name-big { font-size: 1.5rem; }
     .mg-grid-12 { grid-template-columns: 1fr; }
-    .mg-toc, .mg-characters-col, .mg-roller-col { grid-column: 1 / -1; }
+    .mg-characters-col, .mg-roller-col { grid-column: 1 / -1; }
 }
