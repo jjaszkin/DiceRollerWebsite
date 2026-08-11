@@ -20,9 +20,15 @@ const DIE_STATE_CLASS = {
     complication: "die-complication"
 };
 
-function diceChipsHtml(dice) {
-    return annotateDice(dice || []).map(({ value, state }) =>
-        `<span class="die-chip die-chip-sm ${DIE_STATE_CLASS[state] || ""}">${value}</span>`
+/** `graalCount` kości Graala są traktowane jako ostatnie `graalCount` pozycje w `dice` (czysto
+ *  umowne - kości k6 są i.i.d., więc "które fizycznie" są Graala nie ma znaczenia mechanicznego,
+ *  liczy się tylko ILE ich było, patrz rollLog.js#entry.graalDice) - dostają dodatkowy znacznik
+ *  "G" w rogu (patrz .die-chip.die-graal w styles.css), niezależnie od koloru tier'u. */
+function diceChipsHtml(dice, graalCount = 0) {
+    const list = dice || [];
+    const graalStart = list.length - (graalCount || 0);
+    return annotateDice(list).map(({ value, state }, i) =>
+        `<span class="die-chip die-chip-sm ${DIE_STATE_CLASS[state] || ""} ${i >= graalStart ? "die-graal" : ""}">${value}</span>`
     ).join("");
 }
 
@@ -51,7 +57,7 @@ function renderEntry(e, canDelete) {
                     ${rightMeta}
                 </div>
                 <div class="entry-result">
-                    <div class="dice-row">${diceChipsHtml(e.dice)}</div>
+                    <div class="dice-row">${diceChipsHtml(e.dice, e.graalDice)}</div>
                     <strong>${escapeHtml(e.tierLabel || e.tier)}</strong>
                     ${e.note ? `<p class="placeholder">${escapeHtml(e.note)}</p>` : ""}
                 </div>

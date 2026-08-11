@@ -3,10 +3,17 @@
 // Kości Graala (deklarowane każdorazowo do TEGO rzutu, maks. tyle, ile wynosi aktualna wartość
 // wybranego Archetypu - bez żadnej współdzielonej/persystentnej puli), opcjonalne Moce zwiększające
 // pulę PRZED rzutem, rzut, a następnie (jeśli dotyczy) Moce modyfikujące już rzucone kości
-// (przerzut/podniesienie) - na końcu zatwierdzenie zapisuje wynik do wspólnej historii testów
-// (rollLog.js) i dopiero wtedy trwale oznacza Moce jako użyte. Do tego momentu rzut jest tylko
-// lokalnym podglądem (nic nie jest zapisywane do Firebase) - dzięki temu "Cofnij/Przerzuć od nowa"
-// nic nie psuje we wspólnym stanie.
+// (przerzut/podniesienie).
+//
+// UWAGA (zmiana zachowania - gracze NIE zatwierdzają już rzutu ręcznie): wynik trafia do wspólnej
+// historii testów (rollLog.js) OD RAZU po rzuceniu kośćmi (patrz doRoll()), bez pośredniego kroku
+// "Zatwierdź i zapisz do dziennika" - dawniej wymaganego, uznanego za zbędne tarcie przy stole.
+// Jeśli gracz zastosuje potem Moc modyfikującą już rzucone kości (przerzut/podniesienie, patrz
+// applyPostPower()), TEN SAM wpis w dzienniku jest aktualizowany w miejscu (po id zwróconym przez
+// logRoll()), a nie dopisywany jako nowy - dziennik zawsze pokazuje ostateczny, po-Mocowy wynik.
+// Moce (zarówno przed-, jak i po-rzutowe) są też oznaczane jako użyte NATYCHMIAST w chwili użycia,
+// zamiast dopiero przy dawnym "zatwierdzeniu". Przycisk "Nowy rzut" tylko czyści lokalny podgląd
+// (ui.pendingRoll) - nic już nie zapisuje, bo zapis nastąpił wcześniej.
 //
 // Ta zakładka zawiera też, poniżej rzutu, cały Dziennik kampanii (patrz panels/journal.js - moduł
 // pomocniczy bez własnego DOM-owego root'a, wpięty tu bezpośrednio) - osobna zakładka "Dziennik"
@@ -26,6 +33,7 @@ import { updateState } from "../store.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
 import { archetypeCurrent } from "../state.js";
+import { showToast } from "../toast.js";
 import {
     escapeHtml, clamp, preserveScroll, TEST_TIER_LABELS, annotateDice,
     rollTestPool, applyRerollOnes, applyRerollAllOnes, applyRaiseLowestDie
@@ -119,9 +127,13 @@ function applyPassivePowers(character, transformation, rollResult) {
     return { result, applied };
 }
 
-function diceChipsHtml(dice) {
-    return annotateDice(dice).map(({ value, state }) =>
-        `<span class="die-chip ${DIE_STATE_CLASS[state] || ""}">${value}</span>`
+/** `graalCount` kości Graala = ostatnie `graalCount` pozycje w `dice` (patrz analogiczny komentarz
+ *  w panels/journal.js#diceChipsHtml - umowne oznaczenie pochodzenia w puli, kości k6 są i.i.d.,
+ *  więc nie ma znaczenia mechaniczne KTÓRE fizycznie kości "są" Graala, tylko ile ich było). */
+function diceChipsHtml(dice, graalCount = 0) {
+    const graalStart = dice.length - (graalCount || 0);
+    return annotateDice(dice).map(({ value, state }, i) =>
+        `<span class="die-chip ${DIE_STATE_CLASS[state] || ""} ${i >= graalStart ? "die-graal" : ""}">${value}</span>`
     ).join("");
 }
 
@@ -197,8 +209,9 @@ function buildPendingRollHtml(character, transformation) {
     return `
         <div class="roller-result">
             <h3>Wynik: ${escapeHtml(pr.tierLabel)}</h3>
-            <div class="dice-row">${diceChipsHtml(pr.dice)}</div>
+            <div class="dice-row">${diceChipsHtml(pr.dice, pr.graalDice)}</div>
             <p class="placeholder">Jedynki: ${pr.oneIndices.length} (anulowały ${pr.cancelledIndices.length} najwyższych kości)</p>
+            <p class="placeholder">✓ Zapisano do dziennika kampanii.</p>
             ${appliedHtml}
 
             ${(trackedPowers.length || narrativePowers.length) ? `
@@ -210,8 +223,7 @@ function buildPendingRollHtml(character, transformation) {
             ` : ""}
 
             <div class="roller-actions">
-                <button class="btn btn-gold" data-action="finalize-roll">Zatwierdź i zapisz do dziennika</button>
-                <button class="btn btn-sm" data-action="cancel-roll">Odrzuć rzut</button>
+                <button class="btn btn-gold" data-action="new-roll">Nowy rzut</button>
             </div>
         </div>
     `;
@@ -304,13 +316,8 @@ function wireEvents(root) {
             return;
         }
 
-        if (action === "finalize-roll") {
-            finalizeRoll(root);
-            return;
-        }
-
-        if (action === "cancel-roll") {
-            ui.pendingRoll = null;
+        if (action === "new-roll") {
+            resetPendingSelection();
             rerender(root);
             return;
         }
@@ -347,14 +354,41 @@ function doRoll(root) {
     const { result: afterPassive, applied: passiveApplied } = applyPassivePowers(character, transformation, result);
     result = afterPassive;
 
-    ui.pendingRoll = {
+    const archetypeLabelStr = archetypeLabel(data, ui.archetypeKey);
+    const appliedPowerNames = [...bonusPowers.map(p => p.name), ...passiveApplied];
+
+    // Moce dorzucające kości PRZED rzutem są już "zużyte" w chwili rzutu (nie ma już osobnego kroku
+    // zatwierdzania) - oznacz je od razu, patrz nagłówek pliku.
+    updateState((s) => {
+        const ch = s.characters[activeKey];
+        if (!ch) return;
+        for (const p of bonusPowers) {
+            ch.usedPowers[p.id] = true;
+            logEvent(s, "power-used", `${ch.name}: moc „${p.name}” użyta w teście (${archetypeLabelStr}).`);
+        }
+    });
+
+    // Rzut trafia do wspólnego dziennika OD RAZU (bez czekania na zatwierdzenie) - id zwrócony przez
+    // logRoll() pozwala późniejszym Mocom po rzucie (patrz applyPostPower) zaktualizować TEN SAM wpis.
+    const rollId = logRoll({
+        characterKey: activeKey,
+        characterName: character.name,
         archetypeKey: ui.archetypeKey,
-        archetypeLabel: archetypeLabel(data, ui.archetypeKey),
+        archetypeLabel: archetypeLabelStr,
         archetypeDice,
         graalDice: ui.graalDiceUsed,
-        preRollPowerIds: bonusPowers.map(p => p.id),
-        postRollPowerIds: [], // uzupełniane przy apply-post-power
-        appliedPowerNames: [...bonusPowers.map(p => p.name), ...passiveApplied],
+        dice: result.dice,
+        tier: result.tier,
+        note: appliedPowerNames.length ? `Moce: ${appliedPowerNames.join(", ")}` : ""
+    });
+
+    ui.pendingRoll = {
+        rollId,
+        archetypeKey: ui.archetypeKey,
+        archetypeLabel: archetypeLabelStr,
+        archetypeDice,
+        graalDice: ui.graalDiceUsed,
+        appliedPowerNames,
         dice: result.dice,
         survivingDice: result.survivingDice,
         oneIndices: result.oneIndices,
@@ -362,6 +396,7 @@ function doRoll(root) {
         tier: result.tier,
         tierLabel: TEST_TIER_LABELS[result.tier] || result.tier
     };
+    showToast("Zapisano do dziennika");
     rerender(root);
 }
 
@@ -389,49 +424,29 @@ function applyPostPower(root, powerId, tracked) {
     pr.tier = result.tier;
     pr.tierLabel = TEST_TIER_LABELS[result.tier] || result.tier;
     pr.appliedPowerNames.push(power.name);
-    if (tracked) pr.postRollPowerIds.push(power.id);
 
-    rerender(root);
-}
+    const noteText = pr.appliedPowerNames.length ? `Moce: ${pr.appliedPowerNames.join(", ")}` : "";
 
-function finalizeRoll(root) {
-    const { state, data, session } = root._ctx;
-    const activeKey = resolveActiveKey(state, session);
-    const pr = ui.pendingRoll;
-    if (!activeKey || !pr) return;
-
-    const transformation = data.transformations[activeKey];
-    const usedIds = [...pr.preRollPowerIds, ...pr.postRollPowerIds];
-    let characterName = state.characters[activeKey]?.name || "";
-
-    // Oznaczenie Mocy jako użytych - jedna mutacja stanu, osobna od logRoll() poniżej (który sam
-    // woła updateState - trzymamy te dwa wywołania rozłącznie, żeby nie zagnieżdżać updateState w
-    // updateState, tak jak eventLog.js#logEvent + zewnętrzny updateState w character.js).
+    // Wpis w dzienniku istnieje już od doRoll() - Moc po rzucie aktualizuje TEN SAM wpis (po
+    // pr.rollId) w miejscu, zamiast dopisywać nowy, i (jeśli limitowana) od razu oznacza się jako
+    // użyta - nie ma już osobnego kroku "zatwierdzenia", który wcześniej to odraczał.
     updateState((s) => {
-        const character = s.characters[activeKey];
-        if (!character) return;
-        characterName = character.name;
-
-        for (const id of usedIds) {
-            character.usedPowers[id] = true;
-            const power = (transformation?.powers || []).find(p => p.id === id);
-            logEvent(s, "power-used", `${character.name}: moc „${power?.name || id}” użyta w teście (${pr.archetypeLabel}).`);
+        if (tracked) {
+            const ch = s.characters[activeKey];
+            if (ch) {
+                ch.usedPowers[power.id] = true;
+                logEvent(s, "power-used", `${ch.name}: moc „${power.name}” użyta w teście (${pr.archetypeLabel}).`);
+            }
+        }
+        const entry = (s.rollHistory || []).find(r => r.id === pr.rollId);
+        if (entry) {
+            entry.dice = pr.dice;
+            entry.tier = pr.tier;
+            entry.tierLabel = pr.tierLabel;
+            entry.note = noteText;
         }
     });
 
-    logRoll({
-        characterKey: activeKey,
-        characterName,
-        archetypeKey: pr.archetypeKey,
-        archetypeLabel: pr.archetypeLabel,
-        archetypeDice: pr.archetypeDice,
-        graalDice: pr.graalDice,
-        dice: pr.dice,
-        tier: pr.tier,
-        note: pr.appliedPowerNames.length ? `Moce: ${pr.appliedPowerNames.join(", ")}` : ""
-    });
-
-    resetPendingSelection();
     rerender(root);
 }
 

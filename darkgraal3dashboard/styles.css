@@ -41,6 +41,12 @@ html, body {
 body {
     min-height: 100vh;
     letter-spacing: 0.01em;
+    /* Tło Camelotu na całą stronę - przyciemnione podwójnym gradientem, żeby karty/tekst (które same
+       w sobie są w pełni kryjące, patrz .card/.gate-card) zostały czytelne, a obrazek był widoczny
+       tylko w marginesach/szczelinach layoutu, nie jako jaskrawe tło pod treścią. */
+    background:
+        linear-gradient(180deg, rgba(10, 8, 6, 0.86), rgba(10, 8, 6, 0.92)),
+        url("images/Camelot bg.png") center center / cover no-repeat fixed;
 }
 
 .app {
@@ -740,6 +746,29 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 .die-chip.die-complication { color: var(--fg-1); border-color: var(--line-strong); }
 .die-chip.die-success { color: var(--gold-bright); border-color: var(--gold-dim); }
 .die-chip.die-full { background: var(--gold); color: var(--bg-0); border-color: var(--gold-bright); }
+
+/* Kość z puli Kości Graala (dorzucona do puli, patrz utils.js#rollTestPool wywołanie w roller.js/
+   mg.js) - odznaczona małym okrągłym znacznikiem "G" w rogu, NIEZALEŻNIE od koloru tier'u powyżej
+   (jedynka/sukces/pełny sukces Graalowej kości nadal liczy się tak samo, to tylko oznaczenie
+   pochodzenia kości w puli, nie osobny wynik). */
+.die-chip.die-graal { position: relative; }
+.die-chip.die-graal::after {
+    content: "G";
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 1.15em;
+    height: 1.15em;
+    font-family: var(--sans);
+    font-size: 0.5rem;
+    font-weight: 700;
+    line-height: 1.15em;
+    text-align: center;
+    background: var(--gold);
+    color: var(--bg-0);
+    border-radius: 50%;
+    border: 1px solid var(--bg-0);
+}
 
 .roller-actions {
     display: flex;

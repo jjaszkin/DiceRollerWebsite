@@ -16,11 +16,15 @@ import { uid, formatTimestamp, TEST_TIER_LABELS } from "./utils.js";
  * @param {number[]} entry.dice - pełny wynik rzutu (wszystkie kości puli, po ew. przerzutach/mocach)
  * @param {string} entry.tier - jeden z TEST_TIERS ("fullSuccess"|"success"|"complication"|"failure")
  * @param {string} [entry.note] - dodatkowy opis (np. nazwa użytej Mocy, kontekst testu)
+ * @returns {string} id nowo utworzonego wpisu - patrz panels/roller.js#applyPostPower, który po
+ *  zapisaniu rzutu OD RAZU (bez czekania na "zatwierdzenie" gracza) wykorzystuje ten id, żeby
+ *  Moc zastosowana po rzucie zaktualizowała TEN SAM wpis w dzienniku zamiast dopisywać nowy.
  */
 export function logRoll(entry) {
+    const id = uid();
     updateState((state) => {
         state.rollHistory.push({
-            id: uid(),
+            id,
             characterKey: entry.characterKey,
             characterName: entry.characterName,
             archetypeKey: entry.archetypeKey,
@@ -35,4 +39,5 @@ export function logRoll(entry) {
             at: Date.now()
         });
     });
+    return id;
 }

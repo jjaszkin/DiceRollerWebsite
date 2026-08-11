@@ -84,9 +84,14 @@ function findOwnerKey(state, itemKey) {
     return null;
 }
 
-function diceChipsHtml(dice) {
-    return annotateDice(dice || []).map(({ value, state: dieState }) =>
-        `<span class="die-chip ${DIE_STATE_CLASS[dieState] || ""}">${value}</span>`
+/** `graalCount` kości Graala = ostatnie `graalCount` pozycje w `dice` (patrz analogiczny komentarz
+ *  w panels/journal.js#diceChipsHtml - umowne oznaczenie pochodzenia w puli, bez znaczenia
+ *  mechanicznego które fizycznie kości "są" Graala). */
+function diceChipsHtml(dice, graalCount = 0) {
+    const list = dice || [];
+    const graalStart = list.length - (graalCount || 0);
+    return annotateDice(list).map(({ value, state: dieState }, i) =>
+        `<span class="die-chip ${DIE_STATE_CLASS[dieState] || ""} ${i >= graalStart ? "die-graal" : ""}">${value}</span>`
     ).join("");
 }
 
@@ -144,7 +149,7 @@ function renderLegendaryCatalog(ctx) {
         const disabled = owner ? (owner.disabledItemKeys || []).includes(key) : false;
         return `
             <button class="item-chip legendary ${disabled ? "item-disabled" : ""}" data-action="open-legendary" data-key="${key}">
-                ${escapeHtml(item.name)}${owner ? `<span class="mg-legendary-chip-owner">(${escapeHtml(owner.aliasName)})</span>` : ""}${disabled ? " (wygaszony)" : ""}
+                ${escapeHtml(item.name)}${owner ? `<span class="mg-legendary-chip-owner">(${escapeHtml(owner.name)})</span>` : ""}${disabled ? " (wygaszony)" : ""}
             </button>
         `;
     }).join("");
@@ -353,7 +358,7 @@ function buildMgPendingRollHtml() {
             <h2>Rzut MG</h2>
             <div class="roller-result">
                 <h3>Wynik: ${escapeHtml(pr.tierLabel)}</h3>
-                <div class="dice-row">${diceChipsHtml(pr.dice)}</div>
+                <div class="dice-row">${diceChipsHtml(pr.dice, pr.graalDice)}</div>
                 <p class="placeholder">Jedynki: ${pr.oneIndices.length} (anulowały ${pr.cancelledIndices.length} najwyższych kości)</p>
                 <div class="roller-actions">
                     <button class="btn btn-gold" data-action="mg-finalize-roll">Zatwierdź i zapisz do dziennika</button>
