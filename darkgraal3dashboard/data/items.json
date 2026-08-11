@@ -57,7 +57,6 @@
     },
     "serce-ginewry-zimowy-szept": {
         "name": "Serce Ginewry - Zimowy Szept",
-        "image": "images/items/image 54.png",
         "shortTooltip": "Echa wspomnień Ginewry, kryjące sekrety Okrągłego Stołu.",
         "richDescription": [
             { "title": "Moc", "text": "Serce kryje echa wspomnień Ginewry, pozwalając badaczowi usłyszeć sekrety Okrągłego Stołu i prawdziwe przyczyny upadku Camelotu. Może też ujawnić ukryte lokacje artefaktów (być może samego Graala)." },
@@ -66,7 +65,6 @@
     },
     "serce-ginewry-lodowy-dotyk": {
         "name": "Serce Ginewry - Lodowy Dotyk Śmierci",
-        "image": "images/items/image 54.png",
         "shortTooltip": "Dotknięcie serca zamraża wszystko w promieniu kilku kroków.",
         "richDescription": [
             { "title": "Moc", "text": "Dotknięcie serca zamraża wszystko w promieniu kilku kroków, skutecznie zatrzymując czas w wybranym obszarze na chwilę. Użycie tej mocy wymaga ofiary z własnej krwi." },
@@ -75,7 +73,6 @@
     },
     "popioly-guinevak": {
         "name": "Popioły Guinevak - Przeklęte Więzi",
-        "image": "images/items/image 54.png",
         "shortTooltip": "Wejrzenie w emocje i dusze innych, pozwalające na manipulację uczuciami.",
         "richDescription": [
             { "title": "Moc", "text": "Serce umożliwia badaczowi wejrzenie w emocje i dusze innych, pozwalając na manipulację ich uczuciami (miłość, żal, nienawiść). Może zmusić innych do chwilowej lojalności lub zdrady." },
@@ -83,13 +80,13 @@
         ]
     },
     "ashenvach": {
-        "name": "Ashenvach",
+        "name": "Ashenvach (kostur)",
         "image": "images/items/Ashenvach.png",
         "shortTooltip": "Opis w przygotowaniu - MG może go uzupełnić w Panelu MG (edycja opisu przedmiotu).",
         "richDescription": []
     },
     "glacivere": {
-        "name": "Glacivère",
+        "name": "Glacivère (miecz)",
         "image": "images/items/Glacivère.png",
         "shortTooltip": "Opis w przygotowaniu - MG może go uzupełnić w Panelu MG (edycja opisu przedmiotu).",
         "richDescription": []

@@ -124,7 +124,7 @@ function renderItemModal(data, character, state) {
         ${renderUsableButton(itemKey, s, character, disabled)}
     `).join("");
     return `
-        <div class="modal-backdrop" data-action="close-item">
+        <div class="modal-backdrop">
             <div class="modal">
                 <h2>${escapeHtml(item.name)}</h2>
                 ${item.image ? `<img class="item-modal-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">` : ""}

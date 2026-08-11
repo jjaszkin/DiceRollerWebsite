@@ -177,7 +177,7 @@ function renderLegendaryModal(ctx) {
     `).join("");
 
     return `
-        <div class="modal-backdrop" data-action="close-legendary">
+        <div class="modal-backdrop">
             <div class="modal">
                 <h2>${escapeHtml(item.name)}</h2>
                 ${item.image ? `<img class="item-modal-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">` : ""}
