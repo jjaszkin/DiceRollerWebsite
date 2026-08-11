@@ -11,20 +11,24 @@
     --bg-3: #2a2019;
     --line: #3d2f1f;
     --line-strong: #6b5330;
-    --gold: #c9a227;
-    --gold-bright: #e8c34a;
-    --gold-dim: #8a712c;
+    --gold: #E8B83D;
+    --gold-bright: #F8D270;
+    --gold-dim: #BD952F;
     --fg-0: #f2e9d8;
     --fg-1: #d8c9a8;
     --fg-2: #a89878;
     --fg-dim: #6b5f4a;
     --danger: #8a2f2f;
-    --mono: "SFMono-Regular", ui-monospace, "JetBrains Mono", "Consolas", "Courier New", monospace;
-    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: "Pirata One", "SFMono-Regular", ui-monospace, "JetBrains Mono", "Consolas", "Courier New", monospace;
+    --sans: "Domine", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --radius: 3px;
 }
 
 * { box-sizing: border-box; }
+
+html {
+    font-size: 17.5px;
+}
 
 html, body {
     margin: 0;
@@ -69,6 +73,13 @@ body {
     font-weight: 600;
 }
 
+.app-logo {
+    height: 44px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 0 6px rgba(201, 162, 39, 0.35));
+}
+
 .header-status {
     display: flex;
     align-items: center;
@@ -98,7 +109,7 @@ body {
     border: 1px solid transparent;
     border-bottom: none;
     color: var(--fg-2);
-    font-family: var(--mono);
+    font-family: var(--sans);
     font-size: 0.85rem;
     letter-spacing: 0.08em;
     padding: 8px 14px;
@@ -125,7 +136,7 @@ body {
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-.placeholder { color: var(--fg-dim); font-style: italic; }
+.placeholder { color: var(--fg-1); font-style: italic; font-size: 0.92rem; line-height: 1.5; }
 
 /* -- Generic building blocks ---------------------------------------------- */
 
@@ -157,7 +168,7 @@ h4 { font-size: 0.75rem; color: var(--fg-2); }
 /* -- Buttons ---------------------------------------------------------------- */
 
 .btn {
-    font-family: var(--mono);
+    font-family: var(--sans);
     background: var(--bg-2);
     color: var(--fg-0);
     border: 1px solid var(--line-strong);
@@ -239,6 +250,10 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     margin-top: 8px;
 }
 
+input[type="checkbox"] {
+    accent-color: var(--gold);
+}
+
 .char-picker {
     width: 100%;
     margin-bottom: 14px;
@@ -268,6 +283,77 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     color: var(--fg-2);
     font-style: italic;
     font-size: 0.9rem;
+}
+
+.character-name-big {
+    font-size: 2.1rem;
+    letter-spacing: 0.06em;
+}
+
+.character-player {
+    margin: 2px 0 0;
+    color: var(--fg-1);
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-style: italic;
+}
+
+.character-sheet-grid {
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) 1.1fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.character-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.character-col-portrait {
+    align-items: stretch;
+}
+
+.character-portrait {
+    width: 100%;
+    object-fit: contain;
+    border-radius: var(--radius);
+    background: var(--bg-2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.camp-wind-box {
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    text-align: center;
+    box-shadow: 0 0 14px rgba(201, 162, 39, 0.18) inset;
+}
+
+.camp-wind-box label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 1.125rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+}
+
+.camp-wind-value {
+    font-family: var(--mono);
+    font-size: 2.85rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    text-shadow: 0 0 12px rgba(232, 195, 74, 0.35);
+}
+
+.camp-wind-scale {
+    font-size: 1rem;
+    color: var(--fg-dim);
+    font-weight: 400;
 }
 
 /* -- Stat rows (Rozpacz / Rany / Błogosławieństwo, Kości Graala, Wiatr Camelotu) -------------- */
@@ -342,13 +428,33 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 
 .archetype-value {
     font-family: var(--mono);
-    font-size: 1.3rem;
+    font-size: 40px;
     font-weight: 700;
     color: var(--fg-0);
 }
 
 .archetype-base {
     font-size: 0.78rem;
+    color: var(--fg-dim);
+}
+
+.archetype-value-max {
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--fg-dim);
+}
+
+.archetype-skull {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    cursor: help;
+}
+
+.archetype-row.archetype-zero {
+    opacity: 0.5;
+}
+.archetype-row.archetype-zero .archetype-name,
+.archetype-row.archetype-zero .archetype-value {
     color: var(--fg-dim);
 }
 
@@ -409,6 +515,25 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 }
 .item-chip.legendary:hover { background: var(--bg-3); }
 
+button.item-chip {
+    font-family: var(--sans);
+    cursor: pointer;
+}
+button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright); background: var(--bg-3); }
+
+.item-chip.item-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+.item-chip.item-disabled:hover { border-color: var(--line); color: var(--fg-1); background: var(--bg-2); }
+
+.item-disabled-note {
+    color: var(--danger);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
 .chip-remove {
     background: none;
     border: none;
@@ -452,6 +577,15 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 .item-tooltip {
     color: var(--fg-2);
     font-style: italic;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
 }
 
 /* -- Cechy Przemiany i Moce -------------------------------------------------------- */
@@ -597,16 +731,10 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 }
 
 .die-chip.die-removed { opacity: 0.35; text-decoration: line-through; border-color: var(--line); }
+.die-chip.die-cancelled { opacity: 0.45; text-decoration: line-through; border-color: var(--danger); color: var(--fg-2); }
 .die-chip.die-complication { color: var(--fg-1); border-color: var(--line-strong); }
 .die-chip.die-success { color: var(--gold-bright); border-color: var(--gold-dim); }
 .die-chip.die-full { background: var(--gold); color: var(--bg-0); border-color: var(--gold-bright); }
-
-.roll-note-label {
-    display: block;
-    margin-top: 10px;
-}
-
-.roll-note-input { margin-top: 6px; }
 
 .roller-actions {
     display: flex;
@@ -615,16 +743,157 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     flex-wrap: wrap;
 }
 
-/* -- Panel MG ------------------------------------------------------------------------ */
+/* -- Panel MG (widok bez zakładek, siatka 12 kolumn) ---------------------------------- */
 
-.mg-panel { display: flex; flex-direction: column; gap: 4px; }
+.mg-unified-wrap { display: flex; flex-direction: column; gap: 16px; }
 
-.mg-global-controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-bottom: 12px;
+.mg-camp-wind-full {
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    box-shadow: 0 0 14px rgba(201, 162, 39, 0.18) inset;
 }
+
+.mg-camp-wind-full label {
+    font-family: var(--mono);
+    font-size: 1.125rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin: 0;
+}
+
+.mg-camp-wind-full .camp-wind-value { font-size: 2.85rem; }
+
+.mg-grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+.mg-toc {
+    grid-column: span 2;
+    position: sticky;
+    top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+}
+
+.mg-toc h4 { margin: 0 0 4px; padding-bottom: 4px; }
+
+.mg-toc a {
+    color: var(--fg-1);
+    text-decoration: none;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    padding: 4px 6px;
+    border-radius: var(--radius);
+}
+.mg-toc a:hover { background: var(--bg-2); color: var(--gold-bright); }
+
+.mg-characters-col {
+    grid-column: span 6;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.mg-roller-col {
+    grid-column: span 4;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mg-character-block {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    scroll-margin-top: 12px;
+}
+
+.mg-character-block-title {
+    font-family: var(--mono);
+    color: var(--gold-bright);
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+}
+
+.mg-modifier-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.mg-modifier-form select { flex: 1 1 150px; }
+.mg-modifier-form input[type="text"] { flex: 1 1 130px; }
+
+.mg-legendary-catalog {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mg-legendary-chip-owner {
+    font-size: 0.7rem;
+    color: var(--fg-dim);
+    margin-left: 4px;
+}
+
+.mg-legendary-modal-field { margin-top: 10px; }
+.mg-legendary-modal-field label { display: block; margin-bottom: 4px; }
+.mg-legendary-modal-field select, .mg-legendary-modal-field textarea { width: 100%; }
+
+.mg-equipment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.mg-equipment-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 6px 8px;
+}
+
+.mg-equipment-name, .mg-equipment-tooltip-input {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    color: var(--fg-0);
+    font-family: var(--sans);
+    border-radius: var(--radius);
+    padding: 5px 8px;
+    font-size: 0.82rem;
+}
+
+.mg-equipment-name { flex: 1 1 110px; min-width: 90px; }
+.mg-equipment-tooltip-input { flex: 2 1 160px; min-width: 120px; }
 
 .mg-archetype-list {
     display: flex;
@@ -664,17 +933,50 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     gap: 8px;
 }
 
-.mg-add-modifier, .mg-add-equipment {
+.mg-add-equipment {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
     margin-top: 8px;
 }
-.mg-add-modifier input { flex: 1 1 120px; }
 .mg-mod-delta { width: 4.5em; flex: 0 0 auto; }
 
 .mg-equipment-input { flex: 1 1 220px; }
+
+/* -- Toast (potwierdzenie użycia przedmiotu) ------------------------------------------- */
+
+.toast-container {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--bg-1);
+    border: 1px solid var(--gold);
+    color: var(--gold-bright);
+    font-family: var(--sans);
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast.toast-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 
 /* -- Dziennik --------------------------------------------------------------------------- */
 
@@ -761,6 +1063,34 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     text-align: center;
 }
 
+.gate-logo {
+    display: block;
+    width: 151px;
+    height: 166px;
+    margin: 0 auto 6px;
+    filter: drop-shadow(0 0 10px rgba(201, 162, 39, 0.35));
+}
+
+.pin-digits {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.pin-digit {
+    width: 3em;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 8px 0;
+}
+
+.gate-cancel {
+    display: block;
+    margin: 14px auto 0;
+}
+
 .gate-sub {
     text-align: center;
     color: var(--fg-dim);
@@ -820,8 +1150,24 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: var(--radius); }
 ::-webkit-scrollbar-thumb:hover { background: var(--line-strong); }
 
+@media (max-width: 1100px) {
+    .mg-grid-12 { grid-template-columns: repeat(6, 1fr); }
+    .mg-toc { grid-column: span 6; position: static; max-height: none; flex-direction: row; flex-wrap: wrap; }
+    .mg-characters-col { grid-column: span 6; }
+    .mg-roller-col { grid-column: span 6; }
+}
+
+@media (max-width: 900px) {
+    .character-sheet-grid { grid-template-columns: 1fr; }
+    .character-col-portrait { max-width: 260px; }
+}
+
 @media (max-width: 640px) {
     .app-header h1 { font-size: 0.95rem; }
+    .app-logo { height: 34px; }
     .header-status { width: 100%; justify-content: space-between; }
     .archetype-row-head { flex-direction: column; align-items: flex-start; }
+    .character-name-big { font-size: 1.5rem; }
+    .mg-grid-12 { grid-template-columns: 1fr; }
+    .mg-toc, .mg-characters-col, .mg-roller-col { grid-column: 1 / -1; }
 }

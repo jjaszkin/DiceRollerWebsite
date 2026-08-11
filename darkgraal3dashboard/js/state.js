@@ -25,9 +25,17 @@ function cloneArchetypes(catalogArchetypes) {
     return out;
 }
 
+/** Konwertuje jeden wpis ekwipunku zwykłego z katalogu (zwykły string, np. "żołędzie z dębu
+ *  Merlina") na żywy, edytowalny obiekt: { id, name, tooltip, disabled }. `tooltip` startuje puste
+ *  (MG dopisuje go później z panelu MG - patrz panels/mg.js), `disabled` pozwala MG "wygasić"
+ *  przedmiot (zepsuty/zużyty/skradziony) bez usuwania go z karty postaci. */
+function cloneEquipmentItem(name) {
+    return { id: uid(), name, tooltip: "", disabled: false };
+}
+
 /** Buduje żywy (edytowalny w trakcie kampanii) stan jednej postaci na bazie jej wpisu w katalogu
  *  data/characters.json. Katalog jest traktowany jako TYLKO seed stanu startowego - dalsze zmiany
- *  (rany, modyfikatory, ekwipunek, użyte moce...) żyją wyłącznie w state.characters i są
+ *  (modyfikatory, ekwipunek, użyte moce...) żyją wyłącznie w state.characters i są
  *  zapisywane do Firebase, katalog JSON się nie zmienia. */
 function cloneCharacterFromCatalog(c) {
     return {
@@ -39,16 +47,16 @@ function cloneCharacterFromCatalog(c) {
         archetypes: cloneArchetypes(c.archetypes),
         despair: { current: c.despair?.current ?? 0 },
         blessing: !!c.blessing,
-        // Rany - licznik + osobna flaga "rana śmiertelna" (widziana w źródle Figma jako osobny
-        // symbol na karcie postaci). Dokładne mechaniczne konsekwencje progu ran nie zostały
-        // jeszcze doprecyzowane w danych dostępnych tej sesji - na razie to czysty licznik do
-        // ręcznego odczytu/interpretacji przez MG, edytowalny z panelu MG.
-        wounds: { count: 0, deadly: false },
-        equipment: [...(c.equipment || [])],
+        equipment: (c.equipment || []).map(cloneEquipmentItem),
         legendaryItemKeys: [...(c.legendaryItemKeys || [])],
+        // Klucze Przedmiotów Legendarnych aktualnie "wygaszonych" przez MG (np. skradzione,
+        // przeklęte, wyczerpane) - przedmiot ZOSTAJE na karcie postaci (w legendaryItemKeys), tylko
+        // jest wyświetlany jako nieaktywny. Niezależne od `equipment[].disabled` (ekwipunek zwykły).
+        disabledItemKeys: [...(c.disabledItemKeys || [])],
         // { [powerId]: true } - moc oznaczona jako "użyta" w tej sesji/scenie/walce (usage z
-        // data/transformations.json#powers[].effect.usage). Panel MG ma zbiorczy przycisk "Nowa
-        // scena/sesja/walka", który czyści odpowiednie wpisy (patrz panels/mg.js).
+        // data/transformations.json#powers[].effect.usage, albo namespacowane id Mocy Legendarnych
+        // przedmiotów typu "excalibur-blask-zepsucia" - patrz data/items.json#usable). Panel MG ma
+        // zbiorczy przycisk "Nowa scena/sesja/walka", który czyści odpowiednie wpisy (panels/mg.js).
         usedPowers: {}
     };
 }
@@ -63,27 +71,50 @@ export function createDefaultState(gameData) {
 
         characters, // { [charKey]: <patrz cloneCharacterFromCatalog> }
 
-        // Kości Graala - współdzielona pula, którą MG przyznaje graczom; przy teście gracz
-        // deklaruje, ile z puli chce dorzucić do swojej puli testu (patrz panels/roller.js).
-        // Czysty licznik bez wbudowanego maksimum (MG decyduje ręcznie, ile przyznać/odjąć).
-        graalDice: { current: 0 },
+        // PIN Mistrza Gry (4 cyfry) - broni dostępu do roli MG na gate.js. Ustawiany/zmieniany
+        // bezpośrednio w Firebase przez usera (poza UI dashboardu), domyślnie "0000".
+        mgPin: "0000",
 
         // Wiatr Camelotu - czysty licznik 0-10, bez wbudowanego efektu mechanicznego (potwierdzone
         // przez usera: "Wiatr Camelotu ma być tylko licznikiem, bez wartości"), narracyjny wskaźnik
-        // narastającego zepsucia/finału sezonu 3, ręcznie przesuwany przez MG.
+        // narastającego zepsucia/finału sezonu 3, ręcznie przesuwany przez MG, widoczny na karcie
+        // każdego gracza jako wyróżniony (glow/podwójna ramka) odczyt.
         campWind: { current: 0, scale: 10 },
 
         rollHistory: [], // [{ id, characterKey, archetypeKey, dice, tier, note, ts, at }] - patrz rollLog.js
         events: [],      // [{ id, type, text, ts, at }] - patrz eventLog.js
-        journal: []      // [{ id, text, ts, at }] - wolne notatki MG (fabuła, ważne decyzje sesji)
+        journal: [],     // [{ id, text, ts, at }] - zachowane wyłącznie jako "duchy" starych wpisów z
+                          // testów (usuwalne przez MG) - UI dodawania nowych notatek zostało usunięte.
+
+        // Nadpisania opisów Przedmiotów Legendarnych wprowadzane na żywo przez MG z panelu MG
+        // (panels/mg.js - globalny katalog "Przedmioty Legendarne"), BEZ modyfikowania statycznego
+        // katalogu data/items.json. { [itemKey]: { tooltip: string } } - patrz resolveItemTooltip().
+        itemOverrides: {}
     };
 }
 
-/** Punkt zaczepienia pod przyszłe migracje starszych kształtów zapisu (na wzór
- *  glide2solo#state.js#migrateLoadedState) - na razie nie ma jeszcze żadnej starszej wersji
- *  schematu, więc funkcja tylko przepuszcza wczytany stan bez zmian. Wywoływana PRZED
- *  mergeWithDefaults, tak jak w glide2solo. */
+/** Migracje starszych kształtów zapisu, wywoływane PRZED mergeWithDefaults (na wzór
+ *  glide2solo#state.js#migrateLoadedState). Obecnie:
+ *   1) Ekwipunek zwykły: stary kształt to string[] ("żołędzie z dębu Merlina"), nowy to
+ *      { id, name, tooltip, disabled }[] - konwertujemy każdy string-owy wpis na obiekt (idempotentnie:
+ *      wpisy, które już są obiektami, przechodzą bez zmian).
+ *   2) Usuwamy martwe pole `graalDice` (stara, współdzielona pula Kości Graala) ze starszych zapisów -
+ *      mechanika została zastąpiona deklarowaniem puli Graala każdorazowo przy rzucie (panels/roller.js).
+ */
 export function migrateLoadedState(loaded) {
+    if (!loaded || typeof loaded !== "object") return loaded;
+    if (loaded.graalDice !== undefined) delete loaded.graalDice;
+    const characters = loaded.characters;
+    if (characters && typeof characters === "object") {
+        for (const key of Object.keys(characters)) {
+            const character = characters[key];
+            if (character && Array.isArray(character.equipment)) {
+                character.equipment = character.equipment.map(entry =>
+                    typeof entry === "string" ? cloneEquipmentItem(entry) : entry
+                );
+            }
+        }
+    }
     return loaded;
 }
 
@@ -143,4 +174,15 @@ export function removeModifier(archetype, modifierId) {
 export function toggleModifier(archetype, modifierId) {
     const mod = archetype.modifiers.find(m => m.id === modifierId);
     if (mod) mod.active = !mod.active;
+}
+
+/** Zwraca efektywny (widoczny dla graczy) krótki opis Przedmiotu Legendarnego: nadpisanie MG z
+ *  state.itemOverrides, jeśli istnieje, inaczej `shortTooltip` ze statycznego katalogu (data/items.json).
+ *  Używane wszędzie tam, gdzie wyświetlany jest krótki opis przedmiotu (chip ekwipunku i modal na
+ *  karcie postaci - panels/character.js, katalog i modal w panelu MG - panels/mg.js), żeby edycja
+ *  opisu przez MG była widoczna spójnie w obu rolach. */
+export function resolveItemTooltip(state, data, itemKey) {
+    const override = state?.itemOverrides?.[itemKey];
+    if (override && typeof override.tooltip === "string") return override.tooltip;
+    return data?.items?.[itemKey]?.shortTooltip || "";
 }

@@ -14,9 +14,12 @@ export const EVENT_TYPE_LABELS = {
     "modifier-toggled": "Modyfikator włączony/wyłączony",
     "power-used": "Użyto Mocy",
     "power-usage-reset": "Reset użyć Mocy",
+    "item-power-used": "Użycie mocy przedmiotu",
     "graal-dice-change": "Kości Graala",
     "camp-wind-change": "Wiatr Camelotu",
     "equipment-change": "Zmiana ekwipunku",
+    "equipment-used": "Użycie przedmiotu",
+    "equipment-disabled": "Wygaszenie przedmiotu",
     "character-edited": "Edycja karty postaci",
     "journal-note": "Notatka MG"
 };

@@ -1,24 +1,12 @@
 // Dark Graal III - Dashboard Solo (MG). Wspólne narzędzia: generyczne helpery (przeniesione 1:1
 // z glide2solo) + silnik testu Dark Graala (pula k6).
 //
-// UWAGA co do silnika testu (rollTestPool/applyReroll.../resolveTier): dokładny algorytm nie był
-// jeszcze wprost potwierdzony 1:1 przez usera w tej sesji (kontekst z wcześniejszej, długiej
-// wymiany o mechanice ["Rzuca się jako jedna pula", "usuwanie po 1"...] uległ częściowej utracie
-// przy kompaktowaniu historii rozmowy). Zaimplementowany tu kształt to możliwie wierna rekonstrukcja
-// z dostępnych, potwierdzonych źródeł:
-//   - Moce postaci (data/transformations.json) konsekwentnie traktują „6” jako sukces („jeśli w
-//     rzucie wypadnie przynajmniej jedna 6”) i „1” jako coś złego, co da się przerzucić
-//     (reroll_ones) - więc kości to k6, 6 = dobrze, 1 = źle.
-//   - Przedmiot „Zioła Merlina” (data/items.json) nazywa wprost trzy poziomy sukcesu przy leczeniu:
-//     „pełen sukces” / „zwykły [sukces]” / „komplikacja” - to nazewnictwo przenosimy 1 : 1 jako
-//     ogólne tiery testu (+ dodajemy czwarty, `failure`, dla przypadku bez ani jednej sensownej
-//     kości).
-//   - Zadanie z listy TODO tej sesji opisywało silnik jako „pula kości, usuwanie po 1, tier
-//     sukcesu, reroll/raise” - stąd reguła: kości pokazujące „1” są usuwane z puli PRZED
-//     wyznaczeniem tieru (nie liczą się, ale zostają pokazane w logu), z zabezpieczeniem na
-//     brzegowy przypadek (cała pula to same „1” → tier `failure`, a nie wyjątek/pusta tablica).
-// To wszystko wymaga szybkiego potwierdzenia/korekty przez usera przy pierwszym realnym użyciu
-// panelu Rollera - patrz komentarz w panels/roller.js.
+// Silnik testu (potwierdzone przez usera po pierwszych testach na żywo): kości to k6, "6" to pełny
+// sukces, "1" to zła kość - ale "1" NIE jest po prostu odrzucana. Każda "1" w puli anuluje SIEBIE
+// ORAZ jedną najwyższą spośród pozostałych (nie-"1") kości, jedna para na jedną "1". Przykład
+// potwierdzony przez usera: pula [1, 1, 4, 6, 6] → dwie "1" anulują dwie najwyższe kości (6 i 6),
+// ocalałe: [4] → tier "sukces". Jeśli "1" jest więcej niż kości do anulowania, nadmiarowe "1" po
+// prostu nie mają już czego anulować (ocalałe = []).
 
 export function uid() {
     return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -52,23 +40,74 @@ export function resolveTier(survivingDice) {
 }
 
 /**
- * Rzuca testową pulę `count` kości k6 i stosuje zasadę „usuwanie po 1”: kości pokazujące 1 nie
- * liczą się przy wyznaczaniu tieru (ale zostają w `dice` do wyświetlenia w logu). Zwraca:
- *   { dice: number[], survivingDice: number[], removedOnes: number, tier: string }
+ * Wyznacza, które kości z puli PRZETRWAŁY zasadę „1 anuluje siebie + najwyższą pozostałą” (patrz
+ * komentarz na górze pliku). Zwraca indeksy (nie wartości), żeby dało się rozróżnić dwie kości o
+ * tej samej wartości. Kolejność wewnątrz zwracanych tablic jest rosnąca po indeksie w `dice`.
+ *   { survivingIndices: number[], cancelledIndices: number[], oneIndices: number[] }
+ */
+export function computeSurvivingIndices(dice) {
+    const oneIndices = [];
+    const nonOneEntries = []; // { index, value }
+    dice.forEach((d, i) => {
+        if (d === 1) oneIndices.push(i);
+        else nonOneEntries.push({ index: i, value: d });
+    });
+    // Sortuj malejąco po wartości - Array#sort jest stabilny (spec ES2019+), więc przy remisach
+    // anulowana zostaje ta kość, która pojawiła się wcześniej w puli (deterministyczne, bez znaczenia
+    // mechanicznego, ale przewidywalne dla UI).
+    const sortedDesc = [...nonOneEntries].sort((a, b) => b.value - a.value);
+    const cancelCount = Math.min(oneIndices.length, sortedDesc.length);
+    const cancelledIndices = sortedDesc.slice(0, cancelCount).map(e => e.index);
+    const cancelledSet = new Set(cancelledIndices);
+    const survivingIndices = nonOneEntries.filter(e => !cancelledSet.has(e.index)).map(e => e.index);
+    return { survivingIndices, cancelledIndices, oneIndices };
+}
+
+/** Jak computeSurvivingIndices, ale od razu z wartościami kości + wyznaczonym tierem. Zwraca:
+ *   { dice, survivingDice, survivingIndices, cancelledIndices, oneIndices, tier } */
+export function resolveDicePool(dice) {
+    const { survivingIndices, cancelledIndices, oneIndices } = computeSurvivingIndices(dice);
+    const survivingDice = survivingIndices.map(i => dice[i]);
+    return { dice, survivingDice, survivingIndices, cancelledIndices, oneIndices, tier: resolveTier(survivingDice) };
+}
+
+/** Per-kość adnotacja do renderowania chipów (roller.js/journal-w-roller.js): dla każdej kości w
+ *  `dice` zwraca { value, state }, gdzie state ∈ 'one' (dosłowna "1") | 'cancelled' (anulowana
+ *  przez "1") | 'full' (ocalała 6) | 'success' (ocalała 4-5) | 'complication' (ocalała 2-3). */
+export function annotateDice(dice) {
+    const { survivingIndices, cancelledIndices, oneIndices } = computeSurvivingIndices(dice);
+    const survivingSet = new Set(survivingIndices);
+    const cancelledSet = new Set(cancelledIndices);
+    const oneSet = new Set(oneIndices);
+    return dice.map((value, i) => {
+        let state;
+        if (oneSet.has(i)) state = "one";
+        else if (cancelledSet.has(i)) state = "cancelled";
+        else if (value === 6) state = "full";
+        else if (value >= 4) state = "success";
+        else state = "complication";
+        return { value, state };
+    });
+}
+
+/**
+ * Rzuca testową pulę `count` kości k6 i stosuje zasadę anulowania (patrz resolveDicePool). Zwraca:
+ *   { dice, survivingDice, survivingIndices, cancelledIndices, oneIndices, removedOnes, tier }
  * `count` jest przycinane do min. 1 (test z zerem/ujemną liczbą kości nie ma sensu - wywołujący
- * powinien zablokować taką akcję w UI zamiast polegać na tej funkcji).
+ * powinien zablokować taką akcję w UI zamiast polegać na tej funkcji). `removedOnes` (liczba
+ * dosłownych "1" w puli) zostaje jako pole dla wstecznej zgodności z istniejącym UI.
  */
 export function rollTestPool(count) {
     const n = Math.max(1, count);
     const dice = Array.from({ length: n }, () => rollD6());
-    const survivingDice = dice.filter(d => d !== 1);
-    const removedOnes = n - survivingDice.length;
-    return { dice, survivingDice, removedOnes, tier: resolveTier(survivingDice) };
+    const resolved = resolveDicePool(dice);
+    return { ...resolved, removedOnes: resolved.oneIndices.length };
 }
 
-/** Przerzuca do `amount` kości o wartości 1 w PEŁNEJ tablicy kości z rollTestPool().dice (nie tylko
- *  survivingDice) - używane przez moce w rodzaju „Zew krwi”/„Szept otchłani” (reroll_ones). Zwraca
- *  nową tablicę kości (ta sama długość) + policzone survivingDice/tier po przerzucie. */
+/** Przerzuca do `amount` DOSŁOWNYCH kości o wartości 1 w PEŁNEJ tablicy kości (nie kości anulowanych
+ *  przez "1", tylko literalne jedynki) - używane przez moce w rodzaju „Zew krwi”/„Szept otchłani”
+ *  (reroll_ones). Zwraca nową tablicę kości (ta sama długość) + świeżo policzony wynik (surviving/
+ *  cancelled/tier, zgodnie z nowym rozdaniem po przerzucie). */
 export function applyRerollOnes(dice, amount) {
     let rerolled = 0;
     const next = dice.map((d) => {
@@ -78,11 +117,11 @@ export function applyRerollOnes(dice, amount) {
         }
         return d;
     });
-    const survivingDice = next.filter(d => d !== 1);
-    return { dice: next, survivingDice, removedOnes: next.length - survivingDice.length, tier: resolveTier(survivingDice), rerolled };
+    const resolved = resolveDicePool(next);
+    return { ...resolved, removedOnes: resolved.oneIndices.length, rerolled };
 }
 
-/** Przerzuca WSZYSTKIE kości o wartości 1 (reroll_all_ones, np. „Puste sakramenty”). */
+/** Przerzuca WSZYSTKIE dosłowne "1" (reroll_all_ones, np. „Puste sakramenty”). */
 export function applyRerollAllOnes(dice) {
     return applyRerollOnes(dice, dice.length);
 }
@@ -90,13 +129,13 @@ export function applyRerollAllOnes(dice) {
 /** Podnosi najniższą kość w tablicy o `amount` (przycięte do 6) - używane przez moce w rodzaju
  *  „Kościana siła”/„Głos Excalibura” (raise_lowest_die). Jeśli tablica jest pusta, nic nie robi. */
 export function applyRaiseLowestDie(dice, amount) {
-    if (!dice.length) return { dice: [...dice], survivingDice: [], removedOnes: 0, tier: "failure" };
+    if (!dice.length) return { dice: [...dice], survivingDice: [], survivingIndices: [], cancelledIndices: [], oneIndices: [], removedOnes: 0, tier: "failure" };
     let lowestIdx = 0;
     for (let i = 1; i < dice.length; i++) if (dice[i] < dice[lowestIdx]) lowestIdx = i;
     const next = [...dice];
     next[lowestIdx] = clamp(next[lowestIdx] + amount, 1, 6);
-    const survivingDice = next.filter(d => d !== 1);
-    return { dice: next, survivingDice, removedOnes: next.length - survivingDice.length, tier: resolveTier(survivingDice) };
+    const resolved = resolveDicePool(next);
+    return { ...resolved, removedOnes: resolved.oneIndices.length };
 }
 
 /** Parsuje pole zakresu w tabelach ("1-5", "54-54", "9", 9, "1-2") na [min, max]. */

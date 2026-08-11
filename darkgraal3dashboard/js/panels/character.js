@@ -1,15 +1,17 @@
-// Dark Graal III - Dashboard Solo (MG). Panel "Postać" - pełna karta jednej postaci: Archetypy
-// (baza/kości ran/modyfikatory/wartość efektywna), Rozpacz, Błogosławieństwo Merlina, Rany,
-// Ekwipunek (zwykły + Legendarne przedmioty z bogatym opisem), Cechy Przemiany i Moce.
+// Dark Graal III - Dashboard Solo (MG). Panel "Postać" - pełna karta jednej postaci, w układzie 3
+// kolumn: (1) portret + Wiatr Camelotu (wyróżniony odczyt), (2) Rozpacz/Błogosławieństwo/Archetypy/
+// Ekwipunek, (3) Cechy Przemiany i Moce. "Rany" nie mają tu już własnej sekcji - MG reprezentuje ich
+// skutki wyłącznie przez pole "Kości ran" każdego Archetypu (panel MG), patrz też uwaga w state.js.
 //
 // MG widzi selektor postaci (może przeglądać każdą z 4 kart), Gracz widzi wyłącznie swoją -
 // klucz aktywnej postaci przychodzi z ctx.session (patrz main.js), a dla MG dodatkowo trzymany
 // jest lokalny (nie zapisywany do Firebase) wybór w `ui.selectedCharacterKey`.
 
 import { updateState } from "../store.js";
-import { archetypeCurrent, despairMax } from "../state.js";
+import { archetypeCurrent, despairMax, resolveItemTooltip } from "../state.js";
 import { logEvent } from "../eventLog.js";
 import { escapeHtml, clamp, preserveScroll } from "../utils.js";
+import { showToast } from "../toast.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -37,33 +39,48 @@ function archetypeFlavor(data, key) {
 
 function renderArchetypeRow(data, key, archetype) {
     const current = archetypeCurrent(archetype);
+    const isZero = current === 0;
     const activeMods = (archetype.modifiers || []).filter(m => m.active);
     const modsHtml = (archetype.modifiers || []).map(m => `
         <span class="mod-chip ${m.active ? "mod-active" : "mod-inactive"}" title="${escapeHtml(m.tooltip || "")}">
             ${escapeHtml(m.label)} (${m.delta >= 0 ? "+" : ""}${m.delta})
         </span>
     `).join("");
+    const flavor = archetypeFlavor(data, key);
     return `
-        <div class="archetype-row">
-            <div class="archetype-row-head">
+        <div class="archetype-row ${isZero ? "archetype-zero" : ""}">
+            <div class="archetype-row-head" title="${escapeHtml(flavor)}">
                 <span class="archetype-name">${escapeHtml(archetypeLabel(data, key))}</span>
-                <span class="archetype-value">${current}</span>
-                <span class="archetype-base">(baza ${archetype.base}${archetype.woundDice ? `, -${archetype.woundDice} rany` : ""})</span>
+                <span class="archetype-value">${current}<span class="archetype-value-max">/${archetype.base}</span></span>
+                ${isZero ? `<span class="archetype-skull" title="Archetyp wyczerpany">💀</span>` : ""}
+                ${archetype.woundDice ? `<span class="archetype-base">(-${archetype.woundDice} rany)</span>` : ""}
             </div>
-            <div class="archetype-flavor">${escapeHtml(archetypeFlavor(data, key))}</div>
-            ${modsHtml ? `<div class="archetype-mods">${modsHtml}</div>` : ""}
+            <div class="archetype-flavor">${escapeHtml(flavor)}</div>
+            ${activeMods.length || (archetype.modifiers || []).length ? `<div class="archetype-mods">${modsHtml}</div>` : ""}
         </div>
     `;
 }
 
-function renderEquipment(character, data) {
-    const legendarySet = new Set(character.legendaryItemKeys || []);
-    const legendaryHtml = character.legendaryItemKeys.map(key => {
+function renderEquipment(character, data, state) {
+    const disabledLegendary = new Set(character.disabledItemKeys || []);
+    const legendaryHtml = (character.legendaryItemKeys || []).map(key => {
         const item = data.items[key];
         if (!item) return "";
-        return `<button class="item-chip legendary" data-action="open-item" data-key="${key}">${escapeHtml(item.name)}</button>`;
+        const disabled = disabledLegendary.has(key);
+        return `
+            <button class="item-chip legendary ${disabled ? "item-disabled" : ""}" data-action="open-item" data-key="${key}"
+                title="${escapeHtml(resolveItemTooltip(state, data, key))}">
+                ${escapeHtml(item.name)}${disabled ? " (wygaszony)" : ""}
+            </button>
+        `;
     }).join("");
-    const plainHtml = (character.equipment || []).map(e => `<span class="item-chip">${escapeHtml(e)}</span>`).join("");
+    const plainHtml = (character.equipment || []).map(e => {
+        const titleAttr = e.tooltip ? ` title="${escapeHtml(e.tooltip)}"` : "";
+        if (e.disabled) {
+            return `<span class="item-chip item-disabled"${titleAttr}>${escapeHtml(e.name)} (wygaszony)</span>`;
+        }
+        return `<button class="item-chip" data-action="use-equipment" data-item-id="${e.id}"${titleAttr}>${escapeHtml(e.name)}</button>`;
+    }).join("");
     return `
         <div class="equipment-block">
             ${legendaryHtml ? `<div class="equipment-legendary">${legendaryHtml}</div>` : ""}
@@ -72,20 +89,51 @@ function renderEquipment(character, data) {
     `;
 }
 
-function renderItemModal(data) {
-    const item = ui.openItemKey ? data.items[ui.openItemKey] : null;
-    if (!item) return "";
+function renderUsableButton(itemKey, section, character, itemDisabled) {
+    const usable = section.usable;
+    if (!usable) return "";
+    const label = usable.buttonLabel || `Użyj mocy: ${section.title}`;
+    if (usable.usage === "session") {
+        const used = !!character.usedPowers?.[usable.id];
+        return `
+            <button class="btn btn-xs" data-action="use-item-power" data-item-key="${itemKey}"
+                data-power-id="${usable.id}" data-power-title="${escapeHtml(section.title)}" data-tracked="1"
+                ${(used || itemDisabled) ? "disabled" : ""}>
+                ${used ? "Moc już użyta (raz na sesję)" : escapeHtml(label)}
+            </button>
+        `;
+    }
+    return `
+        <button class="btn btn-xs" data-action="use-item-power" data-item-key="${itemKey}"
+            data-power-id="${usable.id}" data-power-title="${escapeHtml(section.title)}" data-tracked="0"
+            data-cost="${escapeHtml(usable.costText || "")}" ${itemDisabled ? "disabled" : ""}>
+            ${escapeHtml(label)}
+        </button>
+        ${usable.costText ? `<p class="placeholder">${escapeHtml(usable.costText)}</p>` : ""}
+    `;
+}
+
+function renderItemModal(data, character, state) {
+    const itemKey = ui.openItemKey;
+    const item = itemKey ? data.items[itemKey] : null;
+    if (!item || !character) return "";
+    const disabled = (character.disabledItemKeys || []).includes(itemKey);
     const sections = (item.richDescription || []).map(s => `
         <h3>${escapeHtml(s.title)}</h3>
         <p>${escapeHtml(s.text)}</p>
+        ${renderUsableButton(itemKey, s, character, disabled)}
     `).join("");
     return `
         <div class="modal-backdrop" data-action="close-item">
-            <div class="modal" data-action-stop="1">
+            <div class="modal">
                 <h2>${escapeHtml(item.name)}</h2>
-                <p class="item-tooltip">${escapeHtml(item.shortTooltip || "")}</p>
+                ${disabled ? `<p class="item-disabled-note">Ten przedmiot jest obecnie wygaszony przez MG.</p>` : ""}
+                <p class="item-tooltip">${escapeHtml(resolveItemTooltip(state, data, itemKey))}</p>
                 ${sections}
-                <button class="btn btn-sm" data-action="close-item">Zamknij</button>
+                <div class="modal-actions">
+                    <button class="btn btn-sm btn-gold" data-action="use-item" data-item-key="${itemKey}" ${disabled ? "disabled" : ""}>Użyj przedmiotu</button>
+                    <button class="btn btn-sm" data-action="close-item">Zamknij</button>
+                </div>
             </div>
         </div>
     `;
@@ -100,9 +148,21 @@ function powerUsageNote(power) {
     return "narracyjna";
 }
 
-function renderPowers(character, transformation) {
+/** Cechy Przemiany - przeniesione do kolumny 1 (pod portret + Wiatr Camelotu), żeby "Moce" w
+ *  kolumnie 3 zaczynały się wyżej i nie wymagały scrolla. */
+function renderTraits(transformation) {
     if (!transformation) return "";
     const traitsHtml = (transformation.traits || []).map(t => `<li>${escapeHtml(t)}</li>`).join("");
+    return `
+        <div class="transformation-block traits-block">
+            <h3>Cechy Przemiany (${escapeHtml(transformation.type)})</h3>
+            <ul class="traits-list">${traitsHtml}</ul>
+        </div>
+    `;
+}
+
+function renderPowers(character, transformation) {
+    if (!transformation) return "";
     const powersHtml = (transformation.powers || []).map(p => {
         const used = !!character.usedPowers?.[p.id];
         return `
@@ -119,8 +179,6 @@ function renderPowers(character, transformation) {
     }).join("");
     return `
         <div class="transformation-block">
-            <h3>Cechy Przemiany (${escapeHtml(transformation.type)})</h3>
-            <ul class="traits-list">${traitsHtml}</ul>
             <h3>Moce</h3>
             <div class="powers-list">${powersHtml}</div>
         </div>
@@ -136,6 +194,10 @@ function power_toggle_button(power, used) {
     </button>`;
 }
 
+function portraitUrl(character) {
+    return `images/${encodeURIComponent(character.name)}.png`;
+}
+
 function buildHtml(ctx) {
     const { state, data, session } = ctx;
     const activeKey = resolveActiveKey(state, session);
@@ -144,6 +206,7 @@ function buildHtml(ctx) {
 
     const transformation = data.transformations[activeKey];
     const dMax = despairMax(character);
+    const campWind = state.campWind || { current: 0, scale: 10 };
 
     const selectorHtml = session.role === "mg" ? `
         <select id="characterPicker" class="char-picker">
@@ -157,50 +220,54 @@ function buildHtml(ctx) {
         ${selectorHtml}
         <div class="character-sheet">
             <header class="character-sheet-head">
-                <h2>${escapeHtml(character.name)}${character.epithet ? " " + escapeHtml(character.epithet) : ""}</h2>
-                <p class="character-sub">„${escapeHtml(character.aliasName)}” - ${escapeHtml(character.type)}</p>
+                <h2 class="character-name-big">${escapeHtml(character.name)}${character.epithet ? " " + escapeHtml(character.epithet) : ""}</h2>
+                <p class="character-player">${escapeHtml(character.aliasName)}</p>
             </header>
 
-            <div class="stat-row">
-                <div class="stat-box">
-                    <label>Rozpacz</label>
-                    <div class="stat-controls">
-                        <button class="btn btn-xs" data-action="despair-dec">−</button>
-                        <span>${character.despair.current} / ${dMax}</span>
-                        <button class="btn btn-xs" data-action="despair-inc">+</button>
+            <div class="character-sheet-grid">
+                <div class="character-col character-col-portrait">
+                    <img class="character-portrait" src="${portraitUrl(character)}" alt="${escapeHtml(character.name)}"
+                        onerror="this.style.display='none'">
+                    <div class="camp-wind-box">
+                        <label>Wiatr Camelotu</label>
+                        <div class="camp-wind-value">${campWind.current} <span class="camp-wind-scale">/ ${campWind.scale}</span></div>
                     </div>
+                    ${renderTraits(transformation)}
                 </div>
-                <div class="stat-box">
-                    <label>Błogosławieństwo Merlina</label>
-                    <button class="btn btn-sm ${character.blessing ? "btn-gold" : ""}" data-action="toggle-blessing">
-                        ${character.blessing ? "Aktywne" : "Nieaktywne"}
-                    </button>
-                </div>
-                <div class="stat-box">
-                    <label>Rany</label>
-                    <div class="stat-controls">
-                        <button class="btn btn-xs" data-action="wounds-dec">−</button>
-                        <span>${character.wounds.count}</span>
-                        <button class="btn btn-xs" data-action="wounds-inc">+</button>
+
+                <div class="character-col character-col-stats">
+                    <div class="stat-row">
+                        <div class="stat-box">
+                            <label>Rozpacz</label>
+                            <div class="stat-controls">
+                                <button class="btn btn-xs" data-action="despair-dec">−</button>
+                                <span>${character.despair.current} / ${dMax}</span>
+                                <button class="btn btn-xs" data-action="despair-inc">+</button>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <label>Błogosławieństwo Merlina</label>
+                            <button class="btn btn-sm ${character.blessing ? "btn-gold" : ""}" data-action="toggle-blessing">
+                                ${character.blessing ? "Dostępne" : "Wykorzystane"}
+                            </button>
+                        </div>
                     </div>
-                    <label class="inline-check">
-                        <input type="checkbox" data-action="toggle-deadly" ${character.wounds.deadly ? "checked" : ""}>
-                        Rana śmiertelna
-                    </label>
+
+                    <h3>Archetypy</h3>
+                    <div class="archetype-list">
+                        ${ARCHETYPE_ORDER.map(key => renderArchetypeRow(data, key, character.archetypes[key])).join("")}
+                    </div>
+
+                    <h3>Ekwipunek</h3>
+                    ${renderEquipment(character, data, state)}
+                </div>
+
+                <div class="character-col character-col-powers">
+                    ${renderPowers(character, transformation)}
                 </div>
             </div>
-
-            <h3>Archetypy</h3>
-            <div class="archetype-list">
-                ${ARCHETYPE_ORDER.map(key => renderArchetypeRow(data, key, character.archetypes[key])).join("")}
-            </div>
-
-            <h3>Ekwipunek</h3>
-            ${renderEquipment(character, data)}
-
-            ${renderPowers(character, transformation)}
         </div>
-        ${renderItemModal(data)}
+        ${renderItemModal(data, character, state)}
     `;
 }
 
@@ -210,17 +277,13 @@ function wireEvents(root) {
             ui.selectedCharacterKey = e.target.value;
             preserveScroll(() => { root.innerHTML = buildHtml(root._ctx); });
         }
-        if (e.target.dataset.action === "toggle-deadly") {
-            withActiveCharacter(root, (character, state) => {
-                character.wounds.deadly = e.target.checked;
-                logEvent(state, "wound-change", `${character.name}: rana śmiertelna ${e.target.checked ? "ustawiona" : "zdjęta"}.`);
-            });
-        }
     });
 
     root.addEventListener("click", (e) => {
-        const backdrop = e.target.closest('[data-action="close-item"]');
-        if (backdrop && !e.target.closest('[data-action-stop]')) {
+        // Kliknięcie DOKŁADNIE w tło modala (nie w jego zawartość) zamyka go - patrz niżej też
+        // jawna obsługa przycisku "Zamknij" (poprzednia wersja błędnie łapała też kliknięcie w
+        // sam przycisk przez zagnieżdżony data-action-stop guard, przez co "Zamknij" nie działał).
+        if (e.target.classList.contains("modal-backdrop")) {
             ui.openItemKey = null;
             preserveScroll(() => { root.innerHTML = buildHtml(root._ctx); });
             return;
@@ -229,6 +292,12 @@ function wireEvents(root) {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
         const action = btn.dataset.action;
+
+        if (action === "close-item") {
+            ui.openItemKey = null;
+            preserveScroll(() => { root.innerHTML = buildHtml(root._ctx); });
+            return;
+        }
 
         if (action === "open-item") {
             ui.openItemKey = btn.dataset.key;
@@ -243,16 +312,6 @@ function wireEvents(root) {
                 character.despair.current = clamp(before + (action === "despair-inc" ? 1 : -1), 0, dMax);
                 if (character.despair.current !== before) {
                     logEvent(state, "despair-change", `${character.name}: Rozpacz ${before} → ${character.despair.current}.`);
-                }
-            });
-        }
-
-        if (action === "wounds-inc" || action === "wounds-dec") {
-            withActiveCharacter(root, (character, state) => {
-                const before = character.wounds.count;
-                character.wounds.count = Math.max(0, before + (action === "wounds-inc" ? 1 : -1));
-                if (character.wounds.count !== before) {
-                    logEvent(state, "wound-change", `${character.name}: Rany ${before} → ${character.wounds.count}.`);
                 }
             });
         }
@@ -273,6 +332,54 @@ function wireEvents(root) {
                 logEvent(state, "power-used", `${character.name}: moc „${id}” oznaczona jako ${wasUsed ? "dostępna" : "użyta"}.`);
             });
         }
+
+        if (action === "use-equipment") {
+            const itemId = btn.dataset.itemId;
+            let used = false;
+            withActiveCharacter(root, (character, state) => {
+                const item = (character.equipment || []).find(e => e.id === itemId);
+                if (!item || item.disabled) return;
+                used = true;
+                logEvent(state, "equipment-used", `${character.name} użył ${item.name}.`);
+            });
+            if (used) showToast("Użyłeś przedmiotu");
+        }
+
+        if (action === "use-item") {
+            const itemKey = btn.dataset.itemKey;
+            const { data } = root._ctx;
+            const item = data.items[itemKey];
+            if (!item) return;
+            let used = false;
+            withActiveCharacter(root, (character, state) => {
+                if ((character.disabledItemKeys || []).includes(itemKey)) return;
+                used = true;
+                logEvent(state, "equipment-used", `${character.name} użył ${item.name}.`);
+            });
+            if (used) showToast("Użyłeś przedmiotu");
+        }
+
+        if (action === "use-item-power") {
+            const itemKey = btn.dataset.itemKey;
+            const powerId = btn.dataset.powerId;
+            const powerTitle = btn.dataset.powerTitle;
+            const tracked = btn.dataset.tracked === "1";
+            const cost = btn.dataset.cost;
+            const { data } = root._ctx;
+            const item = data.items[itemKey];
+            if (!item) return;
+            let used = false;
+            withActiveCharacter(root, (character, state) => {
+                if ((character.disabledItemKeys || []).includes(itemKey)) return;
+                if (tracked) {
+                    if (character.usedPowers[powerId]) return;
+                    character.usedPowers[powerId] = true;
+                }
+                used = true;
+                logEvent(state, "item-power-used", `${character.name} użył mocy „${powerTitle}” (${item.name}).${cost ? " " + cost : ""}`);
+            });
+            if (used) showToast("Użyłeś przedmiotu");
+        }
     });
 }
 
@@ -281,6 +388,8 @@ function withActiveCharacter(root, fn) {
     const key = resolveActiveKey(state, session);
     const character = state.characters[key];
     if (!character) return;
+    // Nie renderujemy tu ręcznie - updateState() woła touch() -> notify(), a main.js#renderAll()
+    // jest zasubskrybowany i sam odświeży ten panel (tak jak w oryginalnej wersji tego pliku).
     updateState((s) => fn(s.characters[key], s));
 }
 

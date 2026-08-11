@@ -5,10 +5,13 @@
         "richDescription": [
             { "title": "Aura Króla", "text": "Rycerze w pobliżu budzą respekt na widok miecza, ale jego blask ściąga też uwagę potworów i istot Mroku." },
             { "title": "Głos w Mieczu", "text": "Słaby, gniewny szept dobiega z klingi - wzmacnia wolę dzierżącego, lecz trudno go ignorować." },
-            { "title": "Blask Zepsucia", "text": "Raz na sesję miecz może ujawnić najgłębsze lęki tego, kogo dotknie jego ostrze." },
+            { "title": "Blask Zepsucia", "text": "Raz na sesję miecz może ujawnić najgłębsze lęki tego, kogo dotknie jego ostrze.",
+                "usable": { "id": "excalibur-blask-zepsucia", "usage": "session", "buttonLabel": "Użyj mocy: Blask Zepsucia" } },
             { "title": "Ciężar Przeznaczenia", "text": "Im bliżej Camelotu, tym cięższy się staje - sprawia ból i osłabia władającego nim podczas walki." },
-            { "title": "Widmowa Tarcza", "text": "Może przywołać widmową tarczę chroniącą przed uderzeniem, kosztem samego dzierżącego." },
-            { "title": "Przebudzenie Krwi", "text": "Drży i błyszczy w obecności prawdziwego wroga, ale w pełni budzi się tylko za cenę ofiary z krwi." }
+            { "title": "Widmowa Tarcza", "text": "Może przywołać widmową tarczę chroniącą przed uderzeniem, kosztem samego dzierżącego.",
+                "usable": { "id": "excalibur-widmowa-tarcza", "usage": "narrative", "costText": "Koszt: -1 do wybranego Archetypu (obniż go ręcznie w Archetypach).", "buttonLabel": "Użyj mocy: Widmowa Tarcza" } },
+            { "title": "Przebudzenie Krwi", "text": "Drży i błyszczy w obecności prawdziwego wroga, ale w pełni budzi się tylko za cenę ofiary z krwi.",
+                "usable": { "id": "excalibur-przebudzenie-krwi", "usage": "narrative", "costText": "Efekt: +1 do Rycerza na tę walkę. Koszt: -1 do wybranego Archetypu (1 mniejsza rana).", "buttonLabel": "Użyj mocy: Przebudzenie Krwi" } }
         ]
     },
     "swiatlosc-w-mroku": {

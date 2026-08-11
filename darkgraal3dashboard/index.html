@@ -3,20 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Domine:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <title>Dark Graal III - Dashboard Solo (MG)</title>
 </head>
 <body>
     <div class="gate" id="characterGate">
         <div class="gate-card">
-            <h1>DARK GRAAL III</h1>
-            <p class="gate-sub">Wspólna kampania - powiedz nam, kto patrzy.</p>
+            <img class="gate-logo" src="images/Logo.png" alt="Dark Graal III">
+            <p class="gate-sub">Powiedz mi, kto patrzy.</p>
 
             <div id="gateStepRole">
-                <p class="gate-sub">Kim jesteś?</p>
                 <div class="gate-actions gate-actions-role">
                     <button type="button" class="btn btn-primary" id="gateRoleMg">Jestem Mistrzem Gry</button>
                     <button type="button" class="btn btn-secondary" id="gateRolePlayer">Jestem Graczem</button>
+                </div>
+            </div>
+
+            <div id="gateStepPin" style="display:none;">
+                <p class="gate-sub">Podaj PIN Mistrza Gry</p>
+
+                <div class="pin-digits" id="gatePinInputs">
+                    <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                    <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                    <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                    <input type="password" class="pin-digit" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off">
+                </div>
+
+                <p class="gate-error" id="gatePinError" style="display:none;"></p>
+
+                <div class="gate-actions">
+                    <button class="btn btn-secondary" id="gatePinBack">Wstecz</button>
+                    <button class="btn btn-primary" id="gatePinNext" disabled>Wejdź do gry</button>
                 </div>
             </div>
 
@@ -35,23 +55,24 @@
                     <button class="btn btn-primary" id="gateCharacterNext">Wejdź do gry</button>
                 </div>
             </div>
+
+            <button type="button" class="btn btn-sm gate-cancel" id="gateCancel" style="display:none;">Anuluj</button>
         </div>
     </div>
 
     <div class="app hidden" id="app">
 
         <header class="app-header">
-            <h1>DARK GRAAL III</h1>
+            <img class="app-logo" src="images/Logo.png" alt="Dark Graal III">
             <div class="header-status">
+                <button type="button" class="btn btn-sm" id="changeCharacterBtn">Zmień postać</button>
                 <span class="save-indicator" id="saveIndicator" title="Stan zapisu">●</span>
             </div>
         </header>
 
         <nav class="tabs" id="mainTabs">
             <button class="tab-btn active" data-tab="character">Postać</button>
-            <button class="tab-btn" data-tab="roller">Test</button>
-            <button class="tab-btn" data-tab="journal">Dziennik</button>
-            <button class="tab-btn" data-tab="mg">MG</button>
+            <button class="tab-btn" data-tab="roller">Rzuty</button>
         </nav>
 
         <main class="tab-panels">
@@ -62,20 +83,18 @@
             <section id="panel-roller" class="tab-panel">
                 <p class="placeholder">Ładowanie testu...</p>
             </section>
-
-            <section id="panel-journal" class="tab-panel">
-                <p class="placeholder">Ładowanie dziennika...</p>
-            </section>
-
-            <section id="panel-mg" class="tab-panel">
-                <p class="placeholder">Ładowanie zaplecza MG...</p>
-            </section>
         </main>
+
+        <div id="mgUnifiedRoot" class="hidden">
+            <p class="placeholder">Ładowanie zaplecza MG...</p>
+        </div>
 
         <footer class="app-footer">
             <span id="bootStatus">Inicjalizacja...</span>
         </footer>
     </div>
+
+    <div class="toast-container" id="toastContainer"></div>
 
     <script type="module" src="js/main.js"></script>
 </body>

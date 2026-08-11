@@ -11,25 +11,21 @@ import { showGate } from "./gate.js";
 import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
 import * as mgPanel from "./panels/mg.js";
-import * as journalPanel from "./panels/journal.js";
 
+// Zakładki ("Postać"/"Rzuty") istnieją WYŁĄCZNIE dla Graczy - MG w ogóle ich nie widzi (patrz
+// applyRoleVisibility()) i ma zamiast nich jeden własny, nietabowy widok #mgUnifiedRoot
+// (panels/mg.js - siatka 12 kolumn: nawigacja po postaciach + karty postaci + panel rzutów MG).
 const PANELS = {
     character: characterPanel,
-    roller: rollerPanel,
-    mg: mgPanel,
-    journal: journalPanel
+    roller: rollerPanel
 };
-
-// Zakładki widoczne WYŁĄCZNIE dla MG - chowamy ich przyciski graczom (panele MG mają dodatkowo
-// własny defensywny guard na session.role, patrz panels/mg.js). Domyślnie aktywna zakładka to
-// zawsze "character" (ustawione statycznie w index.html), więc nie trzeba obsługiwać przełączania
-// z zakładki, która akurat znika.
-const MG_ONLY_TABS = new Set(["mg"]);
 
 const bootStatus = document.getElementById("bootStatus");
 const saveIndicator = document.getElementById("saveIndicator");
+const changeCharacterBtn = document.getElementById("changeCharacterBtn");
 
 let session = null; // { role: "mg"|"player", characterKey: string|null } - patrz gate.js
+let cachedGameData = null;
 
 function setBootStatus(text) {
     if (bootStatus) bootStatus.textContent = text;
@@ -39,6 +35,12 @@ function renderAll() {
     const state = getState();
     const data = getData();
     if (!state || !session) return;
+
+    if (session.role === "mg") {
+        const mgRoot = document.getElementById("mgUnifiedRoot");
+        if (mgRoot && mgPanel.render) mgPanel.render(mgRoot, { state, data, session });
+        return;
+    }
 
     for (const [tab, mod] of Object.entries(PANELS)) {
         const root = document.getElementById(`panel-${tab}`);
@@ -58,12 +60,26 @@ function setupTabs() {
     });
 }
 
+/** MG i Gracz mają teraz całkowicie odrębne "powłoki" UI: Gracz widzi zakładki "Postać"/"Rzuty"
+ *  (#mainTabs + #panel-*), MG widzi jeden nietabowy widok (#mgUnifiedRoot, patrz panels/mg.js) -
+ *  ta funkcja przełącza między nimi całymi sekcjami zamiast pojedynczymi zakładkami. */
 function applyRoleVisibility() {
-    document.querySelectorAll(".tab-btn").forEach(btn => {
-        if (MG_ONLY_TABS.has(btn.dataset.tab) && session.role !== "mg") {
-            btn.style.display = "none";
-        }
-    });
+    const isMg = session.role === "mg";
+    const tabsEl = document.getElementById("mainTabs");
+    const tabPanelsEl = document.querySelector(".tab-panels");
+    const mgRoot = document.getElementById("mgUnifiedRoot");
+
+    if (tabsEl) tabsEl.classList.toggle("hidden", isMg);
+    if (tabPanelsEl) tabPanelsEl.classList.toggle("hidden", isMg);
+    if (mgRoot) mgRoot.classList.toggle("hidden", !isMg);
+
+    if (!isMg) {
+        // Jeśli żadna zakładka Gracza nie jest aktywna (np. świeże wejście albo powrót z roli MG),
+        // upewnij się, że coś jest wybrane zamiast zostawiać pusty panel.
+        const buttons = Array.from(document.querySelectorAll(".tab-btn"));
+        const activeBtn = buttons.find(b => b.classList.contains("active"));
+        if (!activeBtn && buttons[0]) buttons[0].click();
+    }
 }
 
 function setupSaveIndicator() {
@@ -83,10 +99,25 @@ function setupSaveIndicator() {
     });
 }
 
+function setupChangeCharacterButton() {
+    if (!changeCharacterBtn) return;
+    changeCharacterBtn.addEventListener("click", () => {
+        showGate(cachedGameData, {
+            allowCancel: true,
+            onDone: (selection) => {
+                session = selection;
+                applyRoleVisibility();
+                renderAll();
+            }
+        });
+    });
+}
+
 async function bootstrap() {
     try {
         setBootStatus("Wczytywanie danych podręcznika...");
         const gameData = await loadGameData();
+        cachedGameData = gameData;
         initStore(gameData);
 
         setBootStatus("Łączenie ze wspólną kampanią...");
@@ -95,6 +126,7 @@ async function bootstrap() {
         subscribe(renderAll);
         setupTabs();
         setupSaveIndicator();
+        setupChangeCharacterButton();
 
         setBootStatus("Wybierz, kto patrzy...");
 
