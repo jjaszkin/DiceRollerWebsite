@@ -180,6 +180,7 @@ function renderLegendaryModal(ctx) {
         <div class="modal-backdrop" data-action="close-legendary">
             <div class="modal">
                 <h2>${escapeHtml(item.name)}</h2>
+                ${item.image ? `<img class="item-modal-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">` : ""}
                 ${owner && disabled ? `<p class="item-disabled-note">Ten przedmiot jest obecnie wygaszony.</p>` : ""}
                 ${sections}
 

@@ -127,6 +127,7 @@ function renderItemModal(data, character, state) {
         <div class="modal-backdrop" data-action="close-item">
             <div class="modal">
                 <h2>${escapeHtml(item.name)}</h2>
+                ${item.image ? `<img class="item-modal-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}">` : ""}
                 ${disabled ? `<p class="item-disabled-note">Ten przedmiot jest obecnie wygaszony przez MG.</p>` : ""}
                 <p class="item-tooltip">${escapeHtml(resolveItemTooltip(state, data, itemKey))}</p>
                 ${sections}

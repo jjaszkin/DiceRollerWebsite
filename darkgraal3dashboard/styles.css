@@ -585,6 +585,17 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 .modal h3 { color: var(--gold); font-size: 1.05rem; margin: 14px 0 4px; border-bottom: none; padding-bottom: 0; }
 .modal p { color: var(--fg-1); line-height: 1.55; font-size: 0.88rem; }
 
+/* Artwork przedmiotu legendarnego w modalu - alfa-przezroczyste PNG, bez tła/ramki, ta sama
+   konwencja poświaty co .character-portrait (patrz wyżej). */
+.item-modal-image {
+    display: block;
+    max-width: 100%;
+    max-height: 220px;
+    margin: 0 auto 14px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55));
+}
+
 .item-tooltip {
     color: var(--fg-2);
     font-style: italic;

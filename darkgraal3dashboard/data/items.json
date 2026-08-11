@@ -1,6 +1,7 @@
 {
     "excalibur": {
         "name": "Excalibur",
+        "image": "images/items/Excalibur.png",
         "shortTooltip": "Przekuty Miecz - legendarna broń Camelotu, przesiąknięta wolą i winą minionego króla.",
         "richDescription": [
             { "title": "Aura Króla", "text": "Rycerze w pobliżu budzą respekt na widok miecza, ale jego blask ściąga też uwagę potworów i istot Mroku." },
@@ -16,6 +17,7 @@
     },
     "swiatlosc-w-mroku": {
         "name": "Światłość w Mroku",
+        "image": "images/items/Światłość w Mroku.png",
         "shortTooltip": "Młot bojowy Sir Cadwyna, wykuty na cześć wschodzącego słońca.",
         "richDescription": [
             { "title": "Główka młota", "text": "Lśniący metal zdobiony motywem dębu i wschodzącego słońca." },
@@ -25,6 +27,7 @@
     },
     "tarcza-wiecznego-debu": {
         "name": "Tarcza Wiecznego Dębu",
+        "image": "images/items/Tarcza Wiecznego Dębu.png",
         "shortTooltip": "Tarcza Sir Cadwyna, wyrzeźbiona z dębu naznaczonego runami nadziei.",
         "richDescription": [
             { "title": "Front tarczy", "text": "Drewno dębu zdobione runami Algiz i Berkana oraz motywem kwiatów nadziei." },
@@ -34,23 +37,27 @@
     },
     "zioła-merlina": {
         "name": "Zioła Merlina",
+        "image": "images/items/zioła Merlina.png",
         "shortTooltip": "Zioła Merlina podwajają liczbę sukcesów w leczeniu (za pełen sukces można uleczyć 6 ran, za zwykły 4 rany, za komplikację 2 rany).",
         "richDescription": [],
         "mechanicalEffect": { "type": "double_healing_successes", "fullSuccess": 6, "success": 4, "complication": 2 }
     },
     "czarny-luk-robina": {
         "name": "Czarny Łuk Robina",
+        "image": "images/items/Czarny Łuk.png",
         "shortTooltip": "+1 do Archetypu Łowczy. Zawsze wymaga przynajmniej 1 kostki Graala.",
         "richDescription": [],
         "mechanicalEffect": { "archetype": "lowczy", "delta": 1, "requiresMinGraalDice": 1 }
     },
     "łza-merlina": {
         "name": "Łza Merlina",
+        "image": "images/items/Łza Merlina.png",
         "shortTooltip": "Sztylet z domieszką galeny (siarczek ołowiu) - potęguje moce demoniczne.",
         "richDescription": []
     },
     "serce-ginewry-zimowy-szept": {
         "name": "Serce Ginewry - Zimowy Szept",
+        "image": "images/items/image 54.png",
         "shortTooltip": "Echa wspomnień Ginewry, kryjące sekrety Okrągłego Stołu.",
         "richDescription": [
             { "title": "Moc", "text": "Serce kryje echa wspomnień Ginewry, pozwalając badaczowi usłyszeć sekrety Okrągłego Stołu i prawdziwe przyczyny upadku Camelotu. Może też ujawnić ukryte lokacje artefaktów (być może samego Graala)." },
@@ -59,6 +66,7 @@
     },
     "serce-ginewry-lodowy-dotyk": {
         "name": "Serce Ginewry - Lodowy Dotyk Śmierci",
+        "image": "images/items/image 54.png",
         "shortTooltip": "Dotknięcie serca zamraża wszystko w promieniu kilku kroków.",
         "richDescription": [
             { "title": "Moc", "text": "Dotknięcie serca zamraża wszystko w promieniu kilku kroków, skutecznie zatrzymując czas w wybranym obszarze na chwilę. Użycie tej mocy wymaga ofiary z własnej krwi." },
@@ -67,10 +75,23 @@
     },
     "popioly-guinevak": {
         "name": "Popioły Guinevak - Przeklęte Więzi",
+        "image": "images/items/image 54.png",
         "shortTooltip": "Wejrzenie w emocje i dusze innych, pozwalające na manipulację uczuciami.",
         "richDescription": [
             { "title": "Moc", "text": "Serce umożliwia badaczowi wejrzenie w emocje i dusze innych, pozwalając na manipulację ich uczuciami (miłość, żal, nienawiść). Może zmusić innych do chwilowej lojalności lub zdrady." },
             { "title": "Komplikacje", "text": "Czarownik zaczyna odczuwać skrajne emocje osób, na które wpłynął, tracąc kontrolę nad sobą. Ostatecznie jego własne serce zaczyna powoli zmieniać się w kamień, stopniowo odbierając mu człowieczeństwo." }
         ]
+    },
+    "ashenvach": {
+        "name": "Ashenvach",
+        "image": "images/items/Ashenvach.png",
+        "shortTooltip": "Opis w przygotowaniu - MG może go uzupełnić w Panelu MG (edycja opisu przedmiotu).",
+        "richDescription": []
+    },
+    "glacivere": {
+        "name": "Glacivère",
+        "image": "images/items/Glacivère.png",
+        "shortTooltip": "Opis w przygotowaniu - MG może go uzupełnić w Panelu MG (edycja opisu przedmiotu).",
+        "richDescription": []
     }
 }
