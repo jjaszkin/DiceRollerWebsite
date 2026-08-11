@@ -19,8 +19,8 @@
     --fg-2: #a89878;
     --fg-dim: #6b5f4a;
     --danger: #8a2f2f;
-    --mono: "SFMono-Regular", ui-monospace, "JetBrains Mono", "Consolas", "Courier New", monospace;
-    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: "Pirata One", "SFMono-Regular", ui-monospace, "JetBrains Mono", "Consolas", "Courier New", monospace;
+    --sans: "Domine", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --radius: 3px;
 }
 
@@ -67,6 +67,13 @@ body {
     margin: 0;
     color: var(--gold-bright);
     font-weight: 600;
+}
+
+.app-logo {
+    height: 44px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 0 6px rgba(201, 162, 39, 0.35));
 }
 
 .header-status {
@@ -125,7 +132,7 @@ body {
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-.placeholder { color: var(--fg-dim); font-style: italic; }
+.placeholder { color: var(--fg-1); font-style: italic; font-size: 0.92rem; line-height: 1.5; }
 
 /* -- Generic building blocks ---------------------------------------------- */
 
@@ -239,6 +246,10 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     margin-top: 8px;
 }
 
+input[type="checkbox"] {
+    accent-color: var(--gold);
+}
+
 .char-picker {
     width: 100%;
     margin-bottom: 14px;
@@ -268,6 +279,79 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     color: var(--fg-2);
     font-style: italic;
     font-size: 0.9rem;
+}
+
+.character-name-big {
+    font-size: 2.1rem;
+    letter-spacing: 0.06em;
+}
+
+.character-player {
+    margin: 2px 0 0;
+    color: var(--fg-1);
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-style: italic;
+}
+
+.character-sheet-grid {
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) 1.1fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.character-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.character-col-portrait {
+    align-items: stretch;
+}
+
+.character-portrait {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border: 1px solid var(--gold-dim);
+    border-radius: var(--radius);
+    background: var(--bg-2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.camp-wind-box {
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    text-align: center;
+    box-shadow: 0 0 14px rgba(201, 162, 39, 0.18) inset;
+}
+
+.camp-wind-box label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+}
+
+.camp-wind-value {
+    font-family: var(--mono);
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    text-shadow: 0 0 12px rgba(232, 195, 74, 0.35);
+}
+
+.camp-wind-scale {
+    font-size: 1rem;
+    color: var(--fg-dim);
+    font-weight: 400;
 }
 
 /* -- Stat rows (Rozpacz / Rany / Błogosławieństwo, Kości Graala, Wiatr Camelotu) -------------- */
@@ -352,6 +436,26 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     color: var(--fg-dim);
 }
 
+.archetype-value-max {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--fg-dim);
+}
+
+.archetype-skull {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    cursor: help;
+}
+
+.archetype-row.archetype-zero {
+    opacity: 0.5;
+}
+.archetype-row.archetype-zero .archetype-name,
+.archetype-row.archetype-zero .archetype-value {
+    color: var(--fg-dim);
+}
+
 .archetype-flavor {
     font-size: 0.82rem;
     color: var(--fg-1);
@@ -409,6 +513,25 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 }
 .item-chip.legendary:hover { background: var(--bg-3); }
 
+button.item-chip {
+    font-family: var(--sans);
+    cursor: pointer;
+}
+button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright); background: var(--bg-3); }
+
+.item-chip.item-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+.item-chip.item-disabled:hover { border-color: var(--line); color: var(--fg-1); background: var(--bg-2); }
+
+.item-disabled-note {
+    color: var(--danger);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
 .chip-remove {
     background: none;
     border: none;
@@ -452,6 +575,15 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 .item-tooltip {
     color: var(--fg-2);
     font-style: italic;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
 }
 
 /* -- Cechy Przemiany i Moce -------------------------------------------------------- */
@@ -597,16 +729,10 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 }
 
 .die-chip.die-removed { opacity: 0.35; text-decoration: line-through; border-color: var(--line); }
+.die-chip.die-cancelled { opacity: 0.45; text-decoration: line-through; border-color: var(--danger); color: var(--fg-2); }
 .die-chip.die-complication { color: var(--fg-1); border-color: var(--line-strong); }
 .die-chip.die-success { color: var(--gold-bright); border-color: var(--gold-dim); }
 .die-chip.die-full { background: var(--gold); color: var(--bg-0); border-color: var(--gold-bright); }
-
-.roll-note-label {
-    display: block;
-    margin-top: 10px;
-}
-
-.roll-note-input { margin-top: 6px; }
 
 .roller-actions {
     display: flex;
@@ -624,6 +750,87 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
     margin-bottom: 12px;
+}
+
+.mg-character-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(240px, 1fr));
+    gap: 14px;
+    align-items: start;
+}
+
+.mg-character-col {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mg-character-col-title {
+    font-family: var(--mono);
+    color: var(--gold-bright);
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+}
+
+.mg-equipment-list, .mg-legendary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.mg-equipment-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 6px 8px;
+}
+
+.mg-equipment-name, .mg-equipment-tooltip-input {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    color: var(--fg-0);
+    font-family: var(--sans);
+    border-radius: var(--radius);
+    padding: 5px 8px;
+    font-size: 0.82rem;
+}
+
+.mg-equipment-name { flex: 1 1 110px; min-width: 90px; }
+.mg-equipment-tooltip-input { flex: 2 1 160px; min-width: 120px; }
+
+.mg-equipment-tooltip {
+    color: var(--fg-2);
+    font-style: italic;
+    font-size: 0.78rem;
+}
+
+.mg-legendary-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--fg-1);
+}
+
+.mg-legendary-disable {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--fg-dim);
 }
 
 .mg-archetype-list {
@@ -761,6 +968,35 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     text-align: center;
 }
 
+.gate-logo {
+    display: block;
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+    margin: 0 auto 6px;
+    filter: drop-shadow(0 0 10px rgba(201, 162, 39, 0.35));
+}
+
+.pin-digits {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.pin-digit {
+    width: 3em;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 8px 0;
+}
+
+.gate-cancel {
+    display: block;
+    margin: 14px auto 0;
+}
+
 .gate-sub {
     text-align: center;
     color: var(--fg-dim);
@@ -820,8 +1056,17 @@ label { font-size: 0.8rem; color: var(--fg-2); }
 ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: var(--radius); }
 ::-webkit-scrollbar-thumb:hover { background: var(--line-strong); }
 
+@media (max-width: 900px) {
+    .character-sheet-grid { grid-template-columns: 1fr; }
+    .character-col-portrait { max-width: 260px; }
+    .mg-character-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 640px) {
     .app-header h1 { font-size: 0.95rem; }
+    .app-logo { height: 34px; }
     .header-status { width: 100%; justify-content: space-between; }
     .archetype-row-head { flex-direction: column; align-items: flex-start; }
+    .character-name-big { font-size: 1.5rem; }
+    .mg-character-grid { grid-template-columns: 1fr; }
 }

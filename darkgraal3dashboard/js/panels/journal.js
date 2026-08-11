@@ -1,24 +1,29 @@
-// Dark Graal III - Dashboard Solo (MG). Panel "Dziennik" - połączony log kampanii: automatyczna
-// historia testów (state.rollHistory, patrz rollLog.js), automatyczny log zdarzeń mechanicznych
-// (state.events, patrz eventLog.js: zmiany Rozpaczy/Ran/Błogosławieństwa/Archetypów/Mocy/Kości
-// Graala/Wiatru Camelotu/ekwipunku) oraz swobodne notatki (state.journal) - wszystko razem, jedna
-// chronologia od najnowszego wpisu. W odróżnieniu od glide2solo#panels/journal.js NIE ma tu
-// grupowania wg "dnia gry" (Dark Graal III nie śledzi dni/czasu w tym dashboardzie - poza zakresem
-// obecnej wersji, patrz komentarz w main.js), więc wszystko leci jedną płaską, posortowaną listą.
-//
-// Dodawanie notatki jest dostępne dla każdej roli (MG i gracze mogą dopisać coś do kroniki sesji),
-// ale usuwanie/czyszczenie historii jest zastrzeżone dla MG - żeby gracz przypadkiem nie skasował
-// wspólnej historii kampanii.
+// Dark Graal III - Dashboard Solo (MG). Dziennik kampanii - NIE jest już osobną zakładką (patrz
+// index.html/main.js: "Dziennik" zostało zniesione jako top-level tab), tylko pomocniczy moduł bez
+// własnego DOM-owego root'a, wpinany bezpośrednio w dolną część zakładki "Rzuty" (panels/roller.js).
+// Łączy automatyczną historię testów (state.rollHistory, patrz rollLog.js) i automatyczny log
+// zdarzeń mechanicznych (state.events, patrz eventLog.js) w jedną chronologię od najnowszego wpisu.
+// Dodawanie wolnych notatek zostało usunięte (nikt - ani MG, ani gracze - go nie potrzebuje), ale
+// usuwanie pojedynczych wpisów i zbiorcze czyszczenie historii zostaje, zastrzeżone dla MG - żeby
+// gracz przypadkiem nie skasował wspólnej historii kampanii. Stare wolne notatki (state.journal),
+// jeśli jakieś już istnieją z wcześniejszych testów, nadal są pokazywane i usuwalne.
 
 import { updateState } from "../store.js";
 import { EVENT_TYPE_LABELS } from "../eventLog.js";
-import { escapeHtml, uid, formatTimestamp, preserveScroll } from "../utils.js";
+import { escapeHtml, annotateDice } from "../utils.js";
+
+const DIE_STATE_CLASS = {
+    one: "die-removed",
+    cancelled: "die-cancelled",
+    full: "die-full",
+    success: "die-success",
+    complication: "die-complication"
+};
 
 function diceChipsHtml(dice) {
-    return (dice || []).map(d => {
-        const cls = d === 1 ? "die-removed" : d === 6 ? "die-full" : d >= 4 ? "die-success" : "die-complication";
-        return `<span class="die-chip die-chip-sm ${cls}">${d}</span>`;
-    }).join("");
+    return annotateDice(dice || []).map(({ value, state }) =>
+        `<span class="die-chip die-chip-sm ${DIE_STATE_CLASS[state] || ""}">${value}</span>`
+    ).join("");
 }
 
 function mergeChronological(journalEntries, rollEntries, eventEntries) {
@@ -75,7 +80,9 @@ function renderEntry(e, canDelete) {
     `;
 }
 
-function buildHtml(ctx) {
+/** Buduje HTML dziennika (przyciski czyszczenia dla MG + posortowana lista wpisów) do osadzenia
+ *  wewnątrz panelu Rzuty (panels/roller.js) - patrz wireJournalActions() dla obsługi kliknięć. */
+export function buildJournalHtml(ctx) {
     const { state, session } = ctx;
     const journalEntries = state.journal ?? [];
     const rollEntries = state.rollHistory ?? [];
@@ -84,96 +91,66 @@ function buildHtml(ctx) {
     const canDelete = session.role === "mg";
 
     return `
-        <div class="card">
-            <h2>Nowy wpis</h2>
-            <textarea data-field="new-entry" rows="3" placeholder="Notatka do kroniki sesji..."></textarea>
-            <button class="btn btn-gold" data-action="add-entry">Dodaj notatkę</button>
-            ${canDelete ? `
-                <div class="journal-clear-row">
-                    ${rollEntries.length ? `<button class="btn btn-sm" data-action="clear-history">Wyczyść historię testów</button>` : ""}
-                    ${journalEntries.length ? `<button class="btn btn-sm" data-action="clear-journal">Wyczyść notatki</button>` : ""}
-                    ${eventEntries.length ? `<button class="btn btn-sm" data-action="clear-events">Wyczyść historię zdarzeń</button>` : ""}
-                </div>
-            ` : ""}
-        </div>
-        <div class="card journal-list-card">
+        <h2>Dziennik kampanii</h2>
+        ${canDelete && (rollEntries.length || journalEntries.length || eventEntries.length) ? `
+            <div class="journal-clear-row">
+                ${rollEntries.length ? `<button class="btn btn-sm" data-action="clear-history">Wyczyść historię testów</button>` : ""}
+                ${journalEntries.length ? `<button class="btn btn-sm" data-action="clear-journal">Wyczyść notatki</button>` : ""}
+                ${eventEntries.length ? `<button class="btn btn-sm" data-action="clear-events">Wyczyść historię zdarzeń</button>` : ""}
+            </div>
+        ` : ""}
+        <div class="journal-list-card">
             ${merged.length ? `<ul class="entry-list">${merged.map(e => renderEntry(e, canDelete)).join("")}</ul>` : `
-                <p class="placeholder">Dziennik jest pusty - dopisz notatkę powyżej albo wykonaj test w panelu "Test".</p>
+                <p class="placeholder">Dziennik jest pusty - wykonaj test powyżej, żeby zaczęła się zapełniać historia.</p>
             `}
         </div>
     `;
 }
 
-function rerender(root) {
-    preserveScroll(() => { root.innerHTML = buildHtml(root._ctx); });
-}
+/** Zestaw akcji dziennika obsługiwanych przez data-action - do wywołania z jednego delegowanego
+ *  click-handlera w panels/roller.js (obok jego własnych akcji rzutu). Zwraca `true`, jeśli akcja
+ *  została rozpoznana i obsłużona (wywołujący powinien wtedy przerwać dalsze przetwarzanie kliknięcia
+ *  i wywołać swój rerender), inaczej `false`. */
+export function handleJournalAction(action, btn, ctx) {
+    const { session } = ctx;
 
-function wireEvents(root) {
-    root.addEventListener("click", (e) => {
-        const btn = e.target.closest("[data-action]");
-        if (!btn) return;
-        const action = btn.dataset.action;
-        const { session } = root._ctx;
-
-        if (action === "add-entry") {
-            const textarea = root.querySelector('[data-field="new-entry"]');
-            const text = textarea.value.trim();
-            if (!text) return;
-            updateState((state) => {
-                if (!state.journal) state.journal = [];
-                state.journal.push({ id: uid(), text, ts: formatTimestamp(), at: Date.now() });
-            });
-            rerender(root);
-            return;
+    if (action === "delete-entry") {
+        if (session.role !== "mg") return true;
+        const kind = btn.dataset.kind;
+        const id = btn.dataset.id;
+        if (kind === "roll") {
+            if (!window.confirm("Usunąć ten wpis z historii testów?")) return true;
+            updateState((state) => { state.rollHistory = state.rollHistory.filter(r => r.id !== id); });
+        } else if (kind === "event") {
+            if (!window.confirm("Usunąć ten wpis z historii zdarzeń?")) return true;
+            updateState((state) => { state.events = (state.events ?? []).filter(ev => ev.id !== id); });
+        } else {
+            if (!window.confirm("Usunąć tę notatkę?")) return true;
+            updateState((state) => { state.journal = state.journal.filter(j => j.id !== id); });
         }
-
-        if (session.role !== "mg") return; // pozostałe akcje (usuwanie/czyszczenie) tylko dla MG
-
-        if (action === "delete-entry") {
-            const kind = btn.dataset.kind;
-            const id = btn.dataset.id;
-            if (kind === "roll") {
-                if (!window.confirm("Usunąć ten wpis z historii testów?")) return;
-                updateState((state) => { state.rollHistory = state.rollHistory.filter(r => r.id !== id); });
-            } else if (kind === "event") {
-                if (!window.confirm("Usunąć ten wpis z historii zdarzeń?")) return;
-                updateState((state) => { state.events = (state.events ?? []).filter(ev => ev.id !== id); });
-            } else {
-                if (!window.confirm("Usunąć tę notatkę?")) return;
-                updateState((state) => { state.journal = state.journal.filter(j => j.id !== id); });
-            }
-            rerender(root);
-            return;
-        }
-
-        if (action === "clear-history") {
-            if (!window.confirm("Na pewno wyczyścić całą historię testów? Tej operacji nie można cofnąć.")) return;
-            updateState((state) => { state.rollHistory = []; });
-            rerender(root);
-            return;
-        }
-
-        if (action === "clear-journal") {
-            if (!window.confirm("Na pewno wyczyścić wszystkie notatki? Tej operacji nie można cofnąć.")) return;
-            updateState((state) => { state.journal = []; });
-            rerender(root);
-            return;
-        }
-
-        if (action === "clear-events") {
-            if (!window.confirm("Na pewno wyczyścić całą historię zdarzeń? Tej operacji nie można cofnąć.")) return;
-            updateState((state) => { state.events = []; });
-            rerender(root);
-            return;
-        }
-    });
-}
-
-export function render(root, ctx) {
-    root._ctx = ctx;
-    root.innerHTML = buildHtml(ctx);
-    if (!root.dataset.wired) {
-        wireEvents(root);
-        root.dataset.wired = "1";
+        return true;
     }
+
+    if (action === "clear-history") {
+        if (session.role !== "mg") return true;
+        if (!window.confirm("Na pewno wyczyścić całą historię testów? Tej operacji nie można cofnąć.")) return true;
+        updateState((state) => { state.rollHistory = []; });
+        return true;
+    }
+
+    if (action === "clear-journal") {
+        if (session.role !== "mg") return true;
+        if (!window.confirm("Na pewno wyczyścić wszystkie notatki? Tej operacji nie można cofnąć.")) return true;
+        updateState((state) => { state.journal = []; });
+        return true;
+    }
+
+    if (action === "clear-events") {
+        if (session.role !== "mg") return true;
+        if (!window.confirm("Na pewno wyczyścić całą historię zdarzeń? Tej operacji nie można cofnąć.")) return true;
+        updateState((state) => { state.events = []; });
+        return true;
+    }
+
+    return false;
 }

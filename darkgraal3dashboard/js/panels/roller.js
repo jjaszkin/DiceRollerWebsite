@@ -1,10 +1,17 @@
-// Dark Graal III - Dashboard Solo (MG). Panel "Test" - rzut pulą k6 dla aktywnej postaci: wybór
+// Dark Graal III - Dashboard Solo (MG). Zakładka "Rzuty" - rzut pulą k6 dla aktywnej postaci: wybór
 // Archetypu (pula = wartość efektywna, patrz state.js#archetypeCurrent), opcjonalne dorzucenie
-// Kości Graala ze wspólnej puli, opcjonalne Moce zwiększające pulę PRZED rzutem, rzut, a następnie
-// (jeśli dotyczy) Moce modyfikujące już rzucone kości (przerzut/podniesienie) - na końcu zatwierdzenie
-// zapisuje wynik do wspólnej historii testów (rollLog.js) i dopiero wtedy trwale zużywa Kości
-// Graala/oznacza Moce jako użyte. Do tego momentu rzut jest tylko lokalnym podglądem (nic nie jest
-// zapisywane do Firebase) - dzięki temu "Cofnij/Przerzuć od nowa" nic nie psuje we wspólnym stanie.
+// Kości Graala (deklarowane każdorazowo do TEGO rzutu, maks. tyle, ile wynosi aktualna wartość
+// wybranego Archetypu - bez żadnej współdzielonej/persystentnej puli), opcjonalne Moce zwiększające
+// pulę PRZED rzutem, rzut, a następnie (jeśli dotyczy) Moce modyfikujące już rzucone kości
+// (przerzut/podniesienie) - na końcu zatwierdzenie zapisuje wynik do wspólnej historii testów
+// (rollLog.js) i dopiero wtedy trwale oznacza Moce jako użyte. Do tego momentu rzut jest tylko
+// lokalnym podglądem (nic nie jest zapisywane do Firebase) - dzięki temu "Cofnij/Przerzuć od nowa"
+// nic nie psuje we wspólnym stanie.
+//
+// Ta zakładka zawiera też, poniżej rzutu, cały Dziennik kampanii (patrz panels/journal.js - moduł
+// pomocniczy bez własnego DOM-owego root'a, wpięty tu bezpośrednio) - osobna zakładka "Dziennik"
+// została zniesiona, a swobodne notatki nie są już nigdzie dodawane (tylko usuwalne przez MG, jeśli
+// jakieś zostały z wcześniejszych testów).
 //
 // UWAGA (kontynuacja zastrzeżenia z utils.js): poniższa kategoryzacja Mocy na "przed rzutem"/"po
 // rzucie"/"pasywna, autostosowana"/"nielimitowana narracyjna" jest rekonstrukcją opartą o pole
@@ -13,19 +20,27 @@
 // "narrative" → nielimitowana, nieśledzona; usage "passive" → zawsze aktywna, bez przycisku).
 // Jeden przypadek szczególny: `party_bonus_dice` (np. "Cierniowa korona" Cadwyna) działa na PULĘ
 // SOJUSZNIKÓW, nie własną - roller go nie automatyzuje w matematyce rzutu, tylko pokazuje jako
-// informację (aktywację/zużycie tej Mocy nadal można ręcznie oznaczyć w panelu Postać). To wszystko,
-// tak jak silnik testu w utils.js, wymaga potwierdzenia przez usera przy pierwszym realnym użyciu.
+// informację (aktywację/zużycie tej Mocy nadal można ręcznie oznaczyć w panelu Postać).
 
 import { updateState } from "../store.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
 import { archetypeCurrent } from "../state.js";
 import {
-    escapeHtml, clamp, preserveScroll, TEST_TIER_LABELS,
+    escapeHtml, clamp, preserveScroll, TEST_TIER_LABELS, annotateDice,
     rollTestPool, applyRerollOnes, applyRerollAllOnes, applyRaiseLowestDie
 } from "../utils.js";
+import { buildJournalHtml, handleJournalAction } from "./journal.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
+
+const DIE_STATE_CLASS = {
+    one: "die-removed",
+    cancelled: "die-cancelled",
+    full: "die-full",
+    success: "die-success",
+    complication: "die-complication"
+};
 
 const ui = {
     selectedCharacterKey: null, // tylko dla MG, patrz resolveActiveKey()
@@ -105,14 +120,13 @@ function applyPassivePowers(character, transformation, rollResult) {
 }
 
 function diceChipsHtml(dice) {
-    return dice.map(d => {
-        const cls = d === 1 ? "die-removed" : d === 6 ? "die-full" : d >= 4 ? "die-success" : "die-complication";
-        return `<span class="die-chip ${cls}">${d}</span>`;
-    }).join("");
+    return annotateDice(dice).map(({ value, state }) =>
+        `<span class="die-chip ${DIE_STATE_CLASS[state] || ""}">${value}</span>`
+    ).join("");
 }
 
 function buildSetupHtml(state, data, character, transformation, archetypeDice) {
-    const graalPool = state.graalDice.current;
+    const graalMax = archetypeDice;
     const bonusPowers = preRollBonusPowers(character, transformation);
     const bonusHtml = bonusPowers.map(p => `
         <label class="power-check">
@@ -144,9 +158,10 @@ function buildSetupHtml(state, data, character, transformation, archetypeDice) {
             </div>
 
             <h3>Kości Graala</h3>
+            <p class="placeholder">Pula Kości Graala nie jest współdzielona - deklarujesz ją każdorazowo do TEGO rzutu, maksymalnie tyle, ile wynosi aktualna wartość wybranego Archetypu (${graalMax}).</p>
             <div class="stat-controls">
                 <button class="btn btn-xs" data-action="graal-dec">−</button>
-                <span>${ui.graalDiceUsed} <span class="placeholder">(dostępne: ${graalPool})</span></span>
+                <span>${ui.graalDiceUsed} <span class="placeholder">(maks. ${graalMax})</span></span>
                 <button class="btn btn-xs" data-action="graal-inc">+</button>
             </div>
 
@@ -183,7 +198,7 @@ function buildPendingRollHtml(character, transformation) {
         <div class="roller-result">
             <h3>Wynik: ${escapeHtml(pr.tierLabel)}</h3>
             <div class="dice-row">${diceChipsHtml(pr.dice)}</div>
-            <p class="placeholder">Usunięto po 1: ${pr.removedOnes}</p>
+            <p class="placeholder">Jedynki: ${pr.oneIndices.length} (anulowały ${pr.cancelledIndices.length} najwyższych kości)</p>
             ${appliedHtml}
 
             ${(trackedPowers.length || narrativePowers.length) ? `
@@ -193,11 +208,6 @@ function buildPendingRollHtml(character, transformation) {
                     ${powerButtonsHtml(narrativePowers, false)}
                 </div>
             ` : ""}
-
-            <label class="roll-note-label">
-                Notatka (opcjonalnie)
-                <textarea class="roll-note-input" data-action="roll-note-input" rows="2">${escapeHtml(pr.note)}</textarea>
-            </label>
 
             <div class="roller-actions">
                 <button class="btn btn-gold" data-action="finalize-roll">Zatwierdź i zapisz do dziennika</button>
@@ -227,8 +237,11 @@ function buildHtml(ctx) {
     return `
         ${selectorHtml}
         <div class="roller-panel">
-            <h2>Test - ${escapeHtml(character.name)}</h2>
+            <h2>Rzut - ${escapeHtml(character.name)}</h2>
             ${ui.pendingRoll ? buildPendingRollHtml(character, transformation) : buildSetupHtml(state, data, character, transformation, archetypeDice)}
+        </div>
+        <div class="card">
+            ${buildJournalHtml(ctx)}
         </div>
     `;
 }
@@ -253,26 +266,29 @@ function wireEvents(root) {
         }
     });
 
-    root.addEventListener("input", (e) => {
-        if (e.target.dataset.action === "roll-note-input" && ui.pendingRoll) {
-            ui.pendingRoll.note = e.target.value;
-        }
-    });
-
     root.addEventListener("click", (e) => {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
         const action = btn.dataset.action;
 
         if (action === "select-archetype") {
+            const { state, session } = root._ctx;
+            const activeKey = resolveActiveKey(state, session);
+            const character = state.characters[activeKey];
             ui.archetypeKey = btn.dataset.key;
+            if (character) {
+                const newMax = archetypeCurrent(character.archetypes[ui.archetypeKey]);
+                ui.graalDiceUsed = clamp(ui.graalDiceUsed, 0, newMax);
+            }
             rerender(root);
             return;
         }
 
         if (action === "graal-inc" || action === "graal-dec") {
             const { state, session } = root._ctx;
-            const max = state.graalDice.current;
+            const activeKey = resolveActiveKey(state, session);
+            const character = state.characters[activeKey];
+            const max = character ? archetypeCurrent(character.archetypes[ui.archetypeKey]) : 0;
             ui.graalDiceUsed = clamp(ui.graalDiceUsed + (action === "graal-inc" ? 1 : -1), 0, max);
             rerender(root);
             return;
@@ -295,6 +311,12 @@ function wireEvents(root) {
 
         if (action === "cancel-roll") {
             ui.pendingRoll = null;
+            rerender(root);
+            return;
+        }
+
+        // Akcje dziennika (usuwanie wpisów/czyszczenie historii, tylko MG) - patrz panels/journal.js.
+        if (handleJournalAction(action, btn, root._ctx)) {
             rerender(root);
             return;
         }
@@ -335,10 +357,10 @@ function doRoll(root) {
         appliedPowerNames: [...bonusPowers.map(p => p.name), ...passiveApplied],
         dice: result.dice,
         survivingDice: result.survivingDice,
-        removedOnes: result.removedOnes,
+        oneIndices: result.oneIndices,
+        cancelledIndices: result.cancelledIndices,
         tier: result.tier,
-        tierLabel: TEST_TIER_LABELS[result.tier] || result.tier,
-        note: ""
+        tierLabel: TEST_TIER_LABELS[result.tier] || result.tier
     };
     rerender(root);
 }
@@ -362,7 +384,8 @@ function applyPostPower(root, powerId, tracked) {
 
     pr.dice = result.dice;
     pr.survivingDice = result.survivingDice;
-    pr.removedOnes = result.removedOnes;
+    pr.oneIndices = result.oneIndices;
+    pr.cancelledIndices = result.cancelledIndices;
     pr.tier = result.tier;
     pr.tierLabel = TEST_TIER_LABELS[result.tier] || result.tier;
     pr.appliedPowerNames.push(power.name);
@@ -381,18 +404,13 @@ function finalizeRoll(root) {
     const usedIds = [...pr.preRollPowerIds, ...pr.postRollPowerIds];
     let characterName = state.characters[activeKey]?.name || "";
 
-    // Zużycie Kości Graala i oznaczenie Mocy jako użytych - jedna mutacja stanu, osobna od logRoll()
-    // poniżej (który sam woła updateState - trzymamy te dwa wywołania rozłącznie, żeby nie zagnieżdżać
-    // updateState w updateState, tak jak eventLog.js#logEvent + zewnętrzny updateState w character.js).
+    // Oznaczenie Mocy jako użytych - jedna mutacja stanu, osobna od logRoll() poniżej (który sam
+    // woła updateState - trzymamy te dwa wywołania rozłącznie, żeby nie zagnieżdżać updateState w
+    // updateState, tak jak eventLog.js#logEvent + zewnętrzny updateState w character.js).
     updateState((s) => {
         const character = s.characters[activeKey];
         if (!character) return;
         characterName = character.name;
-
-        if (pr.graalDice > 0) {
-            s.graalDice.current = Math.max(0, s.graalDice.current - pr.graalDice);
-            logEvent(s, "graal-dice-change", `${character.name}: użyto ${pr.graalDice} Kości Graala w teście (${pr.archetypeLabel}).`);
-        }
 
         for (const id of usedIds) {
             character.usedPowers[id] = true;
@@ -410,8 +428,7 @@ function finalizeRoll(root) {
         graalDice: pr.graalDice,
         dice: pr.dice,
         tier: pr.tier,
-        note: [pr.note, pr.appliedPowerNames.length ? `Moce: ${pr.appliedPowerNames.join(", ")}` : ""]
-            .filter(Boolean).join(" - ")
+        note: pr.appliedPowerNames.length ? `Moce: ${pr.appliedPowerNames.join(", ")}` : ""
     });
 
     resetPendingSelection();

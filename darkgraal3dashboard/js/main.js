@@ -11,25 +11,25 @@ import { showGate } from "./gate.js";
 import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
 import * as mgPanel from "./panels/mg.js";
-import * as journalPanel from "./panels/journal.js";
 
 const PANELS = {
     character: characterPanel,
     roller: rollerPanel,
-    mg: mgPanel,
-    journal: journalPanel
+    mg: mgPanel
 };
 
-// Zakładki widoczne WYŁĄCZNIE dla MG - chowamy ich przyciski graczom (panele MG mają dodatkowo
-// własny defensywny guard na session.role, patrz panels/mg.js). Domyślnie aktywna zakładka to
-// zawsze "character" (ustawione statycznie w index.html), więc nie trzeba obsługiwać przełączania
-// z zakładki, która akurat znika.
+// Zakładki widoczne WYŁĄCZNIE dla MG (chowane graczom) i wyłącznie dla Gracza (chowane MG) - MG ma
+// tylko "MG" + "Rzuty", Gracz ma tylko "Postać" + "Rzuty" (panele MG mają dodatkowo własny
+// defensywny guard na session.role, patrz panels/mg.js).
 const MG_ONLY_TABS = new Set(["mg"]);
+const PLAYER_ONLY_TABS = new Set(["character"]);
 
 const bootStatus = document.getElementById("bootStatus");
 const saveIndicator = document.getElementById("saveIndicator");
+const changeCharacterBtn = document.getElementById("changeCharacterBtn");
 
 let session = null; // { role: "mg"|"player", characterKey: string|null } - patrz gate.js
+let cachedGameData = null;
 
 function setBootStatus(text) {
     if (bootStatus) bootStatus.textContent = text;
@@ -60,10 +60,19 @@ function setupTabs() {
 
 function applyRoleVisibility() {
     document.querySelectorAll(".tab-btn").forEach(btn => {
-        if (MG_ONLY_TABS.has(btn.dataset.tab) && session.role !== "mg") {
-            btn.style.display = "none";
-        }
+        const tab = btn.dataset.tab;
+        const hidden = (MG_ONLY_TABS.has(tab) && session.role !== "mg") ||
+            (PLAYER_ONLY_TABS.has(tab) && session.role === "mg");
+        btn.style.display = hidden ? "none" : "";
     });
+    // Jeśli aktualnie aktywna zakładka właśnie zniknęła (np. zmiana roli przez "Zmień postać" w
+    // trakcie sesji), przełącz na pierwszą widoczną zamiast zostawiać pusty panel.
+    const buttons = Array.from(document.querySelectorAll(".tab-btn"));
+    const activeBtn = buttons.find(b => b.classList.contains("active"));
+    if (!activeBtn || activeBtn.style.display === "none") {
+        const firstVisible = buttons.find(b => b.style.display !== "none");
+        if (firstVisible) firstVisible.click();
+    }
 }
 
 function setupSaveIndicator() {
@@ -83,10 +92,25 @@ function setupSaveIndicator() {
     });
 }
 
+function setupChangeCharacterButton() {
+    if (!changeCharacterBtn) return;
+    changeCharacterBtn.addEventListener("click", () => {
+        showGate(cachedGameData, {
+            allowCancel: true,
+            onDone: (selection) => {
+                session = selection;
+                applyRoleVisibility();
+                renderAll();
+            }
+        });
+    });
+}
+
 async function bootstrap() {
     try {
         setBootStatus("Wczytywanie danych podręcznika...");
         const gameData = await loadGameData();
+        cachedGameData = gameData;
         initStore(gameData);
 
         setBootStatus("Łączenie ze wspólną kampanią...");
@@ -95,6 +119,7 @@ async function bootstrap() {
         subscribe(renderAll);
         setupTabs();
         setupSaveIndicator();
+        setupChangeCharacterButton();
 
         setBootStatus("Wybierz, kto patrzy...");
 
