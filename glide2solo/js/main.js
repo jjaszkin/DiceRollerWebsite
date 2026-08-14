@@ -6,6 +6,7 @@ import { rollD100, findInRangeTable, clamp, preserveScroll } from "./utils.js";
 import { logRoll } from "./rollLog.js";
 import { logEvent, buildDaySummaryText } from "./eventLog.js";
 import { showGate } from "./gate.js";
+import { PORTABLE_TENT_SLUG } from "./gearData.js";
 
 import * as characterPanel from "./panels/character.js";
 import * as gearPanel from "./panels/gear.js";
@@ -36,9 +37,14 @@ const bootStatus = document.getElementById("bootStatus");
 const saveIndicator = document.getElementById("saveIndicator");
 const dayValue = document.getElementById("dayValue");
 const campButton = document.getElementById("campButton");
+const newDayButton = document.getElementById("newDayButton");
 const campResultBox = document.getElementById("campResultBox");
 
 let lastCampResult = null;
+// Ustawiane tylko, gdy akcja Obóz ma aktywną Przewagę (założony Przenośny Namiot, patrz
+// PORTABLE_TENT_SLUG) — dwa rzuty Wydarzenia Obozowego czekają na wybór gracza (renderCampResultBox),
+// zanim finalizeCampDay zastosuje efekty WYBRANEGO wyniku i przejdzie do kolejnego dnia.
+let pendingCampChoice = null;
 
 function setBootStatus(text) {
     if (bootStatus) bootStatus.textContent = text;
@@ -64,7 +70,38 @@ function renderAll() {
     });
 }
 
+/** Kompaktowa lista rzutów do karty wyboru Przewagi (patrz renderCampResultBox/pendingCampChoice). */
+function renderCampAttemptCompact(rolls) {
+    return rolls.map(({ roll, entry }) => `
+        <div class="entry-meta"><span>d100 = ${roll}</span></div>
+        <p>${entry ? entry.effect : "Brak dopasowania w tabeli."}</p>
+    `).join("");
+}
+
+/** Pełny nagłówkowy zapis rzutów do finalnego podsumowania (jak przed rozbiciem na Przewagę). */
+function renderCampAttemptFull(rolls) {
+    return rolls.map(({ roll, entry }) => `
+        <h2>Wydarzenie Obozowe (d100 = ${roll})</h2>
+        <p>${entry ? entry.effect : "Brak dopasowania w tabeli."}</p>
+    `).join("");
+}
+
 function renderCampResultBox() {
+    if (pendingCampChoice) {
+        campResultBox.style.display = "block";
+        campResultBox.innerHTML = `
+            <h2>Przewaga (Przenośny Namiot) — wybierz jeden z dwóch wyników Obozu</h2>
+            <div class="grid grid-2">
+                ${pendingCampChoice.attempts.map((rolls, idx) => `
+                    <div class="entry">
+                        ${renderCampAttemptCompact(rolls)}
+                        <button class="btn btn-sm btn-primary" data-action="choose-camp-attempt" data-idx="${idx}">Wybierz ten wynik</button>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+        return;
+    }
     if (!lastCampResult) {
         campResultBox.style.display = "none";
         campResultBox.innerHTML = "";
@@ -72,19 +109,11 @@ function renderCampResultBox() {
     }
     const { rolls, recoveryText } = lastCampResult;
     campResultBox.style.display = "block";
-    const rollsHtml = rolls.map(({ roll, entry }) => `
-        <h2>Wydarzenie Obozowe (d100 = ${roll})</h2>
-        <p>${entry ? entry.effect : "Brak dopasowania w tabeli."}</p>
-    `).join("");
     campResultBox.innerHTML = `
-        ${rollsHtml}
+        ${renderCampAttemptFull(rolls)}
         <p class="placeholder">${recoveryText}</p>
-        <button class="btn btn-sm" id="campResultDismiss">Zamknij</button>
+        <button class="btn btn-sm" data-action="dismiss-camp-result">Zamknij</button>
     `;
-    document.getElementById("campResultDismiss").addEventListener("click", () => {
-        lastCampResult = null;
-        renderCampResultBox();
-    });
 }
 
 function setupTabs() {
@@ -169,50 +198,110 @@ function applyCampingEventEffects(state, effects) {
     return parts;
 }
 
+/** Finalizuje akcję Obóz dla JEDNEGO wybranego zestawu rzutów Wydarzenia Obozowego (`rolls` —
+ *  patrz rollCampingEvents, może mieć 3 wpisy przy "Rzuć dwa razy"): nakłada jego strukturalny
+ *  efekt (applyCampingEventEffects) NA WIERZCH bazowej regeneracji Staminy (Poszukiwaczowi i
+ *  towarzyszowi, jeśli obecny) wg camping_base_recovery z mechanics.json, po czym przechodzi do
+ *  kolejnego dnia. `discardedRolls` (tylko przy aktywnej Przewadze z Przenośnego Namiotu) to
+ *  drugi, NIE wybrany zestaw rzutów — logowany osobno do historii, żeby zapis rzutów był pełny,
+ *  ale jego efekty nigdy nie są nakładane na stan. */
+function finalizeCampDay(rolls, discardedRolls) {
+    const data = getData();
+    const rec = data?.mechanics?.camping_base_recovery ?? { seeker_stamina: 0, companion_stamina: 0 };
+
+    const recoveryParts = [];
+
+    updateState((state) => {
+        const stam = state.character.resources.stamina;
+        const before = stam.cur;
+        stam.cur = clamp(stam.cur + (rec.seeker_stamina || 0), 0, stam.max);
+        recoveryParts.push(`Wytrzymałość Poszukiwacza: ${before} → ${stam.cur}`);
+
+        if (state.character.companion.key) {
+            const cstam = state.character.companion.stamina;
+            const cBefore = cstam.cur;
+            cstam.cur = clamp(cstam.cur + (rec.companion_stamina || 0), 0, cstam.max);
+            recoveryParts.push(`Wytrzymałość towarzysza: ${cBefore} → ${cstam.cur}`);
+        }
+
+        for (const { entry } of rolls) {
+            recoveryParts.push(...applyCampingEventEffects(state, entry?.effects));
+        }
+    });
+
+    // Zaloguj rzut(y) pod dniem, w którym nastąpił Obóz, zanim przejdziemy do kolejnego dnia.
+    for (const { roll, entry } of rolls) {
+        logRoll("Wydarzenie Obozowe (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
+    }
+    if (discardedRolls) {
+        for (const { roll, entry } of discardedRolls) {
+            logRoll("Wydarzenie Obozowe (d100) — odrzucone (Przewaga, Przenośny Namiot)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
+        }
+    }
+
+    updateState((state) => {
+        // Inkrementacja PRZED zalogowaniem podsumowania, żeby wpis otagował się nowym
+        // dniem (logEvent czyta state.day.current) — to właśnie ma być "stan na starcie dnia".
+        state.day.current += 1;
+        logEvent(state, "day-summary", buildDaySummaryText(state));
+    });
+
+    pendingCampChoice = null;
+    lastCampResult = { rolls, recoveryText: recoveryParts.join(" · ") };
+    renderAll();
+}
+
 function setupCampButton() {
-    // Akcja Obóz: rzuca Wydarzenie Obozowe (d100, patrz rollCampingEvents — może dać 3 wyniki
-    // przy "Rzuć dwa razy"), nakłada jego strukturalny efekt (applyCampingEventEffects) NA
-    // WIERZCH bazowej regeneracji Staminy (Poszukiwaczowi i towarzyszowi, jeśli obecny) wg
-    // camping_base_recovery z mechanics.json, po czym przechodzi do kolejnego dnia.
     campButton.addEventListener("click", () => {
         const data = getData();
         const table = data?.mechanics?.camping_events_table_d100 ?? [];
-        const rec = data?.mechanics?.camping_base_recovery ?? { seeker_stamina: 0, companion_stamina: 0 };
-        const rolls = rollCampingEvents(table);
+        const state = getState();
 
-        const recoveryParts = [];
-
-        updateState((state) => {
-            const stam = state.character.resources.stamina;
-            const before = stam.cur;
-            stam.cur = clamp(stam.cur + (rec.seeker_stamina || 0), 0, stam.max);
-            recoveryParts.push(`Wytrzymałość Poszukiwacza: ${before} → ${stam.cur}`);
-
-            if (state.character.companion.key) {
-                const cstam = state.character.companion.stamina;
-                const cBefore = cstam.cur;
-                cstam.cur = clamp(cstam.cur + (rec.companion_stamina || 0), 0, cstam.max);
-                recoveryParts.push(`Wytrzymałość towarzysza: ${cBefore} → ${cstam.cur}`);
-            }
-
-            for (const { entry } of rolls) {
-                recoveryParts.push(...applyCampingEventEffects(state, entry?.effects));
-            }
-        });
-
-        // Zaloguj rzut(y) pod dniem, w którym nastąpił Obóz, zanim przejdziemy do kolejnego dnia.
-        for (const { roll, entry } of rolls) {
-            logRoll("Wydarzenie Obozowe (d100)", `d100=${roll}`, entry ? entry.effect : "brak dopasowania");
+        // Przewaga (Przenośny Namiot, patrz PORTABLE_TENT_SLUG): rzuć Wydarzenie Obozowe DWA
+        // razy i daj graczowi wybrać, który wynik się liczy — "raz na Obóz", więc nie stosuje
+        // się rekurencyjnie do ew. dodatkowych rzutów z "Rzuć dwa razy" w treści tabeli.
+        const hasAdvantage = !!state.character.gear?.[PORTABLE_TENT_SLUG]?.equipped;
+        if (hasAdvantage) {
+            pendingCampChoice = { attempts: [rollCampingEvents(table), rollCampingEvents(table)] };
+            lastCampResult = null;
+            renderCampResultBox();
+            return;
         }
 
+        finalizeCampDay(rollCampingEvents(table));
+    });
+
+    // Delegacja na kontenerze (nie na konkretnych przyciskach) — campResultBox.innerHTML jest
+    // przebudowywane przy każdym renderze (renderCampResultBox), więc pojedyncze przyciski by
+    // znikały; sam kontener zostaje w DOM przez cały czas życia strony.
+    campResultBox.addEventListener("click", (e) => {
+        const chooseBtn = e.target.closest('[data-action="choose-camp-attempt"]');
+        if (chooseBtn && pendingCampChoice) {
+            const idx = Number(chooseBtn.dataset.idx);
+            const chosen = pendingCampChoice.attempts[idx];
+            const discarded = pendingCampChoice.attempts[1 - idx];
+            finalizeCampDay(chosen, discarded);
+            return;
+        }
+        if (e.target.closest('[data-action="dismiss-camp-result"]')) {
+            lastCampResult = null;
+            renderCampResultBox();
+        }
+    });
+}
+
+/** Akcja Nowy dzień: gdy gracz nocuje w Osadzie (albo z innego powodu nie rozbija Obozu wg
+ *  zasad), przechodzi do kolejnego dnia z podsumowaniem w Dzienniku, ale BEZ Wydarzenia
+ *  Obozowego i BEZ bazowej regeneracji Staminy z camping_base_recovery — obie są częścią
+ *  akcji Obóz w podręczniku, więc bez rozbijania obozu żadna się nie należy. */
+function setupNewDayButton() {
+    newDayButton.addEventListener("click", () => {
+        pendingCampChoice = null;
+        lastCampResult = null;
         updateState((state) => {
-            // Inkrementacja PRZED zalogowaniem podsumowania, żeby wpis otagował się nowym
-            // dniem (logEvent czyta state.day.current) — to właśnie ma być "stan na starcie dnia".
             state.day.current += 1;
             logEvent(state, "day-summary", buildDaySummaryText(state));
         });
-
-        lastCampResult = { rolls, recoveryText: recoveryParts.join(" · ") };
         renderAll();
     });
 }
@@ -231,6 +320,7 @@ async function bootstrap() {
         setupTabs();
         setupSaveIndicator();
         setupCampButton();
+        setupNewDayButton();
 
         setBootStatus("Wybierz postać, żeby połączyć się z zapisem…");
 

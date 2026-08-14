@@ -105,6 +105,13 @@ export const EXPLORERS_BACKPACK_GEAR_BONUS = 2;
 export const EXOSKELETON_SLUG = gearSlug("Egzoszkielet");
 export const EXOSKELETON_GEAR_BONUS = 1;
 
+/** Przenośny Namiot (Sprzęt Survivalowy): "Przewaga na akcjach Obóz (raz na Obóz)" — założony
+ *  sprawia, że akcja Obóz rzuca Wydarzenie Obozowe dwa razy i pozwala wybrać, który wynik się
+ *  liczy (patrz main.js#setupCampButton). Sam checkbox "Założone" nic tu nie mutuje w state —
+ *  main.js sprawdza ten slug na żywo przy każdym kliknięciu Obóz, tak jak gearCapacity()
+ *  sprawdza Plecak Odkrywcy/Egzoszkielet na żywo zamiast trzymać osobny licznik. */
+export const PORTABLE_TENT_SLUG = gearSlug("Przenośny Namiot");
+
 /** Efektywny limit noszonego Sprzęt (bazowy max_carried z mechanics.json + bonusy z założonego
  *  Plecaka Odkrywcy/Egzoszkieletu) oraz liczba faktycznie zajętych slotów (Plecak, mimo że
  *  założony, slotu nie zajmuje — patrz jego efekt; Egzoszkielet slot zajmuje normalnie).
