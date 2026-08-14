@@ -98,11 +98,15 @@ export function createDefaultState(gameData) {
         // `sfxFired` to znacznik ostatniego jednorazowego efektu (gracze porównują `at`, żeby nie
         // odtworzyć tego samego efektu dwa razy), `playlists` to listy odtwarzania budowane na
         // żywo przez MG w zakładce "Muzyka" (mini-kreator control-panel.js), BEZ modyfikowania
-        // statycznego katalogu data/soundboard.json.
+        // statycznego katalogu data/soundboard.json. `trackOrder` to kolejność WYŚWIETLANIA kart w
+        // tej zakładce (klucze z manifestu ORAZ id playlist w jednej liście, sortowanie per-sekcja
+        // filtruje ją do właściwej kategorii) - też edytowana na żywo przez MG (uchwyt/strzałki/
+        // drag&drop), niezależna od kolejności utworów WEWNĄTRZ konkretnej playlisty.
         soundboard: {
             music: null,      // { key, startedAt: epoch ms, volume: 0-1, playlistId?: string } | null
             sfxFired: null,   // { key, at: epoch ms } | null
-            playlists: {}     // { [playlistId]: { name: string, trackKeys: string[] } }
+            playlists: {},    // { [playlistId]: { name: string, trackKeys: string[] } }
+            trackOrder: []    // string[] - klucze manifestu + id playlist, w kolejności wyświetlania
         }
     };
 }

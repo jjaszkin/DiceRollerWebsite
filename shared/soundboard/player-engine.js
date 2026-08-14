@@ -33,6 +33,21 @@ function readMasterMuted() {
     return localStorage.getItem(MASTER_MUTED_KEY) === "1";
 }
 
+// Referencja do jedynego (na całą stronę) elementu <audio> muzyki - montowanego raz, patrz
+// main.js#ensureSoundboardMounted. Wystawiona przez getNowPlaying(), żeby panel MG (control-panel.js
+// nie zna Firebase ani żadnego <audio> - to CZYSTE funkcje budujące HTML) mógł pokazać pasek
+// postępu i policzyć pozycję kliknięcia przy przewijaniu (patrz panels/mg.js#sb-seek).
+let activeMusicAudioRef = null;
+
+/** Zwraca { currentTime, duration } aktualnie odtwarzanego utworu muzyki, albo `null`, jeśli nic
+ *  nie gra albo metadane (długość) jeszcze nie są znane. `duration` bywa `NaN`/`Infinity` zanim
+ *  przeglądarka pozna długość pliku - wywołujący powinien to sprawdzić przed pokazaniem paska. */
+export function getNowPlaying() {
+    const el = activeMusicAudioRef;
+    if (!el || el.paused || !Number.isFinite(el.duration) || el.duration <= 0) return null;
+    return { currentTime: el.currentTime, duration: el.duration };
+}
+
 /**
  * Montuje silnik odtwarzania + mały pływający widget (głośność/wycisz) w `container`.
  * @param {HTMLElement} container
@@ -48,6 +63,7 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
 
     const musicAudio = new Audio();
     musicAudio.preload = "auto";
+    activeMusicAudioRef = musicAudio;
 
     let masterVolume = readMasterVolume();
     let masterMuted = readMasterMuted();
@@ -55,6 +71,8 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
     let appliedMusicStartedAt = null;
     let appliedPlaylistId = null;
     let lastSfxAt = 0;
+    let locked = false; // autoplay zablokowany przez przeglądarkę - patrz showUnlockPrompt niżej
+    let toggleBtnRef = null;
 
     musicAudio.addEventListener("ended", () => {
         if (onMusicEnded && appliedPlaylistId && appliedMusicKey) {
@@ -132,19 +150,31 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
         fireSfx(soundboard?.sfxFired || null);
     }
 
+    /** Przeglądarka zablokowała autoplay - patrz attemptPlay(). ŚWIADOMIE nie ma tu osobnego,
+     *  dodatkowego pływającego przycisku "odblokuj" (poprzednia wersja miała taki, dokładnie w tym
+     *  samym miejscu na ekranie co panel głośności - z wyższym z-index, więc gdy zostawał
+     *  niezauważony, CICHO blokował kliknięcia w suwak głośności pod spodem). Zamiast tego sam
+     *  przycisk FAB sygnalizuje blokadę (🔇 + pulsowanie) - kliknięcie w NIEGO (który i tak trzeba
+     *  kliknąć, żeby otworzyć panel) jest samo w sobie gestem użytkownika, więc odblokowuje audio. */
     function showUnlockPrompt() {
-        if (container.querySelector(".sb-unlock-prompt")) return;
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "sb-unlock-prompt";
-        btn.textContent = "🔈 Kliknij, aby włączyć dźwięk";
-        btn.addEventListener("click", () => {
-            btn.remove();
-            // Odtwarzanie muzyki uruchomione teraz, wewnątrz gestu użytkownika, odblokowuje audio
-            // dla całej karty - kolejne programistyczne play() (efekty, zmiana utworu) już przejdą.
-            if (appliedMusicKey) attemptPlay(musicAudio);
-        }, { once: true });
-        container.appendChild(btn);
+        if (locked) return;
+        locked = true;
+        if (toggleBtnRef) {
+            toggleBtnRef.textContent = "🔇";
+            toggleBtnRef.classList.add("sb-player-toggle-locked");
+            toggleBtnRef.title = "Dźwięk zablokowany przez przeglądarkę - kliknij, żeby włączyć";
+        }
+    }
+
+    function unlock() {
+        if (!locked) return;
+        locked = false;
+        if (toggleBtnRef) {
+            toggleBtnRef.textContent = "🔊";
+            toggleBtnRef.classList.remove("sb-player-toggle-locked");
+            toggleBtnRef.title = "Dźwięk";
+        }
+        if (appliedMusicKey) attemptPlay(musicAudio);
     }
 
     function buildWidget() {
@@ -164,8 +194,12 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
         `;
 
         const toggleBtn = el.querySelector(".sb-player-toggle");
+        toggleBtnRef = toggleBtn;
         const panel = el.querySelector(".sb-player-panel");
-        toggleBtn.addEventListener("click", () => panel.classList.toggle("sb-player-panel-open"));
+        toggleBtn.addEventListener("click", () => {
+            if (locked) unlock();
+            panel.classList.toggle("sb-player-panel-open");
+        });
 
         el.querySelector(".sb-player-mute").addEventListener("change", (e) => {
             masterMuted = e.target.checked;

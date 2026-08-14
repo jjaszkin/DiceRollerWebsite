@@ -28,9 +28,10 @@ import {
 } from "../utils.js";
 import { buildJournalHtml, handleJournalAction } from "./journal.js";
 import {
-    buildSoundboardControlHtml, buildSoundboardPlaylistEditorHtml, handleSoundboardAction,
-    reorderPlaylistEditorTrack, setPlaylistEditorName
+    buildSoundboardControlHtml, buildSoundboardPlaylistEditorHtml, buildPlaylistPreviewHtml,
+    handleSoundboardAction, reorderPlaylistEditorTrack, reorderMainOrder, setPlaylistEditorName
 } from "../../../shared/soundboard/control-panel.js";
+import { getNowPlaying } from "../../../shared/soundboard/player-engine.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -432,6 +433,7 @@ function buildHtml(ctx) {
     const activeCharacter = activeKey ? state.characters[activeKey] : null;
 
     const activeTopTab = ui.activeTopTab || "kampania";
+    const nowPlaying = getNowPlaying();
 
     return `
         <div class="mg-unified-wrap">
@@ -440,7 +442,7 @@ function buildHtml(ctx) {
 
             <div class="mg-grid-12">
                 <div class="mg-characters-col">
-                    ${activeTopTab === "muzyka" ? buildSoundboardControlHtml(ctx) : `
+                    ${activeTopTab === "muzyka" ? buildSoundboardControlHtml(ctx, nowPlaying) : `
                         ${renderModifierModule(ctx)}
                         ${renderLegendaryCatalog(ctx)}
                         ${renderCharacterTabs(characters, activeKey)}
@@ -456,6 +458,7 @@ function buildHtml(ctx) {
         </div>
         ${renderLegendaryModal(ctx)}
         ${buildSoundboardPlaylistEditorHtml(ctx)}
+        ${buildPlaylistPreviewHtml(ctx, nowPlaying)}
     `;
 }
 
@@ -793,6 +796,23 @@ function wireEvents(root) {
             return;
         }
 
+        // Przewijanie (klik na pasku postępu) - poza handleSoundboardAction, bo control-panel.js
+        // (czyste HTML) nie zna `duration` żadnego <audio> - to wie tylko player-engine.js
+        // (patrz getNowPlaying()). Przewijanie = po prostu przesunięcie startedAt wstecz/w przód,
+        // bo cała synchronizacja odtwarzania już i tak liczy pozycję z (teraz - startedAt).
+        if (action === "sb-seek") {
+            const nowPlaying = getNowPlaying();
+            if (!nowPlaying) return;
+            const rect = btn.getBoundingClientRect();
+            const fraction = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+            const seekSeconds = fraction * nowPlaying.duration;
+            updateState((state) => {
+                if (state.soundboard?.music) state.soundboard.music.startedAt = Date.now() - seekSeconds * 1000;
+            });
+            rerender(root);
+            return;
+        }
+
         // Akcje modułu Dźwięki (play/stop muzyki, wyzwolenie efektu) - patrz shared/soundboard/.
         if (handleSoundboardAction(action, btn, { ...root._ctx, updateState })) {
             rerender(root);
@@ -806,30 +826,51 @@ function wireEvents(root) {
         }
     });
 
-    // Przeciąganie kolejności utworów w mini-kreatorze playlisty (shared/soundboard/) - osobne
-    // zdarzenia (dragstart/dragover/drop), bo to nie jest zwykły klik na [data-action]. Przycisk
-    // ↑/↓ w tej samej liście (patrz sb-editor-move-track wyżej) jest odpowiednikiem dla dotyku,
-    // gdzie natywne HTML5 drag&drop nie działa.
+    // Przeciąganie kolejności - osobne zdarzenia (dragstart/dragover/drop), bo to nie jest zwykły
+    // klik na [data-action]. Dwa konteksty dzielą tę samą obsługę: kolejność utworów WEWNĄTRZ
+    // mini-kreatora playlisty (.sb-playlist-order-item, lokalny szkic, patrz
+    // reorderPlaylistEditorTrack) i kolejność KART w głównej liście Dźwięki
+    // ([data-reorder-scope="main"], zapisywana od razu do stanu, patrz reorderMainOrder). Przyciski
+    // ↑/↓ obok obu list (patrz sb-editor-move-track / sb-move-entry wyżej) są odpowiednikiem dla
+    // dotyku, gdzie natywne HTML5 drag&drop nie działa.
     let sbDragKey = null;
+    let sbDragScope = null;
+
+    function closestDraggable(target) {
+        const playlistItem = target.closest(".sb-playlist-order-item");
+        if (playlistItem) return { item: playlistItem, scope: "playlist" };
+        const mainItem = target.closest("[data-reorder-scope='main']");
+        if (mainItem) return { item: mainItem, scope: "main" };
+        return null;
+    }
 
     root.addEventListener("dragstart", (e) => {
-        const item = e.target.closest(".sb-playlist-order-item");
-        if (!item) return;
-        sbDragKey = item.dataset.key;
+        const found = closestDraggable(e.target);
+        if (!found) return;
+        sbDragKey = found.item.dataset.key;
+        sbDragScope = found.scope;
         e.dataTransfer.effectAllowed = "move";
     });
 
     root.addEventListener("dragover", (e) => {
-        if (!sbDragKey || !e.target.closest(".sb-playlist-order-item")) return;
+        if (!sbDragKey) return;
+        const found = closestDraggable(e.target);
+        if (!found || found.scope !== sbDragScope) return;
         e.preventDefault();
     });
 
     root.addEventListener("drop", (e) => {
-        const item = e.target.closest(".sb-playlist-order-item");
-        if (!item || !sbDragKey) return;
+        if (!sbDragKey) return;
+        const found = closestDraggable(e.target);
+        if (!found || found.scope !== sbDragScope) return;
         e.preventDefault();
-        reorderPlaylistEditorTrack(sbDragKey, item.dataset.key);
+        if (sbDragScope === "playlist") {
+            reorderPlaylistEditorTrack(sbDragKey, found.item.dataset.key);
+        } else {
+            reorderMainOrder({ ...root._ctx, updateState }, sbDragKey, found.item.dataset.key);
+        }
         sbDragKey = null;
+        sbDragScope = null;
         rerender(root);
     });
 
@@ -847,5 +888,11 @@ export function render(root, ctx) {
     if (!root.dataset.wired) {
         wireEvents(root);
         root.dataset.wired = "1";
+        // Odświeża pasek postępu utworu co sekundę - TYLKO gdy zakładka Muzyka jest aktywna i coś
+        // faktycznie gra (patrz player-engine.js#getNowPlaying), żeby nie przerenderowywać całego
+        // panelu MG bez potrzeby.
+        setInterval(() => {
+            if (ui.activeTopTab === "muzyka" && getNowPlaying()) rerender(root);
+        }, 1000);
     }
 }
