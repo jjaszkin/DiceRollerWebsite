@@ -11,6 +11,7 @@ import { getState, touch } from "../store.js";
 import { rollDie, uid, formatTimestamp, findInRangeTable, escapeHtml, clamp, preserveScroll } from "../utils.js";
 import { logRoll } from "../rollLog.js";
 import { logEvent } from "../eventLog.js";
+import { confirmDialog } from "../modal.js";
 import { applyTravelEventEffects, renderTravelEventEffects } from "../travelEvents.js";
 import {
     rollTiles, needsTileRoll, resolveLocationLevel, rollD100Table,
@@ -459,12 +460,12 @@ function rerollHex(coord) {
     rerender();
 }
 
-function removeHex(coord) {
+async function removeHex(coord) {
     const state = getState();
     const seg = currentSeg(state);
     const hex = seg.hexes[coord];
     if (!hex) return;
-    if (!window.confirm(`Usunąć heks ${coord} z mapy? Tej operacji nie można cofnąć.`)) return;
+    if (!await confirmDialog(`Usunąć heks ${coord} z mapy? Tej operacji nie można cofnąć.`)) return;
     if (!hex.regionRoot) cascadeClearRegion(seg, coord);
     delete seg.hexes[coord];
     if (selectedCoord === coord) selectedCoord = null;
@@ -480,11 +481,11 @@ function cancelPendingRegion() {
 }
 
 /** Przełącza aktualnie oglądany Sektor (dir = +1 na wschód, -1 na zachód). Jeśli docelowy Sektor
- *  jeszcze nie istnieje, prosi o potwierdzenie (window.confirm — ten sam wzorzec co przy usuwaniu
+ *  jeszcze nie istnieje, prosi o potwierdzenie (confirmDialog — ten sam wzorzec co przy usuwaniu
  *  heksu, patrz removeHex) i dopiero po zgodzie tworzy dla niego pusty wpis w state.map.segments.
  *  Nawigacja między Sektorami jest czysto widokowa — NIE rusza state.map.position (patrz moveHere)
  *  ani currentSegment innych heksów/regionów. */
-function navigateSegment(dir) {
+async function navigateSegment(dir) {
     const state = getState();
     const targetId = state.map.currentSegment + dir;
     const key = String(targetId);
@@ -492,7 +493,7 @@ function navigateSegment(dir) {
     if (!exists) {
         const label = segmentLabel(targetId);
         const dirText = dir > 0 ? "wschód" : "zachód";
-        if (!window.confirm(`Utworzyć nowy ${label} na ${dirText} od obecnego Sektora? To doda nową, pustą siatkę 12x10 heksów.`)) return;
+        if (!await confirmDialog(`Utworzyć nowy ${label} na ${dirText} od obecnego Sektora? To doda nową, pustą siatkę 12x10 heksów.`)) return;
         state.map.segments[key] = { hexes: {}, pendingRegion: null };
         touch();
     }
@@ -966,7 +967,7 @@ export function render(root, { state, data }) {
 }
 
 function wireEvents(root) {
-    root.addEventListener("click", (e) => {
+    root.addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
         const action = btn.dataset.action;
@@ -988,11 +989,11 @@ function wireEvents(root) {
         else if (action === "cancel-hex-edit") cancelHexEdit();
         else if (action === "move-here") moveHere(coord);
         else if (action === "reroll-hex") rerollHex(coord);
-        else if (action === "remove-hex") removeHex(coord);
+        else if (action === "remove-hex") await removeHex(coord);
         else if (action === "cancel-pending-region") cancelPendingRegion();
         else if (action === "roll-map-travel-event") rollMapTravelEvent();
         else if (action === "dismiss-travel-check") dismissTravelCheck();
-        else if (action === "nav-segment") navigateSegment(Number(btn.dataset.dir));
+        else if (action === "nav-segment") await navigateSegment(Number(btn.dataset.dir));
         else if (action === "goto-position-segment") gotoPositionSegment();
     });
 

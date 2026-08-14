@@ -6,6 +6,7 @@
 import { getState, touch } from "../store.js";
 import { uid, formatTimestamp } from "../utils.js";
 import { EVENT_TYPE_LABELS } from "../eventLog.js";
+import { confirmDialog } from "../modal.js";
 
 function mergeAndGroupByDay(journalEntries, rollEntries, eventEntries) {
     const tagged = [
@@ -106,7 +107,7 @@ export function render(root, { state }) {
 }
 
 function wireEvents(root) {
-    root.addEventListener("click", (e) => {
+    root.addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
         const action = btn.dataset.action;
@@ -121,26 +122,26 @@ function wireEvents(root) {
         } else if (action === "delete-entry") {
             const kind = btn.dataset.kind;
             if (kind === "roll") {
-                if (!window.confirm("Usunąć ten wpis z historii rzutów?")) return;
+                if (!await confirmDialog("Usunąć ten wpis z historii rzutów?")) return;
                 state.rollHistory = state.rollHistory.filter(r => r.id !== btn.dataset.id);
             } else if (kind === "event") {
-                if (!window.confirm("Usunąć ten wpis z historii zdarzeń?")) return;
+                if (!await confirmDialog("Usunąć ten wpis z historii zdarzeń?")) return;
                 state.events = (state.events ?? []).filter(ev => ev.id !== btn.dataset.id);
             } else {
-                if (!window.confirm("Usunąć ten wpis dziennika?")) return;
+                if (!await confirmDialog("Usunąć ten wpis dziennika?")) return;
                 state.journal = state.journal.filter(j => j.id !== btn.dataset.id);
             }
             touch();
         } else if (action === "clear-history") {
-            if (!window.confirm("Na pewno wyczyścić całą historię rzutów? Tej operacji nie można cofnąć.")) return;
+            if (!await confirmDialog("Na pewno wyczyścić całą historię rzutów? Tej operacji nie można cofnąć.")) return;
             state.rollHistory = [];
             touch();
         } else if (action === "clear-journal") {
-            if (!window.confirm("Na pewno wyczyścić całą historię wpisów dziennika? Tej operacji nie można cofnąć.")) return;
+            if (!await confirmDialog("Na pewno wyczyścić całą historię wpisów dziennika? Tej operacji nie można cofnąć.")) return;
             state.journal = [];
             touch();
         } else if (action === "clear-events") {
-            if (!window.confirm("Na pewno wyczyścić całą historię zdarzeń? Tej operacji nie można cofnąć.")) return;
+            if (!await confirmDialog("Na pewno wyczyścić całą historię zdarzeń? Tej operacji nie można cofnąć.")) return;
             state.events = [];
             touch();
         }

@@ -7,6 +7,7 @@ import { showEndgameDecision } from "../endgame.js";
 import { equippedGearEntries, installedModEntries, gearCapacity } from "../gearData.js";
 import { unlockedGuildRewards, roleRewardEntries } from "../rewardsData.js";
 import { logEvent } from "../eventLog.js";
+import { confirmDialog, promptDialog } from "../modal.js";
 
 const STAT_ORDER = ["H", "K", "R", "C", "F"];
 
@@ -339,7 +340,7 @@ export function render(root, { state, data }) {
 }
 
 function wireEvents(root, { data, companions }) {
-    root.addEventListener("click", (e) => {
+    root.addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
         const state = getState();
@@ -371,7 +372,7 @@ function wireEvents(root, { data, companions }) {
         } else if (action === "edit-max") {
             const path = btn.dataset.path;
             const cur = getPath(state, path);
-            const input = prompt("Nowa wartość maksymalna:", cur);
+            const input = await promptDialog("Nowa wartość maksymalna:", cur);
             if (input === null) return;
             const val = parseInt(input, 10);
             if (!Number.isFinite(val) || val < 0) return;
@@ -379,7 +380,7 @@ function wireEvents(root, { data, companions }) {
             touch();
 
         } else if (action === "reopen-gate") {
-            if (!confirm("Otworzyć ekran startowy? Możesz tam wpisać inne imię, żeby przełączyć się na inną (albo nową) grę solo, albo zostawić to samo imię i zmienić rolę — co nadpisze statystyki, cel i cechy obecnej postaci.")) {
+            if (!await confirmDialog("Otworzyć ekran startowy? Możesz tam wpisać inne imię, żeby przełączyć się na inną (albo nową) grę solo, albo zostawić to samo imię i zmienić rolę — co nadpisze statystyki, cel i cechy obecnej postaci.")) {
                 return;
             }
             showGate(data, {

@@ -7,6 +7,7 @@ import { escapeHtml, clamp } from "../utils.js";
 import { flattenMods, humanizeCategory, TIERED_UPGRADE_CATEGORIES, applyTierStatBonus, applyKnownStatBonus } from "../gearData.js";
 import { unlockedGuildItemRewards } from "../rewardsData.js";
 import { logEvent } from "../eventLog.js";
+import { confirmDialog } from "../modal.js";
 
 function renderModCard(item, itemState, canInstallMore) {
     const owned = !!itemState.owned;
@@ -149,7 +150,7 @@ export function render(root, { state, data }) {
 }
 
 function wireEvents(root) {
-    root.addEventListener("change", (e) => {
+    root.addEventListener("change", async (e) => {
         const el = e.target;
         const action = el.dataset.action;
         if (!action) return;
@@ -169,7 +170,7 @@ function wireEvents(root) {
                 // tego, czy mod jest akurat zainstalowany w jednym z ograniczonych slotów.
                 applyKnownStatBonus(state, slug, +1);
             } else {
-                if (mods[slug]?.installed && !window.confirm("Ten mod jest zainstalowany — na pewno oznaczyć jako niekupiony? (zostanie odinstalowany)")) {
+                if (mods[slug]?.installed && !await confirmDialog("Ten mod jest zainstalowany — na pewno oznaczyć jako niekupiony? (zostanie odinstalowany)")) {
                     el.checked = true;
                     return;
                 }

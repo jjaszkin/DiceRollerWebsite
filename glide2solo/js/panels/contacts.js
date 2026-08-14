@@ -10,6 +10,7 @@ import { getState, touch } from "../store.js";
 import { generateNpc } from "../npcGenerator.js";
 import { uid, escapeHtml, preserveScroll } from "../utils.js";
 import { logEvent } from "../eventLog.js";
+import { confirmDialog } from "../modal.js";
 
 let draft = null; // aktualnie wylosowany, jeszcze niezapisany NPC (albo null)
 let includeFaction = true; // stan checkboxa "losuj Frakcję" — lokalny UI, nietrwały
@@ -136,7 +137,7 @@ function wireEvents(root) {
         }
     });
 
-    root.addEventListener("click", (e) => {
+    root.addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
         const action = btn.dataset.action;
@@ -166,7 +167,7 @@ function wireEvents(root) {
             draft = null;
             touch();
         } else if (action === "contact-delete") {
-            if (!window.confirm("Usunąć tego NPC-a ze Znajomości?")) return;
+            if (!await confirmDialog("Usunąć tego NPC-a ze Znajomości?")) return;
             const state = getState();
             state.contacts = (state.contacts ?? []).filter(c => c.id !== btn.dataset.id);
             touch();

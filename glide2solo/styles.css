@@ -448,6 +448,46 @@ label { font-size: 0.8rem; color: var(--fg-2); }
     justify-content: flex-end;
 }
 
+/* ── Modal (confirm/alert/prompt własnej roboty, patrz js/modal.js) ─────── */
+/* Zastępuje window.confirm()/alert()/prompt() — te natywne okna przeglądarki zawsze
+   dopisują adres strony do treści, czego nie da się ukryć; ten modal to zwykły <div>
+   nad resztą appki, więc żadna domena się nie pokazuje (istotne przy nagrywaniu sesji). */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    z-index: 500;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg-1);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+.modal-message {
+    margin: 0 0 16px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--fg-1);
+    white-space: pre-line;
+}
+
+.modal-input { width: 100%; margin-bottom: 16px; }
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
 /* ── Endgame (Rozdroże: Żyjąca Legenda / Nowa Twarz) ────────────────────── */
 /* Reużywa .gate/.gate-card (patrz wyżej) — #endgameOverlay to drugi, niezależny
    pełnoekranowy overlay obok #characterGate, sterowany tymi samymi klasami

@@ -26,6 +26,7 @@ import { logEvent } from "./eventLog.js";
 import { showGate } from "./gate.js";
 import { writePendingBridge } from "./endgameBridge.js";
 import { bondLevelFromPoints } from "./state.js";
+import { confirmDialog, alertDialog } from "./modal.js";
 
 const overlayEl = document.getElementById("endgameOverlay");
 const appEl = document.getElementById("app");
@@ -227,16 +228,15 @@ function computeLegacySummary(state) {
     };
 }
 
-function confirmPathA() {
+async function confirmPathA() {
     const state = getState();
     const ch = state.character;
     const traits = currentData.endgame?.legacy_traits ?? [];
     const trait = traits.find(t => t.id === selectedTraitId);
     if (!trait || !traitReady(trait)) return;
 
-    if (!window.confirm(`Na pewno? Historia postaci „${ch.name || "Poszukiwacz"}” dobiega końca jako Żyjąca Legenda. Ten zapis zostaje zachowany (możesz do niego wrócić, wpisując to samo imię), ale dashboard przełączy się teraz na tworzenie nowej postaci — następcy.`)) {
-        return;
-    }
+    const ok = await confirmDialog(`Na pewno? Historia postaci „${ch.name || "Poszukiwacz"}” dobiega końca jako Żyjąca Legenda. Ten zapis zostaje zachowany (możesz do niego wrócić, wpisując to samo imię), ale dashboard przełączy się teraz na tworzenie nowej postaci — następcy.`);
+    if (!ok) return;
 
     const bridge = {
         type: "new-face",
@@ -252,7 +252,7 @@ function confirmPathA() {
         writePendingBridge(bridge);
     } catch (err) {
         console.error("[GLIDE] Nie udało się zapisać mostu Żyjącej Legendy do localStorage:", err);
-        alert("Nie udało się zapisać decyzji lokalnie — spróbuj ponownie.");
+        await alertDialog("Nie udało się zapisać decyzji lokalnie — spróbuj ponownie.");
         return;
     }
 
@@ -282,7 +282,7 @@ function applyTradeInReward(state, effect) {
     }
 }
 
-function confirmPathB() {
+async function confirmPathB() {
     const state = getState();
     const ch = state.character;
     if (selectedRewardIds.length !== 2) return;
@@ -292,9 +292,8 @@ function confirmPathB() {
     if (chosen.length !== 2) return;
 
     const fameBefore = ch.resources.fame;
-    if (!window.confirm(`Potwierdź: Twoja Sława (${fameBefore}) zresetuje się do 0 w zamian za „${chosen[0].name_pl}” i „${chosen[1].name_pl}”?`)) {
-        return;
-    }
+    const ok = await confirmDialog(`Potwierdź: Twoja Sława (${fameBefore}) zresetuje się do 0 w zamian za „${chosen[0].name_pl}” i „${chosen[1].name_pl}”?`);
+    if (!ok) return;
 
     for (const r of chosen) applyTradeInReward(state, r.effect);
     ch.resources.fame = 0;
@@ -331,7 +330,7 @@ function wireOnce() {
     if (wired) return;
     wired = true;
 
-    overlayEl.addEventListener("click", (e) => {
+    overlayEl.addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-action]");
         if (!btn) return;
         const action = btn.dataset.action;
@@ -351,9 +350,9 @@ function wireOnce() {
             selectedRewardIds = [];
             renderOverlay();
         } else if (action === "endgame-confirm-a") {
-            confirmPathA();
+            await confirmPathA();
         } else if (action === "endgame-confirm-b") {
-            confirmPathB();
+            await confirmPathB();
         } else if (action === "endgame-toggle-reward") {
             const id = btn.value;
             const idx = selectedRewardIds.indexOf(id);

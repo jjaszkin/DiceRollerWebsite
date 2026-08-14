@@ -6,6 +6,7 @@ import { escapeHtml } from "../utils.js";
 import { flattenGear, humanizeCategory, gearCapacity, EXPLORERS_BACKPACK_SLUG, applyKnownStatBonus } from "../gearData.js";
 import { unlockedGuildItemRewards } from "../rewardsData.js";
 import { logEvent } from "../eventLog.js";
+import { confirmDialog } from "../modal.js";
 
 function groupByCategory(flat) {
     const groups = new Map();
@@ -140,7 +141,7 @@ export function render(root, { state, data }) {
 }
 
 function wireEvents(root) {
-    root.addEventListener("change", (e) => {
+    root.addEventListener("change", async (e) => {
         const el = e.target;
         const action = el.dataset.action;
         if (!action) return;
@@ -157,7 +158,7 @@ function wireEvents(root) {
                 const item = flattenGear(data.gear).find(g => g.slug === slug);
                 logEvent(state, "item-gained", `Zdobyto sprzęt: "${item?.name ?? slug}".`);
             } else {
-                if (gear[slug]?.equipped && !window.confirm("Ten przedmiot jest założony — na pewno oznaczyć jako niekupiony? (zostanie zdjęty)")) {
+                if (gear[slug]?.equipped && !await confirmDialog("Ten przedmiot jest założony — na pewno oznaczyć jako niekupiony? (zostanie zdjęty)")) {
                     el.checked = true;
                     return;
                 }
