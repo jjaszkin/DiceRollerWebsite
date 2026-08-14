@@ -36,9 +36,14 @@ function readMasterMuted() {
 /**
  * Montuje silnik odtwarzania + mały pływający widget (głośność/wycisz) w `container`.
  * @param {HTMLElement} container
- * @param {{ manifest: Array, subscribe: Function, getState: Function }} deps
+ * @param {{ manifest: Array, subscribe: Function, getState: Function, onMusicEnded?: Function }} deps
+ *   `onMusicEnded(playlistId, finishedKey)` - opcjonalne, wywoływane, gdy odtwarzany jako część
+ *   playlisty utwór naturalnie dogra do końca (utwory z playlisty świadomie NIE są zapętlane
+ *   pojedynczo, patrz applyMusicState niżej - inaczej nigdy nie doszłoby do zdarzenia "ended").
+ *   Ma sens tylko w JEDNEJ przeglądarce naraz (patrz komentarz w main.js#ensureSoundboardMounted),
+ *   więc większość wywołujących (gracze) po prostu tego nie przekazuje.
  */
-export function mountSoundboardPlayer(container, { manifest, subscribe, getState }) {
+export function mountSoundboardPlayer(container, { manifest, subscribe, getState, onMusicEnded }) {
     const byKey = new Map((manifest || []).map(e => [e.key, e]));
 
     const musicAudio = new Audio();
@@ -48,7 +53,14 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
     let masterMuted = readMasterMuted();
     let appliedMusicKey = null;
     let appliedMusicStartedAt = null;
+    let appliedPlaylistId = null;
     let lastSfxAt = 0;
+
+    musicAudio.addEventListener("ended", () => {
+        if (onMusicEnded && appliedPlaylistId && appliedMusicKey) {
+            onMusicEnded(appliedPlaylistId, appliedMusicKey);
+        }
+    });
 
     function effectiveVolume(trackVolume) {
         return masterMuted ? 0 : clamp01((trackVolume ?? 1) * masterVolume);
@@ -67,6 +79,7 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
                 musicAudio.pause();
                 appliedMusicKey = null;
                 appliedMusicStartedAt = null;
+                appliedPlaylistId = null;
             }
             return;
         }
@@ -80,13 +93,18 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
         }
         appliedMusicKey = musicState.key;
         appliedMusicStartedAt = musicState.startedAt;
+        appliedPlaylistId = musicState.playlistId || null;
         musicAudio.src = entry.file;
-        musicAudio.loop = !!entry.loop;
+        // Utwory odtwarzane jako część playlisty NIE są zapętlane pojedynczo (nawet jeśli katalog
+        // ma dla nich `loop: true`) - inaczej audio.loop=true sprawiłoby, że przeglądarka nigdy nie
+        // wyemitowałaby zdarzenia "ended", więc playlista nigdy by się nie przesunęła dalej.
+        const loop = appliedPlaylistId ? false : !!entry.loop;
+        musicAudio.loop = loop;
 
         const seekAndPlay = () => {
             const elapsed = Math.max(0, (Date.now() - musicState.startedAt) / 1000);
             try {
-                musicAudio.currentTime = entry.loop && musicAudio.duration
+                musicAudio.currentTime = loop && musicAudio.duration
                     ? elapsed % musicAudio.duration
                     : elapsed;
             } catch { /* metadata jeszcze nie w pełni gotowe - odtwórz od bieżącej pozycji */ }

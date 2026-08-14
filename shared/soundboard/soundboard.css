@@ -89,6 +89,79 @@
 }
 .sb-range:hover::-moz-range-thumb { background: var(--gold-bright, #F8D270); }
 
+.sb-card-sub {
+    color: var(--fg-2, #a89878);
+    font-weight: normal;
+    font-size: 0.85em;
+}
+
+.sb-add-playlist {
+    background: transparent;
+    border: 1px dashed var(--line-strong, #6b5330);
+    border-radius: var(--radius, 3px);
+    color: var(--fg-1, #d8c9a8);
+    font-family: var(--sans, sans-serif);
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 74px;
+    padding: 10px;
+}
+.sb-add-playlist:hover { border-color: var(--gold, #E8B83D); color: var(--gold-bright, #F8D270); }
+
+/* -- Mini-kreator playlisty (modal, patrz control-panel.js#buildSoundboardPlaylistEditorHtml) --- */
+
+.sb-playlist-track-checks {
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 10px;
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+}
+
+.sb-playlist-order-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.sb-playlist-order-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-2, #1e1712);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    padding: 6px 10px;
+    cursor: grab;
+    font-size: 0.85rem;
+    color: var(--fg-0, #f2e9d8);
+}
+.sb-playlist-order-item:active { cursor: grabbing; }
+
+.sb-playlist-order-handle { color: var(--fg-dim, #6b5f4a); }
+
+.sb-playlist-order-name {
+    flex: 1;
+    word-break: break-word;
+}
+
+.sb-playlist-order-move {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
 /* -- Widget gracza (pływający, poza panelami, patrz player-engine.js) -------------------------- */
 
 .sb-player-widget {

@@ -96,10 +96,13 @@ export function createDefaultState(gameData) {
         // Netlify bezpośrednio do przeglądarki gracza, patrz data/soundboard.json). `music` to
         // JEDEN aktywny kanał w tle (nowe odtworzenie zastępuje poprzednie, jak crossfade sceny),
         // `sfxFired` to znacznik ostatniego jednorazowego efektu (gracze porównują `at`, żeby nie
-        // odtworzyć tego samego efektu dwa razy).
+        // odtworzyć tego samego efektu dwa razy), `playlists` to listy odtwarzania budowane na
+        // żywo przez MG w zakładce "Muzyka" (mini-kreator control-panel.js), BEZ modyfikowania
+        // statycznego katalogu data/soundboard.json.
         soundboard: {
-            music: null,    // { key, startedAt: epoch ms, volume: 0-1 } | null
-            sfxFired: null  // { key, at: epoch ms } | null
+            music: null,      // { key, startedAt: epoch ms, volume: 0-1, playlistId?: string } | null
+            sfxFired: null,   // { key, at: epoch ms } | null
+            playlists: {}     // { [playlistId]: { name: string, trackKeys: string[] } }
         }
     };
 }
