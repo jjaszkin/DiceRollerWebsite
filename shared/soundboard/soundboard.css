@@ -1,0 +1,330 @@
+/* Soundboard - wspólny moduł (DiceRollerWebsite/shared/soundboard/). Style dla siatki kart MG
+   (control-panel.js) i pływającego widgetu gracza (player-engine.js).
+
+   Celowo BEZ własnej przestrzeni nazw zmiennych (--sb-*) - projekty w tym repo (darkgraal3dashboard
+   i kolejne dashboardy wzorowane na nim) już współdzielą jeden zestaw nazw zmiennych motywu
+   (--bg-0/1/2/3, --gold/--gold-bright/--gold-dim, --fg-0/1/2, --line, --line-strong, --radius,
+   --sans - patrz any styles.css), odziedziczony od glide2solo. Ten plik używa ich wprost, z
+   fallbackami na wypadek podpięcia w projekcie, który jeszcze tych zmiennych nie zna. */
+
+.sb-module h4 { margin-top: 14px; }
+
+/* Karty na pełną szerokość, jedna pod drugą (nie kwadratowe kafelki w siatce) - patrz
+   control-panel.js#renderMusicCard/renderSfxCard/renderPlaylistCard. */
+.sb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sb-card {
+    background: var(--bg-2, #1e1712);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sb-card-row {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.sb-card-playing {
+    border-color: var(--gold, #E8B83D);
+    box-shadow: 0 0 0 1px var(--gold, #E8B83D) inset;
+}
+
+.sb-card-handle {
+    color: var(--fg-dim, #6b5f4a);
+    cursor: grab;
+    flex-shrink: 0;
+}
+.sb-card-row:active .sb-card-handle { cursor: grabbing; }
+
+.sb-card-order-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.sb-card-body {
+    flex: 1;
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sb-card-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.sb-card-name {
+    font-size: 0.85rem;
+    color: var(--fg-0, #f2e9d8);
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.sb-card-volume { width: 100%; }
+
+/* Suwaki głośności (karta MG + widget gracza) - odmalowane w kolorze motywu zamiast domyślnego
+   niebieskiego paska przeglądarki. Krok 1 (nie 10) na całej długości - patrz `step="1"` w markupie
+   (control-panel.js/player-engine.js) - żeby dało się ustawić głośność z dokładnością do 1%. */
+.sb-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--line, #3d2f1f);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+.sb-range::-webkit-slider-runnable-track {
+    height: 4px;
+    background: var(--line, #3d2f1f);
+    border-radius: 2px;
+}
+.sb-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: var(--gold, #E8B83D);
+    border: 2px solid var(--bg-0, #0a0806);
+    cursor: pointer;
+}
+.sb-range:hover::-webkit-slider-thumb { background: var(--gold-bright, #F8D270); }
+.sb-range::-moz-range-track {
+    height: 4px;
+    background: var(--line, #3d2f1f);
+    border-radius: 2px;
+}
+.sb-range::-moz-range-progress {
+    height: 4px;
+    background: var(--gold, #E8B83D);
+    border-radius: 2px;
+}
+.sb-range::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold, #E8B83D);
+    border: 2px solid var(--bg-0, #0a0806);
+    cursor: pointer;
+}
+.sb-range:hover::-moz-range-thumb { background: var(--gold-bright, #F8D270); }
+
+.sb-card-sub {
+    color: var(--fg-2, #a89878);
+    font-weight: normal;
+    font-size: 0.85em;
+}
+
+/* Pasek postępu + klik-aby-przewinąć (patrz control-panel.js#renderProgressBar,
+   panels/mg.js#sb-seek). */
+.sb-progress {
+    width: 100%;
+    height: 6px;
+    background: var(--line, #3d2f1f);
+    border-radius: 3px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.sb-progress-fill {
+    height: 100%;
+    background: var(--gold, #E8B83D);
+    border-radius: 3px;
+}
+
+.sb-progress-time {
+    font-size: 0.75rem;
+    color: var(--fg-2, #a89878);
+    text-align: right;
+}
+
+.sb-add-playlist {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed var(--line-strong, #6b5330);
+    border-radius: var(--radius, 3px);
+    color: var(--fg-1, #d8c9a8);
+    font-family: var(--sans, sans-serif);
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-top: 6px;
+}
+.sb-add-playlist:hover { border-color: var(--gold, #E8B83D); color: var(--gold-bright, #F8D270); }
+
+/* -- Mini-kreator playlisty (modal, patrz control-panel.js#buildSoundboardPlaylistEditorHtml) --- */
+
+.sb-playlist-track-checks {
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 10px;
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+}
+
+.sb-playlist-order-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.sb-playlist-order-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-2, #1e1712);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    padding: 6px 10px;
+    cursor: grab;
+    font-size: 0.85rem;
+    color: var(--fg-0, #f2e9d8);
+}
+.sb-playlist-order-item:active { cursor: grabbing; }
+
+.sb-playlist-order-handle { color: var(--fg-dim, #6b5f4a); }
+
+.sb-playlist-order-name {
+    flex: 1;
+    word-break: break-word;
+}
+
+.sb-playlist-order-move {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+/* -- Podgląd playlisty (modal, patrz control-panel.js#buildPlaylistPreviewHtml) ----------------- */
+
+.sb-preview-transport {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.sb-preview-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sb-preview-row { display: block; }
+
+.sb-preview-track-btn {
+    width: 100%;
+    text-align: left;
+    background: var(--bg-2, #1e1712);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    color: var(--fg-0, #f2e9d8);
+    font-family: var(--sans, sans-serif);
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+.sb-preview-track-btn:hover { border-color: var(--gold-dim, #BD952F); }
+
+.sb-preview-row-current .sb-preview-track-btn {
+    border-color: var(--gold, #E8B83D);
+    color: var(--gold-bright, #F8D270);
+    font-weight: 700;
+}
+
+/* -- Widget gracza (pływający, poza panelami, patrz player-engine.js) -------------------------- */
+
+.sb-player-widget {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 200;
+    font-family: var(--sans, sans-serif);
+}
+
+.sb-player-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-1, #14100b);
+    border: 1px solid var(--line-strong, #6b5330);
+    color: var(--fg-0, #f2e9d8);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sb-player-toggle:hover { border-color: var(--gold-dim, #BD952F); }
+
+/* Przeglądarka zablokowała autoplay (patrz player-engine.js#showUnlockPrompt) - sam przycisk FAB
+   pulsuje zamiast osobnego, dodatkowego pływającego przycisku (który w poprzedniej wersji
+   nachodził dokładnie na panel głośności i blokował mu kliknięcia). */
+.sb-player-toggle-locked {
+    border-color: var(--gold, #E8B83D);
+    animation: sb-pulse 1.6s ease-in-out infinite;
+}
+@keyframes sb-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232, 184, 61, 0.55); }
+    50% { box-shadow: 0 0 0 6px rgba(232, 184, 61, 0); }
+}
+
+.sb-player-panel {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 48px;
+    background: var(--bg-1, #14100b);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    padding: 10px 12px;
+    min-width: 320px; /* 2x poprzedniej szerokości - więcej miejsca na precyzyjne ustawienie głośności */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.sb-player-panel-open { display: block; }
+
+.sb-player-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg-1, #d8c9a8);
+    font-size: 0.82rem;
+    margin: 6px 0;
+}
+
+.sb-player-row input[type="range"] { flex: 1; }

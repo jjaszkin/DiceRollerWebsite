@@ -5,8 +5,10 @@
 // tylko "kto patrzy" (MG czy który Gracz), nie "który zapis wczytać" - patrz gate.js.
 
 import { loadGameData } from "./data.js";
-import { initStore, connectCampaign, getState, getData, subscribe, onSaveStatusChange } from "./store.js";
+import { initStore, connectCampaign, getState, getData, subscribe, updateState, onSaveStatusChange } from "./store.js";
 import { showGate } from "./gate.js";
+import { mountSoundboardPlayer } from "../../shared/soundboard/player-engine.js";
+import { advancePlaylistTrack } from "../../shared/soundboard/control-panel.js";
 
 import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
@@ -26,9 +28,33 @@ const changeCharacterBtn = document.getElementById("changeCharacterBtn");
 
 let session = null; // { role: "mg"|"player", characterKey: string|null } - patrz gate.js
 let cachedGameData = null;
+let soundboardMounted = false;
 
 function setBootStatus(text) {
     if (bootStatus) bootStatus.textContent = text;
+}
+
+/** Montuje silnik Soundboardu (shared/soundboard/) RAZ, dla KAŻDEJ roli (patrz #soundboardRoot w
+ *  index.html - stabilny węzeł POZA panelami, żeby <audio> przeżywało ich rerendery) - MG też ma
+ *  dostać dźwięk i FAB głośności, żeby móc odsłuchać miksu, który sam puszcza.
+ *  Tylko przeglądarka MG dostaje `onMusicEnded` - to ona jest "dyrygentem" playlist: gdy kończy się
+ *  utwór odtwarzany jako część playlisty (nie zapętlony pojedynczo), przesuwa wspólny stan na
+ *  kolejny utwór. Gdyby każda przeglądarka (gracze + MG) próbowała to robić niezależnie, urządzenia
+ *  mogłyby się rozjechać na różne "następne" utwory - patrz control-panel.js#advancePlaylistTrack. */
+function ensureSoundboardMounted() {
+    if (soundboardMounted || !session) return;
+    const root = document.getElementById("soundboardRoot");
+    if (!root) return;
+    const isMg = session.role === "mg";
+    mountSoundboardPlayer(root, {
+        manifest: getData()?.soundboard || [],
+        subscribe,
+        getState,
+        onMusicEnded: isMg
+            ? (playlistId, finishedKey) => advancePlaylistTrack({ state: getState(), updateState }, playlistId, finishedKey)
+            : undefined
+    });
+    soundboardMounted = true;
 }
 
 function renderAll() {
@@ -108,6 +134,7 @@ function setupChangeCharacterButton() {
                 session = selection;
                 applyRoleVisibility();
                 renderAll();
+                ensureSoundboardMounted();
             }
         });
     });
@@ -135,7 +162,8 @@ async function bootstrap() {
                 session = selection;
                 applyRoleVisibility();
                 renderAll();
-                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/4 plików.`);
+                ensureSoundboardMounted();
+                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/5 plików.`);
             }
         });
     } catch (err) {

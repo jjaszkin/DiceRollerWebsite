@@ -89,7 +89,25 @@ export function createDefaultState(gameData) {
         // Nadpisania opisów Przedmiotów Legendarnych wprowadzane na żywo przez MG z panelu MG
         // (panels/mg.js - globalny katalog "Przedmioty Legendarne"), BEZ modyfikowania statycznego
         // katalogu data/items.json. { [itemKey]: { tooltip: string } } - patrz resolveItemTooltip().
-        itemOverrides: {}
+        itemOverrides: {},
+
+        // Stan odtwarzania Soundboardu (shared/soundboard/, patrz control-panel.js i
+        // player-engine.js) - MICROSKOPIJNE dane sterujące, NIE same pliki audio (te serwuje
+        // Netlify bezpośrednio do przeglądarki gracza, patrz data/soundboard.json). `music` to
+        // JEDEN aktywny kanał w tle (nowe odtworzenie zastępuje poprzednie, jak crossfade sceny),
+        // `sfxFired` to znacznik ostatniego jednorazowego efektu (gracze porównują `at`, żeby nie
+        // odtworzyć tego samego efektu dwa razy), `playlists` to listy odtwarzania budowane na
+        // żywo przez MG w zakładce "Muzyka" (mini-kreator control-panel.js), BEZ modyfikowania
+        // statycznego katalogu data/soundboard.json. `trackOrder` to kolejność WYŚWIETLANIA kart w
+        // tej zakładce (klucze z manifestu ORAZ id playlist w jednej liście, sortowanie per-sekcja
+        // filtruje ją do właściwej kategorii) - też edytowana na żywo przez MG (uchwyt/strzałki/
+        // drag&drop), niezależna od kolejności utworów WEWNĄTRZ konkretnej playlisty.
+        soundboard: {
+            music: null,      // { key, startedAt: epoch ms, volume: 0-1, playlistId?: string } | null
+            sfxFired: null,   // { key, at: epoch ms } | null
+            playlists: {},    // { [playlistId]: { name: string, trackKeys: string[] } }
+            trackOrder: []    // string[] - klucze manifestu + id playlist, w kolejności wyświetlania
+        }
     };
 }
 

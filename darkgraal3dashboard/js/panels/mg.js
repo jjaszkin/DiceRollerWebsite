@@ -27,6 +27,11 @@ import {
     escapeHtml, clamp, preserveScroll, annotateDice, rollTestPool, TEST_TIER_LABELS
 } from "../utils.js";
 import { buildJournalHtml, handleJournalAction } from "./journal.js";
+import {
+    buildSoundboardControlHtml, buildSoundboardPlaylistEditorHtml, buildPlaylistPreviewHtml,
+    handleSoundboardAction, reorderPlaylistEditorTrack, reorderMainOrder, setPlaylistEditorName
+} from "../../../shared/soundboard/control-panel.js";
+import { getNowPlaying } from "../../../shared/soundboard/player-engine.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -40,13 +45,15 @@ const DIE_STATE_CLASS = {
 
 // Stan czysto lokalny UI panelu MG (nie zapisywany do Firebase) - który modal Przedmiotu
 // Legendarnego jest otwarty, ostatni wybór w module "Dodaj modyfikator" (żeby nie resetował się po
-// każdym dodaniu), która postać jest aktualnie wybrana w tabach (patrz renderCharacterTabs()) i
-// podgląd rzutu MG do zatwierdzenia (analogicznie do panels/roller.js#ui.pendingRoll).
+// każdym dodaniu), która postać jest aktualnie wybrana w tabach (patrz renderCharacterTabs()),
+// który z górnych tabów MG ("Kampania"/"Muzyka") jest aktywny i podgląd rzutu MG do zatwierdzenia
+// (analogicznie do panels/roller.js#ui.pendingRoll).
 const ui = {
     openLegendaryKey: null,
     modAddCharacterKey: null,
     modAddArchetypeKey: "rycerz",
     activeCharacterKey: null,
+    activeTopTab: "kampania", // "kampania" | "muzyka" - patrz renderTopTabs()
     rollDiceCount: 3,
     rollGraalDice: 0,
     pendingRoll: null
@@ -73,6 +80,19 @@ function renderCharacterTabs(characters, activeKey) {
                     ${escapeHtml(c.name)}
                 </button>
             `).join("")}
+        </nav>
+    `;
+}
+
+/** Górne taby widoku MG ("Kampania"/"Muzyka") - w odróżnieniu od renderCharacterTabs() (który
+ *  z 4 postaci jest wybrany) te przełączają, co pokazuje kolumna 1-8 (patrz buildHtml()). Kolumna
+ *  9-12 (rzut MG + dziennik) zostaje widoczna ZAWSZE, niezależnie od wybranego taba - to samo
+ *  świadome ograniczenie, co przy tabach postaci (patrz komentarz na górze pliku). */
+function renderTopTabs(activeTab) {
+    return `
+        <nav class="tabs mg-top-tabs">
+            <button type="button" class="tab-btn ${activeTab === "kampania" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="kampania">Kampania</button>
+            <button type="button" class="tab-btn ${activeTab === "muzyka" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="muzyka">Muzyka</button>
         </nav>
     `;
 }
@@ -412,16 +432,22 @@ function buildHtml(ctx) {
     const activeKey = resolveActiveCharacterKey(state);
     const activeCharacter = activeKey ? state.characters[activeKey] : null;
 
+    const activeTopTab = ui.activeTopTab || "kampania";
+    const nowPlaying = getNowPlaying();
+
     return `
         <div class="mg-unified-wrap">
+            ${renderTopTabs(activeTopTab)}
             ${renderCampWindFull(state)}
 
             <div class="mg-grid-12">
                 <div class="mg-characters-col">
-                    ${renderModifierModule(ctx)}
-                    ${renderLegendaryCatalog(ctx)}
-                    ${renderCharacterTabs(characters, activeKey)}
-                    ${activeCharacter ? renderCharacterBlock(activeCharacter, ctx) : `<p class="placeholder">Brak wybranej postaci.</p>`}
+                    ${activeTopTab === "muzyka" ? buildSoundboardControlHtml(ctx, nowPlaying) : `
+                        ${renderModifierModule(ctx)}
+                        ${renderLegendaryCatalog(ctx)}
+                        ${renderCharacterTabs(characters, activeKey)}
+                        ${activeCharacter ? renderCharacterBlock(activeCharacter, ctx) : `<p class="placeholder">Brak wybranej postaci.</p>`}
+                    `}
                 </div>
 
                 <div class="mg-roller-col">
@@ -431,6 +457,8 @@ function buildHtml(ctx) {
             </div>
         </div>
         ${renderLegendaryModal(ctx)}
+        ${buildSoundboardPlaylistEditorHtml(ctx)}
+        ${buildPlaylistPreviewHtml(ctx, nowPlaying)}
     `;
 }
 
@@ -565,6 +593,12 @@ function wireEvents(root) {
             });
             return;
         }
+
+        // Suwak głośności muzyki (<input type="range">) - patrz shared/soundboard/control-panel.js.
+        if (handleSoundboardAction(action, el, { ...root._ctx, updateState })) {
+            rerender(root);
+            return;
+        }
     });
 
     root.addEventListener("click", (e) => {
@@ -584,6 +618,12 @@ function wireEvents(root) {
 
         if (action === "mg-select-character") {
             ui.activeCharacterKey = btn.dataset.key;
+            rerender(root);
+            return;
+        }
+
+        if (action === "mg-select-top-tab") {
+            ui.activeTopTab = btn.dataset.tab;
             rerender(root);
             return;
         }
@@ -756,11 +796,89 @@ function wireEvents(root) {
             return;
         }
 
+        // Przewijanie (klik na pasku postępu) - poza handleSoundboardAction, bo control-panel.js
+        // (czyste HTML) nie zna `duration` żadnego <audio> - to wie tylko player-engine.js
+        // (patrz getNowPlaying()). Przewijanie = po prostu przesunięcie startedAt wstecz/w przód,
+        // bo cała synchronizacja odtwarzania już i tak liczy pozycję z (teraz - startedAt).
+        if (action === "sb-seek") {
+            const nowPlaying = getNowPlaying();
+            if (!nowPlaying) return;
+            const rect = btn.getBoundingClientRect();
+            const fraction = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+            const seekSeconds = fraction * nowPlaying.duration;
+            updateState((state) => {
+                if (state.soundboard?.music) state.soundboard.music.startedAt = Date.now() - seekSeconds * 1000;
+            });
+            rerender(root);
+            return;
+        }
+
+        // Akcje modułu Dźwięki (play/stop muzyki, wyzwolenie efektu) - patrz shared/soundboard/.
+        if (handleSoundboardAction(action, btn, { ...root._ctx, updateState })) {
+            rerender(root);
+            return;
+        }
+
         // Akcje dziennika (usuwanie wpisów/czyszczenie historii) - patrz panels/journal.js.
         if (handleJournalAction(action, btn, root._ctx)) {
             rerender(root);
             return;
         }
+    });
+
+    // Przeciąganie kolejności - osobne zdarzenia (dragstart/dragover/drop), bo to nie jest zwykły
+    // klik na [data-action]. Dwa konteksty dzielą tę samą obsługę: kolejność utworów WEWNĄTRZ
+    // mini-kreatora playlisty (.sb-playlist-order-item, lokalny szkic, patrz
+    // reorderPlaylistEditorTrack) i kolejność KART w głównej liście Dźwięki
+    // ([data-reorder-scope="main"], zapisywana od razu do stanu, patrz reorderMainOrder). Przyciski
+    // ↑/↓ obok obu list (patrz sb-editor-move-track / sb-move-entry wyżej) są odpowiednikiem dla
+    // dotyku, gdzie natywne HTML5 drag&drop nie działa.
+    let sbDragKey = null;
+    let sbDragScope = null;
+
+    function closestDraggable(target) {
+        const playlistItem = target.closest(".sb-playlist-order-item");
+        if (playlistItem) return { item: playlistItem, scope: "playlist" };
+        const mainItem = target.closest("[data-reorder-scope='main']");
+        if (mainItem) return { item: mainItem, scope: "main" };
+        return null;
+    }
+
+    root.addEventListener("dragstart", (e) => {
+        const found = closestDraggable(e.target);
+        if (!found) return;
+        sbDragKey = found.item.dataset.key;
+        sbDragScope = found.scope;
+        e.dataTransfer.effectAllowed = "move";
+    });
+
+    root.addEventListener("dragover", (e) => {
+        if (!sbDragKey) return;
+        const found = closestDraggable(e.target);
+        if (!found || found.scope !== sbDragScope) return;
+        e.preventDefault();
+    });
+
+    root.addEventListener("drop", (e) => {
+        if (!sbDragKey) return;
+        const found = closestDraggable(e.target);
+        if (!found || found.scope !== sbDragScope) return;
+        e.preventDefault();
+        if (sbDragScope === "playlist") {
+            reorderPlaylistEditorTrack(sbDragKey, found.item.dataset.key);
+        } else {
+            reorderMainOrder({ ...root._ctx, updateState }, sbDragKey, found.item.dataset.key);
+        }
+        sbDragKey = null;
+        sbDragScope = null;
+        rerender(root);
+    });
+
+    // Nazwa playlisty w mini-kreatorze - zapisywana na bieżąco BEZ rerenderu (patrz
+    // control-panel.js#setPlaylistEditorName), żeby przetrwała rerender wywołany inną akcją w tym
+    // samym modalu (np. zaznaczenie utworu) i żeby pisanie nie gubiło kursora/fokusu.
+    root.addEventListener("input", (e) => {
+        if (e.target.id === "sbPlaylistNameInput") setPlaylistEditorName(e.target.value);
     });
 }
 
@@ -770,5 +888,11 @@ export function render(root, ctx) {
     if (!root.dataset.wired) {
         wireEvents(root);
         root.dataset.wired = "1";
+        // Odświeża pasek postępu utworu co sekundę - TYLKO gdy zakładka Muzyka jest aktywna i coś
+        // faktycznie gra (patrz player-engine.js#getNowPlaying), żeby nie przerenderowywać całego
+        // panelu MG bez potrzeby.
+        setInterval(() => {
+            if (ui.activeTopTab === "muzyka" && getNowPlaying()) rerender(root);
+        }, 1000);
     }
 }

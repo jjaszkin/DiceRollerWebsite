@@ -1,0 +1,261 @@
+[
+    {
+        "key": "atrium-carceri-forgotten-gods-full-album",
+        "name": "Atrium Carceri - Forgotten Gods [ FULL ALBUM ]",
+        "file": "music/Atrium Carceri - Forgotten Gods [ FULL ALBUM ].mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "camelot-dark-souls-3-all-boss-theme-songs-ost-dlc",
+        "name": "CAMELOT Dark Souls 3 All Boss Theme Songs OST (DLC)",
+        "file": "music/CAMELOT Dark Souls 3 All Boss Theme Songs OST (DLC).mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "camelot-floating-ice-castle",
+        "name": "CAMELOT floating-ice-castle",
+        "file": "music/CAMELOT floating-ice-castle.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "camelot-gateway-to-hell",
+        "name": "CAMELOT gateway-to-hell",
+        "file": "music/CAMELOT gateway-to-hell.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "camelot-vault-of-terror",
+        "name": "CAMELOT vault-of-terror",
+        "file": "music/CAMELOT vault-of-terror.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-magic-music-salems-secret",
+        "name": "Dark Magic Music -  Salems Secret",
+        "file": "music/Dark Magic Music -  Salems Secret.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-1",
+        "name": "Dark Souls Soundtrack 1",
+        "file": "music/Dark Souls Soundtrack 1.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-10",
+        "name": "Dark Souls Soundtrack 10",
+        "file": "music/Dark Souls Soundtrack 10.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-11",
+        "name": "Dark Souls Soundtrack 11",
+        "file": "music/Dark Souls Soundtrack 11.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-2",
+        "name": "Dark Souls Soundtrack 2",
+        "file": "music/Dark Souls Soundtrack 2.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-3",
+        "name": "Dark Souls Soundtrack 3",
+        "file": "music/Dark Souls Soundtrack 3.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-4",
+        "name": "Dark Souls Soundtrack 4",
+        "file": "music/Dark Souls Soundtrack 4.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-5",
+        "name": "Dark Souls Soundtrack 5",
+        "file": "music/Dark Souls Soundtrack 5.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-6",
+        "name": "Dark Souls Soundtrack 6",
+        "file": "music/Dark Souls Soundtrack 6.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-7",
+        "name": "Dark Souls Soundtrack 7",
+        "file": "music/Dark Souls Soundtrack 7.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-8",
+        "name": "Dark Souls Soundtrack 8",
+        "file": "music/Dark Souls Soundtrack 8.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dark-souls-soundtrack-9",
+        "name": "Dark Souls Soundtrack 9",
+        "file": "music/Dark Souls Soundtrack 9.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dead-ambient-dark-ambient-mix-by-atrium-carceri-1",
+        "name": "Dead Ambient :: Dark Ambient Mix by Atrium Carceri 1",
+        "file": "music/Dead Ambient :: Dark Ambient Mix by Atrium Carceri 1.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dead-ambient-dark-ambient-mix-by-atrium-carceri-2",
+        "name": "Dead Ambient :: Dark Ambient Mix by Atrium Carceri 2",
+        "file": "music/Dead Ambient :: Dark Ambient Mix by Atrium Carceri 2.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dead-ambient-dark-ambient-mix-by-atrium-carceri-3",
+        "name": "Dead Ambient :: Dark Ambient Mix by Atrium Carceri 3",
+        "file": "music/Dead Ambient :: Dark Ambient Mix by Atrium Carceri 3.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dead-kings-hauntingly-majestic-dark-fantasy-music",
+        "name": "Dead Kings - Hauntingly Majestic Dark Fantasy Music",
+        "file": "music/Dead Kings - Hauntingly Majestic Dark Fantasy Music.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "for-eternity",
+        "name": "For Eternity",
+        "file": "music/For Eternity.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "heretoir-the-circle-full-album",
+        "name": "Heretoir - The Circle (Full Album)",
+        "file": "music/Heretoir - The Circle (Full Album).mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "moth-tower-void-receiver-2022-1",
+        "name": "Moth Tower - Void Receiver (2022) 1",
+        "file": "music/Moth Tower - Void Receiver (2022) 1.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "moth-tower-void-receiver-2022-2",
+        "name": "Moth Tower - Void Receiver (2022) 2",
+        "file": "music/Moth Tower - Void Receiver (2022) 2.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "moth-tower-void-receiver-2022-3",
+        "name": "Moth Tower - Void Receiver (2022) 3",
+        "file": "music/Moth Tower - Void Receiver (2022) 3.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "moth-tower-void-receiver-2022-4",
+        "name": "Moth Tower - Void Receiver (2022) 4",
+        "file": "music/Moth Tower - Void Receiver (2022) 4.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "moth-tower-void-receiver-2022-5",
+        "name": "Moth Tower - Void Receiver (2022) 5",
+        "file": "music/Moth Tower - Void Receiver (2022) 5.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "moth-tower-void-receiver-2022-6",
+        "name": "Moth Tower - Void Receiver (2022) 6",
+        "file": "music/Moth Tower - Void Receiver (2022) 6.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "night-at-camelot",
+        "name": "Night at Camelot",
+        "file": "music/Night at Camelot.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "sir-lancelot-s-tomb-feat-death-verified",
+        "name": "Sir Lancelot's Tomb (feat. Death Verified)",
+        "file": "music/Sir Lancelot's Tomb (feat. Death Verified).mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "intro-dg2-between-the-shadows-2004-remaster-hd-remastered",
+        "name": "[INTRO DG2] Between the Shadows (2004 Remaster HD) (Remastered)",
+        "file": "music/[INTRO DG2] Between the Shadows (2004 Remaster HD) (Remastered).mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "intro-dg3-gnaal-the-bowed-lyre-taglharpe-funeral-march",
+        "name": "[INTRO DG3] \"Gnaal\" - the bowed lyre (taglharpe) \"Funeral march\"",
+        "file": "music/[INTRO DG3] \"Gnaal\" - the bowed lyre (taglharpe) \"Funeral march\".mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "katedra-mod-y-chor-kobiet-allmother-s-theme-tainted-grail-the-fall-of-avalon-music-soundtrack",
+        "name": "[KATEDRA] MODŁY CHÓR KOBIET Allmother's Theme ｜ Tainted Grail The Fall of Avalon Music Soundtrack",
+        "file": "music/[KATEDRA] MODŁY CHÓR KOBIET Allmother's Theme ｜ Tainted Grail The Fall of Avalon Music Soundtrack.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "katedra-defiled-temple",
+        "name": "[KATEDRA] defiled-temple",
+        "file": "music/[KATEDRA] defiled-temple.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "kingstown-haunted-ramparts",
+        "name": "[KINGSTOWN] haunted-ramparts",
+        "file": "music/[KINGSTOWN] haunted-ramparts.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "targ-wspomnien-these-walls-tell-tales",
+        "name": "[TARG WSPOMNIEŃ] these-walls-tell-tales",
+        "file": "music/[TARG WSPOMNIEŃ] these-walls-tell-tales.m4a",
+        "category": "music",
+        "loop": true
+    }
+]
