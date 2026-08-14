@@ -89,7 +89,18 @@ export function createDefaultState(gameData) {
         // Nadpisania opisów Przedmiotów Legendarnych wprowadzane na żywo przez MG z panelu MG
         // (panels/mg.js - globalny katalog "Przedmioty Legendarne"), BEZ modyfikowania statycznego
         // katalogu data/items.json. { [itemKey]: { tooltip: string } } - patrz resolveItemTooltip().
-        itemOverrides: {}
+        itemOverrides: {},
+
+        // Stan odtwarzania Soundboardu (shared/soundboard/, patrz control-panel.js i
+        // player-engine.js) - MICROSKOPIJNE dane sterujące, NIE same pliki audio (te serwuje
+        // Netlify bezpośrednio do przeglądarki gracza, patrz data/soundboard.json). `music` to
+        // JEDEN aktywny kanał w tle (nowe odtworzenie zastępuje poprzednie, jak crossfade sceny),
+        // `sfxFired` to znacznik ostatniego jednorazowego efektu (gracze porównują `at`, żeby nie
+        // odtworzyć tego samego efektu dwa razy).
+        soundboard: {
+            music: null,    // { key, startedAt: epoch ms, volume: 0-1 } | null
+            sfxFired: null  // { key, at: epoch ms } | null
+        }
     };
 }
 

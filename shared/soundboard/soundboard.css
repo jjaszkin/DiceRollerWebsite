@@ -1,0 +1,108 @@
+/* Soundboard - wspólny moduł (DiceRollerWebsite/shared/soundboard/). Style dla siatki kart MG
+   (control-panel.js) i pływającego widgetu gracza (player-engine.js).
+
+   Celowo BEZ własnej przestrzeni nazw zmiennych (--sb-*) - projekty w tym repo (darkgraal3dashboard
+   i kolejne dashboardy wzorowane na nim) już współdzielą jeden zestaw nazw zmiennych motywu
+   (--bg-0/1/2/3, --gold/--gold-bright/--gold-dim, --fg-0/1/2, --line, --line-strong, --radius,
+   --sans - patrz any styles.css), odziedziczony od glide2solo. Ten plik używa ich wprost, z
+   fallbackami na wypadek podpięcia w projekcie, który jeszcze tych zmiennych nie zna. */
+
+.sb-module h4 { margin-top: 14px; }
+
+.sb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.sb-card {
+    background: var(--bg-2, #1e1712);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sb-card-playing {
+    border-color: var(--gold, #E8B83D);
+    box-shadow: 0 0 0 1px var(--gold, #E8B83D) inset;
+}
+
+.sb-card-name {
+    font-size: 0.85rem;
+    color: var(--fg-0, #f2e9d8);
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.sb-card-volume { width: 100%; }
+
+/* -- Widget gracza (pływający, poza panelami, patrz player-engine.js) -------------------------- */
+
+.sb-player-widget {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 200;
+    font-family: var(--sans, sans-serif);
+}
+
+.sb-player-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-1, #14100b);
+    border: 1px solid var(--line-strong, #6b5330);
+    color: var(--fg-0, #f2e9d8);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sb-player-toggle:hover { border-color: var(--gold-dim, #BD952F); }
+
+.sb-player-panel {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 48px;
+    background: var(--bg-1, #14100b);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    padding: 10px 12px;
+    min-width: 160px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.sb-player-panel-open { display: block; }
+
+.sb-player-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg-1, #d8c9a8);
+    font-size: 0.82rem;
+    margin: 6px 0;
+}
+
+.sb-player-row input[type="range"] { flex: 1; }
+
+.sb-unlock-prompt {
+    position: fixed;
+    right: 14px;
+    bottom: 62px;
+    z-index: 201;
+    background: var(--gold, #E8B83D);
+    color: var(--bg-0, #0a0806);
+    border: none;
+    border-radius: var(--radius, 3px);
+    padding: 8px 14px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}

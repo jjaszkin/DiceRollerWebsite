@@ -7,6 +7,7 @@
 import { loadGameData } from "./data.js";
 import { initStore, connectCampaign, getState, getData, subscribe, onSaveStatusChange } from "./store.js";
 import { showGate } from "./gate.js";
+import { mountSoundboardPlayer } from "../../shared/soundboard/player-engine.js";
 
 import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
@@ -26,9 +27,21 @@ const changeCharacterBtn = document.getElementById("changeCharacterBtn");
 
 let session = null; // { role: "mg"|"player", characterKey: string|null } - patrz gate.js
 let cachedGameData = null;
+let soundboardMounted = false;
 
 function setBootStatus(text) {
     if (bootStatus) bootStatus.textContent = text;
+}
+
+/** Montuje silnik Soundboardu (shared/soundboard/) RAZ, wyłącznie dla Graczy - MG steruje
+ *  odtwarzaniem z panelu MG, ale audio u siebie nie odtwarza (patrz #soundboardRoot w index.html
+ *  - stabilny węzeł POZA panelami, żeby <audio> przeżywało ich rerendery). */
+function ensureSoundboardMounted() {
+    if (soundboardMounted || !session || session.role === "mg") return;
+    const root = document.getElementById("soundboardRoot");
+    if (!root) return;
+    mountSoundboardPlayer(root, { manifest: getData()?.soundboard || [], subscribe, getState });
+    soundboardMounted = true;
 }
 
 function renderAll() {
@@ -108,6 +121,7 @@ function setupChangeCharacterButton() {
                 session = selection;
                 applyRoleVisibility();
                 renderAll();
+                ensureSoundboardMounted();
             }
         });
     });
@@ -135,7 +149,8 @@ async function bootstrap() {
                 session = selection;
                 applyRoleVisibility();
                 renderAll();
-                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/4 plików.`);
+                ensureSoundboardMounted();
+                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/5 plików.`);
             }
         });
     } catch (err) {

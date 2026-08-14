@@ -27,6 +27,7 @@ import {
     escapeHtml, clamp, preserveScroll, annotateDice, rollTestPool, TEST_TIER_LABELS
 } from "../utils.js";
 import { buildJournalHtml, handleJournalAction } from "./journal.js";
+import { buildSoundboardControlHtml, handleSoundboardAction } from "../../../shared/soundboard/control-panel.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -420,6 +421,7 @@ function buildHtml(ctx) {
                 <div class="mg-characters-col">
                     ${renderModifierModule(ctx)}
                     ${renderLegendaryCatalog(ctx)}
+                    ${buildSoundboardControlHtml(ctx)}
                     ${renderCharacterTabs(characters, activeKey)}
                     ${activeCharacter ? renderCharacterBlock(activeCharacter, ctx) : `<p class="placeholder">Brak wybranej postaci.</p>`}
                 </div>
@@ -563,6 +565,12 @@ function wireEvents(root) {
                 else character.disabledItemKeys.push(itemKey);
                 logEvent(state, "equipment-disabled", `${character.name}: Legendarny przedmiot "${itemKey}" ${isDisabled ? "przywrócony" : "wygaszony"}.`);
             });
+            return;
+        }
+
+        // Suwak głośności muzyki (<input type="range">) - patrz shared/soundboard/control-panel.js.
+        if (handleSoundboardAction(action, el, { ...root._ctx, updateState })) {
+            rerender(root);
             return;
         }
     });
@@ -752,6 +760,12 @@ function wireEvents(root) {
 
         if (action === "mg-cancel-roll") {
             ui.pendingRoll = null;
+            rerender(root);
+            return;
+        }
+
+        // Akcje modułu Dźwięki (play/stop muzyki, wyzwolenie efektu) - patrz shared/soundboard/.
+        if (handleSoundboardAction(action, btn, { ...root._ctx, updateState })) {
             rerender(root);
             return;
         }

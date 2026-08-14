@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Domine:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../shared/soundboard/soundboard.css">
     <link rel="icon" href="images/favicon.ico" type="image/png">
     <title>Dark Graal III - Dashboard Solo (MG)</title>
 </head>
@@ -89,6 +90,12 @@
         <div id="mgUnifiedRoot" class="hidden">
             <p class="placeholder">Ładowanie zaplecza MG...</p>
         </div>
+
+        <!-- Silnik Soundboardu (shared/soundboard/player-engine.js) - montowany RAZ, POZA panelami,
+             które robią pełny innerHTML rerender (patrz main.js#bootstrap), żeby <audio> nie było
+             niszczone i tworzone od nowa przy każdej zmianie stanu. Tylko dla graczy - MG steruje
+             odtwarzaniem z #mgUnifiedRoot, ale sam audio u siebie nie odtwarza. -->
+        <div id="soundboardRoot"></div>
 
         <footer class="app-footer">
             <span id="bootStatus">Inicjalizacja...</span>
