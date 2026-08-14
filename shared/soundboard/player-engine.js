@@ -140,7 +140,7 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
                     Wycisz
                 </label>
                 <label class="sb-player-row">
-                    <input type="range" class="sb-player-volume" min="0" max="100" value="${Math.round(masterVolume * 100)}">
+                    <input type="range" class="sb-range sb-player-volume" min="0" max="100" step="1" value="${Math.round(masterVolume * 100)}">
                 </label>
             </div>
         `;

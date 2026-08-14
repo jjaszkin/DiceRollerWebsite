@@ -39,6 +39,56 @@
 
 .sb-card-volume { width: 100%; }
 
+/* Suwaki głośności (karta MG + widget gracza) - odmalowane w kolorze motywu zamiast domyślnego
+   niebieskiego paska przeglądarki. Krok 1 (nie 10) na całej długości - patrz `step="1"` w markupie
+   (control-panel.js/player-engine.js) - żeby dało się ustawić głośność z dokładnością do 1%. */
+.sb-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--line, #3d2f1f);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+.sb-range::-webkit-slider-runnable-track {
+    height: 4px;
+    background: var(--line, #3d2f1f);
+    border-radius: 2px;
+}
+.sb-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: var(--gold, #E8B83D);
+    border: 2px solid var(--bg-0, #0a0806);
+    cursor: pointer;
+}
+.sb-range:hover::-webkit-slider-thumb { background: var(--gold-bright, #F8D270); }
+.sb-range::-moz-range-track {
+    height: 4px;
+    background: var(--line, #3d2f1f);
+    border-radius: 2px;
+}
+.sb-range::-moz-range-progress {
+    height: 4px;
+    background: var(--gold, #E8B83D);
+    border-radius: 2px;
+}
+.sb-range::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold, #E8B83D);
+    border: 2px solid var(--bg-0, #0a0806);
+    cursor: pointer;
+}
+.sb-range:hover::-moz-range-thumb { background: var(--gold-bright, #F8D270); }
+
 /* -- Widget gracza (pływający, poza panelami, patrz player-engine.js) -------------------------- */
 
 .sb-player-widget {
@@ -74,7 +124,7 @@
     border: 1px solid var(--line, #3d2f1f);
     border-radius: var(--radius, 3px);
     padding: 10px 12px;
-    min-width: 160px;
+    min-width: 320px; /* 2x poprzedniej szerokości - więcej miejsca na precyzyjne ustawienie głośności */
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 

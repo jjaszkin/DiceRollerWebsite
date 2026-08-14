@@ -35,7 +35,7 @@ function renderMusicCard(entry, soundboard) {
                 ${playing ? "■ Stop" : "▶ Graj"}
             </button>
             ${playing ? `
-                <input type="range" class="sb-card-volume" min="0" max="100" value="${Math.round(volume * 100)}"
+                <input type="range" class="sb-range sb-card-volume" min="0" max="100" step="1" value="${Math.round(volume * 100)}"
                     data-action="sb-set-volume" data-key="${entry.key}">
             ` : ""}
         </div>
