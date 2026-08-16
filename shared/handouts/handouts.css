@@ -1,0 +1,124 @@
+/* Handouty - wspólny moduł (DiceRollerWebsite/shared/handouts/). Style dla siatki miniaturek MG
+   (control-panel.js), listy widocznych handoutów u graczy (viewer.js) i wspólnej warstwy
+   powiększenia (zoom.js).
+
+   Celowo BEZ własnej przestrzeni nazw zmiennych (--ho-*) - patrz analogiczny komentarz na górze
+   shared/soundboard/soundboard.css: projekty w tym repo już współdzielą jeden zestaw nazw
+   zmiennych motywu, ten plik używa ich wprost, z fallbackami. */
+
+.ho-module h3 { margin-bottom: 12px; }
+
+/* -- Panel MG: siatka 2 w wierszu, stała kolejność (numer malejąco) --------------------------- */
+
+.ho-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.ho-card {
+    position: relative;
+    background: var(--bg-2, #1e1712);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ho-thumb-btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: var(--bg-0, #0a0806);
+    border-radius: var(--radius, 3px);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.ho-thumb {
+    display: block;
+    width: 100%;
+    height: 130px;
+    object-fit: contain;
+}
+
+.ho-eye-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(10, 8, 6, 0.75);
+    border: 1px solid var(--line-strong, #6b5330);
+    color: var(--fg-2, #a89878);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
+.ho-eye-btn:hover { border-color: var(--gold-dim, #BD952F); }
+
+.ho-eye-visible {
+    border-color: var(--gold, #E8B83D);
+    color: var(--gold-bright, #F8D270);
+    background: rgba(232, 184, 61, 0.18);
+}
+
+.ho-card-name {
+    font-size: 0.8rem;
+    color: var(--fg-1, #d8c9a8);
+    line-height: 1.3;
+    word-break: break-word;
+    text-align: center;
+}
+
+/* -- Widok gracza: lista tylko widocznych handoutów, najnowszy pokazany pierwszy -------------- */
+
+.ho-viewer-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.ho-viewer-item {
+    padding: 0;
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    background: var(--bg-2, #1e1712);
+    cursor: pointer;
+    overflow: hidden;
+}
+.ho-viewer-item:hover { border-color: var(--gold-dim, #BD952F); }
+
+.ho-viewer-thumb {
+    display: block;
+    width: 100%;
+    height: 160px;
+    object-fit: contain;
+}
+
+/* -- Powiększenie (pełny ekran, patrz zoom.js) - klik gdziekolwiek zamyka --------------------- */
+
+.ho-zoom-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 300;
+    cursor: zoom-out;
+}
+
+.ho-zoom-image {
+    max-width: 92vw;
+    max-height: 92vh;
+    object-fit: contain;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
+}

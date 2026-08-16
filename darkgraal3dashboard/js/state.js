@@ -107,6 +107,16 @@ export function createDefaultState(gameData) {
             sfxFired: null,   // { key, at: epoch ms } | null
             playlists: {},    // { [playlistId]: { name: string, trackKeys: string[] } }
             trackOrder: []    // string[] - klucze manifestu + id playlist, w kolejności wyświetlania
+        },
+
+        // Stan Handoutów (shared/handouts/, patrz control-panel.js i viewer.js) - który obrazek z
+        // katalogu data/handouts.json (wygenerowanego z folderu handouts/) MG aktualnie pokazuje
+        // graczom. `visible` decyduje CO gracze w ogóle widzą w swojej zakładce Handouty,
+        // `lastShownAt` decyduje w JAKIEJ KOLEJNOŚCI (ostatnio pokazany na górze) - niezależnie od
+        // stałej kolejności numerycznej w siatce MG (patrz buildHandoutsControlHtml).
+        handouts: {
+            visible: {},      // { [handoutKey]: true } - pominięty klucz = ukryty
+            lastShownAt: {}   // { [handoutKey]: epoch ms }
         }
     };
 }

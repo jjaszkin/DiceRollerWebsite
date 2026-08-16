@@ -1,0 +1,32 @@
+[
+    {
+        "key": "1-dark-graal-cover-sezon-3",
+        "name": "1 Dark Graal cover sezon 3",
+        "file": "handouts/1 Dark Graal cover sezon 3.png",
+        "number": 1
+    },
+    {
+        "key": "2-artefakty",
+        "name": "2 Artefakty",
+        "file": "handouts/2 Artefakty.png",
+        "number": 2
+    },
+    {
+        "key": "3-dark-graal-3-obszary-camelotu",
+        "name": "3 Dark Graal 3 obszary Camelotu",
+        "file": "handouts/3 Dark Graal 3 obszary Camelotu.png",
+        "number": 3
+    },
+    {
+        "key": "4-dg3-kingstown",
+        "name": "4 DG3 Kingstown",
+        "file": "handouts/4 DG3 Kingstown.png",
+        "number": 4
+    },
+    {
+        "key": "5-dg3-arena",
+        "name": "5 DG3 Arena",
+        "file": "handouts/5 DG3 Arena.png",
+        "number": 5
+    }
+]
