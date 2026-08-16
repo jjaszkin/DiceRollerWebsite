@@ -8,7 +8,8 @@
 
 .ho-module h3 { margin-bottom: 12px; }
 
-/* -- Panel MG: siatka 2 w wierszu, stała kolejność (numer malejąco) --------------------------- */
+/* -- Panel MG: siatka 2 w wierszu, kolejność ustawiana przez MG (przeciągnij/strzałki) - TA
+   kolejność definiuje wprost kolejność u graczy, patrz control-panel.js/viewer.js. ------------- */
 
 .ho-grid {
     display: grid;
@@ -25,6 +26,21 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    cursor: grab;
+}
+.ho-card:active { cursor: grabbing; }
+
+.ho-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ho-card-handle { color: var(--fg-dim, #6b5f4a); }
+
+.ho-card-order-buttons {
+    display: flex;
+    gap: 4px;
 }
 
 .ho-thumb-btn {
@@ -45,6 +61,9 @@
     object-fit: contain;
 }
 
+/* Oko otwarte (widoczny dla graczy, tło pełne złoto) / przekreślone (ukryty) - patrz
+   control-panel.js#eyeIconSvg. Inline SVG zamiast emoji, żeby przekreślenie renderowało się
+   identycznie wszędzie i dało się pomalować przez currentColor. */
 .ho-eye-btn {
     position: absolute;
     top: 12px;
@@ -59,15 +78,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
 }
 .ho-eye-btn:hover { border-color: var(--gold-dim, #BD952F); }
 
 .ho-eye-visible {
     border-color: var(--gold, #E8B83D);
-    color: var(--gold-bright, #F8D270);
-    background: rgba(232, 184, 61, 0.18);
+    color: var(--bg-0, #0a0806);
+    background: var(--gold, #E8B83D);
 }
+.ho-eye-visible:hover { background: var(--gold-bright, #F8D270); border-color: var(--gold-bright, #F8D270); }
 
 .ho-card-name {
     font-size: 0.8rem;
@@ -77,7 +96,7 @@
     text-align: center;
 }
 
-/* -- Widok gracza: lista tylko widocznych handoutów, najnowszy pokazany pierwszy -------------- */
+/* -- Widok gracza: lista tylko widocznych handoutów, w kolejności ustawionej przez MG ---------- */
 
 .ho-viewer-list {
     display: grid;
@@ -122,3 +141,26 @@
     object-fit: contain;
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
 }
+
+.ho-zoom-nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(10, 8, 6, 0.75);
+    border: 1px solid var(--line-strong, #6b5330);
+    color: var(--fg-0, #f2e9d8);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 301;
+}
+.ho-zoom-nav:hover { border-color: var(--gold, #E8B83D); color: var(--gold-bright, #F8D270); }
+
+.ho-zoom-nav-prev { left: 24px; }
+.ho-zoom-nav-next { right: 24px; }

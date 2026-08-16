@@ -111,12 +111,13 @@ export function createDefaultState(gameData) {
 
         // Stan Handoutów (shared/handouts/, patrz control-panel.js i viewer.js) - który obrazek z
         // katalogu data/handouts.json (wygenerowanego z folderu handouts/) MG aktualnie pokazuje
-        // graczom. `visible` decyduje CO gracze w ogóle widzą w swojej zakładce Handouty,
-        // `lastShownAt` decyduje w JAKIEJ KOLEJNOŚCI (ostatnio pokazany na górze) - niezależnie od
-        // stałej kolejności numerycznej w siatce MG (patrz buildHandoutsControlHtml).
+        // graczom. `visible` decyduje CO gracze w ogóle widzą w swojej zakładce Handouty, `order`
+        // decyduje W JAKIEJ KOLEJNOŚCI - ustawiana przez MG (uchwyt/strzałki/drag&drop w siatce
+        // MG) i używana WPROST jako kolejność u graczy (ta sama lista, tylko przefiltrowana do
+        // widocznych) - patrz control-panel.js#reorderHandoutsOrder i viewer.js.
         handouts: {
-            visible: {},      // { [handoutKey]: true } - pominięty klucz = ukryty
-            lastShownAt: {}   // { [handoutKey]: epoch ms }
+            visible: {},   // { [handoutKey]: true } - pominięty klucz = ukryty
+            order: []      // string[] - klucze katalogu, w kolejności od góry w dół
         }
     };
 }

@@ -32,7 +32,10 @@ import {
     handleSoundboardAction, reorderPlaylistEditorTrack, reorderMainOrder, setPlaylistEditorName
 } from "../../../shared/soundboard/control-panel.js";
 import { getNowPlaying } from "../../../shared/soundboard/player-engine.js";
-import { buildHandoutsControlHtml, handleHandoutsAction } from "../../../shared/handouts/control-panel.js";
+import {
+    buildHandoutsControlHtml, handleHandoutsAction, reorderHandoutsOrder
+} from "../../../shared/handouts/control-panel.js";
+import { getZoomKey } from "../../../shared/handouts/zoom.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -837,50 +840,55 @@ function wireEvents(root) {
     });
 
     // Przeciąganie kolejności - osobne zdarzenia (dragstart/dragover/drop), bo to nie jest zwykły
-    // klik na [data-action]. Dwa konteksty dzielą tę samą obsługę: kolejność utworów WEWNĄTRZ
-    // mini-kreatora playlisty (.sb-playlist-order-item, lokalny szkic, patrz
-    // reorderPlaylistEditorTrack) i kolejność KART w głównej liście Dźwięki
-    // ([data-reorder-scope="main"], zapisywana od razu do stanu, patrz reorderMainOrder). Przyciski
-    // ↑/↓ obok obu list (patrz sb-editor-move-track / sb-move-entry wyżej) są odpowiednikiem dla
-    // dotyku, gdzie natywne HTML5 drag&drop nie działa.
-    let sbDragKey = null;
-    let sbDragScope = null;
+    // klik na [data-action]. Trzy konteksty dzielą tę samą obsługę, rozróżnione przez `scope`:
+    // kolejność utworów WEWNĄTRZ mini-kreatora playlisty (.sb-playlist-order-item, lokalny szkic,
+    // patrz reorderPlaylistEditorTrack), kolejność kart w głównej liście Dźwięki
+    // ([data-reorder-scope="sb-main"], patrz reorderMainOrder) i kolejność kart Handoutów
+    // ([data-reorder-scope="ho-main"], patrz reorderHandoutsOrder - TA kolejność definiuje też
+    // kolejność u graczy, patrz shared/handouts/viewer.js). Przyciski ↑/↓ obok każdej z tych list
+    // (sb-editor-move-track / sb-move-entry / ho-move-entry) są odpowiednikiem dla dotyku, gdzie
+    // natywne HTML5 drag&drop nie działa.
+    const REORDER_HANDLERS = {
+        playlist: (from, to) => reorderPlaylistEditorTrack(from, to),
+        "sb-main": (from, to) => reorderMainOrder({ ...root._ctx, updateState }, from, to),
+        "ho-main": (from, to) => reorderHandoutsOrder({ ...root._ctx, updateState }, from, to)
+    };
+    let dragKey = null;
+    let dragScope = null;
 
     function closestDraggable(target) {
         const playlistItem = target.closest(".sb-playlist-order-item");
         if (playlistItem) return { item: playlistItem, scope: "playlist" };
-        const mainItem = target.closest("[data-reorder-scope='main']");
-        if (mainItem) return { item: mainItem, scope: "main" };
+        for (const scope of ["sb-main", "ho-main"]) {
+            const item = target.closest(`[data-reorder-scope='${scope}']`);
+            if (item) return { item, scope };
+        }
         return null;
     }
 
     root.addEventListener("dragstart", (e) => {
         const found = closestDraggable(e.target);
         if (!found) return;
-        sbDragKey = found.item.dataset.key;
-        sbDragScope = found.scope;
+        dragKey = found.item.dataset.key;
+        dragScope = found.scope;
         e.dataTransfer.effectAllowed = "move";
     });
 
     root.addEventListener("dragover", (e) => {
-        if (!sbDragKey) return;
+        if (!dragKey) return;
         const found = closestDraggable(e.target);
-        if (!found || found.scope !== sbDragScope) return;
+        if (!found || found.scope !== dragScope) return;
         e.preventDefault();
     });
 
     root.addEventListener("drop", (e) => {
-        if (!sbDragKey) return;
+        if (!dragKey) return;
         const found = closestDraggable(e.target);
-        if (!found || found.scope !== sbDragScope) return;
+        if (!found || found.scope !== dragScope) return;
         e.preventDefault();
-        if (sbDragScope === "playlist") {
-            reorderPlaylistEditorTrack(sbDragKey, found.item.dataset.key);
-        } else {
-            reorderMainOrder({ ...root._ctx, updateState }, sbDragKey, found.item.dataset.key);
-        }
-        sbDragKey = null;
-        sbDragScope = null;
+        REORDER_HANDLERS[dragScope](dragKey, found.item.dataset.key);
+        dragKey = null;
+        dragScope = null;
         rerender(root);
     });
 
@@ -889,6 +897,18 @@ function wireEvents(root) {
     // samym modalu (np. zaznaczenie utworu) i żeby pisanie nie gubiło kursora/fokusu.
     root.addEventListener("input", (e) => {
         if (e.target.id === "sbPlaylistNameInput") setPlaylistEditorName(e.target.value);
+    });
+
+    // Strzałki lewo/prawo przełączają powiększony handout (patrz shared/handouts/zoom.js) -
+    // na `document`, nie na `root`, bo warstwa powiększenia nie musi mieć fokusu klawiatury,
+    // żeby strzałki zadziałały. Nieaktywne, gdy nic nie jest powiększone (getZoomKey() === null),
+    // żeby nie przechwytywać strzałek używanych gdzie indziej w aplikacji (np. w polach liczbowych).
+    document.addEventListener("keydown", (e) => {
+        if (!getZoomKey()) return;
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+        e.preventDefault();
+        const action = e.key === "ArrowLeft" ? "ho-zoom-prev" : "ho-zoom-next";
+        if (handleHandoutsAction(action, { dataset: {} }, root._ctx)) rerender(root);
     });
 }
 
