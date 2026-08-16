@@ -116,7 +116,7 @@ function renderMusicCard(entry, state, nowPlaying) {
     const playing = isPlayingMusic(state, entry.key);
     const volume = playing ? (state.soundboard.music.volume ?? 0.8) : 0.8;
     return `
-        <div class="sb-card sb-card-row ${playing ? "sb-card-playing" : ""}" draggable="true" data-key="${entry.key}" data-reorder-scope="main">
+        <div class="sb-card sb-card-row ${playing ? "sb-card-playing" : ""}" draggable="true" data-key="${entry.key}" data-reorder-scope="sb-main">
             <span class="sb-card-handle" title="Przeciągnij, żeby zmienić kolejność">☰</span>
             <span class="sb-card-order-buttons">
                 <button type="button" class="btn btn-xs" data-action="sb-move-entry" data-key="${entry.key}" data-section="music" data-dir="up">↑</button>
@@ -139,7 +139,7 @@ function renderMusicCard(entry, state, nowPlaying) {
 
 function renderSfxCard(entry) {
     return `
-        <div class="sb-card sb-card-row" draggable="true" data-key="${entry.key}" data-reorder-scope="main">
+        <div class="sb-card sb-card-row" draggable="true" data-key="${entry.key}" data-reorder-scope="sb-main">
             <span class="sb-card-handle" title="Przeciągnij, żeby zmienić kolejność">☰</span>
             <span class="sb-card-order-buttons">
                 <button type="button" class="btn btn-xs" data-action="sb-move-entry" data-key="${entry.key}" data-section="sfx" data-dir="up">↑</button>
@@ -157,7 +157,7 @@ function renderPlaylistCard(playlistId, playlist, state, nowPlaying) {
     const playing = isPlayingPlaylist(state, playlistId);
     const volume = playing ? (state.soundboard.music.volume ?? 0.8) : 0.8;
     return `
-        <div class="sb-card sb-card-row ${playing ? "sb-card-playing" : ""}" draggable="true" data-key="${playlistId}" data-reorder-scope="main">
+        <div class="sb-card sb-card-row ${playing ? "sb-card-playing" : ""}" draggable="true" data-key="${playlistId}" data-reorder-scope="sb-main">
             <span class="sb-card-handle" title="Przeciągnij, żeby zmienić kolejność">☰</span>
             <span class="sb-card-order-buttons">
                 <button type="button" class="btn btn-xs" data-action="sb-move-entry" data-key="${playlistId}" data-section="playlist" data-dir="up">↑</button>
