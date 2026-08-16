@@ -7,27 +7,6 @@
         "loop": true
     },
     {
-        "key": "katedra-mod-y-chor-kobiet-allmother-s-theme-from-tainted-grail-the-fall-of-avalon-music-soundtrack",
-        "name": "(KATEDRA) MODŁY CHÓR KOBIET Allmother's Theme from Tainted Grail The Fall of Avalon Music Soundtrack",
-        "file": "music/(KATEDRA) MODŁY CHÓR KOBIET Allmother's Theme from Tainted Grail The Fall of Avalon Music Soundtrack.mp3",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "katedra-defiled-temple",
-        "name": "(KATEDRA) defiled-temple",
-        "file": "music/(KATEDRA) defiled-temple.m4a",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "kingstown-haunted-ramparts",
-        "name": "(KINGSTOWN) haunted-ramparts",
-        "file": "music/(KINGSTOWN) haunted-ramparts.m4a",
-        "category": "music",
-        "loop": true
-    },
-    {
         "key": "atrium-carceri-forgotten-gods-full-album",
         "name": "Atrium Carceri - Forgotten Gods FULL ALBUM",
         "file": "music/Atrium Carceri - Forgotten Gods FULL ALBUM.mp3",
@@ -44,21 +23,21 @@
     {
         "key": "camelot-floating-ice-castle",
         "name": "CAMELOT floating-ice-castle",
-        "file": "music/CAMELOT floating-ice-castle.m4a",
+        "file": "music/CAMELOT floating-ice-castle.mp3",
         "category": "music",
         "loop": true
     },
     {
         "key": "camelot-gateway-to-hell",
         "name": "CAMELOT gateway-to-hell",
-        "file": "music/CAMELOT gateway-to-hell.m4a",
+        "file": "music/CAMELOT gateway-to-hell.mp3",
         "category": "music",
         "loop": true
     },
     {
         "key": "camelot-vault-of-terror",
         "name": "CAMELOT vault-of-terror",
-        "file": "music/CAMELOT vault-of-terror.m4a",
+        "file": "music/CAMELOT vault-of-terror.mp3",
         "category": "music",
         "loop": true
     },
@@ -178,6 +157,27 @@
         "key": "for-eternity",
         "name": "For Eternity",
         "file": "music/For Eternity.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "katedra-mod-y-chor-kobiet-allmother-s-theme-from-tainted-grail-the-fall-of-avalon-ost",
+        "name": "KATEDRA MODŁY CHÓR KOBIET Allmother's Theme from Tainted Grail The Fall of Avalon OST",
+        "file": "music/KATEDRA MODŁY CHÓR KOBIET Allmother's Theme from Tainted Grail The Fall of Avalon OST.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "katedra-defiled-temple",
+        "name": "KATEDRA defiled-temple",
+        "file": "music/KATEDRA defiled-temple.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "kingstown-haunted-ramparts",
+        "name": "KINGSTOWN haunted-ramparts",
+        "file": "music/KINGSTOWN haunted-ramparts.mp3",
         "category": "music",
         "loop": true
     },
