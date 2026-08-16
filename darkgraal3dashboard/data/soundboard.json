@@ -1,8 +1,36 @@
 [
     {
+        "key": "intro-dg3-gnaal-the-bowed-lyre-taglharpe-funeral-march",
+        "name": "(INTRO DG3) \"Gnaal\" - the bowed lyre (taglharpe) \"Funeral march\"",
+        "file": "music/(INTRO DG3) \"Gnaal\" - the bowed lyre (taglharpe) \"Funeral march\".mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "katedra-mod-y-chor-kobiet-allmother-s-theme-from-tainted-grail-the-fall-of-avalon-music-soundtrack",
+        "name": "(KATEDRA) MODŁY CHÓR KOBIET Allmother's Theme from Tainted Grail The Fall of Avalon Music Soundtrack",
+        "file": "music/(KATEDRA) MODŁY CHÓR KOBIET Allmother's Theme from Tainted Grail The Fall of Avalon Music Soundtrack.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "katedra-defiled-temple",
+        "name": "(KATEDRA) defiled-temple",
+        "file": "music/(KATEDRA) defiled-temple.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "kingstown-haunted-ramparts",
+        "name": "(KINGSTOWN) haunted-ramparts",
+        "file": "music/(KINGSTOWN) haunted-ramparts.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
         "key": "atrium-carceri-forgotten-gods-full-album",
-        "name": "Atrium Carceri - Forgotten Gods [ FULL ALBUM ]",
-        "file": "music/Atrium Carceri - Forgotten Gods [ FULL ALBUM ].mp3",
+        "name": "Atrium Carceri - Forgotten Gods FULL ALBUM",
+        "file": "music/Atrium Carceri - Forgotten Gods FULL ALBUM.mp3",
         "category": "music",
         "loop": true
     },
@@ -120,22 +148,22 @@
     },
     {
         "key": "dead-ambient-dark-ambient-mix-by-atrium-carceri-1",
-        "name": "Dead Ambient :: Dark Ambient Mix by Atrium Carceri 1",
-        "file": "music/Dead Ambient :: Dark Ambient Mix by Atrium Carceri 1.mp3",
+        "name": "Dead Ambient Dark Ambient Mix by Atrium Carceri 1",
+        "file": "music/Dead Ambient Dark Ambient Mix by Atrium Carceri 1.mp3",
         "category": "music",
         "loop": true
     },
     {
         "key": "dead-ambient-dark-ambient-mix-by-atrium-carceri-2",
-        "name": "Dead Ambient :: Dark Ambient Mix by Atrium Carceri 2",
-        "file": "music/Dead Ambient :: Dark Ambient Mix by Atrium Carceri 2.mp3",
+        "name": "Dead Ambient Dark Ambient Mix by Atrium Carceri 2",
+        "file": "music/Dead Ambient Dark Ambient Mix by Atrium Carceri 2.mp3",
         "category": "music",
         "loop": true
     },
     {
         "key": "dead-ambient-dark-ambient-mix-by-atrium-carceri-3",
-        "name": "Dead Ambient :: Dark Ambient Mix by Atrium Carceri 3",
-        "file": "music/Dead Ambient :: Dark Ambient Mix by Atrium Carceri 3.mp3",
+        "name": "Dead Ambient Dark Ambient Mix by Atrium Carceri 3",
+        "file": "music/Dead Ambient Dark Ambient Mix by Atrium Carceri 3.mp3",
         "category": "music",
         "loop": true
     },
@@ -150,13 +178,6 @@
         "key": "for-eternity",
         "name": "For Eternity",
         "file": "music/For Eternity.mp3",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "heretoir-the-circle-full-album",
-        "name": "Heretoir - The Circle (Full Album)",
-        "file": "music/Heretoir - The Circle (Full Album).mp3",
         "category": "music",
         "loop": true
     },
@@ -213,48 +234,6 @@
         "key": "sir-lancelot-s-tomb-feat-death-verified",
         "name": "Sir Lancelot's Tomb (feat. Death Verified)",
         "file": "music/Sir Lancelot's Tomb (feat. Death Verified).mp3",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "intro-dg2-between-the-shadows-2004-remaster-hd-remastered",
-        "name": "[INTRO DG2] Between the Shadows (2004 Remaster HD) (Remastered)",
-        "file": "music/[INTRO DG2] Between the Shadows (2004 Remaster HD) (Remastered).mp3",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "intro-dg3-gnaal-the-bowed-lyre-taglharpe-funeral-march",
-        "name": "[INTRO DG3] \"Gnaal\" - the bowed lyre (taglharpe) \"Funeral march\"",
-        "file": "music/[INTRO DG3] \"Gnaal\" - the bowed lyre (taglharpe) \"Funeral march\".mp3",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "katedra-mod-y-chor-kobiet-allmother-s-theme-tainted-grail-the-fall-of-avalon-music-soundtrack",
-        "name": "[KATEDRA] MODŁY CHÓR KOBIET Allmother's Theme ｜ Tainted Grail The Fall of Avalon Music Soundtrack",
-        "file": "music/[KATEDRA] MODŁY CHÓR KOBIET Allmother's Theme ｜ Tainted Grail The Fall of Avalon Music Soundtrack.mp3",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "katedra-defiled-temple",
-        "name": "[KATEDRA] defiled-temple",
-        "file": "music/[KATEDRA] defiled-temple.m4a",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "kingstown-haunted-ramparts",
-        "name": "[KINGSTOWN] haunted-ramparts",
-        "file": "music/[KINGSTOWN] haunted-ramparts.m4a",
-        "category": "music",
-        "loop": true
-    },
-    {
-        "key": "targ-wspomnien-these-walls-tell-tales",
-        "name": "[TARG WSPOMNIEŃ] these-walls-tell-tales",
-        "file": "music/[TARG WSPOMNIEŃ] these-walls-tell-tales.m4a",
         "category": "music",
         "loop": true
     }
