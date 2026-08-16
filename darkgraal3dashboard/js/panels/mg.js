@@ -32,6 +32,7 @@ import {
     handleSoundboardAction, reorderPlaylistEditorTrack, reorderMainOrder, setPlaylistEditorName
 } from "../../../shared/soundboard/control-panel.js";
 import { getNowPlaying } from "../../../shared/soundboard/player-engine.js";
+import { buildHandoutsControlHtml, handleHandoutsAction } from "../../../shared/handouts/control-panel.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -93,6 +94,7 @@ function renderTopTabs(activeTab) {
         <nav class="tabs mg-top-tabs">
             <button type="button" class="tab-btn ${activeTab === "kampania" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="kampania">Kampania</button>
             <button type="button" class="tab-btn ${activeTab === "muzyka" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="muzyka">Muzyka</button>
+            <button type="button" class="tab-btn ${activeTab === "handouty" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="handouty">Handouty</button>
         </nav>
     `;
 }
@@ -442,12 +444,14 @@ function buildHtml(ctx) {
 
             <div class="mg-grid-12">
                 <div class="mg-characters-col">
-                    ${activeTopTab === "muzyka" ? buildSoundboardControlHtml(ctx, nowPlaying) : `
+                    ${activeTopTab === "muzyka" ? buildSoundboardControlHtml(ctx, nowPlaying) : ""}
+                    ${activeTopTab === "handouty" ? buildHandoutsControlHtml(ctx) : ""}
+                    ${activeTopTab === "kampania" ? `
                         ${renderModifierModule(ctx)}
                         ${renderLegendaryCatalog(ctx)}
                         ${renderCharacterTabs(characters, activeKey)}
                         ${activeCharacter ? renderCharacterBlock(activeCharacter, ctx) : `<p class="placeholder">Brak wybranej postaci.</p>`}
-                    `}
+                    ` : ""}
                 </div>
 
                 <div class="mg-roller-col">
@@ -815,6 +819,12 @@ function wireEvents(root) {
 
         // Akcje modułu Dźwięki (play/stop muzyki, wyzwolenie efektu) - patrz shared/soundboard/.
         if (handleSoundboardAction(action, btn, { ...root._ctx, updateState })) {
+            rerender(root);
+            return;
+        }
+
+        // Akcje modułu Handouty (pokaż/ukryj, powiększenie) - patrz shared/handouts/.
+        if (handleHandoutsAction(action, btn, { ...root._ctx, updateState })) {
             rerender(root);
             return;
         }

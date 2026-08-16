@@ -12,14 +12,17 @@ import { advancePlaylistTrack } from "../../shared/soundboard/control-panel.js";
 
 import * as characterPanel from "./panels/character.js";
 import * as rollerPanel from "./panels/roller.js";
+import * as handoutsPanel from "./panels/handouts.js";
 import * as mgPanel from "./panels/mg.js";
 
-// Zakładki ("Postać"/"Rzuty") istnieją WYŁĄCZNIE dla Graczy - MG w ogóle ich nie widzi (patrz
-// applyRoleVisibility()) i ma zamiast nich jeden własny, nietabowy widok #mgUnifiedRoot
-// (panels/mg.js - siatka 12 kolumn: nawigacja po postaciach + karty postaci + panel rzutów MG).
+// Zakładki ("Postać"/"Rzuty"/"Handouty") istnieją WYŁĄCZNIE dla Graczy - MG w ogóle ich nie widzi
+// (patrz applyRoleVisibility()) i ma zamiast nich jeden własny, nietabowy widok #mgUnifiedRoot
+// (panels/mg.js - siatka 12 kolumn: nawigacja po postaciach + karty postaci + panel rzutów MG;
+// Handouty MG steruje z jednego z górnych tabów tego widoku, nie z osobnej zakładki).
 const PANELS = {
     character: characterPanel,
-    roller: rollerPanel
+    roller: rollerPanel,
+    handouts: handoutsPanel
 };
 
 const bootStatus = document.getElementById("bootStatus");
@@ -176,7 +179,7 @@ async function bootstrap() {
                 applyRoleVisibility();
                 renderAll();
                 ensureSoundboardMounted();
-                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/5 plików.`);
+                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/6 plików.`);
             }
         });
     } catch (err) {
