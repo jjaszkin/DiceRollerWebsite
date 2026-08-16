@@ -125,9 +125,22 @@ function setupSaveIndicator() {
     });
 }
 
+/** Zatrzymuje wspólne odtwarzanie (muzyka/playlista w tle) dla WSZYSTKICH - wywoływane, gdy MG
+ *  zamyka swój widok (patrz setupChangeCharacterButton). Bez tego muzyka/playlista zostałaby
+ *  puszczona dalej bez nikogo, kto by nią sterował - a playlisty w ogóle przestałyby się
+ *  automatycznie przesuwać, bo tylko przeglądarka MG jest "dyrygentem" (patrz
+ *  ensureSoundboardMounted, control-panel.js#advancePlaylistTrack). Efekty jednorazowe (sfxFired)
+ *  celowo zostają - to już i tak przebrzmiały, jednorazowy sygnał, nie ma czego zatrzymywać. */
+function stopSharedPlayback() {
+    const state = getState();
+    if (!state?.soundboard?.music) return;
+    updateState((s) => { if (s.soundboard) s.soundboard.music = null; });
+}
+
 function setupChangeCharacterButton() {
     if (!changeCharacterBtn) return;
     changeCharacterBtn.addEventListener("click", () => {
+        if (session?.role === "mg") stopSharedPlayback();
         showGate(cachedGameData, {
             allowCancel: true,
             onDone: (selection) => {

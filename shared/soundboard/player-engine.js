@@ -80,6 +80,16 @@ export function mountSoundboardPlayer(container, { manifest, subscribe, getState
         }
     });
 
+    // Kropka na przycisku FAB pokazująca, czy TA przeglądarka faktycznie coś teraz słyszy (nie to
+    // samo, co "state.soundboard.music istnieje" - to mogłoby być true nawet gdy audio jest
+    // zablokowane/jeszcze się ładuje). Zdarzeniowo (play/pause), nie odpytywaniem co sekundę.
+    musicAudio.addEventListener("play", () => {
+        if (toggleBtnRef) toggleBtnRef.classList.add("sb-player-toggle-active");
+    });
+    musicAudio.addEventListener("pause", () => {
+        if (toggleBtnRef) toggleBtnRef.classList.remove("sb-player-toggle-active");
+    });
+
     function effectiveVolume(trackVolume) {
         return masterMuted ? 0 : clamp01((trackVolume ?? 1) * masterVolume);
     }

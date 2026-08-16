@@ -276,6 +276,7 @@
 }
 
 .sb-player-toggle {
+    position: relative;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -290,6 +291,21 @@
 }
 
 .sb-player-toggle:hover { border-color: var(--gold-dim, #BD952F); }
+
+/* Kropka pokazująca, że TA przeglądarka faktycznie coś teraz odtwarza (patrz player-engine.js -
+   zdarzenia play/pause na <audio>, nie samo istnienie state.soundboard.music). */
+.sb-player-toggle-active::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gold, #E8B83D);
+    border: 2px solid var(--bg-0, #0a0806);
+    box-shadow: 0 0 5px rgba(232, 184, 61, 0.8);
+}
 
 /* Przeglądarka zablokowała autoplay (patrz player-engine.js#showUnlockPrompt) - sam przycisk FAB
    pulsuje zamiast osobnego, dodatkowego pływającego przycisku (który w poprzedniej wersji
