@@ -2,19 +2,14 @@
     "gaven": {
         "type": "Bestia",
         "traits": [
-            "Możesz widzieć w ciemności.",
-            "Małe porcje futra wyrastają z twojego ciała.",
+            "Widzisz w ciemności.",
             "Twój zmysł węchu jest wzmocniony.",
-            "Jesz tylko surowe mięso.",
             "Emitujesz nieprzyjemny zapach.",
-            "Twoja twarz jest wykrzywiona, kły wystają z twojej szczęki.",
-            "Normalni ludzie boją się ciebie, ale jesteś silniejszy.",
-            "Dodaj jedną kość podczas bijatyki.",
+            "Twoja twarz jest wykrzywiona, kły wystają z twojej szczęki, a całe ciało pokrywa gęsta sierść.",
+            "Normalni ludzie boją się ciebie, ale jesteś silniejszy - dodaj jedną kość podczas bijatyki.",
             "Zmniejsz kostkę, gdy próbujesz zrobić cokolwiek, co wiąże się z naturalną charyzmą.",
-            "Masz wielką żądzę krwi, którą musisz zaspokoić.",
-            "Musisz udać się na pustkowie na 1k3 dni i pożreć zwierzęta.",
-            "Twoje ciało pokrywają twarde, kościste wypustki i narośla.",
-            "Otrzymujesz dodatkową ochronę, ale nie możesz nosić zwykłej zbroi ani ubrań.",
+            "Jesz tylko surowe mięso i masz wielką żądzę krwi, którą musisz zaspokajać co 2-3 dni.",
+            "Twoje ciało pokrywają twarde, kościste wypustki i narośla - otrzymujesz dodatkową ochronę, ale nie możesz nosić zwykłej zbroi ani ubrań.",
             "Możesz wyczuć emocje strachu i złości w promieniu mili.",
             "Twoja furia przejmuje nad tobą kontrolę, gdy wyczujesz słabość przeciwnika."
         ],
@@ -48,17 +43,14 @@
     "palanore": {
         "type": "Demon",
         "traits": [
-            "Podąża za Tobą delikatny zapach siarki.",
-            "Przekroczenie progu kaplicy zadaje Ci Mniejszą Ranę.",
-            "Zdobądź dodatkową kość, próbując kłamać lub uwodzić.",
-            "Krótkie skrzydła wyrastają z twoich pleców, dzięki czemu możesz latać przez minutę.",
-            "Woda święcona zadaje ci Mniejsze Rany.",
-            "Twoje skrzydła są w pełnej rozpiętości, co pozwala latać w nieskończoność.",
-            "Na twojej głowie tworzą się rogi.",
-            "Ludzie unikają cię jak zarazy.",
-            "Posiadasz aurę strachu, która osłabia innych wokół ciebie, ale twoje ciało zyskuje podatność na poświęcone przedmioty i symbole.",
-            "Możesz spopielać małe przedmioty lub ranisz przeciwnika samym spojrzeniem.",
-            "Jednakże, każde użycie tej mocy pogłębia twoje demoniczne cechy."
+            "Podąża za Tobą mocny zapach siarki.",
+            "Przekroczenie progu kaplicy, święte symbole i woda święcona zadają Ci Mniejszą Ranę.",
+            "Masz dodatkową kość, gdy kłamiesz i uwodzisz.",
+            "Twoje skrzydła na plecach są w pełnej rozpiętości, co pozwala ci latać.",
+            "Na twojej głowie wyrosły rogi.",
+            "Ludzie unikają cię jak zarazy - posiadasz aurę strachu, która osłabia innych wokół ciebie.",
+            "Możesz spopielać małe przedmioty lub palisz przeciwników samym spojrzeniem.",
+            "Każde użycie demonicznych mocy objawia się kolejnymi diabelskimi cechami."
         ],
         "powers": [
             {
@@ -94,17 +86,14 @@
     "cadwyn": {
         "type": "Nieumarły",
         "traits": [
-            "Twoja skóra jest poszarzała, a włosy wypadają.",
-            "W dziąsłach rozwijają się kły.",
-            "Musisz spuszczać krew ze zwierzęcia trzy razy dziennie lub odjąć kość Archetypu za każdy pominięty posiłek.",
-            "Twoje oczy są zapadnięte.",
-            "Kroplę krwi możesz wyczuć z odległości mili.",
-            "Przez godzinę po nakarmieniu zyskujesz dodatkową kość w dowolnym Archetypie.",
-            "W nocy twoje zmysły wyostrzają się i zyskujesz dodatkową kość podczas walki bez broni.",
+            "Twoja skóra jest poszarzała, oczy są zapadnięte, a w dziąsłach rozwinęły się kły.",
             "Twoje ciało staje się częściowo rozkładające, pokryte ropą i wysuszonymi tkankami.",
+            "Kroplę krwi możesz wyczuć z odległości mili.",
+            "Po nakarmieniu zyskujesz dodatkową kość w dowolnym Archetypie.",
+            "W nocy twoje zmysły wyostrzają się i zyskujesz dodatkową kość podczas walki bez broni.",
             "Uzyskujesz odporność na cięcia i kłucia, ale ludzie czują obrzydzenie i strach, gdy zbliżasz się do nich.",
             "Możesz wykryć obecność żywych istot i wrażeń, które były częścią śmierci w danym miejscu.",
-            "Możesz zadać dodatkowe obrażenia duchom i innym umarłym."
+            "Możesz zadać dodatkowe obrażenia duchom i innym umarłym (+1 Kość)."
         ],
         "powers": [
             {
@@ -148,17 +137,14 @@
     "brandon": {
         "type": "Nieumarły",
         "traits": [
-            "Twoja skóra jest poszarzała, a włosy wypadają.",
-            "W dziąsłach rozwijają się kły.",
-            "Musisz spuszczać krew ze zwierzęcia trzy razy dziennie lub odjąć kość Archetypu za każdy pominięty posiłek.",
-            "Twoje oczy są zapadnięte.",
-            "Kroplę krwi możesz wyczuć z odległości mili.",
-            "Przez godzinę po nakarmieniu zyskujesz dodatkową kość w dowolnym Archetypie.",
-            "W nocy twoje zmysły wyostrzają się i zyskujesz dodatkową kość podczas walki bez broni.",
+            "Twoja skóra jest poszarzała, oczy są zapadnięte, a w dziąsłach rozwinęły się kły.",
             "Twoje ciało staje się częściowo rozkładające, pokryte ropą i wysuszonymi tkankami.",
+            "Kroplę krwi możesz wyczuć z odległości mili.",
+            "Po nakarmieniu zyskujesz dodatkową kość w dowolnym Archetypie.",
+            "W nocy twoje zmysły wyostrzają się i zyskujesz dodatkową kość podczas walki bez broni.",
             "Uzyskujesz odporność na cięcia i kłucia, ale ludzie czują obrzydzenie i strach, gdy zbliżasz się do nich.",
             "Możesz wykryć obecność żywych istot i wrażeń, które były częścią śmierci w danym miejscu.",
-            "Możesz zadać dodatkowe obrażenia duchom i innym umarłym."
+            "Możesz zadać dodatkowe obrażenia duchom i innym umarłym (+1 Kość)."
         ],
         "powers": [
             {

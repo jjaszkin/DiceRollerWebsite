@@ -206,16 +206,16 @@ export function buildSoundboardControlHtml(ctx, nowPlaying = null) {
     return `
         <div class="card sb-module">
             <h3>Dźwięki</h3>
-            ${music.length ? `
-                <h4>Muzyka</h4>
-                <div class="sb-list">${music.map(e => renderMusicCard(e, ctx.state, nowPlaying)).join("")}</div>
-            ` : ""}
-
             <h4>Playlisty</h4>
             <div class="sb-list">
                 ${playlists.map(pl => renderPlaylistCard(pl.key, pl, ctx.state, nowPlaying)).join("")}
             </div>
             <button type="button" class="sb-add-playlist" data-action="sb-new-playlist">+ Dodaj playlistę</button>
+
+            ${music.length ? `
+                <h4>Muzyka</h4>
+                <div class="sb-list">${music.map(e => renderMusicCard(e, ctx.state, nowPlaying)).join("")}</div>
+            ` : ""}
 
             ${sfx.length ? `
                 <h4>Efekty</h4>
