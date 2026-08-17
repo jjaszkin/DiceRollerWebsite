@@ -70,14 +70,14 @@ function renderEquipment(character, data, state) {
         return `
             <button class="item-chip legendary ${disabled ? "item-disabled" : ""}" data-action="open-item" data-key="${key}"
                 title="${escapeHtml(resolveItemTooltip(state, data, key))}">
-                ${escapeHtml(item.name)}${disabled ? " (wygaszony)" : ""}
+                ${escapeHtml(item.name)}
             </button>
         `;
     }).join("");
     const plainHtml = (character.equipment || []).map(e => {
         const titleAttr = e.tooltip ? ` title="${escapeHtml(e.tooltip)}"` : "";
         if (e.disabled) {
-            return `<span class="item-chip item-disabled"${titleAttr}>${escapeHtml(e.name)} (wygaszony)</span>`;
+            return `<span class="item-chip item-disabled"${titleAttr}>${escapeHtml(e.name)}</span>`;
         }
         return `<button class="item-chip" data-action="use-equipment" data-item-id="${e.id}"${titleAttr}>${escapeHtml(e.name)}</button>`;
     }).join("");
