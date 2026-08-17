@@ -899,12 +899,18 @@ function wireEvents(root) {
         if (e.target.id === "sbPlaylistNameInput") setPlaylistEditorName(e.target.value);
     });
 
-    // Strzałki lewo/prawo przełączają powiększony handout (patrz shared/handouts/zoom.js) -
-    // na `document`, nie na `root`, bo warstwa powiększenia nie musi mieć fokusu klawiatury,
-    // żeby strzałki zadziałały. Nieaktywne, gdy nic nie jest powiększone (getZoomKey() === null),
-    // żeby nie przechwytywać strzałek używanych gdzie indziej w aplikacji (np. w polach liczbowych).
+    // Strzałki lewo/prawo przełączają powiększony handout, Escape go zamyka (patrz
+    // shared/handouts/zoom.js) - na `document`, nie na `root`, bo warstwa powiększenia nie musi
+    // mieć fokusu klawiatury, żeby to zadziałało. Nieaktywne, gdy nic nie jest powiększone
+    // (getZoomKey() === null), żeby nie przechwytywać klawiszy używanych gdzie indziej w
+    // aplikacji (np. strzałek w polach liczbowych).
     document.addEventListener("keydown", (e) => {
         if (!getZoomKey()) return;
+        if (e.key === "Escape") {
+            e.preventDefault();
+            if (handleHandoutsAction("ho-close-zoom", { dataset: {} }, root._ctx)) rerender(root);
+            return;
+        }
         if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
         e.preventDefault();
         const action = e.key === "ArrowLeft" ? "ho-zoom-prev" : "ho-zoom-next";

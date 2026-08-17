@@ -24,10 +24,16 @@ function wireEvents(root) {
         }
     });
 
-    // Strzałki lewo/prawo przełączają powiększony handout - patrz analogiczny komentarz w
-    // panels/mg.js. Na `document`, bo warstwa powiększenia nie musi mieć fokusu klawiatury.
+    // Strzałki lewo/prawo przełączają powiększony handout, Escape go zamyka - patrz analogiczny
+    // komentarz w panels/mg.js. Na `document`, bo warstwa powiększenia nie musi mieć fokusu
+    // klawiatury.
     document.addEventListener("keydown", (e) => {
         if (!getZoomKey()) return;
+        if (e.key === "Escape") {
+            e.preventDefault();
+            if (handleHandoutsViewerAction("ho-close-zoom", { dataset: {} }, root._ctx)) rerender(root);
+            return;
+        }
         if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
         e.preventDefault();
         const action = e.key === "ArrowLeft" ? "ho-zoom-prev" : "ho-zoom-next";
