@@ -42,6 +42,12 @@ import { buildJournalHtml, handleJournalAction } from "./journal.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
+// Tryb "Bez Archetypu" - czasem gracz musi rzucić inną liczbą kości niż to, co ma w Archetypach
+// (np. na polecenie MG) - zamiast wartości Archetypu pula bierze się z ręcznie wpisanej liczby
+// (ui.freeDiceCount). Kości Graala nadal można dorzucić - ich limit to po prostu aktualna wielkość
+// puli, którą by ona nie była (patrz currentPoolDice/graalMax w buildSetupHtml).
+const FREE_ARCHETYPE_KEY = "none";
+
 const DIE_STATE_CLASS = {
     one: "die-removed",
     cancelled: "die-cancelled",
@@ -53,6 +59,7 @@ const DIE_STATE_CLASS = {
 const ui = {
     selectedCharacterKey: null, // tylko dla MG, patrz resolveActiveKey()
     archetypeKey: "rycerz",
+    freeDiceCount: 1, // tylko w trybie "Bez Archetypu" - patrz FREE_ARCHETYPE_KEY
     graalDiceUsed: 0,
     selectedBonusPowerIds: new Set(), // Moce bonus_dice zaznaczone do dorzucenia PRZED rzutem
     pendingRoll: null // podgląd rzutu do zatwierdzenia, patrz buildPendingRoll()
@@ -67,7 +74,16 @@ function resolveActiveKey(state, session) {
 }
 
 function archetypeLabel(data, key) {
+    if (key === FREE_ARCHETYPE_KEY) return "Bez Archetypu";
     return data.archetypes.find(a => a.key === key)?.label || key;
+}
+
+/** Wielkość puli bazowej WYBRANEGO Archetypu, albo - w trybie "Bez Archetypu" - ręcznie wpisanej
+ *  wolnej liczby kości (ui.freeDiceCount). Jedyne miejsce, które woła archetypeCurrent() na wybór
+ *  gracza - character.archetypes[FREE_ARCHETYPE_KEY] nie istnieje, więc wywołanie wprost by rzuciło. */
+function currentPoolDice(character, archetypeKey) {
+    if (archetypeKey === FREE_ARCHETYPE_KEY) return Math.max(0, ui.freeDiceCount || 0);
+    return archetypeCurrent(character.archetypes[archetypeKey]);
 }
 
 function isPowerUsed(character, power) {
@@ -153,6 +169,8 @@ function buildSetupHtml(state, data, character, transformation, archetypeDice) {
         .filter(p => ui.selectedBonusPowerIds.has(p.id))
         .reduce((sum, p) => sum + (p.effect.amount || 0), 0);
     const poolTotal = archetypeDice + ui.graalDiceUsed + bonusDiceTotal;
+    const isFree = ui.archetypeKey === FREE_ARCHETYPE_KEY;
+    const poolSourceLabel = isFree ? "wolnej puli" : "Archetypu";
 
     return `
         <div class="roller-setup">
@@ -167,10 +185,19 @@ function buildSetupHtml(state, data, character, transformation, archetypeDice) {
                         </button>
                     `;
                 }).join("")}
+                <button class="archetype-chip ${isFree ? "archetype-chip-active" : ""}"
+                    data-action="select-archetype" data-key="${FREE_ARCHETYPE_KEY}">
+                    Bez Archetypu
+                </button>
             </div>
+            ${isFree ? `
+                <label class="mg-inline-field">Liczba kości (wolna pula)
+                    <input type="number" min="0" class="mg-input-num" id="rollerFreeDiceCount" value="${ui.freeDiceCount}">
+                </label>
+            ` : ""}
 
             <h3>Kości Graala</h3>
-            <p class="placeholder">Pula Kości Graala nie jest współdzielona - deklarujesz ją każdorazowo do TEGO rzutu, maksymalnie tyle, ile wynosi aktualna wartość wybranego Archetypu (${graalMax}).</p>
+            <p class="placeholder">Pula Kości Graala nie jest współdzielona - deklarujesz ją każdorazowo do TEGO rzutu, maksymalnie tyle, ile wynosi aktualna wielkość ${poolSourceLabel} (${graalMax}).</p>
             <div class="stat-controls">
                 <button class="btn btn-xs" data-action="graal-dec">−</button>
                 <span>${ui.graalDiceUsed} <span class="placeholder">(maks. ${graalMax})</span></span>
@@ -181,7 +208,7 @@ function buildSetupHtml(state, data, character, transformation, archetypeDice) {
 
             <div class="roller-pool-summary">
                 Pula testu: <strong>${poolTotal}</strong>
-                <span class="placeholder">(${archetypeDice} z Archetypu + ${ui.graalDiceUsed} Graala${bonusDiceTotal ? ` + ${bonusDiceTotal} z Mocy` : ""})</span>
+                <span class="placeholder">(${archetypeDice} z ${poolSourceLabel} + ${ui.graalDiceUsed} Graala${bonusDiceTotal ? ` + ${bonusDiceTotal} z Mocy` : ""})</span>
             </div>
 
             <button class="btn btn-gold" data-action="do-roll">Rzuć kośćmi</button>
@@ -236,7 +263,7 @@ function buildHtml(ctx) {
     if (!character) return `<p class="placeholder">Brak wybranej postaci.</p>`;
 
     const transformation = data.transformations[activeKey];
-    const archetypeDice = archetypeCurrent(character.archetypes[ui.archetypeKey]);
+    const archetypeDice = currentPoolDice(character, ui.archetypeKey);
 
     const selectorHtml = session.role === "mg" ? `
         <select id="rollerCharacterPicker" class="char-picker">
@@ -275,6 +302,17 @@ function wireEvents(root) {
             if (e.target.checked) ui.selectedBonusPowerIds.add(id);
             else ui.selectedBonusPowerIds.delete(id);
             rerender(root);
+            return;
+        }
+        if (e.target.id === "rollerFreeDiceCount") {
+            const { state, session } = root._ctx;
+            const activeKey = resolveActiveKey(state, session);
+            const character = state.characters[activeKey];
+            ui.freeDiceCount = Math.max(0, parseInt(e.target.value, 10) || 0);
+            if (character) {
+                ui.graalDiceUsed = clamp(ui.graalDiceUsed, 0, currentPoolDice(character, ui.archetypeKey));
+            }
+            rerender(root);
         }
     });
 
@@ -289,7 +327,7 @@ function wireEvents(root) {
             const character = state.characters[activeKey];
             ui.archetypeKey = btn.dataset.key;
             if (character) {
-                const newMax = archetypeCurrent(character.archetypes[ui.archetypeKey]);
+                const newMax = currentPoolDice(character, ui.archetypeKey);
                 ui.graalDiceUsed = clamp(ui.graalDiceUsed, 0, newMax);
             }
             rerender(root);
@@ -300,7 +338,7 @@ function wireEvents(root) {
             const { state, session } = root._ctx;
             const activeKey = resolveActiveKey(state, session);
             const character = state.characters[activeKey];
-            const max = character ? archetypeCurrent(character.archetypes[ui.archetypeKey]) : 0;
+            const max = character ? currentPoolDice(character, ui.archetypeKey) : 0;
             ui.graalDiceUsed = clamp(ui.graalDiceUsed + (action === "graal-inc" ? 1 : -1), 0, max);
             rerender(root);
             return;
@@ -344,7 +382,7 @@ function doRoll(root) {
     const transformation = data.transformations[activeKey];
     if (!character) return;
 
-    const archetypeDice = archetypeCurrent(character.archetypes[ui.archetypeKey]);
+    const archetypeDice = currentPoolDice(character, ui.archetypeKey);
     const bonusPowers = preRollBonusPowers(character, transformation)
         .filter(p => ui.selectedBonusPowerIds.has(p.id));
     const bonusDiceTotal = bonusPowers.reduce((sum, p) => sum + (p.effect.amount || 0), 0);
