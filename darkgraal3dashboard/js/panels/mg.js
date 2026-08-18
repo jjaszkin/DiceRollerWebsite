@@ -35,7 +35,7 @@ import { getNowPlaying } from "../../../shared/soundboard/player-engine.js";
 import {
     buildHandoutsControlHtml, handleHandoutsAction, reorderHandoutsOrder
 } from "../../../shared/handouts/control-panel.js";
-import { getZoomKey } from "../../../shared/handouts/zoom.js";
+import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -916,6 +916,8 @@ function wireEvents(root) {
         const action = e.key === "ArrowLeft" ? "ho-zoom-prev" : "ho-zoom-next";
         if (handleHandoutsAction(action, { dataset: {} }, root._ctx)) rerender(root);
     });
+
+    wireZoomPan(root);
 }
 
 export function render(root, ctx) {
