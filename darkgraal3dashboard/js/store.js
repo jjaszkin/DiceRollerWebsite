@@ -11,6 +11,9 @@ let gameData = null;
 let connected = false;
 const listeners = new Set();
 let saveTimer = null;
+// Prawdziwe od touch() aż do momentu, gdy persistCampaign() faktycznie dograł do Firebase (czyli
+// obejmuje CAŁE okno: debounce + sam zapis sieciowy) - patrz użycie w connectCampaign() niżej.
+let saveInFlight = false;
 let onSaveStatus = () => {};
 
 const SAVE_DEBOUNCE_MS = 600;
@@ -55,7 +58,13 @@ export function connectCampaign() {
                 resolved = true;
                 resolve(state);
             } else {
-                // Zmiana przyszła z zewnątrz (inna karta/inny gracz/MG) - zaktualizuj lokalnie bez re-zapisu.
+                // Zmiana przyszła z zewnątrz (inna karta/inny gracz/MG). Jeśli WŁASNA zmiana wciąż
+                // czeka na zapis (patrz saveInFlight/scheduleSave), NIE nadpisuj nią lokalnego stanu -
+                // ten przychodzący snapshot jest sprzed naszego jeszcze niezapisanego touch() i
+                // cofnąłby go (np. auto-przejście playlisty na kolejny utwór po "ended" ginęło w ten
+                // sposób, gdy ktokolwiek inny zapisał cokolwiek w tym samym ~600ms oknie). Nasz
+                // zaplanowany zapis i tak wkrótce sam odświeży serwer i wróci tu echem.
+                if (saveInFlight) return;
                 const defaults = createDefaultState(gameData);
                 state = remoteState ? mergeWithDefaults(defaults, migrateLoadedState(remoteState)) : defaults;
                 notify();
@@ -110,6 +119,7 @@ export function touch() {
 
 function scheduleSave() {
     onSaveStatus("pending");
+    saveInFlight = true;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(async () => {
         try {
@@ -119,6 +129,8 @@ function scheduleSave() {
         } catch (err) {
             console.error("[DarkGraal3] Błąd zapisu do Firebase:", err);
             onSaveStatus("error", err.message);
+        } finally {
+            saveInFlight = false;
         }
     }, SAVE_DEBOUNCE_MS);
 }

@@ -29,7 +29,8 @@ import {
 import { buildJournalHtml, handleJournalAction } from "./journal.js";
 import {
     buildSoundboardControlHtml, buildSoundboardPlaylistEditorHtml, buildPlaylistPreviewHtml,
-    handleSoundboardAction, reorderPlaylistEditorTrack, reorderMainOrder, setPlaylistEditorName
+    handleSoundboardAction, reorderPlaylistEditorTrack, reorderMainOrder, setPlaylistEditorName,
+    updateSoundboardProgressInPlace
 } from "../../../shared/soundboard/control-panel.js";
 import { getNowPlaying } from "../../../shared/soundboard/player-engine.js";
 import {
@@ -925,10 +926,18 @@ export function render(root, ctx) {
         wireEvents(root);
         root.dataset.wired = "1";
         // Odświeża pasek postępu utworu co sekundę - TYLKO gdy zakładka Muzyka jest aktywna i coś
-        // faktycznie gra (patrz player-engine.js#getNowPlaying), żeby nie przerenderowywać całego
-        // panelu MG bez potrzeby.
+        // faktycznie gra (patrz player-engine.js#getNowPlaying). Aktualizuje TYLKO pasek postępu w
+        // miejscu (patrz control-panel.js#updateSoundboardProgressInPlace) zamiast pełnego
+        // rerender() - pełne przerysowanie co sekundę niszczyło i odtwarzało od zera cały panel,
+        // co dawało wrażenie "pulsowania" przycisku Stop (retrigger CSS :hover-transition) i gubiło
+        // wpisywaną wartość + fokus w polu "Liczba kości" w Rzucie MG (który leży w tym samym
+        // korzeniu DOM, mimo że wizualnie jest poza zakładką Muzyka).
         setInterval(() => {
-            if (ui.activeTopTab === "muzyka" && getNowPlaying()) rerender(root);
+            if (ui.activeTopTab !== "muzyka") return;
+            const nowPlaying = getNowPlaying();
+            if (!nowPlaying) return;
+            const updated = updateSoundboardProgressInPlace(root, root._ctx.state, nowPlaying);
+            if (!updated) rerender(root);
         }, 1000);
     }
 }
