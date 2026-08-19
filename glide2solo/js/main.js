@@ -16,6 +16,7 @@ import * as questsPanel from "./panels/quests.js";
 import * as mapPanel from "./panels/map.js";
 import * as journalPanel from "./panels/journal.js";
 import * as contactsPanel from "./panels/contacts.js";
+import * as backupPanel from "./panels/backup.js";
 
 const PANELS = {
     character: characterPanel,
@@ -25,7 +26,8 @@ const PANELS = {
     quests: questsPanel,
     map: mapPanel,
     journal: journalPanel,
-    contacts: contactsPanel
+    contacts: contactsPanel,
+    backup: backupPanel
 };
 
 // Klucz pod którym w localStorage zapamiętujemy ostatnio używane imię postaci — czysta

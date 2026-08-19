@@ -149,6 +149,12 @@ body {
 
 .card + .card { margin-top: 12px; }
 
+.backup-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
 .card h2, .card h3 {
     margin: 0 0 10px;
     font-family: var(--mono);
