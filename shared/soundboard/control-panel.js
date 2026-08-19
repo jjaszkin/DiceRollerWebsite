@@ -112,6 +112,31 @@ function renderProgressBar(key, nowPlaying) {
     `;
 }
 
+/** Aktualizuje TYLKO pasek postępu (wypełnienie + tekst czasu) aktualnie grającej karty w `root`,
+ *  bez przerysowywania reszty panelu - do wywoływania co sekundę podczas odtwarzania (patrz
+ *  panels/mg.js#render, setInterval). Pełny rerender() co sekundę niszczyłby i odtwarzał od zera
+ *  KAŻDY element panelu - m.in. przycisk Stop (retriggerując jego CSS `:hover`-transition, co
+ *  wyglądało jak ciągłe pulsowanie) i pole "Liczba kości" w Rzucie MG (gubiąc wpisywaną wartość
+ *  i fokus co sekundę, bo to pole nigdy nie jest w `activeTopTab === "muzyka"`, a mimo to leży w
+ *  TYM SAMYM `root`, który rerender() w całości zastępuje). Zwraca `true`, jeśli pasek został
+ *  zaktualizowany w miejscu, `false` gdy karty jeszcze nie ma w DOM (np. dopiero co przełączono na
+ *  zakładkę Muzyka) - wywołujący powinien wtedy zrobić pełny rerender jako fallback. */
+export function updateSoundboardProgressInPlace(root, state, nowPlaying) {
+    if (!nowPlaying) return false;
+    const music = state?.soundboard?.music;
+    const activeKey = music?.playlistId || music?.key;
+    if (!activeKey) return false;
+    const card = root.querySelector(`.sb-card[data-key="${CSS.escape(activeKey)}"]`);
+    if (!card) return false;
+    const fill = card.querySelector(".sb-progress-fill");
+    const time = card.querySelector(".sb-progress-time");
+    if (!fill || !time) return false;
+    const pct = clamp01(nowPlaying.currentTime / nowPlaying.duration) * 100;
+    fill.style.width = `${pct}%`;
+    time.textContent = `${formatTime(nowPlaying.currentTime)} / ${formatTime(nowPlaying.duration)}`;
+    return true;
+}
+
 function renderMusicCard(entry, state, nowPlaying) {
     const playing = isPlayingMusic(state, entry.key);
     const volume = playing ? (state.soundboard.music.volume ?? 0.8) : 0.8;
