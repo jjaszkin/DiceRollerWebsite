@@ -90,7 +90,7 @@ function renderCharacterTabs(characters, activeKey) {
     `;
 }
 
-/** Górne taby widoku MG ("Kampania"/"Muzyka") - w odróżnieniu od renderCharacterTabs() (który
+/** Górne taby widoku MG ("Kampania"/"Muzyka"/"Handouty"/"Backup") - w odróżnieniu od renderCharacterTabs() (który
  *  z 4 postaci jest wybrany) te przełączają, co pokazuje kolumna 1-8 (patrz buildHtml()). Kolumna
  *  9-12 (rzut MG + dziennik) zostaje widoczna ZAWSZE, niezależnie od wybranego taba - to samo
  *  świadome ograniczenie, co przy tabach postaci (patrz komentarz na górze pliku). */
@@ -100,6 +100,7 @@ function renderTopTabs(activeTab) {
             <button type="button" class="tab-btn ${activeTab === "kampania" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="kampania">Kampania</button>
             <button type="button" class="tab-btn ${activeTab === "muzyka" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="muzyka">Muzyka</button>
             <button type="button" class="tab-btn ${activeTab === "handouty" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="handouty">Handouty</button>
+            <button type="button" class="tab-btn ${activeTab === "backup" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="backup">Backup</button>
         </nav>
     `;
 }
@@ -512,13 +513,13 @@ function buildHtml(ctx) {
     return `
         <div class="mg-unified-wrap">
             ${renderTopTabs(activeTopTab)}
-            ${renderDataBackupModule()}
             ${renderCampWindFull(state)}
 
             <div class="mg-grid-12">
                 <div class="mg-characters-col">
                     ${activeTopTab === "muzyka" ? buildSoundboardControlHtml(ctx, nowPlaying) : ""}
                     ${activeTopTab === "handouty" ? buildHandoutsControlHtml(ctx) : ""}
+                    ${activeTopTab === "backup" ? renderDataBackupModule() : ""}
                     ${activeTopTab === "kampania" ? `
                         ${renderModifierModule(ctx)}
                         ${renderLegendaryCatalog(ctx)}
