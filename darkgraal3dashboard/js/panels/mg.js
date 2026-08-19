@@ -21,11 +21,13 @@ import { updateState } from "../store.js";
 import { logEvent } from "../eventLog.js";
 import { logRoll } from "../rollLog.js";
 import {
-    archetypeCurrent, despairMax, addModifier, removeModifier, toggleModifier, resolveItemTooltip
+    archetypeCurrent, despairMax, addModifier, removeModifier, toggleModifier, resolveItemTooltip,
+    createDefaultState, mergeWithDefaults, migrateLoadedState
 } from "../state.js";
 import {
     escapeHtml, clamp, preserveScroll, annotateDice, rollTestPool, TEST_TIER_LABELS
 } from "../utils.js";
+import { showToast } from "../toast.js";
 import { buildJournalHtml, handleJournalAction } from "./journal.js";
 import {
     buildSoundboardControlHtml, buildSoundboardPlaylistEditorHtml, buildPlaylistPreviewHtml,
@@ -134,6 +136,73 @@ function renderCampWindFull(state) {
             </div>
         </div>
     `;
+}
+
+/* -- Kopia zapasowa danych kampanii (eksport/import całego wspólnego stanu jako JSON) --------- */
+
+function renderDataBackupModule() {
+    return `
+        <div class="card mg-data-module">
+            <div class="mg-data-actions">
+                <button type="button" class="btn btn-sm" data-action="mg-export-data">Eksportuj dane</button>
+                <button type="button" class="btn btn-sm" data-action="mg-import-data">Importuj dane</button>
+                <input type="file" id="mgImportFileInput" accept="application/json,.json" style="display: none;">
+            </div>
+            <p class="placeholder">Kopia zapasowa całej wspólnej kampanii (postacie, dziennik, soundboard,
+                handouty) jako plik JSON. Import NADPISUJE całą kampanię dla wszystkich - używaj tylko
+                w razie awarii.</p>
+        </div>
+    `;
+}
+
+/** Ściąga CAŁY wspólny stan kampanii jako plik .json - zwykły `JSON.stringify` bez selekcji pól,
+ *  żeby kopia zapasowa była kompletna (odtworzenie przez importCampaignData powinno dać dokładnie
+ *  ten sam stan). */
+function exportCampaignData(state) {
+    const json = JSON.stringify(state, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const stamp = new Date().toISOString().replace(/[:T]/g, "-").slice(0, 16);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `darkgraal3-backup-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast("Wyeksportowano dane kampanii");
+}
+
+/** Wczytuje plik wybrany w #mgImportFileInput i - po potwierdzeniu przez MG - NADPISUJE nim całą
+ *  wspólną kampanię (dla wszystkich, natychmiast po zapisaniu do Firebase). Przepuszcza wczytane
+ *  dane przez te same createDefaultState/mergeWithDefaults/migrateLoadedState co store.js#connect-
+ *  Campaign przy starcie aplikacji - żeby stara kopia zapasowa (sprzed dodania nowszego pola w
+ *  createDefaultState) dostała rozsądne domyślne wartości zamiast zepsuć resztę aplikacji brakiem
+ *  oczekiwanego klucza. */
+async function importCampaignData(root, file) {
+    if (!file) return;
+    let parsed;
+    try {
+        parsed = JSON.parse(await file.text());
+    } catch {
+        showToast("Nieprawidłowy plik JSON");
+        return;
+    }
+    if (!parsed || typeof parsed !== "object" || !parsed.characters) {
+        showToast("Plik nie wygląda na kopię zapasową Dark Graal III");
+        return;
+    }
+    const confirmed = window.confirm(
+        "To NADPISZE całą wspólną kampanię (dla wszystkich graczy i MG) danymi z tego pliku - obecny stan przepadnie, jeśli nie masz jego kopii. Tej operacji nie da się cofnąć. Kontynuować?"
+    );
+    if (!confirmed) return;
+
+    const { data } = root._ctx;
+    const defaults = createDefaultState(data);
+    const merged = mergeWithDefaults(defaults, migrateLoadedState(parsed));
+    updateState(merged);
+    rerender(root);
+    showToast("Zaimportowano dane kampanii");
 }
 
 /* -- Moduł "Dodaj modyfikator" (globalny) --------------------------------------------------- */
@@ -443,6 +512,7 @@ function buildHtml(ctx) {
     return `
         <div class="mg-unified-wrap">
             ${renderTopTabs(activeTopTab)}
+            ${renderDataBackupModule()}
             ${renderCampWindFull(state)}
 
             <div class="mg-grid-12">
@@ -491,6 +561,12 @@ function wireEvents(root) {
         const { session } = root._ctx;
         if (session.role !== "mg") return;
         const el = e.target;
+
+        if (el.id === "mgImportFileInput") {
+            importCampaignData(root, el.files?.[0]);
+            el.value = ""; // pozwala ponownie wybrać ten sam plik (bez tego "change" by się nie odpalił)
+            return;
+        }
 
         if (el.id === "mgModCharacter") { ui.modAddCharacterKey = el.value; return; }
         if (el.id === "mgModArchetype") { ui.modAddArchetypeKey = el.value; return; }
@@ -622,6 +698,16 @@ function wireEvents(root) {
         if (!btn) return;
         const action = btn.dataset.action;
         const characterKey = btn.dataset.character;
+
+        if (action === "mg-export-data") {
+            exportCampaignData(root._ctx.state);
+            return;
+        }
+
+        if (action === "mg-import-data") {
+            document.getElementById("mgImportFileInput")?.click();
+            return;
+        }
 
         if (action === "mg-select-character") {
             ui.activeCharacterKey = btn.dataset.key;
