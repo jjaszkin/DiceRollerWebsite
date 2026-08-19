@@ -870,6 +870,13 @@ button.item-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright
 .mg-modifier-form select { flex: 1 1 150px; }
 .mg-modifier-form input[type="text"] { flex: 1 1 130px; }
 
+.mg-data-module { margin-bottom: 16px; }
+.mg-data-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
 .mg-legendary-catalog {
     display: flex;
     flex-wrap: wrap;
