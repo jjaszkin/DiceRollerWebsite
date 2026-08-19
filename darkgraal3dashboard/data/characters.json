@@ -43,7 +43,7 @@
             "lusterko \"oka\" Glacivère (Miecz) i Ashenvach (Kostur)",
             "kawałek lusterka z runą Oka", "fiolka z esencją Sir Kay'a"
         ],
-        "legendaryItemKeys": ["serce-ginewry-zimowy-szept", "serce-ginewry-lodowy-dotyk", "popioly-guinevak"]
+        "legendaryItemKeys": ["glacivere", "ashenvach"]
     },
     {
         "key": "cadwyn",
