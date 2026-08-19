@@ -1,6 +1,6 @@
 // GLIDE: Part Two — Dashboard Solo. Punkt wejścia.
 
-import { loadGameData } from "./data.js";
+import { loadGameData, FILES } from "./data.js";
 import { initStore, getState, getData, subscribe, onSaveStatusChange, updateState } from "./store.js";
 import { rollD100, findInRangeTable, clamp, preserveScroll } from "./utils.js";
 import { logRoll } from "./rollLog.js";
@@ -333,7 +333,7 @@ async function bootstrap() {
             onDone: () => {
                 const name = getState()?.character?.name;
                 if (name) localStorage.setItem(LAST_NAME_KEY, name);
-                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/11 plików.`);
+                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/${FILES.length} plików.`);
             }
         });
     } catch (err) {

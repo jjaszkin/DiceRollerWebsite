@@ -3,7 +3,7 @@
 // endgame.json, Cechy Spuścizny Żyjącej Legendy i nagrody za wymianę Fame, patrz jego _meta.notes).
 // Ładowane raz przy starcie przez fetch (brak bundlera w tym repo — spójnie z resztą projektu).
 
-const FILES = [
+export const FILES = [
     "mechanics", "companions", "guilds", "economy", "gear",
     "desert", "ruins", "green_space", "unique_locations", "oracles",
     "npc_flavor", "endgame"
