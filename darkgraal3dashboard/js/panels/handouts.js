@@ -5,7 +5,7 @@
 // pokaż/ukryj + kolejność) - ten plik obsługuje wyłącznie stronę Gracza.
 
 import { buildHandoutsViewerHtml, handleHandoutsViewerAction } from "../../../shared/handouts/viewer.js";
-import { getZoomKey } from "../../../shared/handouts/zoom.js";
+import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
 
 function buildHtml(ctx) {
     return buildHandoutsViewerHtml(ctx);
@@ -39,6 +39,8 @@ function wireEvents(root) {
         const action = e.key === "ArrowLeft" ? "ho-zoom-prev" : "ho-zoom-next";
         if (handleHandoutsViewerAction(action, { dataset: {} }, root._ctx)) rerender(root);
     });
+
+    wireZoomPan(root);
 }
 
 export function render(root, ctx) {

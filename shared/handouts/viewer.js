@@ -9,7 +9,7 @@
 // render i dispatch akcji, ten moduł nie zna Firebase ani konkretnego kształtu projektu poza tym,
 // co dostaje jawnie w `ctx` (ten sam kontrakt co control-panel.js - state.handouts/data.handouts).
 
-import { getZoomKey, openZoom, closeZoom, buildZoomOverlayHtml } from "./zoom.js";
+import { getZoomKey, getZoomedIn, openZoom, closeZoom, toggleZoomLevel, buildZoomOverlayHtml } from "./zoom.js";
 
 function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, c => ({
@@ -53,7 +53,7 @@ export function buildHandoutsViewerHtml(ctx) {
                 `).join("")}
             </div>
         ` : `<p class="placeholder">Mistrz Gry nie udostępnił jeszcze żadnych handoutów.</p>`}
-        ${buildZoomOverlayHtml(zoomEntry, zoomIdx > 0, zoomIdx !== -1 && zoomIdx < shown.length - 1)}
+        ${buildZoomOverlayHtml(zoomEntry, zoomIdx > 0, zoomIdx !== -1 && zoomIdx < shown.length - 1, getZoomedIn())}
     `;
 }
 
@@ -67,6 +67,10 @@ export function handleHandoutsViewerAction(action, el, ctx) {
     }
     if (action === "ho-close-zoom") {
         closeZoom();
+        return true;
+    }
+    if (action === "ho-zoom-toggle") {
+        toggleZoomLevel();
         return true;
     }
     if (action === "ho-zoom-prev" || action === "ho-zoom-next") {

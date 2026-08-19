@@ -13,7 +13,7 @@
 //   ctx.data.handouts   - katalog: [{ key, name, file, number }]
 //   ctx.updateState(fn) - mutator stanu danego projektu (patrz store.js#updateState)
 
-import { getZoomKey, openZoom, closeZoom, buildZoomOverlayHtml } from "./zoom.js";
+import { getZoomKey, getZoomedIn, openZoom, closeZoom, toggleZoomLevel, buildZoomOverlayHtml } from "./zoom.js";
 
 function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, c => ({
@@ -97,7 +97,7 @@ export function buildHandoutsControlHtml(ctx) {
             <h3>Handouty</h3>
             <div class="ho-grid">${sorted.map(e => renderHandoutCard(e, ctx.state)).join("")}</div>
         </div>
-        ${buildZoomOverlayHtml(zoomEntry, zoomIdx > 0, zoomIdx !== -1 && zoomIdx < sorted.length - 1)}
+        ${buildZoomOverlayHtml(zoomEntry, zoomIdx > 0, zoomIdx !== -1 && zoomIdx < sorted.length - 1, getZoomedIn())}
     `;
 }
 
@@ -170,6 +170,11 @@ export function handleHandoutsAction(action, el, ctx) {
 
     if (action === "ho-close-zoom") {
         closeZoom();
+        return true;
+    }
+
+    if (action === "ho-zoom-toggle") {
+        toggleZoomLevel();
         return true;
     }
 

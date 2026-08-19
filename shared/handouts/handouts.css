@@ -121,7 +121,11 @@
     object-fit: contain;
 }
 
-/* -- Powiększenie (pełny ekran, patrz zoom.js) - klik gdziekolwiek zamyka --------------------- */
+/* -- Powiększenie (pełny ekran, patrz zoom.js) - zamyka WYŁĄCZNIE Esc albo przycisk X (klik w tło
+   i w sam obrazek już nie zamykają - zbyt łatwo było zamknąć przez przypadek). Klik w obrazek
+   przełącza głębszy zoom (.ho-zoom-overlay-zoomed/.ho-zoom-image-zoomed) - gdy jest większy niż
+   widok, można go przeciągać myszą (patrz zoom.js#wireZoomPan) albo przewijać dotykiem/trackpadem
+   (natywnie, dzięki `overflow: auto` poniżej). --------------------------------------------------- */
 
 .ho-zoom-overlay {
     position: fixed;
@@ -132,7 +136,12 @@
     justify-content: center;
     padding: 24px;
     z-index: 300;
-    cursor: zoom-out;
+}
+
+.ho-zoom-overlay-zoomed {
+    display: block;
+    overflow: auto;
+    padding: 0;
 }
 
 .ho-zoom-image {
@@ -140,7 +149,35 @@
     max-height: 92vh;
     object-fit: contain;
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
+    cursor: zoom-in;
 }
+
+.ho-zoom-image-zoomed {
+    max-width: none;
+    max-height: none;
+    cursor: grab;
+}
+.ho-zoom-image-zoomed.ho-zoom-dragging { cursor: grabbing; }
+
+.ho-zoom-close {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(10, 8, 6, 0.75);
+    border: 1px solid var(--line-strong, #6b5330);
+    color: var(--fg-0, #f2e9d8);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 302;
+}
+.ho-zoom-close:hover { border-color: var(--gold, #E8B83D); color: var(--gold-bright, #F8D270); }
 
 .ho-zoom-nav {
     position: fixed;
