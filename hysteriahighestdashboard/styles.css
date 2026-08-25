@@ -1,0 +1,413 @@
+/* Hysteria Highest - Dashboard. Paleta 1:1 z hysteriahighest/styles.css (roller istniejący):
+   tło czarne, panele w odcieniach szarości, akcent karmazynowy #c41e3a, zieleń sukcesu #22c55e. */
+
+:root {
+    --bg-0: #000;
+    --bg-1: #0a0a0a;
+    --bg-2: #171717;
+    --bg-3: #262626;
+    --bg-4: #404040;
+    --line: #333;
+    --fg-0: #f5f5f5;
+    --fg-1: #a3a3a3;
+    --fg-2: #737373;
+    --accent: #c41e3a;
+    --accent-bright: #e0304f;
+    --accent-dim: #7a1428;
+    --success: #22c55e;
+    --danger: #ef4444;
+
+    /* Aliasy dla shared/handouts/handouts.css (napisany pod nazewnictwo --gold-* innych
+       projektów) - żeby powiększenie handoutów trzymało się karmazynowego motywu zamiast
+       spadać na złote fallbacki modułu. */
+    --gold: var(--accent);
+    --gold-dim: var(--accent-dim);
+    --gold-bright: var(--accent-bright);
+    --fg-dim: var(--fg-2);
+    --line-strong: var(--bg-4);
+    --radius: 8px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--bg-0) url("images/bg.jpg") center/cover fixed no-repeat;
+    color: var(--fg-0);
+    font-family: "Kanit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100vh;
+}
+
+.hidden { display: none !important; }
+
+/* ── Gate ─────────────────────────────────────────────────────────────────── */
+
+.gate {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+.gate.active { display: flex; }
+
+.gate-box {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 32px;
+    width: min(420px, 92vw);
+    text-align: center;
+}
+
+.gate-logo { max-width: 220px; margin-bottom: 16px; }
+.gate-title { font-size: 1.6rem; margin: 0 0 4px; letter-spacing: 0.04em; }
+.gate-subtitle { color: var(--fg-1); margin: 0 0 20px; }
+
+.gate-role-buttons, .gate-nav-buttons { display: flex; flex-direction: column; gap: 10px; }
+.gate-nav-buttons { flex-direction: row; margin-top: 16px; }
+.gate-nav-buttons .btn-gate { flex: 1; }
+
+.btn-gate {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.btn-gate:hover { background: var(--accent-bright); }
+.btn-gate:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-gate-secondary {
+    background: var(--bg-3);
+    color: var(--fg-0);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+.btn-gate-secondary:hover { border-color: var(--accent-dim); }
+.gate-cancel { margin-top: 14px; }
+
+.pin-digits { display: flex; gap: 10px; justify-content: center; margin: 12px 0; }
+.pin-digit {
+    width: 48px; height: 56px;
+    text-align: center;
+    font-size: 1.5rem;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--fg-0);
+}
+.pin-digit:focus { outline: none; border-color: var(--accent); }
+
+.gate-error { color: var(--danger); font-size: 0.85rem; margin: 6px 0 0; }
+
+.gate-pair-list { display: flex; flex-direction: column; gap: 10px; }
+.gate-pair-btn {
+    display: flex; flex-direction: column; gap: 2px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--fg-0);
+    text-align: left;
+    cursor: pointer;
+}
+.gate-pair-btn:hover { border-color: var(--accent); }
+.gate-pair-btn.last-used { border-color: var(--accent-dim); }
+.gate-pair-player { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-1); }
+.gate-pair-chars { font-size: 1.05rem; font-weight: 600; }
+
+/* ── App shell ────────────────────────────────────────────────────────────── */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 20px;
+    background: rgba(10, 10, 10, 0.85);
+    border-bottom: 1px solid var(--line);
+    backdrop-filter: blur(6px);
+}
+.header-logo { height: 40px; }
+.app-title {
+    font-family: "Special Gothic Expanded One", sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.05em;
+    margin: 0;
+    flex: 1;
+}
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.save-indicator { width: 10px; height: 10px; border-radius: 50%; background: var(--fg-2); }
+.save-indicator.saving { background: var(--accent); animation: pulse 1s infinite; }
+.save-indicator.saved { background: var(--success); }
+.save-indicator.error { background: var(--danger); }
+@keyframes pulse { 50% { opacity: 0.3; } }
+
+.btn-header {
+    background: var(--bg-3);
+    color: var(--fg-0);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+.btn-header:hover { border-color: var(--accent); }
+
+.main-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 8px 20px 0;
+    background: rgba(10, 10, 10, 0.7);
+    overflow-x: auto;
+}
+.tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--fg-1);
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.tab-btn:hover { color: var(--fg-0); }
+.tab-btn.active { color: var(--accent-bright); border-bottom-color: var(--accent); }
+
+.tab-panels { padding: 20px; max-width: 1400px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.app-footer { text-align: center; padding: 10px; color: var(--fg-2); font-size: 0.8rem; }
+
+.panel-subtitle { color: var(--accent-bright); font-size: 1rem; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+.placeholder { color: var(--fg-1); font-style: italic; }
+.placeholder-inline { color: var(--fg-2); font-style: italic; font-size: 0.85rem; }
+
+.card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+}
+.card h3 { margin-top: 0; color: var(--accent-bright); }
+
+.btn {
+    background: var(--bg-3);
+    color: var(--fg-0);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 14px;
+    cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.active { background: var(--accent); border-color: var(--accent); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-xs { padding: 4px 8px; font-size: 0.8rem; }
+.btn-danger:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── Karty tarota ─────────────────────────────────────────────────────────── */
+
+.tarot-card {
+    position: relative;
+    width: 90px; height: 155px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+.tarot-card-sm { width: 56px; height: 96px; }
+.tarot-card-lg { width: 130px; height: 224px; }
+.tarot-card-empty { border-style: dashed; align-items: center; justify-content: center; color: var(--fg-2); }
+.tarot-card-back { background: repeating-linear-gradient(45deg, var(--bg-3), var(--bg-3) 6px, var(--bg-1) 6px, var(--bg-1) 12px); }
+.tarot-card-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.tarot-card-img-missing .tarot-card-img { display: none; }
+.tarot-card-label {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 3px 5px;
+    font-size: 0.68rem;
+    line-height: 1.15;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    color: #fff;
+}
+
+.card-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    background: var(--bg-1);
+    border: 1px solid var(--accent-dim);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--fg-0);
+    z-index: 20;
+    text-align: left;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+}
+.tarot-card:hover .card-tooltip,
+.ability-chip:hover .card-tooltip { display: block; }
+.card-tooltip-kicker { color: var(--accent-bright); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+.card-tooltip-name { font-weight: 700; margin-bottom: 4px; }
+.card-tooltip-subtitle { font-style: italic; color: var(--fg-1); margin-bottom: 6px; }
+.card-tooltip-desc { margin-bottom: 4px; }
+.card-tooltip-row { margin-top: 3px; }
+
+.mystic-cross {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: repeat(3, auto);
+    gap: 14px;
+    justify-content: center;
+    padding: 20px 0;
+}
+.cross-slot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cross-slot-label { font-size: 0.72rem; color: var(--fg-1); text-transform: uppercase; letter-spacing: 0.05em; }
+.cross-slot-gorna { grid-column: 2; grid-row: 1; }
+.cross-slot-lewa { grid-column: 1; grid-row: 2; }
+.cross-slot-srodkowa { grid-column: 2; grid-row: 2; }
+.cross-slot-prawa { grid-column: 3; grid-row: 2; }
+.cross-slot-dolna { grid-column: 2; grid-row: 3; }
+.cross-slot-controls { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.cross-assign-select { background: var(--bg-1); color: var(--fg-0); border: 1px solid var(--line); border-radius: 6px; padding: 4px; }
+
+.deck-status { display: flex; align-items: center; gap: 12px; justify-content: center; margin-top: 10px; }
+.deck-count { color: var(--fg-1); font-size: 0.85rem; }
+.deck-stage-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+
+.tarot-characters-area { margin-top: 20px; }
+.char-card-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+}
+.char-card-row-name { min-width: 160px; font-weight: 600; }
+.char-card-row-cards { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+.tarot-card-select { position: relative; cursor: pointer; }
+.tarot-card-select input { position: absolute; top: 2px; left: 2px; z-index: 2; }
+.tarot-card-select.selected .tarot-card { outline: 2px solid var(--accent); }
+
+/* ── Tor Boskości ─────────────────────────────────────────────────────────── */
+
+.divinity-group { margin-bottom: 18px; }
+.divinity-goal { color: var(--fg-1); font-size: 0.8rem; text-transform: none; letter-spacing: 0; }
+.divinity-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); }
+.divinity-row-name { min-width: 170px; font-weight: 600; }
+.divinity-row-progress { color: var(--fg-1); font-size: 0.85rem; }
+.divinity-track { display: flex; gap: 6px; flex: 1; }
+.divinity-pip {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    padding: 0;
+    cursor: default;
+}
+button.divinity-pip { cursor: pointer; }
+.divinity-pip.filled { background: var(--accent); border-color: var(--accent-bright); }
+
+/* ── Karta postaci ────────────────────────────────────────────────────────── */
+
+.char-sheet { max-width: 1100px; margin: 0 auto; }
+.char-sheet-header { display: flex; align-items: center; justify-content: center; gap: 24px; }
+.char-portrait { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-dim); }
+.char-badge { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-1); border: 1px solid var(--line); border-radius: 20px; padding: 4px 12px; }
+.char-name { text-align: center; font-family: "Special Gothic Expanded One", sans-serif; font-size: 1.4rem; margin: 8px 0 20px; }
+
+.char-sheet-body { display: grid; grid-template-columns: 220px 1fr 260px; gap: 20px; }
+@media (max-width: 900px) { .char-sheet-body { grid-template-columns: 1fr; } }
+
+.char-tag { font-size: 0.85rem; margin: 0 0 8px; color: var(--fg-0); }
+.char-tag-locked { color: var(--fg-2); }
+.char-tag-filled { color: var(--fg-0); font-weight: 600; }
+.char-abilities-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.ability-chip { position: relative; font-size: 0.85rem; cursor: default; }
+.ability-tooltip { bottom: auto; top: 0; left: calc(100% + 10px); transform: none; }
+
+.attr-mandala {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px 14px;
+    justify-items: center;
+    max-width: 360px;
+    margin: 0 auto;
+}
+.attr-node {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: var(--bg-1);
+    border: 1px solid var(--accent-dim);
+    border-radius: 50%;
+    width: 78px; height: 78px;
+    cursor: pointer;
+    color: var(--fg-0);
+    justify-content: center;
+}
+.attr-node:hover { border-color: var(--accent); background: var(--bg-2); }
+.attr-node-value { font-size: 1.1rem; font-weight: 700; }
+.attr-node-label { font-size: 0.62rem; text-align: center; line-height: 1.1; color: var(--fg-1); }
+
+.attr-node-silaWoli { grid-column: 2; grid-row: 1; }
+.attr-node-odpornosc { grid-column: 1; grid-row: 2; }
+.attr-node-refleks { grid-column: 3; grid-row: 2; }
+.attr-node-rozum { grid-column: 1; grid-row: 3; }
+.attr-node-intuicja { grid-column: 3; grid-row: 3; }
+.attr-node-percepcja { grid-column: 2; grid-row: 4; }
+.attr-node-opanowanie { grid-column: 1; grid-row: 5; }
+.attr-node-przemoc { grid-column: 3; grid-row: 5; }
+.attr-node-charyzma { grid-column: 2; grid-row: 6; }
+.attr-node-dusza { grid-column: 2; grid-row: 7; }
+
+.roll-result-panel { margin-top: 20px; background: var(--bg-1); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.roll-result-panel.tier-success { border-color: var(--success); }
+.roll-result-panel.tier-partial { border-color: var(--accent); }
+.roll-result-panel.tier-failure { border-color: var(--danger); }
+.roll-result-header { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--fg-1); }
+.roll-result-tier { font-weight: 700; margin: 4px 0; }
+.roll-result-text { font-size: 0.88rem; line-height: 1.5; white-space: pre-line; }
+
+.sheet-block { margin-bottom: 18px; }
+.sheet-block-title { color: var(--accent-bright); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
+.wound-row, .dev-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 3px 0; }
+.dev-row.locked { color: var(--fg-2); }
+.wound-row-critical { color: var(--danger); }
+
+.stability-row { display: grid; grid-template-columns: auto 24px 1fr; gap: 4px 8px; align-items: baseline; font-size: 0.78rem; padding: 3px 0; color: var(--fg-1); }
+.stability-row.current { color: var(--fg-0); font-weight: 700; }
+.stability-value { font-variant-numeric: tabular-nums; }
+.stability-effect { grid-column: 3; font-size: 0.7rem; color: var(--fg-2); }
+
+/* ── MG unified root ──────────────────────────────────────────────────────── */
+
+.mg-unified-root { padding: 20px; max-width: 1300px; margin: 0 auto; }
+.mg-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.mg-char-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.mg-attr-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.mg-attr-input { display: flex; flex-direction: column; gap: 2px; font-size: 0.75rem; color: var(--fg-1); }
+.mg-attr-input input { width: 100%; background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 4px; }
+.mg-ability-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 4px; font-size: 0.8rem; }
+.ability-check { display: flex; align-items: center; gap: 6px; }
+
+.mg-body label { display: block; margin-bottom: 10px; font-size: 0.85rem; color: var(--fg-1); }
+.mg-body input[type="text"] { display: block; width: 100%; margin-top: 4px; background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 6px 8px; }
+.mg-body select { background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 4px; }
+
+/* Handouty: style w shared/handouts/handouts.css (linkowane w index.html), nie duplikowane tu -
+   patrz aliasy --gold-*/--fg-dim/--line-strong powyżej, żeby trzymały się karmazynowego motywu. */

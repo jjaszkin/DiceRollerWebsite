@@ -1,0 +1,345 @@
+{
+    "stabilityLevels": [
+        {
+            "value": 0,
+            "label": "Spokojny",
+            "effect": null
+        },
+        {
+            "value": -1,
+            "label": "Zaniepokojony",
+            "effect": "Przeciętny stres. -1 do rzutów na Komplikacje."
+        },
+        {
+            "value": -2,
+            "label": "Rozproszony",
+            "effect": null
+        },
+        {
+            "value": -3,
+            "label": "Wstrząśnięty",
+            "effect": "Poważny stres."
+        },
+        {
+            "value": -4,
+            "label": "Przestraszony",
+            "effect": "-1 do Ruchu Weź się w garść."
+        },
+        {
+            "value": -5,
+            "label": "Znerwicowany",
+            "effect": "-2 do rzutów na Komplikacje."
+        },
+        {
+            "value": -6,
+            "label": "Zatrwożony",
+            "effect": "Poważny stres."
+        },
+        {
+            "value": -7,
+            "label": "Irracjonalny",
+            "effect": "-2 do Ruchu Weź się w garść."
+        },
+        {
+            "value": -8,
+            "label": "Rozstrojony",
+            "effect": "-3 do rzutów na Komplikacje. +1 do Ruchu Przejrzyj Iluzję."
+        },
+        {
+            "value": -9,
+            "label": "Zdrużgotany",
+            "effect": "MG wykonuje Ruch z listy."
+        }
+    ],
+    "developmentMilestones": [
+        "Zwiększ wartość Atrybutu o +1",
+        "Wybierz nową, dowolną Zdolność/Atut",
+        "Wybierz nową, dowolną Zdolność/Atut",
+        "Wybierz Oświecony Archetyp"
+    ],
+    "attrOrder": [
+        "silaWoli",
+        "odpornosc",
+        "refleks",
+        "rozum",
+        "intuicja",
+        "percepcja",
+        "opanowanie",
+        "przemoc",
+        "charyzma",
+        "dusza"
+    ],
+    "attrMoveMap": {
+        "silaWoli": "wez-sie-w-gars",
+        "odpornosc": "znies-obrazenia",
+        "refleks": "uniknij-obrazen",
+        "rozum": "zbadaj",
+        "intuicja": "rozeznaj-intencje",
+        "percepcja": "analizuj-sytuacje",
+        "opanowanie": "dzialaj-pod-presja",
+        "przemoc": "przystap-do-walki",
+        "charyzma": "wplyw-na-innych-npc",
+        "dusza": "przejrzyj-iluze"
+    },
+    "pairs": [
+        {
+            "key": "brax",
+            "player": "Brax",
+            "characters": [
+                "jasper",
+                "jose"
+            ]
+        },
+        {
+            "key": "yavi",
+            "player": "Yavi",
+            "characters": [
+                "nick",
+                "luis"
+            ]
+        },
+        {
+            "key": "thorgalson",
+            "player": "Thorgalson",
+            "characters": [
+                "jesse",
+                "miguel"
+            ]
+        },
+        {
+            "key": "klapi",
+            "player": "Kłapi",
+            "characters": [
+                "paul",
+                "orlando"
+            ]
+        }
+    ],
+    "characters": [
+        {
+            "key": "jasper",
+            "name": "Jasper Blaine",
+            "role": "straznik",
+            "divinitySteps": 7,
+            "portrait": "images/characters/Jasper Blaine.png",
+            "awareness": "spiacy",
+            "attrs": {
+                "silaWoli": 0,
+                "odpornosc": 0,
+                "refleks": 0,
+                "rozum": 0,
+                "intuicja": 0,
+                "percepcja": 0,
+                "opanowanie": 0,
+                "przemoc": 0,
+                "charyzma": 0,
+                "dusza": 0
+            },
+            "hauntings": null,
+            "darkPact": null,
+            "darkSecret": null,
+            "abilities": [],
+            "todo": "Dane placeholder — do uzupełnienia przez Jakuba (atrybuty, Nawiedzenia, Mroczny pakt, Namiętność, Zdolności)."
+        },
+        {
+            "key": "nick",
+            "name": "Nick Campbell",
+            "role": "straznik",
+            "divinitySteps": 7,
+            "portrait": "images/characters/Nick Campbell.png",
+            "awareness": "spiacy",
+            "attrs": {
+                "silaWoli": 0,
+                "odpornosc": 0,
+                "refleks": 0,
+                "rozum": 0,
+                "intuicja": 0,
+                "percepcja": 0,
+                "opanowanie": 0,
+                "przemoc": 0,
+                "charyzma": 0,
+                "dusza": 0
+            },
+            "hauntings": null,
+            "darkPact": null,
+            "darkSecret": null,
+            "abilities": [],
+            "todo": "Dane placeholder — do uzupełnienia przez Jakuba (atrybuty, Nawiedzenia, Mroczny pakt, Namiętność, Zdolności)."
+        },
+        {
+            "key": "jesse",
+            "name": "Jesse James",
+            "role": "straznik",
+            "divinitySteps": 7,
+            "portrait": "images/characters/Jesse James.png",
+            "awareness": "spiacy",
+            "attrs": {
+                "silaWoli": 0,
+                "odpornosc": 0,
+                "refleks": 0,
+                "rozum": 0,
+                "intuicja": 0,
+                "percepcja": 0,
+                "opanowanie": 0,
+                "przemoc": 0,
+                "charyzma": 0,
+                "dusza": 0
+            },
+            "hauntings": null,
+            "darkPact": null,
+            "darkSecret": null,
+            "abilities": [],
+            "todo": "Dane placeholder — do uzupełnienia przez Jakuba (atrybuty, Nawiedzenia, Mroczny pakt, Namiętność, Zdolności)."
+        },
+        {
+            "key": "paul",
+            "name": "Paul Abby",
+            "role": "straznik",
+            "divinitySteps": 7,
+            "portrait": "images/characters/Paul Abby.png",
+            "awareness": "spiacy",
+            "attrs": {
+                "silaWoli": 0,
+                "odpornosc": 0,
+                "refleks": 0,
+                "rozum": 0,
+                "intuicja": 0,
+                "percepcja": 0,
+                "opanowanie": 0,
+                "przemoc": 0,
+                "charyzma": 0,
+                "dusza": 0
+            },
+            "hauntings": null,
+            "darkPact": null,
+            "darkSecret": null,
+            "abilities": [],
+            "todo": "Dane placeholder — do uzupełnienia przez Jakuba (atrybuty, Nawiedzenia, Mroczny pakt, Namiętność, Zdolności)."
+        },
+        {
+            "key": "jose",
+            "name": "Jose Navarro",
+            "role": "absolwent",
+            "divinitySteps": 4,
+            "portrait": "images/characters/Jose Navarro.png",
+            "awareness": "spiacy",
+            "attrs": {
+                "silaWoli": 0,
+                "odpornosc": 0,
+                "refleks": 0,
+                "rozum": 0,
+                "intuicja": 0,
+                "percepcja": 0,
+                "opanowanie": 0,
+                "przemoc": 0,
+                "charyzma": 0,
+                "dusza": 0
+            },
+            "hauntings": null,
+            "darkPact": null,
+            "darkSecret": null,
+            "abilities": [],
+            "todo": "Dane placeholder — do uzupełnienia przez Jakuba (atrybuty, Nawiedzenia, Mroczny pakt, Namiętność, Zdolności)."
+        },
+        {
+            "key": "luis",
+            "name": "X (Luis Manuel Serrano)",
+            "role": "absolwent",
+            "divinitySteps": 4,
+            "portrait": "images/characters/Luis Manuel Serrano.png",
+            "awareness": "swiadomy",
+            "attrs": {
+                "silaWoli": 2,
+                "odpornosc": 1,
+                "refleks": 0,
+                "rozum": 0,
+                "intuicja": 1,
+                "percepcja": -1,
+                "opanowanie": 2,
+                "przemoc": -2,
+                "charyzma": 1,
+                "dusza": 4
+            },
+            "hauntings": null,
+            "darkPact": {
+                "angel": "Gamaliel",
+                "text": "Mroczny pakt (Gamaliel)"
+            },
+            "darkSecret": "Ofiara własnych namiętności",
+            "abilities": [
+                "rozwinięta-swiadomosc",
+                "magiczna-intuicja",
+                "amator-okultyzmu",
+                "egzorcysta",
+                "podstepny",
+                "uparty"
+            ],
+            "wounds": {
+                "serious": [
+                    false,
+                    false,
+                    false,
+                    false
+                ],
+                "critical": false
+            },
+            "stability": 0,
+            "development": [
+                false,
+                false,
+                false,
+                false
+            ]
+        },
+        {
+            "key": "miguel",
+            "name": "Miguel Sanchez",
+            "role": "absolwent",
+            "divinitySteps": 4,
+            "portrait": "images/characters/Miguel Sanchez.png",
+            "awareness": "spiacy",
+            "attrs": {
+                "silaWoli": 0,
+                "odpornosc": 0,
+                "refleks": 0,
+                "rozum": 0,
+                "intuicja": 0,
+                "percepcja": 0,
+                "opanowanie": 0,
+                "przemoc": 0,
+                "charyzma": 0,
+                "dusza": 0
+            },
+            "hauntings": null,
+            "darkPact": null,
+            "darkSecret": null,
+            "abilities": [],
+            "todo": "Dane placeholder — do uzupełnienia przez Jakuba (atrybuty, Nawiedzenia, Mroczny pakt, Namiętność, Zdolności)."
+        },
+        {
+            "key": "orlando",
+            "name": "Orlando Costa",
+            "role": "absolwent",
+            "divinitySteps": 4,
+            "portrait": "images/characters/Orlando Costa.png",
+            "awareness": "spiacy",
+            "attrs": {
+                "silaWoli": 0,
+                "odpornosc": 0,
+                "refleks": 0,
+                "rozum": 0,
+                "intuicja": 0,
+                "percepcja": 0,
+                "opanowanie": 0,
+                "przemoc": 0,
+                "charyzma": 0,
+                "dusza": 0
+            },
+            "hauntings": null,
+            "darkPact": null,
+            "darkSecret": null,
+            "abilities": [],
+            "todo": "Dane placeholder — do uzupełnienia przez Jakuba (atrybuty, Nawiedzenia, Mroczny pakt, Namiętność, Zdolności)."
+        }
+    ]
+}
