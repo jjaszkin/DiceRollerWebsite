@@ -7,35 +7,49 @@
 // trakcie kampanii: PIN MG, aktywny etap talii, karty na krzyżu, karty w rękach postaci, atrybuty/
 // Rany/Stabilność/Rozwój/Mroczne sekrety (✦)/Komplikacje (✧)/Atuty (☆)/postęp na Torze KAŻDEJ
 // postaci (zaseedowane z data/characters.json przy pierwszym uruchomieniu, dalej edytowalne przez
-// MG - stąd kopia w stanie, nie odczyt na żywo ze statycznych danych).
+// MG - stąd kopia w stanie, nie odczyt na żywo ze statycznych danych) + wspólny dziennik (log[]).
 //
-// Mroczne sekrety to swobodny tekst (narracyjne, unikalne per postać - bez mechaniki). Komplikacje
-// to też swobodny tekst, ale ich bazowa nazwa (przed nawiasem z detalem, np. "Prześladowca (Nick
-// 2.0)" -> "Prześladowca") zwykle odpowiada wpisowi w data/komplikacje.json - dopasowanie robione w
-// panels/character.js#complicationMechanics, nie tutaj. Atuty (☆) to lista ID-ków wprost z
-// data/atuty.json (tak jak dotychczas).
+// Mroczne sekrety (✦) i Komplikacje (✧) to listy { label, active } - "active: false" = wygaszone
+// na karcie (jeszcze nie odkryte/wyzwolone w fabule, patrz Figma node 895-298), nieklikalne, bez
+// rzutu. Bazowa nazwa Komplikacji (przed nawiasem z detalem, np. "Prześladowca (Nick 2.0)" ->
+// "Prześladowca") odpowiada wpisowi w data/komplikacje.json - dopasowanie w panels/character.js.
+// Atuty (☆) to lista ID-ków wprost z data/atuty.json. Rozwój ma różną długość per rola - patrz
+// data/characters.json#developmentMilestonesByRole (Absolwenci 4 kroki, Strażnicy 7).
 
 export const CROSS_POSITIONS = ["gorna", "dolna", "lewa", "prawa", "srodkowa"];
 
-function seedCharacterState(charDef) {
+function seedWounds(charDef) {
+    if (charDef.wounds) return JSON.parse(JSON.stringify(charDef.wounds));
+    return {
+        serious: [
+            { checked: false, note: "" }, { checked: false, note: "" },
+            { checked: false, note: "" }, { checked: false, note: "" }
+        ],
+        critical: { checked: false, note: "" }
+    };
+}
+
+function seedCharacterState(charDef, developmentLength) {
     return {
         cards: [],
         attrs: { ...charDef.attrs },
         awareness: charDef.awareness || "swiadomy",
-        wounds: charDef.wounds ? { serious: [...charDef.wounds.serious], critical: charDef.wounds.critical } : { serious: [false, false, false, false], critical: false },
+        wounds: seedWounds(charDef),
         stability: typeof charDef.stability === "number" ? charDef.stability : 0,
-        development: charDef.development ? [...charDef.development] : [false, false, false, false],
+        development: charDef.development ? [...charDef.development] : Array(developmentLength).fill(false),
         divinityProgress: 0,
-        darkSecrets: charDef.darkSecrets ? [...charDef.darkSecrets] : [],
-        complications: charDef.complications ? [...charDef.complications] : [],
+        darkSecrets: charDef.darkSecrets ? charDef.darkSecrets.map(s => ({ ...s })) : [],
+        complications: charDef.complications ? charDef.complications.map(c => ({ ...c })) : [],
         abilities: charDef.abilities ? [...charDef.abilities] : []
     };
 }
 
 export function createDefaultState(gameData) {
     const characters = {};
+    const milestonesByRole = gameData?.characters?.developmentMilestonesByRole ?? {};
     for (const c of gameData?.characters?.characters ?? []) {
-        characters[c.key] = seedCharacterState(c);
+        const devLength = (milestonesByRole[c.role] ?? []).length || 4;
+        characters[c.key] = seedCharacterState(c, devLength);
     }
     const cross = {};
     for (const pos of CROSS_POSITIONS) cross[pos] = null;
@@ -49,7 +63,8 @@ export function createDefaultState(gameData) {
         },
         cross,
         characters,
-        handouts: { visible: {}, order: [] }
+        handouts: { visible: {}, order: [] },
+        log: []
     };
 }
 

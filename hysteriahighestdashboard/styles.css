@@ -214,15 +214,15 @@ body {
 
 /* ── Karty tarota ─────────────────────────────────────────────────────────── */
 
-/* .tarot-card jest tylko pozycjonującym kontenerem (position:relative, bez overflow:hidden) -
-   samo przycięcie obrazka/tła do zaokrąglonego rogu robi .tarot-card-face (dziecko), żeby
-   .card-tooltip (drugie dziecko, position:absolute wystający POZA granice karty) nie było
-   przycinane przez overflow:hidden rodzica - to był powód, dla którego hover nie pokazywał
-   tooltipów wcześniej. .tarot-card-empty/.tarot-card-back nie mają .tarot-card-face (nie mają
-   tooltipa), więc dostają swój wygląd bezpośrednio. */
 .tarot-card {
     position: relative;
     width: 90px; height: 155px;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    display: block;
 }
 .tarot-card-sm { width: 56px; height: 96px; }
 .tarot-card-lg { width: 130px; height: 224px; }
@@ -253,27 +253,9 @@ body {
     color: #fff;
 }
 
-.card-tooltip {
-    display: none;
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    width: 260px;
-    background: var(--bg-1);
-    border: 1px solid var(--accent-dim);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 0.78rem;
-    line-height: 1.4;
-    color: var(--fg-0);
-    z-index: 20;
-    text-align: left;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-}
-.tarot-card:hover .card-tooltip,
-.ability-chip:hover .card-tooltip,
-.char-tag-hoverable:hover .card-tooltip { display: block; }
+/* card-tooltip-* to teraz czysto typograficzne klasy używane WEWNĄTRZ .modal-body (patrz
+   panels/character.js#mechanicsBodyHtml, cardView.js#cardModalBodyHtml) - dawny hover-tooltip
+   (CSS :hover) zastąpiony klikalnym modalem, patrz js/modal.js. */
 .card-tooltip-kicker { color: var(--accent-bright); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
 .card-tooltip-name { font-weight: 700; margin-bottom: 4px; }
 .card-tooltip-subtitle { font-style: italic; color: var(--fg-1); margin-bottom: 6px; }
@@ -308,6 +290,11 @@ body {
 @media (max-width: 900px) { .tarot-layout { grid-template-columns: 1fr; } }
 
 .tarot-characters-area { }
+/* 2 kolumny x 4 wiersze, auto-flow po wierszach - dzieci przychodzą już posortowane jako
+   [Strażnik pary1, Absolwent pary1, Strażnik pary2, ...] (patrz panels/tarot.js), więc lewa
+   kolumna = Strażnicy, prawa = Absolwenci, każdy wiersz = jedna para graczy. */
+.tarot-pairs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; }
+@media (max-width: 560px) { .tarot-pairs-grid { grid-template-columns: 1fr; } }
 .char-card-row {
     display: flex;
     flex-direction: column;
@@ -342,69 +329,92 @@ button.divinity-pip { cursor: pointer; }
 
 /* ── Karta postaci ────────────────────────────────────────────────────────── */
 
-.char-sheet { max-width: 1100px; margin: 0 auto; }
-.char-sheet-header { display: flex; align-items: center; justify-content: center; gap: 24px; }
-.char-portrait { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-dim); }
-.char-badge { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg-1); border: 1px solid var(--line); border-radius: 20px; padding: 4px 12px; }
-.char-name { text-align: center; font-family: "Special Gothic Expanded One", sans-serif; font-size: 1.4rem; margin: 8px 0 20px; }
-
-.char-sheet-body { display: grid; grid-template-columns: 220px 1fr 260px; gap: 20px; }
-@media (max-width: 900px) { .char-sheet-body { grid-template-columns: 1fr; } }
-
-.char-tag { position: relative; font-size: 0.85rem; margin: 0 0 8px; color: var(--fg-0); }
-.char-tag-locked { color: var(--fg-2); }
-.char-tag-filled { color: var(--fg-0); font-weight: 600; }
-.char-tag-hoverable { cursor: default; }
-.char-abilities-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
-.ability-chip { position: relative; font-size: 0.85rem; cursor: default; }
-.ability-tooltip { bottom: auto; top: 0; left: calc(100% + 10px); transform: none; }
-
-.attr-mandala {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px 14px;
-    justify-items: center;
-    max-width: 360px;
-    margin: 0 auto;
+/* 12 kolumn: 8 karta postaci, 4 wyniki rzutów (patrz panels/character.js) */
+.char-sheet-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; align-items: start; max-width: 1300px; margin: 0 auto; }
+.char-sheet-main { grid-column: span 8; }
+.char-sheet-rollcol { grid-column: span 4; position: sticky; top: 12px; }
+@media (max-width: 1000px) {
+    .char-sheet-grid { grid-template-columns: 1fr; }
+    .char-sheet-main, .char-sheet-rollcol { grid-column: span 1; }
+    .char-sheet-rollcol { position: static; }
 }
+
+/* 3 podkolumny wewnątrz char-sheet-main: lewa (Sekrety/Komplikacje/Atuty), środek (portret+imię+
+   mandala - WSZYSTKO w tej samej kolumnie, żeby portret/imię/diagram były naturalnie wyrównane w
+   poziomie zamiast osobnego wiersza wyśrodkowanego względem całej karty, patrz PR). */
+.char-sheet-body { display: grid; grid-template-columns: minmax(160px, 220px) minmax(220px, 300px) minmax(200px, 260px); gap: 20px; justify-content: center; }
+@media (max-width: 700px) { .char-sheet-body { grid-template-columns: 1fr; } }
+
+.char-sheet-center { display: flex; flex-direction: column; align-items: center; }
+.char-center-header { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.char-badges-row { display: flex; gap: 8px; }
+.char-portrait { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-dim); }
+.char-badge { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-1); border: 1px solid var(--line); border-radius: 20px; padding: 3px 10px; }
+.char-name { text-align: center; font-family: "Special Gothic Expanded One", sans-serif; font-size: 1.15rem; margin: 8px 0 4px; }
+
+.char-tag { position: relative; font-size: 0.85rem; margin: 0 0 8px; color: var(--fg-0); background: none; border: none; padding: 0; text-align: left; font-family: inherit; display: block; }
+.char-tag-inactive { color: var(--fg-2); opacity: 0.4; }
+.char-tag-clickable { cursor: pointer; }
+.char-tag-clickable:hover { color: var(--accent-bright); }
+.char-abilities-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.ability-chip { background: none; border: none; padding: 0; text-align: left; font-family: inherit; font-size: 0.85rem; color: var(--fg-0); cursor: pointer; }
+.ability-chip:hover { color: var(--accent-bright); }
+.ability-chip:disabled { color: var(--fg-2); cursor: not-allowed; }
+
+/* Mandala nałożona na images/diagram cech.svg (proporcje 255x480) - węzły pozycjonowane
+   procentowo wg geometrii tego pliku, patrz ATTR_POSITIONS w panels/character.js. */
+.attr-mandala-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 250px;
+    aspect-ratio: 255 / 480;
+    margin: 4px auto 0;
+    background-image: url("images/diagram cech.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+.attr-mandala { position: absolute; inset: 0; }
 .attr-node {
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-    background: var(--bg-1);
-    border: 1px solid var(--accent-dim);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+    width: 19%;
+    aspect-ratio: 1;
     border-radius: 50%;
-    width: 78px; height: 78px;
+    background: rgba(10, 10, 10, 0.55);
+    border: none;
     cursor: pointer;
     color: var(--fg-0);
-    justify-content: center;
 }
-.attr-node:hover { border-color: var(--accent); background: var(--bg-2); }
-.attr-node-value { font-size: 1.1rem; font-weight: 700; }
-.attr-node-label { font-size: 0.62rem; text-align: center; line-height: 1.1; color: var(--fg-1); }
+.attr-node:hover .attr-node-value { color: var(--accent-bright); }
+.attr-node-value { font-size: 0.95rem; font-weight: 700; line-height: 1.1; }
+.attr-node-label { font-size: 0.42rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--fg-1); line-height: 1; }
 
-.attr-node-silaWoli { grid-column: 2; grid-row: 1; }
-.attr-node-odpornosc { grid-column: 1; grid-row: 2; }
-.attr-node-refleks { grid-column: 3; grid-row: 2; }
-.attr-node-rozum { grid-column: 1; grid-row: 3; }
-.attr-node-intuicja { grid-column: 3; grid-row: 3; }
-.attr-node-percepcja { grid-column: 2; grid-row: 4; }
-.attr-node-opanowanie { grid-column: 1; grid-row: 5; }
-.attr-node-przemoc { grid-column: 3; grid-row: 5; }
-.attr-node-charyzma { grid-column: 2; grid-row: 6; }
-.attr-node-dusza { grid-column: 2; grid-row: 7; }
-
-.roll-result-panel { margin-top: 20px; background: var(--bg-1); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.roll-result-panel { background: var(--bg-1); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
 .roll-result-panel.tier-success { border-color: var(--success); }
 .roll-result-panel.tier-partial { border-color: var(--accent); }
 .roll-result-panel.tier-failure { border-color: var(--danger); }
-.roll-result-header { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--fg-1); }
-.roll-result-tier { font-weight: 700; margin: 4px 0; }
+.roll-result-header { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; color: var(--fg-1); }
+.roll-result-move { font-weight: 600; color: var(--fg-0); }
+.roll-result-notes { font-size: 0.72rem; color: var(--fg-2); margin-top: 4px; }
+.roll-result-tier { font-weight: 700; margin: 6px 0 4px; }
 .roll-result-text { font-size: 0.88rem; line-height: 1.5; white-space: pre-line; }
+
+.recent-rolls-list { display: flex; flex-direction: column; gap: 4px; }
+.recent-roll-row { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 3px 6px; border-left: 3px solid var(--line); }
+.recent-roll-row.tier-success { border-left-color: var(--success); }
+.recent-roll-row.tier-partial { border-left-color: var(--accent); }
+.recent-roll-row.tier-failure { border-left-color: var(--danger); }
 
 .sheet-block { margin-bottom: 18px; }
 .sheet-block-title { color: var(--accent-bright); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 8px; }
-.wound-row, .dev-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 3px 0; }
-.dev-row.locked { color: var(--fg-2); }
+.wound-row { margin-bottom: 6px; }
+.wound-checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+.wound-note { width: 100%; margin-top: 3px; background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 4px 8px; font-size: 0.75rem; }
 .wound-row-critical { color: var(--danger); }
+.dev-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 3px 0; }
+.dev-row.locked { color: var(--fg-2); }
 
 .stability-row { display: grid; grid-template-columns: auto 24px 1fr; gap: 4px 8px; align-items: baseline; font-size: 0.78rem; padding: 3px 0; color: var(--fg-1); }
 .stability-row.current { color: var(--fg-0); font-weight: 700; }
@@ -426,5 +436,72 @@ button.divinity-pip { cursor: pointer; }
 .mg-body input[type="text"] { display: block; width: 100%; margin-top: 4px; background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 6px 8px; }
 .mg-body select { background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 4px; }
 
+.mg-list-editor { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.mg-list-row { display: flex; align-items: center; gap: 8px; }
+.mg-list-row input[type="text"] { display: block; width: auto; flex: 1; margin-top: 0; }
+
 /* Handouty: style w shared/handouts/handouts.css (linkowane w index.html), nie duplikowane tu -
-   patrz aliasy --gold-*/--fg-dim/--line-strong powyżej, żeby trzymały się karmazynowego motywu. */
+   patrz aliasy --gold-* / --fg-dim / --line-strong powyżej, żeby trzymały się karmazynowego motywu. */
+
+/* ── Modal (opisy kart/Atutów/Komplikacji) ───────────────────────────────────
+   Zawsze wyśrodkowany w viewporcie (position:fixed + flex center), przyciemnienie tła 70% -
+   patrz js/modal.js. Zamyka wyłącznie X/Esc (klik w tło celowo nic nie robi). */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    padding: 24px;
+}
+.modal-box {
+    position: relative;
+    background: var(--bg-2);
+    border: 1px solid var(--accent-dim);
+    border-radius: 12px;
+    padding: 24px 28px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+.modal-close {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--fg-0);
+    cursor: pointer;
+    font-size: 1rem;
+}
+.modal-close:hover { border-color: var(--accent); color: var(--accent-bright); }
+.modal-title { margin: 0 32px 12px 0; color: var(--accent-bright); font-size: 1.15rem; }
+.modal-body { font-size: 0.9rem; line-height: 1.55; color: var(--fg-0); }
+.modal-body .card-tooltip-kicker { display: block; }
+.modal-roll-btn { margin-top: 18px; width: 100%; }
+.modal-body-img { width: 100%; border-radius: 8px; margin-bottom: 12px; }
+
+/* ── Dziennik ─────────────────────────────────────────────────────────────── */
+
+.journal-roller-row { display: flex; align-items: flex-end; gap: 14px; flex-wrap: wrap; }
+.journal-roller-formula { font-size: 1.3rem; font-weight: 700; color: var(--fg-0); padding-bottom: 6px; }
+.journal-mod-label { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--fg-1); }
+.journal-mod-label input { width: 90px; background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 6px 8px; font-size: 1rem; }
+
+.log-list { display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
+.log-entry { border-left: 3px solid var(--line); padding: 6px 10px; font-size: 0.85rem; }
+.log-entry-event { border-left-color: var(--bg-4); color: var(--fg-1); }
+.log-entry-roll.tier-success { border-left-color: var(--success); }
+.log-entry-roll.tier-partial { border-left-color: var(--accent); }
+.log-entry-roll.tier-failure { border-left-color: var(--danger); }
+.log-entry-time { color: var(--fg-2); font-size: 0.72rem; margin-right: 8px; }
+.log-entry-head { display: flex; flex-wrap: wrap; gap: 4px; }
+.log-entry-who { font-weight: 600; }
+.log-entry-dice { color: var(--fg-1); margin-top: 2px; }
+.log-entry-result { margin-top: 4px; color: var(--fg-0); white-space: pre-line; }

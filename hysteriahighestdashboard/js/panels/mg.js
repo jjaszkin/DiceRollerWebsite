@@ -5,13 +5,14 @@
 // handouts/ 1:1), Ustawienia (PIN, reset talii).
 
 import { CROSS_POSITIONS } from "../state.js";
-import { renderCard, findCard } from "../cardView.js";
+import { renderCard, openCardModal } from "../cardView.js";
 import { getAvailableCards, drawRandomCard, isHouseMatch } from "../deck.js";
 import { escapeHtml, preserveScroll } from "../utils.js";
 import {
     buildHandoutsControlHtml, handleHandoutsAction, reorderHandoutsOrder
 } from "../../../shared/handouts/control-panel.js";
 import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
+import * as journalPanel from "./journal.js";
 
 const POSITION_LABELS = { gorna: "Górna", dolna: "Dolna", lewa: "Lewa", prawa: "Prawa", srodkowa: "Środkowa" };
 const STAGE_LABELS = { 1: "Etap 1 — Małe Arkana", 2: "Etap 2 — + Archonci / Anioły Śmierci", 3: "Etap 3 — + Super Arkana" };
@@ -55,14 +56,26 @@ function buildTarotTab(ctx, ui) {
         `;
     }).join("");
 
-    const characters = data.characters.characters.map(charDef => {
+    // Sparowane wiersze [Strażnik, Absolwent] per gracz - ta sama kolejność co widok Graczy
+    // (panels/tarot.js#buildPairedCharacterRows), żeby układ MG był 1:1 analogiczny.
+    const byKey = Object.fromEntries(data.characters.characters.map(c => [c.key, c]));
+    const orderedChars = [];
+    for (const pair of data.characters.pairs) {
+        const chars = pair.characters.map(k => byKey[k]);
+        orderedChars.push(chars.find(c => c.role === "straznik"), chars.find(c => c.role === "absolwent"));
+    }
+
+    const characters = orderedChars.map(charDef => {
         const charState = state.characters[charDef.key];
         const selected = ui.selectedCards[charDef.key] || new Set();
+        // Checkbox (zaznaczenie do wydania) i karta (klik = modal opisu) są RODZEŃSTWEM, nie
+        // zagnieżdżone w <label> - zagnieżdżony <button> (karta) w <label> powodowałby, że klik w
+        // kartę TAKŻE przełączałby checkbox przez natywne zachowanie label->control.
         const chips = charState.cards.length ? charState.cards.map(k => `
-            <label class="tarot-card-select ${selected.has(k) ? "selected" : ""}">
+            <div class="tarot-card-select ${selected.has(k) ? "selected" : ""}">
                 <input type="checkbox" data-action="toggle-select-card" data-char="${charDef.key}" data-card="${k}" ${selected.has(k) ? "checked" : ""}>
                 ${renderCard(cards, k, { size: "sm" })}
-            </label>
+            </div>
         `).join("") : `<span class="placeholder-inline">brak kart</span>`;
 
         const selectedArr = [...selected];
@@ -86,13 +99,15 @@ function buildTarotTab(ctx, ui) {
             <div class="deck-stage-controls">${stageButtons}</div>
             <p class="deck-count">Dostępnych do dobrania: ${remaining}</p>
         </div>
-        <div class="card">
-            <h3>Krzyż tarota</h3>
-            <div class="mystic-cross">${cross}</div>
-        </div>
-        <div class="card">
-            <h3>Karty postaci</h3>
-            ${characters}
+        <div class="tarot-layout">
+            <div class="tarot-cross-area card">
+                <h3>Krzyż tarota</h3>
+                <div class="mystic-cross">${cross}</div>
+            </div>
+            <div class="tarot-characters-area card">
+                <h3>Karty postaci</h3>
+                <div class="tarot-pairs-grid">${characters}</div>
+            </div>
         </div>
     `;
 }
@@ -194,6 +209,23 @@ function handleDivinityAction(action, el, root) {
 
 // ── Zakładka: Karty postaci ─────────────────────────────────────────────────────
 
+/** Wiersz edytora Mrocznych sekretów (✦) / Komplikacji (✧): checkbox "aktywny" (odpowiada opacity
+ *  20% na karcie u Gracza, patrz Figma 895-298) + pole tekstowe + usuń. Komplikacje: baza nazwy
+ *  (przed nawiasem) powinna odpowiadać wpisowi w data/komplikacje.json, żeby dostać hover+rzut. */
+function listEditorHtml(items, charKey, field, symbol, addLabel) {
+    const rows = items.map((item, i) => `
+        <div class="mg-list-row">
+            <input type="checkbox" data-action="toggle-item-active" data-char="${charKey}" data-field="${field}" data-index="${i}" ${item.active ? "checked" : ""} title="Aktywny (widoczny/klikalny u Gracza)">
+            <input type="text" data-action="set-item-label" data-char="${charKey}" data-field="${field}" data-index="${i}" value="${escapeHtml(item.label)}">
+            <button type="button" class="btn btn-xs btn-danger" data-action="remove-item" data-char="${charKey}" data-field="${field}" data-index="${i}">✕</button>
+        </div>
+    `).join("");
+    return `
+        <div class="mg-list-editor">${rows}</div>
+        <button type="button" class="btn btn-xs" data-action="add-item" data-char="${charKey}" data-field="${field}">+ ${addLabel}</button>
+    `;
+}
+
 function buildCharactersTab(ctx, ui) {
     const { state, data } = ctx;
     const activeKey = ui.activeCharKey || data.characters.characters[0].key;
@@ -230,12 +262,11 @@ function buildCharactersTab(ctx, ui) {
                     ${AWARENESS_OPTIONS.map(([v, l]) => `<option value="${v}" ${charState.awareness === v ? "selected" : ""}>${l}</option>`).join("")}
                 </select>
             </label>
-            <label>Mroczne sekrety ✦ (jeden na linię)
-                <textarea rows="2" data-action="set-list" data-char="${activeKey}" data-field="darkSecrets">${escapeHtml(charState.darkSecrets.join("\n"))}</textarea>
-            </label>
-            <label>Komplikacje ✧ (jeden na linię - bazowa nazwa dopasowywana do data/komplikacje.json, np. "Prześladowca (Nick 2.0)")
-                <textarea rows="2" data-action="set-list" data-char="${activeKey}" data-field="complications">${escapeHtml(charState.complications.join("\n"))}</textarea>
-            </label>
+            <h4 class="sheet-block-title">Mroczne sekrety ✦</h4>
+            ${listEditorHtml(charState.darkSecrets, activeKey, "darkSecrets", "✦", "Dodaj sekret")}
+            <h4 class="sheet-block-title">Komplikacje ✧</h4>
+            <p class="placeholder">Bazowa nazwa (przed nawiasem, np. "Prześladowca" w "Prześladowca (Nick 2.0)") dopasowywana do data/komplikacje.json - stąd hover z mechaniką i przycisk Rzuć u Gracza.</p>
+            ${listEditorHtml(charState.complications, activeKey, "complications", "✧", "Dodaj komplikację")}
             <h4 class="sheet-block-title">Cechy</h4>
             <div class="mg-attr-grid">${attrInputs}</div>
             <h4 class="sheet-block-title">Zdolności / Atuty</h4>
@@ -262,6 +293,19 @@ function handleCharactersAction(action, el, root) {
         });
         return true;
     }
+    if (action === "add-item") {
+        const charKey = el.dataset.char;
+        const field = el.dataset.field;
+        updateState(s => { s.characters[charKey][field].push({ label: "Nowy wpis", active: true }); });
+        return true;
+    }
+    if (action === "remove-item") {
+        const charKey = el.dataset.char;
+        const field = el.dataset.field;
+        const index = Number(el.dataset.index);
+        updateState(s => { s.characters[charKey][field].splice(index, 1); });
+        return true;
+    }
     return false;
 }
 
@@ -277,11 +321,16 @@ function handleCharactersChange(el, root) {
         updateState(s => { s.characters[charKey].awareness = el.value; });
         return true;
     }
-    if (action === "set-list") {
+    if (action === "toggle-item-active") {
         const field = el.dataset.field;
-        updateState(s => {
-            s.characters[charKey][field] = el.value.split("\n").map(line => line.trim()).filter(Boolean);
-        });
+        const index = Number(el.dataset.index);
+        updateState(s => { s.characters[charKey][field][index].active = el.checked; });
+        return true;
+    }
+    if (action === "set-item-label") {
+        const field = el.dataset.field;
+        const index = Number(el.dataset.index);
+        updateState(s => { s.characters[charKey][field][index].label = el.value; });
         return true;
     }
     return false;
@@ -330,6 +379,7 @@ const TABS = [
     ["divinity", "Tor Boskości"],
     ["characters", "Karty postaci"],
     ["handouts", "Handouty"],
+    ["journal", "Dziennik"],
     ["settings", "Ustawienia"]
 ];
 
@@ -343,6 +393,7 @@ function buildHtml(ctx, ui) {
     else if (ui.activeTab === "divinity") body = buildDivinityTab(ctx);
     else if (ui.activeTab === "characters") body = buildCharactersTab(ctx, ui);
     else if (ui.activeTab === "handouts") body = buildHandoutsControlHtml(ctx);
+    else if (ui.activeTab === "journal") body = `<div id="mgJournalRoot"></div>`;
     else if (ui.activeTab === "settings") body = buildSettingsTab(ctx);
 
     return `
@@ -351,8 +402,20 @@ function buildHtml(ctx, ui) {
     `;
 }
 
+/** Dziennik montowany jako osobny, samodzielny panel (własny root+wireEvents, patrz
+ *  panels/journal.js) wewnątrz #mgJournalRoot - w odróżnieniu od reszty zakładek MG, które są
+ *  czystymi funkcjami budującymi HTML w ten sam, przebudowywany co akcję root. */
+function mountJournalIfActive(root, ui) {
+    if (ui.activeTab !== "journal") return;
+    const journalRoot = root.querySelector("#mgJournalRoot");
+    if (journalRoot) journalPanel.render(journalRoot, root._ctx);
+}
+
 function rerender(root) {
-    preserveScroll(() => { root.innerHTML = buildHtml(root._ctx, getUi(root)); });
+    preserveScroll(() => {
+        root.innerHTML = buildHtml(root._ctx, getUi(root));
+        mountJournalIfActive(root, getUi(root));
+    });
 }
 
 function wireEvents(root) {
@@ -364,6 +427,10 @@ function wireEvents(root) {
         if (action === "mg-tab") {
             getUi(root).activeTab = btn.dataset.tab;
             rerender(root);
+            return;
+        }
+        if (action === "open-card") {
+            openCardModal(root._ctx.data.cards, btn.dataset.cardKey);
             return;
         }
         if (handleTarotAction(action, btn, root)) { rerender(root); return; }
@@ -420,6 +487,7 @@ function wireEvents(root) {
 export function render(root, ctx) {
     root._ctx = ctx;
     root.innerHTML = buildHtml(ctx, getUi(root));
+    mountJournalIfActive(root, getUi(root));
     if (!root.dataset.wired) {
         wireEvents(root);
         root.dataset.wired = "1";

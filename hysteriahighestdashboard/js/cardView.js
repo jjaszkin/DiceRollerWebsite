@@ -1,9 +1,10 @@
-// Hysteria Highest - Dashboard. Renderowanie pojedynczej karty tarota (rewers/awers + tooltip po
-// hover z pełnym opisem) - używane przez panels/tarot.js, panels/character.js i panels/mg.js, żeby
-// nie duplikować znacznika w trzech miejscach. Tooltip jest czystym CSS-em (:hover), więc przeżywa
-// pełny rebuild innerHTML panelu bez potrzeby ponownego podpinania listenerów.
+// Hysteria Highest - Dashboard. Renderowanie pojedynczej karty tarota (rewers/awers, klik = modal
+// z pełnym opisem na środku ekranu) - używane przez panels/tarot.js i panels/mg.js. Widok Gracza
+// NIE pokazuje nazwy na samej karcie (tylko w modalu, patrz opcja `showName`) - widok MG pokazuje
+// nazwę zawsze, żeby MG orientował się bez klikania każdej karty.
 
 import { escapeHtml } from "./utils.js";
+import { openModal } from "./modal.js";
 
 const HOUSE_LABELS = {
     czaszki: "Czaszki — Dom Śmierci i Metropolis",
@@ -25,11 +26,11 @@ function detailRow(label, value) {
     return `<div class="card-tooltip-row"><b>${label}:</b> ${escapeHtml(value)}</div>`;
 }
 
-export function cardTooltipHtml(card) {
+export function cardModalBodyHtml(card) {
     const kicker = card.house ? HOUSE_LABELS[card.house] : CATEGORY_LABELS[card.category];
     return `
+        <img class="modal-body-img" src="${card.image}" alt="${escapeHtml(card.name)}">
         <div class="card-tooltip-kicker">${escapeHtml(kicker || "")}</div>
-        <div class="card-tooltip-name">${escapeHtml(card.name)}</div>
         ${card.subtitle ? `<div class="card-tooltip-subtitle">${escapeHtml(card.subtitle)}</div>` : ""}
         ${card.desc ? `<div class="card-tooltip-desc">${escapeHtml(card.desc)}</div>` : `
             ${detailRow("Postacie", card.postacie)}
@@ -47,11 +48,18 @@ export function findCard(cards, key) {
     return cards.find(c => c.key === key) || null;
 }
 
+export function openCardModal(cards, key) {
+    const card = findCard(cards, key);
+    if (!card) return;
+    openModal({ title: card.name, bodyHtml: cardModalBodyHtml(card) });
+}
+
 /**
- * Buduje znacznik pojedynczej karty (awers, z tooltipem po hover). `size`: "sm" (chip w liście
- * postaci) | "md" (krzyż) | "lg" (podgląd MG). Puste sloty (key === null) renderują placeholder.
+ * Buduje znacznik pojedynczej karty (awers, klikalny -> modal z opisem). `size`: "sm" (chip w
+ * liście postaci) | "md" (krzyż) | "lg" (podgląd MG). `showName`: false u Graczy (nazwa tylko w
+ * modalu), true u MG. Puste sloty (key === null) renderują placeholder.
  */
-export function renderCard(cards, key, { size = "md", faceDown = false } = {}) {
+export function renderCard(cards, key, { size = "md", faceDown = false, showName = true } = {}) {
     if (!key) {
         return `<div class="tarot-card tarot-card-empty tarot-card-${size}"></div>`;
     }
@@ -63,12 +71,11 @@ export function renderCard(cards, key, { size = "md", faceDown = false } = {}) {
         return `<div class="tarot-card tarot-card-back tarot-card-${size}"></div>`;
     }
     return `
-        <div class="tarot-card tarot-card-${size}" data-card-key="${key}">
+        <button type="button" class="tarot-card tarot-card-${size}" data-action="open-card" data-card-key="${key}">
             <div class="tarot-card-face">
                 <img class="tarot-card-img" src="${card.image}" alt="${escapeHtml(card.name)}" loading="lazy" onerror="this.parentElement.parentElement.classList.add('tarot-card-img-missing')">
-                <span class="tarot-card-label">${escapeHtml(card.name)}</span>
+                ${showName ? `<span class="tarot-card-label">${escapeHtml(card.name)}</span>` : ""}
             </div>
-            <div class="card-tooltip">${cardTooltipHtml(card)}</div>
-        </div>
+        </button>
     `;
 }

@@ -1,11 +1,16 @@
 // Hysteria Highest - Dashboard. Zakładka karty postaci (jedna instancja tego panelu montowana
 // DWUKROTNIE przez main.js - raz na #panel-charA, raz na #panel-charB, sparametryzowana przez
-// ctx.characterKey). Diagram 10 cech (mandala w stylu karty Luisa z Figmy), Rany/Stabilność/
-// Rozwój edytowalne bezpośrednio na karcie, Nawiedzenia/Pakt/Namiętność/Zdolności z hover-opisem,
-// klik na cechę = rzut testu KULT (2k10 + wartość cechy) z wynikiem w lokalnym (nie zapisywanym do
-// Firebase) panelu rzutu - wzorzec "panele lokalne z transient UI" z BRIEFING.md Dark Graala.
+// ctx.characterKey). Układ 12-kolumnowy: 8 kolumn karta postaci, 4 kolumny wyniki rzutów (patrz
+// .char-sheet-grid w styles.css). Mandala 10 cech nałożona na images/diagram cech.svg (pozycje
+// węzłów wyliczone raz z geometrii tego SVG - patrz ATTR_POSITIONS). Atuty/Komplikacje klikalne ->
+// modal z opisem (+ przycisk Rzuć, jeśli nie są Pasywne) - wynik loguje się do wspólnego Dziennika
+// (state.log) i pokazuje w kolumnie wyników. Mroczne sekrety/Komplikacje/Atuty oznaczone w danych
+// jako `active:false` są wygaszone i nieklikalne (patrz Figma node 895-298).
 
-import { escapeHtml, preserveScroll, rollKultTest } from "../utils.js";
+import { escapeHtml, preserveScroll } from "../utils.js";
+import { performRoll, computeWoundPenalty } from "../rollEngine.js";
+import { logRoll } from "../eventLog.js";
+import { openModal } from "../modal.js";
 
 const ATTR_LABELS = {
     silaWoli: "Siła Woli", odpornosc: "Odporność", refleks: "Refleks", rozum: "Rozum",
@@ -13,85 +18,132 @@ const ATTR_LABELS = {
     charyzma: "Charyzma", dusza: "Dusza"
 };
 
+// Środki węzłów wg geometrii images/diagram cech.svg (viewBox 255x480), w % szerokości/wysokości
+// kontenera - patrz komentarz w PR: krzyż tarota / diagram cech dla wyprowadzenia tych liczb ze
+// ścieżek SVG (każdy węzeł to okrąg lub romb o znanym środku).
+const ATTR_POSITIONS = {
+    silaWoli: { left: 50.6, top: 7.3 },
+    odpornosc: { left: 13.7, top: 18.75 },
+    refleks: { left: 86.3, top: 18.75 },
+    rozum: { left: 13.5, top: 40.9 },
+    intuicja: { left: 86.1, top: 40.9 },
+    percepcja: { left: 50.4, top: 51.4 },
+    opanowanie: { left: 13.5, top: 62.0 },
+    przemoc: { left: 86.1, top: 62.0 },
+    charyzma: { left: 50.4, top: 72.2 },
+    dusza: { left: 50.4, top: 93.9 }
+};
+
 const AWARENESS_LABELS = { spiacy: "Śpiący", swiadomy: "Świadomy", oswiecony: "Oświecony" };
 const ROLE_LABELS = { absolwent: "Absolwent", straznik: "Strażnik" };
+const TIER_LABELS = { success: "15+ Sukces!", partial: "10–14 Częściowy sukces", failure: "≤9 Porażka" };
 
-/** Bazowa nazwa przed nawiasem z detalem, np. "Prześladowca (Nick 2.0)" -> "Prześladowca" -
- *  dopasowywana do data/komplikacje.json (patrz komentarz w state.js#seedCharacterState). */
-function baseLabel(label) {
-    return label.split(" (")[0].trim();
-}
-
-// UI efemeryczny (wynik ostatniego rzutu) per instancja panelu - trzymany na węźle root, żeby
-// dwie zakładki (charA/charB) nie dzieliły jednego stanu.
 function getUi(root) {
     if (!root._ui) root._ui = { lastRoll: null };
     return root._ui;
 }
 
+function baseLabel(label) {
+    return label.split(" (")[0].trim();
+}
+
 function attrBadge(attrKey, value) {
+    const pos = ATTR_POSITIONS[attrKey];
     return `
-        <button class="attr-node attr-node-${attrKey}" data-action="roll-attr" data-attr="${attrKey}" title="Rzuć ${ATTR_LABELS[attrKey]}">
+        <button class="attr-node" style="left:${pos.left}%; top:${pos.top}%;" data-action="roll-attr" data-attr="${attrKey}" title="Rzuć ${ATTR_LABELS[attrKey]}">
             <span class="attr-node-value">${value >= 0 ? "+" + value : value}</span>
             <span class="attr-node-label">${ATTR_LABELS[attrKey]}</span>
         </button>
     `;
 }
 
-function abilityLabel(abilityId, atutyData) {
+function mechanicsBodyHtml(item) {
+    return `
+        ${item.attr ? `<div class="card-tooltip-kicker">${escapeHtml(item.attr)}</div>` : ""}
+        <div class="card-tooltip-desc">${escapeHtml(item.intro || "")}</div>
+        ${item.high ? `<div class="card-tooltip-row"><b>15+:</b> ${escapeHtml(item.high)}</div>` : ""}
+        ${item.mid ? `<div class="card-tooltip-row"><b>10-14:</b> ${escapeHtml(item.mid)}</div>` : ""}
+        ${item.low ? `<div class="card-tooltip-row"><b>≤9:</b> ${escapeHtml(item.low)}</div>` : ""}
+    `;
+}
+
+/** Wyciąga wartość bazowego modyfikatora z pola `attr` Atutu ("+Dusza" -> wartość cechy Dusza,
+ *  "+Dusza − poziom magii stworzenia" -> jw. ale z adnotacją, że część formuły trzeba doliczyć
+ *  ręcznie, "Pasywny" -> null, czyli brak rzutu). */
+function resolveAbilityModifier(ability, attrs) {
+    if (ability.passive || !ability.attr || ability.attr === "Pasywny") return null;
+    const m = ability.attr.match(/^\+([A-ZŚĆŻŹŁ][a-ząćęłńóśźż]+)/);
+    if (!m) return { value: 0, note: null };
+    const attrKey = Object.keys(ATTR_LABELS).find(k => ATTR_LABELS[k] === m[1]);
+    if (!attrKey) return { value: 0, note: null };
+    const extra = ability.attr.slice(m[0].length).trim();
+    return { value: attrs[attrKey], note: extra ? `(${extra} - dolicz ręcznie)` : null, attrKey };
+}
+
+function performAndLogRoll(root, { label, moveId, baseModifier, rollType, mechanicsFor }) {
+    const { data, state, characterKey } = root._ctx;
+    const charState = state.characters[characterKey];
+    const charDef = data.characters.characters.find(c => c.key === characterKey);
+    const result = performRoll({ gameData: data, characterState: charState, baseModifier, moveId, rollType });
+
+    let resultText = null;
+    let tierLabel = TIER_LABELS[result.tier];
+    if (mechanicsFor) {
+        resultText = result.tier === "success" ? mechanicsFor.high : result.tier === "partial" ? mechanicsFor.mid : mechanicsFor.low;
+    } else if (moveId) {
+        const move = data.moves.find(m => m.id === moveId);
+        if (move) resultText = result.tier === "success" ? move.high : result.tier === "partial" ? move.mid : move.low;
+    }
+
+    getUi(root).lastRoll = { label, result, resultText, tierLabel };
+    logRoll(root._ctx.updateState, {
+        characterName: charDef.name,
+        source: rollType,
+        label,
+        result,
+        resultText
+    });
+}
+
+function abilityChip(abilityId, atutyData) {
     const found = atutyData.find(a => a.id === abilityId);
-    if (!found) return `<span class="ability-chip">☆ ${escapeHtml(abilityId)}</span>`;
-    const tooltip = `
-        <div class="card-tooltip-name">${escapeHtml(found.name)}</div>
-        <div class="card-tooltip-kicker">${escapeHtml(found.attr)}</div>
-        <div class="card-tooltip-desc">${escapeHtml(found.intro || "")}</div>
-        ${found.high ? `<div class="card-tooltip-row"><b>15+:</b> ${escapeHtml(found.high)}</div>` : ""}
-        ${found.mid ? `<div class="card-tooltip-row"><b>10-14:</b> ${escapeHtml(found.mid)}</div>` : ""}
-        ${found.low ? `<div class="card-tooltip-row"><b>≤9:</b> ${escapeHtml(found.low)}</div>` : ""}
-    `;
-    return `<span class="ability-chip">☆ ${escapeHtml(found.name)}<div class="card-tooltip ability-tooltip">${tooltip}</div></span>`;
+    if (!found) return `<button type="button" class="ability-chip" disabled>☆ ${escapeHtml(abilityId)}</button>`;
+    return `<button type="button" class="ability-chip" data-action="open-ability" data-ability="${abilityId}">☆ ${escapeHtml(found.name)}</button>`;
 }
 
-// `<div>` wszędzie tu, NIE `<p>` - `<div class="card-tooltip">` zagnieżdżony w `<p>` byłby przez
-// parser HTML wypchnięty poza niego jako rodzeństwo (p nie może zawierać elementów blokowych),
-// co po cichu psuje hover (tooltip istnieje w DOM, ale poza .char-tag, więc selektor
-// .char-tag-hoverable:hover .card-tooltip nigdy go nie widzi).
-
-function darkSecretLabel(label) {
-    return `<div class="char-tag">✦ ${escapeHtml(label)}</div>`;
+function darkSecretTag(item) {
+    const cls = item.active ? "char-tag" : "char-tag char-tag-inactive";
+    return `<div class="${cls}">✦ ${escapeHtml(item.label)}</div>`;
 }
 
-/** Komplikacja (✧) - swobodny tekst, ale bazowa nazwa (przed nawiasem) zwykle odpowiada wpisowi w
- *  komplikacjeData; jeśli tak, dostaje hover z mechaniką (jak Atuty), inaczej renderuje się jako
- *  goły tekst. */
-function complicationLabel(label, komplikacjeData) {
-    const found = komplikacjeData.find(k => k.name.toLowerCase() === baseLabel(label).toLowerCase());
-    if (!found) return `<div class="char-tag">✧ ${escapeHtml(label)}</div>`;
-    const tooltip = `
-        <div class="card-tooltip-name">${escapeHtml(found.name)}</div>
-        <div class="card-tooltip-desc">${escapeHtml(found.intro || "")}</div>
-        ${found.high ? `<div class="card-tooltip-row"><b>15+:</b> ${escapeHtml(found.high)}</div>` : ""}
-        ${found.mid ? `<div class="card-tooltip-row"><b>10-14:</b> ${escapeHtml(found.mid)}</div>` : ""}
-        ${found.low ? `<div class="card-tooltip-row"><b>≤9:</b> ${escapeHtml(found.low)}</div>` : ""}
-    `;
-    return `<div class="char-tag char-tag-hoverable">✧ ${escapeHtml(label)}<div class="card-tooltip ability-tooltip">${tooltip}</div></div>`;
+function complicationTag(item, komplikacjeData) {
+    if (!item.active) return `<div class="char-tag char-tag-inactive">✧ ${escapeHtml(item.label)}</div>`;
+    const found = komplikacjeData.find(k => k.name.toLowerCase() === baseLabel(item.label).toLowerCase());
+    if (!found) return `<div class="char-tag">✧ ${escapeHtml(item.label)}</div>`;
+    return `<button type="button" class="char-tag char-tag-clickable" data-action="open-complication" data-complication="${escapeHtml(item.label)}">✧ ${escapeHtml(item.label)}</button>`;
 }
 
 function woundsHtml(wounds) {
-    const serious = wounds.serious.map((checked, i) => `
-        <label class="wound-row">
-            <input type="checkbox" data-action="toggle-wound" data-index="${i}" ${checked ? "checked" : ""}>
-            Poważna
-        </label>
+    const serious = wounds.serious.map((w, i) => `
+        <div class="wound-row">
+            <label class="wound-checkbox-row">
+                <input type="checkbox" data-action="toggle-wound" data-index="${i}" ${w.checked ? "checked" : ""}>
+                Poważna
+            </label>
+            <input type="text" class="wound-note" placeholder="czego dotyczy…" data-action="set-wound-note" data-index="${i}" value="${escapeHtml(w.note || "")}">
+        </div>
     `).join("");
     return `
         <div class="sheet-block">
             <h4 class="sheet-block-title">Rany</h4>
             ${serious}
-            <label class="wound-row wound-row-critical">
-                <input type="checkbox" data-action="toggle-critical" ${wounds.critical ? "checked" : ""}>
-                Krytyczna
-            </label>
+            <div class="wound-row wound-row-critical">
+                <label class="wound-checkbox-row">
+                    <input type="checkbox" data-action="toggle-critical" ${wounds.critical.checked ? "checked" : ""}>
+                    Krytyczna
+                </label>
+                <input type="text" class="wound-note" placeholder="czego dotyczy…" data-action="set-critical-note" value="${escapeHtml(wounds.critical.note || "")}">
+            </div>
         </div>
     `;
 }
@@ -109,9 +161,10 @@ function stabilityHtml(currentValue, levels) {
 }
 
 function developmentHtml(development, milestones) {
-    const firstThreeDone = development.slice(0, 3).filter(Boolean).length;
+    const lastIdx = milestones.length - 1;
+    const doneBeforeLast = development.slice(0, lastIdx).filter(Boolean).length;
     const rows = milestones.map((label, i) => {
-        const locked = i === 3 && firstThreeDone < 3;
+        const locked = i === lastIdx && doneBeforeLast < lastIdx;
         return `
             <label class="dev-row ${locked ? "locked" : ""}">
                 <input type="checkbox" data-action="toggle-dev" data-index="${i}" ${development[i] ? "checked" : ""} ${locked ? "disabled" : ""}>
@@ -122,19 +175,36 @@ function developmentHtml(development, milestones) {
     return `<div class="sheet-block"><h4 class="sheet-block-title">Rozwój</h4>${rows}</div>`;
 }
 
-function rollResultHtml(lastRoll, data) {
-    if (!lastRoll) return "";
-    const move = data.moves.find(m => m.id === lastRoll.moveId);
-    const tierText = lastRoll.result.tier === "success" ? move.high : lastRoll.result.tier === "partial" ? move.mid : move.low;
-    const tierLabel = lastRoll.result.tier === "success" ? "15+ Sukces!" : lastRoll.result.tier === "partial" ? "10–14 Częściowy sukces" : "≤9 Porażka";
+function rollResultHtml(lastRoll) {
+    if (!lastRoll) return `<p class="placeholder">Kliknij cechę, Atut lub Komplikację, żeby rzucić.</p>`;
+    const r = lastRoll.result;
     return `
-        <div class="roll-result-panel tier-${lastRoll.result.tier}">
+        <div class="roll-result-panel tier-${r.tier}">
             <div class="roll-result-header">
-                <span class="roll-result-move">${escapeHtml(move.name)} (${escapeHtml(move.attr)})</span>
-                <span class="roll-result-dice">${lastRoll.result.dice.join(" + ")} ${lastRoll.result.modifier >= 0 ? "+" : ""}${lastRoll.result.modifier} = ${lastRoll.result.total}</span>
+                <span class="roll-result-move">${escapeHtml(lastRoll.label)}</span>
+                <span class="roll-result-dice">${r.dice.join(" + ")} ${r.modifier >= 0 ? "+" : ""}${r.modifier} = ${r.total}</span>
             </div>
-            <div class="roll-result-tier">${tierLabel}</div>
-            <div class="roll-result-text">${escapeHtml(tierText || "")}</div>
+            ${r.modifierNotes.length ? `<div class="roll-result-notes">${r.modifierNotes.map(escapeHtml).join(" · ")}</div>` : ""}
+            <div class="roll-result-tier">${lastRoll.tierLabel}</div>
+            ${lastRoll.resultText ? `<div class="roll-result-text">${escapeHtml(lastRoll.resultText)}</div>` : ""}
+        </div>
+    `;
+}
+
+function recentRollsHtml(log, characterName) {
+    const mine = (log || []).filter(e => e.kind === "roll" && e.characterName === characterName).slice(0, 6);
+    if (!mine.length) return "";
+    return `
+        <div class="sheet-block">
+            <h4 class="sheet-block-title">Ostatnie rzuty</h4>
+            <div class="recent-rolls-list">
+                ${mine.map(e => `
+                    <div class="recent-roll-row tier-${e.result.tier}">
+                        <span>${escapeHtml(e.label)}</span>
+                        <span>${e.result.total}</span>
+                    </div>
+                `).join("")}
+            </div>
         </div>
     `;
 }
@@ -149,59 +219,117 @@ function buildHtml(ctx, ui) {
     const attrGrid = attrOrder.map(k => attrBadge(k, charState.attrs[k])).join("");
 
     const abilities = charState.abilities.length
-        ? charState.abilities.map(id => abilityLabel(id, data.atuty)).join("")
+        ? charState.abilities.map(id => abilityChip(id, data.atuty)).join("")
         : `<span class="placeholder-inline">brak</span>`;
 
     const darkSecrets = charState.darkSecrets.length
-        ? charState.darkSecrets.map(darkSecretLabel).join("")
-        : `<p class="char-tag char-tag-locked">✦ brak</p>`;
+        ? charState.darkSecrets.map(darkSecretTag).join("")
+        : `<div class="char-tag char-tag-inactive">✦ brak</div>`;
 
     const complications = charState.complications.length
-        ? charState.complications.map(c => complicationLabel(c, data.komplikacje)).join("")
-        : `<p class="char-tag char-tag-locked">✧ brak</p>`;
+        ? charState.complications.map(c => complicationTag(c, data.komplikacje)).join("")
+        : `<div class="char-tag char-tag-inactive">✧ brak</div>`;
+
+    const milestones = data.characters.developmentMilestonesByRole[charDef.role];
 
     return `
-        <div class="char-sheet">
-            <div class="char-sheet-header">
-                <span class="char-badge char-badge-awareness">${AWARENESS_LABELS[charState.awareness] || charState.awareness}</span>
-                <img class="char-portrait" src="${charDef.portrait}" alt="${escapeHtml(charDef.name)}" onerror="this.style.visibility='hidden'">
-                <span class="char-badge char-badge-role">${ROLE_LABELS[charDef.role]}</span>
+        <div class="char-sheet-grid">
+            <div class="char-sheet-main">
+                <div class="char-sheet-body">
+                    <div class="char-sheet-left">
+                        ${darkSecrets}
+                        ${complications}
+                        <div class="char-abilities-list">${abilities}</div>
+                    </div>
+
+                    <div class="char-sheet-center">
+                        <div class="char-center-header">
+                            <div class="char-badges-row">
+                                <span class="char-badge">${AWARENESS_LABELS[charState.awareness] || charState.awareness}</span>
+                                <span class="char-badge">${ROLE_LABELS[charDef.role]}</span>
+                            </div>
+                            <img class="char-portrait" src="${charDef.portrait}" alt="${escapeHtml(charDef.name)}" onerror="this.style.visibility='hidden'">
+                        </div>
+                        <h2 class="char-name">${escapeHtml(charDef.name)}</h2>
+                        <div class="attr-mandala-wrap">
+                            <div class="attr-mandala">${attrGrid}</div>
+                        </div>
+                    </div>
+
+                    <div class="char-sheet-right">
+                        ${woundsHtml(charState.wounds)}
+                        ${stabilityHtml(charState.stability, data.characters.stabilityLevels)}
+                        ${developmentHtml(charState.development, milestones)}
+                    </div>
+                </div>
             </div>
-            <h2 class="char-name">${escapeHtml(charDef.name)}</h2>
-
-            <div class="char-sheet-body">
-                <div class="char-sheet-left">
-                    ${darkSecrets}
-                    ${complications}
-                    <div class="char-abilities-list">${abilities}</div>
-                </div>
-
-                <div class="char-sheet-center">
-                    <div class="attr-mandala">${attrGrid}</div>
-                    ${rollResultHtml(ui.lastRoll, data)}
-                </div>
-
-                <div class="char-sheet-right">
-                    ${woundsHtml(charState.wounds)}
-                    ${stabilityHtml(charState.stability, data.characters.stabilityLevels)}
-                    ${developmentHtml(charState.development, data.characters.developmentMilestones)}
-                </div>
+            <div class="char-sheet-rollcol">
+                <h3 class="panel-subtitle">Wyniki rzutów</h3>
+                ${rollResultHtml(ui.lastRoll)}
+                ${recentRollsHtml(state.log, charDef.name)}
             </div>
         </div>
     `;
+}
+
+function openAbilityModal(root, abilityId) {
+    const { data } = root._ctx;
+    const found = data.atuty.find(a => a.id === abilityId);
+    if (!found) return;
+    const mod = resolveAbilityModifier(found, root._ctx.state.characters[root._ctx.characterKey].attrs);
+    openModal({
+        title: `☆ ${escapeHtml(found.name)}`,
+        bodyHtml: mechanicsBodyHtml(found) + (mod?.note ? `<div class="card-tooltip-row">${escapeHtml(mod.note)}</div>` : ""),
+        rollLabel: mod ? "Rzuć" : null,
+        onRoll: mod ? () => performAndLogRoll(root, {
+            label: found.name,
+            moveId: null,
+            baseModifier: mod.value,
+            rollType: "ability",
+            mechanicsFor: found
+        }) : null
+    });
+}
+
+function openComplicationModal(root, label) {
+    const { data } = root._ctx;
+    const found = data.komplikacje.find(k => k.name.toLowerCase() === baseLabel(label).toLowerCase());
+    if (!found) return;
+    openModal({
+        title: `✧ ${escapeHtml(label)}`,
+        bodyHtml: mechanicsBodyHtml(found),
+        rollLabel: "Rzuć",
+        onRoll: () => performAndLogRoll(root, {
+            label,
+            moveId: null,
+            baseModifier: 0,
+            rollType: "complication",
+            mechanicsFor: found
+        })
+    });
 }
 
 function wireEvents(root) {
     root.addEventListener("click", (e) => {
         const rollBtn = e.target.closest('[data-action="roll-attr"]');
         if (rollBtn) {
-            const { data, state, characterKey, updateState } = root._ctx;
             const attrKey = rollBtn.dataset.attr;
+            const { data, state, characterKey } = root._ctx;
             const moveId = data.characters.attrMoveMap[attrKey];
             const modifier = state.characters[characterKey].attrs[attrKey];
-            const result = rollKultTest({ modifier });
-            getUi(root).lastRoll = { moveId, result };
+            const move = data.moves.find(m => m.id === moveId);
+            performAndLogRoll(root, { label: `${move ? move.name : ATTR_LABELS[attrKey]} (+${ATTR_LABELS[attrKey]})`, moveId, baseModifier: modifier, rollType: "attribute" });
             preserveScroll(() => rerender(root));
+            return;
+        }
+        const abilityBtn = e.target.closest('[data-action="open-ability"]');
+        if (abilityBtn) {
+            openAbilityModal(root, abilityBtn.dataset.ability);
+            return;
+        }
+        const complicationBtn = e.target.closest('[data-action="open-complication"]');
+        if (complicationBtn) {
+            openComplicationModal(root, complicationBtn.dataset.complication);
             return;
         }
     });
@@ -211,12 +339,23 @@ function wireEvents(root) {
         const woundToggle = e.target.closest('[data-action="toggle-wound"]');
         if (woundToggle) {
             const idx = Number(woundToggle.dataset.index);
-            updateState(s => { s.characters[characterKey].wounds.serious[idx] = woundToggle.checked; });
+            updateState(s => { s.characters[characterKey].wounds.serious[idx].checked = woundToggle.checked; });
             return;
         }
         const criticalToggle = e.target.closest('[data-action="toggle-critical"]');
         if (criticalToggle) {
-            updateState(s => { s.characters[characterKey].wounds.critical = criticalToggle.checked; });
+            updateState(s => { s.characters[characterKey].wounds.critical.checked = criticalToggle.checked; });
+            return;
+        }
+        const woundNote = e.target.closest('[data-action="set-wound-note"]');
+        if (woundNote) {
+            const idx = Number(woundNote.dataset.index);
+            updateState(s => { s.characters[characterKey].wounds.serious[idx].note = woundNote.value; });
+            return;
+        }
+        const criticalNote = e.target.closest('[data-action="set-critical-note"]');
+        if (criticalNote) {
+            updateState(s => { s.characters[characterKey].wounds.critical.note = criticalNote.value; });
             return;
         }
         const stabilityRadio = e.target.closest('[data-action="set-stability"]');

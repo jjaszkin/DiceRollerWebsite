@@ -6,11 +6,13 @@
 import { loadGameData } from "./data.js";
 import { initStore, connectCampaign, getState, getData, subscribe, updateState, onSaveStatusChange } from "./store.js";
 import { showGate } from "./gate.js";
+import { buildModalHtml, wireModalGlobalEvents, subscribeModal } from "./modal.js";
 
 import * as tarotPanel from "./panels/tarot.js";
 import * as divinityPanel from "./panels/divinity.js";
 import * as characterPanel from "./panels/character.js";
 import * as handoutsPanel from "./panels/handouts.js";
+import * as journalPanel from "./panels/journal.js";
 import * as mgPanel from "./panels/mg.js";
 
 const bootStatus = document.getElementById("bootStatus");
@@ -47,6 +49,7 @@ function renderAll() {
     if (session.role === "mg") {
         const mgRoot = document.getElementById("mgUnifiedRoot");
         if (mgRoot && mgPanel.render) mgPanel.render(mgRoot, { state, data, session, updateState });
+        renderModal();
         return;
     }
 
@@ -65,6 +68,16 @@ function renderAll() {
 
     const handoutsRoot = document.getElementById("panel-handouts");
     if (handoutsRoot) handoutsPanel.render(handoutsRoot, { state, data, session, updateState });
+
+    const journalRoot = document.getElementById("panel-journal");
+    if (journalRoot) journalPanel.render(journalRoot, { state, data, session, updateState });
+
+    renderModal();
+}
+
+function renderModal() {
+    const modalRoot = document.getElementById("modalRoot");
+    if (modalRoot) modalRoot.innerHTML = buildModalHtml();
 }
 
 function setupTabs() {
@@ -139,9 +152,11 @@ async function bootstrap() {
         await connectCampaign();
 
         subscribe(renderAll);
+        subscribeModal(renderModal);
         setupTabs();
         setupSaveIndicator();
         setupChangeCharacterButton();
+        wireModalGlobalEvents(renderModal);
 
         setBootStatus("Wybierz, kto patrzy...");
 
