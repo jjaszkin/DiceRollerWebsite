@@ -294,10 +294,25 @@ function buildSettingsTab(ctx) {
             <input type="text" id="mgPinInput" maxlength="4" inputmode="numeric" value="${escapeHtml(ctx.state.mgPin)}">
             <button class="btn btn-xs" data-action="save-pin">Zapisz PIN</button>
         </div>
+        <div class="card">
+            <h3>Reset talii tarota</h3>
+            <p class="placeholder">Czyści krzyż, karty w rękach wszystkich postaci i stos odrzuconych - talia wraca do stanu "nierozdana". NIE dotyka Toru Boskości ani kart postaci.</p>
+            <button class="btn btn-xs btn-danger" data-action="reset-deck">Resetuj talię</button>
+        </div>
     `;
 }
 
 function handleSettingsAction(action, el, root) {
+    if (action === "reset-deck") {
+        if (!confirm("Na pewno zresetować talię? Krzyż, ręce postaci i stos odrzuconych zostaną wyczyszczone.")) return true;
+        const { updateState } = root._ctx;
+        updateState(s => {
+            for (const pos of CROSS_POSITIONS) s.cross[pos] = null;
+            s.deck.discardKeys = [];
+            for (const charState of Object.values(s.characters)) charState.cards = [];
+        });
+        return true;
+    }
     if (action !== "save-pin") return false;
     const { updateState } = root._ctx;
     const input = root.querySelector("#mgPinInput");
