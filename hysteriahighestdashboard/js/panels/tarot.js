@@ -9,8 +9,6 @@ import { renderCard, openCardModal } from "../cardView.js";
 import { getAvailableCards } from "../deck.js";
 import { escapeHtml } from "../utils.js";
 
-const POSITION_LABELS = { gorna: "Górna", dolna: "Dolna", lewa: "Lewa", prawa: "Prawa", srodkowa: "Środkowa" };
-
 /** Zwraca postacie w kolejności [Strażnik pary1, Absolwent pary1, Strażnik pary2, ...] - nałożone
  *  na grid 2-kolumnowy z auto-flow wierszami daje dokładnie układ "Strażnicy po lewej, Absolwenci
  *  po prawej, sparowani per gracz w tym samym wierszu" (patrz PR). */
@@ -30,7 +28,6 @@ function buildHtml({ state, data }) {
     const cards = data.cards;
     const cross = CROSS_POSITIONS.map(pos => `
         <div class="cross-slot cross-slot-${pos}">
-            <span class="cross-slot-label">${POSITION_LABELS[pos]}</span>
             ${renderCard(cards, state.cross[pos], { size: "md", showName: false })}
         </div>
     `).join("");
@@ -60,7 +57,7 @@ function buildHtml({ state, data }) {
                 </div>
             </div>
             <div class="tarot-characters-area">
-                <h3 class="panel-subtitle">Karty postaci</h3>
+                <h3 class="panel-subtitle">Ręka postaci</h3>
                 <div class="tarot-pairs-grid">${characters}</div>
             </div>
         </div>
