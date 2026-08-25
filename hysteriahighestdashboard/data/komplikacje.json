@@ -1,0 +1,84 @@
+[
+    {
+        "id": "fanatyk",
+        "name": "Fanatyk",
+        "attr": "+0",
+        "intro": "Za każdym razem, gdy ktoś podważa wyznawaną przez ciebie ideologię.",
+        "high": "Trzymasz emocje na wodzy.",
+        "mid": "Robisz się zły, zdezorientowany lub sfrustrowany. Otrzymujesz karę −1 do następnego rzutu.",
+        "low": "Musisz wybrać: albo podejmujesz kroki, by wpłynąć na daną osobę lub sytuację tak, aby pozostawały w zgodzie z twoją ideologią, albo obniżasz swoją Stabilność (−2)."
+    },
+    {
+        "id": "narkoman",
+        "name": "Narkoman",
+        "attr": "+0",
+        "intro": "Podczas pierwszej sesji gry i za każdym razem, gdy bierzesz lub masz okazję brać narkotyki.",
+        "high": "Na razie panujesz nad uzależnieniem.",
+        "mid": "MG zyskuje 1 punkt Wpływu.",
+        "low": "MG zyskuje 3 punkty Wpływu. MG może wydawać je, by wykonywać Ruchy reprezentujące twoje uzależnienie."
+    },
+    {
+        "id": "nieudany-eksperyment",
+        "name": "Nieudany eksperyment",
+        "attr": "+0",
+        "intro": "Podczas pierwszej sesji gry i za każdym razem, gdy sprawy wydają się pod kontrolą.",
+        "high": "Twój eksperyment zostawia cię w spokoju.",
+        "mid": "Twój eksperyment depcze ci po piętach. MG zyskuje 1 punkt Wpływu.",
+        "low": "Twój eksperyment jest w pobliżu i działa przeciw tobie. MG zyskuje 3 punkty Wpływu."
+    },
+    {
+        "id": "obsesja",
+        "name": "Obsesja",
+        "attr": "+0",
+        "intro": "Podczas pierwszej sesji gry i za każdym razem, gdy napotykasz coś związanego z twoją obsesją.",
+        "high": "Chwilowo opanowujesz swoją obsesję.",
+        "mid": "Twoja obsesja wpływa na twoje zachowanie. MG zyskuje 1 punkt Wpływu.",
+        "low": "Twoja obsesja przejmuje całkowitą kontrolę. MG zyskuje 3 punkty Wpływu."
+    },
+    {
+        "id": "ofiara-wlasnych-namietnosci",
+        "name": "Ofiara własnych namiętności",
+        "attr": "+0",
+        "intro": "Podczas pierwszej sesji gry i za każdym razem, gdy napotykasz przedmiot swojej pasji (lub coś, co go przypomina).",
+        "high": "Utrzymujesz swoją żądzę na wodzy.",
+        "mid": "Rozbudza się w tobie namiętność. MG zyskuje 1 punkt Wpływu.",
+        "low": "Namiętność ma cię całkowicie w swojej mocy. MG zyskuje 3 punkty Wpływu."
+    },
+    {
+        "id": "poczucie-winy",
+        "name": "Poczucie winy",
+        "attr": "+0",
+        "intro": "Podczas pierwszej sesji gry i za każdym razem, gdy sprawy wydają się w porządku.",
+        "high": "Nie myślisz w tej chwili o swojej winie.",
+        "mid": "Coś przypomina ci o twojej winie. MG zyskuje 1 punkt Wpływu.",
+        "low": "Dopada cię poczucie winy. MG zyskuje 3 punkty Wpływu."
+    },
+    {
+        "id": "przesladowca",
+        "name": "Prześladowca",
+        "attr": "+0",
+        "intro": "W czasie pierwszej sesji gry i za każdym razem, gdy ujawniasz miejsce, gdzie aktualnie przebywasz.",
+        "high": "Jesteś na razie bezpieczny.",
+        "mid": "Twoi wrogowie są blisko. MG zyskuje 1 punkt Wpływu.",
+        "low": "Twoi wrogowie namierzyli cię. MG zyskuje 3 punkty Wpływu."
+    },
+    {
+        "id": "przysiega-zemsty",
+        "name": "Przysięga zemsty",
+        "attr": "+0",
+        "intro": "Za każdym razem, gdy w scenie pojawia się cel twojej zemsty (lub ktoś albo coś z nim powiązanego).",
+        "high": "Kontrolujesz swoją mściwość i możesz działać racjonalnie.",
+        "mid": "Nie możesz skupić się na niczym innym niż cel twojej zemsty. Otrzymujesz −1 do wszystkich rzutów, dopóki cel bierze udział w scenie.",
+        "low": "Ogarnia cię obsesja; możesz się jedynie mścić. Zrobienie czegokolwiek innego wymaga Ruchu Weź się w garść."
+    },
+    {
+        "id": "obiekt-pozadania",
+        "name": "Obiekt pożądania",
+        "attr": "+0",
+        "intro": "Podczas pierwszej sesji gry i za każdym razem, gdy napotykasz obiekt swojego pożądania (lub coś, co go przypomina).",
+        "high": "Utrzymujesz swoje pożądanie na wodzy.",
+        "mid": "Rozbudza się w tobie pożądanie. MG zyskuje 1 punkt Wpływu.",
+        "low": "Pożądanie ma cię całkowicie w swojej mocy. MG zyskuje 3 punkty Wpływu.",
+        "todo": "Tekst mechaniki zrekonstruowany wg wzorca pozostałych Komplikacji (brak oryginalnego tekstu w Figmie) - do potwierdzenia przez Jakuba."
+    }
+]

@@ -1,0 +1,44 @@
+[
+    {
+        "key": "azadewa-i-gynachid",
+        "name": "Azadewa i Gynachid",
+        "file": "handouts/Azadewa i Gynachid.png",
+        "number": 0
+    },
+    {
+        "key": "billboard",
+        "name": "Billboard",
+        "file": "handouts/Billboard.png",
+        "number": 0
+    },
+    {
+        "key": "calle-ocho-1999",
+        "name": "Calle Ocho 1999",
+        "file": "handouts/Calle Ocho 1999.png",
+        "number": 1999
+    },
+    {
+        "key": "diagram",
+        "name": "Diagram",
+        "file": "handouts/Diagram.png",
+        "number": 0
+    },
+    {
+        "key": "gazeta",
+        "name": "Gazeta",
+        "file": "handouts/Gazeta.png",
+        "number": 0
+    },
+    {
+        "key": "miami-1899",
+        "name": "Miami 1899",
+        "file": "handouts/Miami 1899.png",
+        "number": 1899
+    },
+    {
+        "key": "olympia-theatre",
+        "name": "Olympia Theatre",
+        "file": "handouts/Olympia Theatre.png",
+        "number": 0
+    }
+]
