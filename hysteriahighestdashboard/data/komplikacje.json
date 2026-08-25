@@ -70,5 +70,15 @@
         "high": "Kontrolujesz swoją mściwość i możesz działać racjonalnie.",
         "mid": "Nie możesz skupić się na niczym innym niż cel twojej zemsty. Otrzymujesz −1 do wszystkich rzutów, dopóki cel bierze udział w scenie.",
         "low": "Ogarnia cię obsesja; możesz się jedynie mścić. Zrobienie czegokolwiek innego wymaga Ruchu Weź się w garść."
+    },
+    {
+        "id": "obiekt-pozadania",
+        "name": "Obiekt pożądania",
+        "attr": "+0",
+        "intro": "Podczas pierwszej sesji gry i za każdym razem, gdy napotykasz obiekt swojego pożądania (lub coś, co go przypomina).",
+        "high": "Utrzymujesz swoje pożądanie na wodzy.",
+        "mid": "Rozbudza się w tobie pożądanie. MG zyskuje 1 punkt Wpływu.",
+        "low": "Pożądanie ma cię całkowicie w swojej mocy. MG zyskuje 3 punkty Wpływu.",
+        "todo": "Tekst mechaniki zrekonstruowany wg wzorca pozostałych Komplikacji (brak oryginalnego tekstu w Figmie) - do potwierdzenia przez Jakuba."
     }
 ]

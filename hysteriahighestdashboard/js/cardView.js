@@ -64,8 +64,10 @@ export function renderCard(cards, key, { size = "md", faceDown = false } = {}) {
     }
     return `
         <div class="tarot-card tarot-card-${size}" data-card-key="${key}">
-            <img class="tarot-card-img" src="${card.image}" alt="${escapeHtml(card.name)}" loading="lazy" onerror="this.parentElement.classList.add('tarot-card-img-missing')">
-            <span class="tarot-card-label">${escapeHtml(card.name)}</span>
+            <div class="tarot-card-face">
+                <img class="tarot-card-img" src="${card.image}" alt="${escapeHtml(card.name)}" loading="lazy" onerror="this.parentElement.parentElement.classList.add('tarot-card-img-missing')">
+                <span class="tarot-card-label">${escapeHtml(card.name)}</span>
+            </div>
             <div class="card-tooltip">${cardTooltipHtml(card)}</div>
         </div>
     `;

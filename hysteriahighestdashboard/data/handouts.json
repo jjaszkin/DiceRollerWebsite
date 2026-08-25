@@ -12,6 +12,12 @@
         "number": 0
     },
     {
+        "key": "calle-ocho-1999",
+        "name": "Calle Ocho 1999",
+        "file": "handouts/Calle Ocho 1999.png",
+        "number": 1999
+    },
+    {
         "key": "diagram",
         "name": "Diagram",
         "file": "handouts/Diagram.png",

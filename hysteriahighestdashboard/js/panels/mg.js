@@ -16,7 +16,7 @@ import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
 const POSITION_LABELS = { gorna: "Górna", dolna: "Dolna", lewa: "Lewa", prawa: "Prawa", srodkowa: "Środkowa" };
 const STAGE_LABELS = { 1: "Etap 1 — Małe Arkana", 2: "Etap 2 — + Archonci / Anioły Śmierci", 3: "Etap 3 — + Super Arkana" };
 const ROLE_LABELS = { absolwent: "Absolwent", straznik: "Strażnik" };
-const AWARENESS_OPTIONS = [["spiacy", "Śpiący"], ["swiadomy", "Świadomy"], ["przebudzony", "Przebudzony"]];
+const AWARENESS_OPTIONS = [["swiadomy", "Świadomy"], ["oswiecony", "Oświecony"]];
 
 function getUi(root) {
     if (!root._ui) root._ui = { activeTab: "tarot", selectedCards: {}, activeCharKey: null };
@@ -230,9 +230,12 @@ function buildCharactersTab(ctx, ui) {
                     ${AWARENESS_OPTIONS.map(([v, l]) => `<option value="${v}" ${charState.awareness === v ? "selected" : ""}>${l}</option>`).join("")}
                 </select>
             </label>
-            <label>Nawiedzenia <input type="text" data-action="set-text" data-char="${activeKey}" data-field="hauntings" value="${escapeHtml(charState.hauntings || "")}"></label>
-            <label>Mroczny pakt (Anioł) <input type="text" data-action="set-pact" data-char="${activeKey}" value="${escapeHtml(charState.darkPact?.angel || "")}"></label>
-            <label>Namiętność / Ofiara <input type="text" data-action="set-text" data-char="${activeKey}" data-field="darkSecret" value="${escapeHtml(charState.darkSecret || "")}"></label>
+            <label>Mroczne sekrety ✦ (jeden na linię)
+                <textarea rows="2" data-action="set-list" data-char="${activeKey}" data-field="darkSecrets">${escapeHtml(charState.darkSecrets.join("\n"))}</textarea>
+            </label>
+            <label>Komplikacje ✧ (jeden na linię - bazowa nazwa dopasowywana do data/komplikacje.json, np. "Prześladowca (Nick 2.0)")
+                <textarea rows="2" data-action="set-list" data-char="${activeKey}" data-field="complications">${escapeHtml(charState.complications.join("\n"))}</textarea>
+            </label>
             <h4 class="sheet-block-title">Cechy</h4>
             <div class="mg-attr-grid">${attrInputs}</div>
             <h4 class="sheet-block-title">Zdolności / Atuty</h4>
@@ -274,12 +277,11 @@ function handleCharactersChange(el, root) {
         updateState(s => { s.characters[charKey].awareness = el.value; });
         return true;
     }
-    if (action === "set-text") {
-        updateState(s => { s.characters[charKey][el.dataset.field] = el.value || null; });
-        return true;
-    }
-    if (action === "set-pact") {
-        updateState(s => { s.characters[charKey].darkPact = el.value ? { angel: el.value } : null; });
+    if (action === "set-list") {
+        const field = el.dataset.field;
+        updateState(s => {
+            s.characters[charKey][field] = el.value.split("\n").map(line => line.trim()).filter(Boolean);
+        });
         return true;
     }
     return false;

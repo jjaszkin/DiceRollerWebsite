@@ -5,9 +5,15 @@
 // Dane statyczne (imiona, portrety, role, długość Toru Boskości, opisy kart) mieszkają w
 // data/*.json (patrz data.js) i NIE są tu duplikowane - stan trzyma tylko to, co się zmienia w
 // trakcie kampanii: PIN MG, aktywny etap talii, karty na krzyżu, karty w rękach postaci, atrybuty/
-// Rany/Stabilność/Rozwój/Nawiedzenia/Pakt/Namiętność/Zdolności/postęp na Torze KAŻDEJ postaci
-// (zaseedowane z data/characters.json przy pierwszym uruchomieniu, dalej edytowalne przez MG - stąd
-// kopia w stanie, nie odczyt na żywo ze statycznych danych).
+// Rany/Stabilność/Rozwój/Mroczne sekrety (✦)/Komplikacje (✧)/Atuty (☆)/postęp na Torze KAŻDEJ
+// postaci (zaseedowane z data/characters.json przy pierwszym uruchomieniu, dalej edytowalne przez
+// MG - stąd kopia w stanie, nie odczyt na żywo ze statycznych danych).
+//
+// Mroczne sekrety to swobodny tekst (narracyjne, unikalne per postać - bez mechaniki). Komplikacje
+// to też swobodny tekst, ale ich bazowa nazwa (przed nawiasem z detalem, np. "Prześladowca (Nick
+// 2.0)" -> "Prześladowca") zwykle odpowiada wpisowi w data/komplikacje.json - dopasowanie robione w
+// panels/character.js#complicationMechanics, nie tutaj. Atuty (☆) to lista ID-ków wprost z
+// data/atuty.json (tak jak dotychczas).
 
 export const CROSS_POSITIONS = ["gorna", "dolna", "lewa", "prawa", "srodkowa"];
 
@@ -15,14 +21,13 @@ function seedCharacterState(charDef) {
     return {
         cards: [],
         attrs: { ...charDef.attrs },
-        awareness: charDef.awareness || "spiacy",
+        awareness: charDef.awareness || "swiadomy",
         wounds: charDef.wounds ? { serious: [...charDef.wounds.serious], critical: charDef.wounds.critical } : { serious: [false, false, false, false], critical: false },
         stability: typeof charDef.stability === "number" ? charDef.stability : 0,
         development: charDef.development ? [...charDef.development] : [false, false, false, false],
         divinityProgress: 0,
-        hauntings: charDef.hauntings || null,
-        darkPact: charDef.darkPact || null,
-        darkSecret: charDef.darkSecret || null,
+        darkSecrets: charDef.darkSecrets ? [...charDef.darkSecrets] : [],
+        complications: charDef.complications ? [...charDef.complications] : [],
         abilities: charDef.abilities ? [...charDef.abilities] : []
     };
 }

@@ -13,8 +13,14 @@ const ATTR_LABELS = {
     charyzma: "Charyzma", dusza: "Dusza"
 };
 
-const AWARENESS_LABELS = { spiacy: "Śpiący", swiadomy: "Świadomy", przebudzony: "Przebudzony" };
+const AWARENESS_LABELS = { spiacy: "Śpiący", swiadomy: "Świadomy", oswiecony: "Oświecony" };
 const ROLE_LABELS = { absolwent: "Absolwent", straznik: "Strażnik" };
+
+/** Bazowa nazwa przed nawiasem z detalem, np. "Prześladowca (Nick 2.0)" -> "Prześladowca" -
+ *  dopasowywana do data/komplikacje.json (patrz komentarz w state.js#seedCharacterState). */
+function baseLabel(label) {
+    return label.split(" (")[0].trim();
+}
 
 // UI efemeryczny (wynik ostatniego rzutu) per instancja panelu - trzymany na węźle root, żeby
 // dwie zakładki (charA/charB) nie dzieliły jednego stanu.
@@ -44,6 +50,31 @@ function abilityLabel(abilityId, atutyData) {
         ${found.low ? `<div class="card-tooltip-row"><b>≤9:</b> ${escapeHtml(found.low)}</div>` : ""}
     `;
     return `<span class="ability-chip">☆ ${escapeHtml(found.name)}<div class="card-tooltip ability-tooltip">${tooltip}</div></span>`;
+}
+
+// `<div>` wszędzie tu, NIE `<p>` - `<div class="card-tooltip">` zagnieżdżony w `<p>` byłby przez
+// parser HTML wypchnięty poza niego jako rodzeństwo (p nie może zawierać elementów blokowych),
+// co po cichu psuje hover (tooltip istnieje w DOM, ale poza .char-tag, więc selektor
+// .char-tag-hoverable:hover .card-tooltip nigdy go nie widzi).
+
+function darkSecretLabel(label) {
+    return `<div class="char-tag">✦ ${escapeHtml(label)}</div>`;
+}
+
+/** Komplikacja (✧) - swobodny tekst, ale bazowa nazwa (przed nawiasem) zwykle odpowiada wpisowi w
+ *  komplikacjeData; jeśli tak, dostaje hover z mechaniką (jak Atuty), inaczej renderuje się jako
+ *  goły tekst. */
+function complicationLabel(label, komplikacjeData) {
+    const found = komplikacjeData.find(k => k.name.toLowerCase() === baseLabel(label).toLowerCase());
+    if (!found) return `<div class="char-tag">✧ ${escapeHtml(label)}</div>`;
+    const tooltip = `
+        <div class="card-tooltip-name">${escapeHtml(found.name)}</div>
+        <div class="card-tooltip-desc">${escapeHtml(found.intro || "")}</div>
+        ${found.high ? `<div class="card-tooltip-row"><b>15+:</b> ${escapeHtml(found.high)}</div>` : ""}
+        ${found.mid ? `<div class="card-tooltip-row"><b>10-14:</b> ${escapeHtml(found.mid)}</div>` : ""}
+        ${found.low ? `<div class="card-tooltip-row"><b>≤9:</b> ${escapeHtml(found.low)}</div>` : ""}
+    `;
+    return `<div class="char-tag char-tag-hoverable">✧ ${escapeHtml(label)}<div class="card-tooltip ability-tooltip">${tooltip}</div></div>`;
 }
 
 function woundsHtml(wounds) {
@@ -121,6 +152,14 @@ function buildHtml(ctx, ui) {
         ? charState.abilities.map(id => abilityLabel(id, data.atuty)).join("")
         : `<span class="placeholder-inline">brak</span>`;
 
+    const darkSecrets = charState.darkSecrets.length
+        ? charState.darkSecrets.map(darkSecretLabel).join("")
+        : `<p class="char-tag char-tag-locked">✦ brak</p>`;
+
+    const complications = charState.complications.length
+        ? charState.complications.map(c => complicationLabel(c, data.komplikacje)).join("")
+        : `<p class="char-tag char-tag-locked">✧ brak</p>`;
+
     return `
         <div class="char-sheet">
             <div class="char-sheet-header">
@@ -132,9 +171,8 @@ function buildHtml(ctx, ui) {
 
             <div class="char-sheet-body">
                 <div class="char-sheet-left">
-                    ${charState.hauntings ? `<p class="char-tag char-tag-filled">✦ ${escapeHtml(charState.hauntings)}</p>` : `<p class="char-tag char-tag-locked">✦ Nawiedzenia</p>`}
-                    ${charState.darkPact ? `<p class="char-tag char-tag-filled">✦ Mroczny pakt (${escapeHtml(charState.darkPact.angel)})</p>` : `<p class="char-tag char-tag-locked">✦ Mroczny pakt</p>`}
-                    ${charState.darkSecret ? `<p class="char-tag">✧ ${escapeHtml(charState.darkSecret)}</p>` : `<p class="char-tag char-tag-locked">✧ Namiętność</p>`}
+                    ${darkSecrets}
+                    ${complications}
                     <div class="char-abilities-list">${abilities}</div>
                 </div>
 
