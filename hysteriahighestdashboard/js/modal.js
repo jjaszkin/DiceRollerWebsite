@@ -1,9 +1,9 @@
 // Hysteria Highest - Dashboard. Modal współdzielony przez wszystkie panele (opis karty tarota,
-// opis+rzut Atutu/Komplikacji) - zawsze wyśrodkowany w viewporcie, z przyciemnieniem 70%. Stan
-// lokalny (nie synchronizowany do Firebase - każda przeglądarka ma swój otwarty modal), renderowany
-// przez main.js do #modalRoot przy KAŻDYM renderAll() (patrz subscribeModal). Zamyka WYŁĄCZNIE X
-// albo Esc (ta sama konwencja co shared/handouts/zoom.js) - klik w tło NIE zamyka, żeby nie tracić
-// przypadkowo otwartego opisu.
+// opis+rzut Atutu/Komplikacji/cechy) - zawsze wyśrodkowany w viewporcie, z przyciemnieniem 70%.
+// Stan lokalny (nie synchronizowany do Firebase - każda przeglądarka ma swój otwarty modal),
+// renderowany przez main.js do #modalRoot przy KAŻDYM renderAll() (patrz subscribeModal). Zamyka
+// X, Esc, LUB klik poza treścią modala (na samym tle .modal-overlay - stąd sprawdzenie
+// `e.target === overlay`, nie closest(), żeby klik WEWNĄTRZ .modal-box nie zamykał).
 
 let current = null; // { title, bodyHtml, rollLabel, onRoll } | null
 const listeners = new Set();
@@ -50,7 +50,7 @@ export function buildModalHtml() {
 export function wireModalGlobalEvents(rerenderAll) {
     document.addEventListener("click", (e) => {
         const closeBtn = e.target.closest('[data-action="close-modal"]');
-        if (closeBtn) {
+        if (closeBtn || e.target.classList.contains("modal-overlay")) {
             closeModal();
             rerenderAll();
             return;

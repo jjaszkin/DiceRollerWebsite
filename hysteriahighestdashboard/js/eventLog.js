@@ -15,11 +15,22 @@ export function logRoll(updateState, entry) {
     });
 }
 
-/** Loguje zdarzenie bez rzutu (dobranie/przeniesienie karty, zmiana postępu na Torze itp). */
+/** Loguje zdarzenie bez rzutu (dobranie/przeniesienie karty, zmiana postępu na Torze, zmiana
+ *  Stabilności, otrzymana Rana itp). */
 export function logEvent(updateState, text) {
     updateState(s => {
         if (!s.log) s.log = [];
         s.log.unshift({ id: uid(), timestamp: Date.now(), kind: "event", text });
         if (s.log.length > 150) s.log.length = 150;
+    });
+}
+
+/** Usuwa jeden wpis z Dziennika po id - wyłącznie z panelu MG (patrz panels/journal.js), z
+ *  potwierdzeniem przed wywołaniem, wzorem Dark Graala/Glide. */
+export function deleteLogEntry(updateState, id) {
+    updateState(s => {
+        if (!s.log) return;
+        const idx = s.log.findIndex(e => e.id === id);
+        if (idx !== -1) s.log.splice(idx, 1);
     });
 }

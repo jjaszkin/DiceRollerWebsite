@@ -13,6 +13,7 @@ import {
 } from "../../../shared/handouts/control-panel.js";
 import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
 import * as journalPanel from "./journal.js";
+import { logEvent } from "../eventLog.js";
 
 const POSITION_LABELS = { gorna: "Górna", dolna: "Dolna", lewa: "Lewa", prawa: "Prawa", srodkowa: "Środkowa" };
 const STAGE_LABELS = { 1: "Etap 1 — Małe Arkana", 2: "Etap 2 — + Archonci / Anioły Śmierci", 3: "Etap 3 — + Super Arkana" };
@@ -262,6 +263,11 @@ function buildCharactersTab(ctx, ui) {
                     ${AWARENESS_OPTIONS.map(([v, l]) => `<option value="${v}" ${charState.awareness === v ? "selected" : ""}>${l}</option>`).join("")}
                 </select>
             </label>
+            <label>Stabilność
+                <select data-action="set-stability" data-char="${activeKey}">
+                    ${data.characters.stabilityLevels.map(lvl => `<option value="${lvl.value}" ${charState.stability === lvl.value ? "selected" : ""}>${lvl.value} — ${escapeHtml(lvl.label)}</option>`).join("")}
+                </select>
+            </label>
             <h4 class="sheet-block-title">Mroczne sekrety ✦</h4>
             ${listEditorHtml(charState.darkSecrets, activeKey, "darkSecrets", "✦", "Dodaj sekret")}
             <h4 class="sheet-block-title">Komplikacje ✧</h4>
@@ -310,15 +316,23 @@ function handleCharactersAction(action, el, root) {
 }
 
 function handleCharactersChange(el, root) {
-    const { updateState } = root._ctx;
+    const { data, updateState } = root._ctx;
     const action = el.dataset.action;
     const charKey = el.dataset.char;
+    const charName = data.characters.characters.find(c => c.key === charKey)?.name || charKey;
     if (action === "set-attr") {
         updateState(s => { s.characters[charKey].attrs[el.dataset.attr] = Number(el.value) || 0; });
         return true;
     }
     if (action === "set-awareness") {
         updateState(s => { s.characters[charKey].awareness = el.value; });
+        return true;
+    }
+    if (action === "set-stability") {
+        const value = Number(el.value);
+        const level = data.characters.stabilityLevels.find(l => l.value === value);
+        updateState(s => { s.characters[charKey].stability = value; });
+        logEvent(updateState, `${charName}: Stabilność → ${value} ${level ? level.label : ""} (MG)`);
         return true;
     }
     if (action === "toggle-item-active") {

@@ -15,6 +15,7 @@
     --accent-bright: #e0304f;
     --accent-dim: #7a1428;
     --success: #22c55e;
+    --warning: #eab308;
     --danger: #ef4444;
 
     /* Aliasy dla shared/handouts/handouts.css (napisany pod nazewnictwo --gold-* innych
@@ -32,7 +33,7 @@
 
 body {
     margin: 0;
-    background: var(--bg-0) url("images/bg.jpg") center/cover fixed no-repeat;
+    background: var(--bg-0) url("images/bg.png") center/cover fixed no-repeat;
     color: var(--fg-0);
     font-family: "Kanit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     min-height: 100vh;
@@ -256,6 +257,8 @@ body {
 /* card-tooltip-* to teraz czysto typograficzne klasy używane WEWNĄTRZ .modal-body (patrz
    panels/character.js#mechanicsBodyHtml, cardView.js#cardModalBodyHtml) - dawny hover-tooltip
    (CSS :hover) zastąpiony klikalnym modalem, patrz js/modal.js. */
+.move-result-line { margin: 4px 0; }
+.move-diamond-item { margin: 2px 0 2px 10px; }
 .card-tooltip-kicker { color: var(--accent-bright); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
 .card-tooltip-name { font-weight: 700; margin-bottom: 4px; }
 .card-tooltip-subtitle { font-style: italic; color: var(--fg-1); margin-bottom: 6px; }
@@ -356,7 +359,9 @@ button.divinity-pip { cursor: pointer; }
 .char-tag-inactive { color: var(--fg-2); opacity: 0.4; }
 .char-tag-clickable { cursor: pointer; }
 .char-tag-clickable:hover { color: var(--accent-bright); }
-.char-abilities-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.char-tags-group { margin-bottom: 14px; }
+.char-tags-group .char-tag:last-child { margin-bottom: 0; }
+.char-abilities-list { display: flex; flex-direction: column; gap: 6px; }
 .ability-chip { background: none; border: none; padding: 0; text-align: left; font-family: inherit; font-size: 0.85rem; color: var(--fg-0); cursor: pointer; }
 .ability-chip:hover { color: var(--accent-bright); }
 .ability-chip:disabled { color: var(--fg-2); cursor: not-allowed; }
@@ -393,18 +398,21 @@ button.divinity-pip { cursor: pointer; }
 
 .roll-result-panel { background: var(--bg-1); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
 .roll-result-panel.tier-success { border-color: var(--success); }
-.roll-result-panel.tier-partial { border-color: var(--accent); }
+.roll-result-panel.tier-partial { border-color: var(--warning); }
 .roll-result-panel.tier-failure { border-color: var(--danger); }
 .roll-result-header { display: flex; flex-direction: column; gap: 2px; font-size: 0.85rem; color: var(--fg-1); }
 .roll-result-move { font-weight: 600; color: var(--fg-0); }
 .roll-result-notes { font-size: 0.72rem; color: var(--fg-2); margin-top: 4px; }
 .roll-result-tier { font-weight: 700; margin: 6px 0 4px; }
+.roll-result-panel.tier-success .roll-result-tier { color: var(--success); }
+.roll-result-panel.tier-partial .roll-result-tier { color: var(--warning); }
+.roll-result-panel.tier-failure .roll-result-tier { color: var(--danger); }
 .roll-result-text { font-size: 0.88rem; line-height: 1.5; white-space: pre-line; }
 
 .recent-rolls-list { display: flex; flex-direction: column; gap: 4px; }
 .recent-roll-row { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 3px 6px; border-left: 3px solid var(--line); }
 .recent-roll-row.tier-success { border-left-color: var(--success); }
-.recent-roll-row.tier-partial { border-left-color: var(--accent); }
+.recent-roll-row.tier-partial { border-left-color: var(--warning); }
 .recent-roll-row.tier-failure { border-left-color: var(--danger); }
 
 .sheet-block { margin-bottom: 18px; }
@@ -485,7 +493,6 @@ button.divinity-pip { cursor: pointer; }
 .modal-body { font-size: 0.9rem; line-height: 1.55; color: var(--fg-0); }
 .modal-body .card-tooltip-kicker { display: block; }
 .modal-roll-btn { margin-top: 18px; width: 100%; }
-.modal-body-img { width: 100%; border-radius: 8px; margin-bottom: 12px; }
 
 /* ── Dziennik ─────────────────────────────────────────────────────────────── */
 
@@ -494,14 +501,27 @@ button.divinity-pip { cursor: pointer; }
 .journal-mod-label { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--fg-1); }
 .journal-mod-label input { width: 90px; background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 6px 8px; font-size: 1rem; }
 
-.log-list { display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow-y: auto; }
-.log-entry { border-left: 3px solid var(--line); padding: 6px 10px; font-size: 0.85rem; }
+.log-list { display: flex; flex-direction: column; gap: 10px; }
+.log-entry { position: relative; border-left: 3px solid var(--line); padding: 6px 34px 6px 10px; font-size: 0.85rem; }
 .log-entry-event { border-left-color: var(--bg-4); color: var(--fg-1); }
 .log-entry-roll.tier-success { border-left-color: var(--success); }
-.log-entry-roll.tier-partial { border-left-color: var(--accent); }
+.log-entry-roll.tier-partial { border-left-color: var(--warning); }
 .log-entry-roll.tier-failure { border-left-color: var(--danger); }
 .log-entry-time { color: var(--fg-2); font-size: 0.72rem; margin-right: 8px; }
 .log-entry-head { display: flex; flex-wrap: wrap; gap: 4px; }
 .log-entry-who { font-weight: 600; }
 .log-entry-dice { color: var(--fg-1); margin-top: 2px; }
 .log-entry-result { margin-top: 4px; color: var(--fg-0); white-space: pre-line; }
+.log-delete-btn {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--fg-1);
+    font-size: 0.7rem;
+    cursor: pointer;
+    line-height: 1;
+}
+.log-delete-btn:hover { border-color: var(--danger); color: var(--danger); }

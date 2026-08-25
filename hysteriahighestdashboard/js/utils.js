@@ -69,6 +69,19 @@ export function escapeHtml(str) {
     }[c]));
 }
 
+/** Renderuje tekst Ruchu/Atutu/Komplikacji (high/mid/low z data/*.json) na HTML: każda linia
+ *  zaczynająca się od "◊" (opcja wyboru) dostaje własny wiersz zamiast lądować w jednym ciągu ze
+ *  wszystkim innym - wzorzec z hysteriahighest/script-lite-moves.js#renderMoveText. */
+export function renderMoveText(text) {
+    if (!text) return "";
+    return text.split("\n").map(line => {
+        const t = line.trim();
+        if (!t) return "";
+        if (t.startsWith("◊")) return `<div class="move-diamond-item">${escapeHtml(t)}</div>`;
+        return `<p class="move-result-line">${escapeHtml(t)}</p>`;
+    }).filter(Boolean).join("");
+}
+
 export function sanitizeNameToKey(name) {
     return String(name)
         .normalize("NFD").replace(/[̀-ͯ]/g, "")

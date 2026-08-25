@@ -7,9 +7,9 @@
 // (state.log) i pokazuje w kolumnie wyników. Mroczne sekrety/Komplikacje/Atuty oznaczone w danych
 // jako `active:false` są wygaszone i nieklikalne (patrz Figma node 895-298).
 
-import { escapeHtml, preserveScroll } from "../utils.js";
-import { performRoll, computeWoundPenalty } from "../rollEngine.js";
-import { logRoll } from "../eventLog.js";
+import { escapeHtml, renderMoveText } from "../utils.js";
+import { performRoll } from "../rollEngine.js";
+import { logRoll, logEvent } from "../eventLog.js";
 import { openModal } from "../modal.js";
 
 const ATTR_LABELS = {
@@ -61,9 +61,9 @@ function mechanicsBodyHtml(item) {
     return `
         ${item.attr ? `<div class="card-tooltip-kicker">${escapeHtml(item.attr)}</div>` : ""}
         <div class="card-tooltip-desc">${escapeHtml(item.intro || "")}</div>
-        ${item.high ? `<div class="card-tooltip-row"><b>15+:</b> ${escapeHtml(item.high)}</div>` : ""}
-        ${item.mid ? `<div class="card-tooltip-row"><b>10-14:</b> ${escapeHtml(item.mid)}</div>` : ""}
-        ${item.low ? `<div class="card-tooltip-row"><b>≤9:</b> ${escapeHtml(item.low)}</div>` : ""}
+        ${item.high ? `<div class="card-tooltip-row"><b>15+:</b></div>${renderMoveText(item.high)}` : ""}
+        ${item.mid ? `<div class="card-tooltip-row"><b>10-14:</b></div>${renderMoveText(item.mid)}` : ""}
+        ${item.low ? `<div class="card-tooltip-row"><b>≤9:</b></div>${renderMoveText(item.low)}` : ""}
     `;
 }
 
@@ -186,7 +186,7 @@ function rollResultHtml(lastRoll) {
             </div>
             ${r.modifierNotes.length ? `<div class="roll-result-notes">${r.modifierNotes.map(escapeHtml).join(" · ")}</div>` : ""}
             <div class="roll-result-tier">${lastRoll.tierLabel}</div>
-            ${lastRoll.resultText ? `<div class="roll-result-text">${escapeHtml(lastRoll.resultText)}</div>` : ""}
+            ${lastRoll.resultText ? `<div class="roll-result-text">${renderMoveText(lastRoll.resultText)}</div>` : ""}
         </div>
     `;
 }
@@ -237,8 +237,8 @@ function buildHtml(ctx, ui) {
             <div class="char-sheet-main">
                 <div class="char-sheet-body">
                     <div class="char-sheet-left">
-                        ${darkSecrets}
-                        ${complications}
+                        <div class="char-tags-group">${darkSecrets}</div>
+                        <div class="char-tags-group">${complications}</div>
                         <div class="char-abilities-list">${abilities}</div>
                     </div>
 
@@ -291,6 +291,27 @@ function openAbilityModal(root, abilityId) {
     });
 }
 
+function openAttrModal(root, attrKey) {
+    const { data, state, characterKey } = root._ctx;
+    const moveId = data.characters.attrMoveMap[attrKey];
+    const move = data.moves.find(m => m.id === moveId);
+    if (!move) return;
+    const modifier = state.characters[characterKey].attrs[attrKey];
+    const label = `${move.name} (+${ATTR_LABELS[attrKey]})`;
+    openModal({
+        title: escapeHtml(move.name),
+        bodyHtml: mechanicsBodyHtml(move),
+        rollLabel: "Rzuć",
+        onRoll: () => performAndLogRoll(root, {
+            label,
+            moveId,
+            baseModifier: modifier,
+            rollType: "attribute",
+            mechanicsFor: move
+        })
+    });
+}
+
 function openComplicationModal(root, label) {
     const { data } = root._ctx;
     const found = data.komplikacje.find(k => k.name.toLowerCase() === baseLabel(label).toLowerCase());
@@ -313,13 +334,7 @@ function wireEvents(root) {
     root.addEventListener("click", (e) => {
         const rollBtn = e.target.closest('[data-action="roll-attr"]');
         if (rollBtn) {
-            const attrKey = rollBtn.dataset.attr;
-            const { data, state, characterKey } = root._ctx;
-            const moveId = data.characters.attrMoveMap[attrKey];
-            const modifier = state.characters[characterKey].attrs[attrKey];
-            const move = data.moves.find(m => m.id === moveId);
-            performAndLogRoll(root, { label: `${move ? move.name : ATTR_LABELS[attrKey]} (+${ATTR_LABELS[attrKey]})`, moveId, baseModifier: modifier, rollType: "attribute" });
-            preserveScroll(() => rerender(root));
+            openAttrModal(root, rollBtn.dataset.attr);
             return;
         }
         const abilityBtn = e.target.closest('[data-action="open-ability"]');
@@ -335,16 +350,20 @@ function wireEvents(root) {
     });
 
     root.addEventListener("change", (e) => {
-        const { characterKey, updateState } = root._ctx;
+        const { data, characterKey, updateState } = root._ctx;
+        const charName = data.characters.characters.find(c => c.key === characterKey)?.name || characterKey;
+
         const woundToggle = e.target.closest('[data-action="toggle-wound"]');
         if (woundToggle) {
             const idx = Number(woundToggle.dataset.index);
             updateState(s => { s.characters[characterKey].wounds.serious[idx].checked = woundToggle.checked; });
+            logEvent(updateState, `${charName}: ${woundToggle.checked ? "otrzymuje" : "leczy"} Poważną Ranę`);
             return;
         }
         const criticalToggle = e.target.closest('[data-action="toggle-critical"]');
         if (criticalToggle) {
             updateState(s => { s.characters[characterKey].wounds.critical.checked = criticalToggle.checked; });
+            logEvent(updateState, `${charName}: ${criticalToggle.checked ? "otrzymuje" : "leczy"} Krytyczną Ranę`);
             return;
         }
         const woundNote = e.target.closest('[data-action="set-wound-note"]');
@@ -360,7 +379,10 @@ function wireEvents(root) {
         }
         const stabilityRadio = e.target.closest('[data-action="set-stability"]');
         if (stabilityRadio) {
-            updateState(s => { s.characters[characterKey].stability = Number(stabilityRadio.value); });
+            const value = Number(stabilityRadio.value);
+            const level = data.characters.stabilityLevels.find(l => l.value === value);
+            updateState(s => { s.characters[characterKey].stability = value; });
+            logEvent(updateState, `${charName}: Stabilność → ${value} ${level ? level.label : ""}`);
             return;
         }
         const devToggle = e.target.closest('[data-action="toggle-dev"]');
@@ -370,10 +392,6 @@ function wireEvents(root) {
             return;
         }
     });
-}
-
-function rerender(root) {
-    root.innerHTML = buildHtml(root._ctx, getUi(root));
 }
 
 export function render(root, ctx) {

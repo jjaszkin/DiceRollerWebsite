@@ -29,7 +29,6 @@ function detailRow(label, value) {
 export function cardModalBodyHtml(card) {
     const kicker = card.house ? HOUSE_LABELS[card.house] : CATEGORY_LABELS[card.category];
     return `
-        <img class="modal-body-img" src="${card.image}" alt="${escapeHtml(card.name)}">
         <div class="card-tooltip-kicker">${escapeHtml(kicker || "")}</div>
         ${card.subtitle ? `<div class="card-tooltip-subtitle">${escapeHtml(card.subtitle)}</div>` : ""}
         ${card.desc ? `<div class="card-tooltip-desc">${escapeHtml(card.desc)}</div>` : `
