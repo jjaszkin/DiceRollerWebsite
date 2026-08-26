@@ -123,6 +123,34 @@ function complicationTag(item, komplikacjeData) {
     return `<button type="button" class="char-tag char-tag-clickable" data-action="open-complication" data-complication="${escapeHtml(item.label)}">✧ ${escapeHtml(item.label)}</button>`;
 }
 
+/** Wiersz Atutu z bankowanymi Możliwościami (np. Szósty Zmysł: "wybierz do X możliwości i użyj ich
+ *  w dowolnym momencie sesji") - pipsy zużywane klikiem (loguje się do Dziennika i pips znika),
+ *  "+1 Możliwości" dopisuje bez logowania (rutynowa, częsta akcja tuż po udanym rzucie). */
+function abilityOptionRow(ability, count) {
+    const pips = Array.from({ length: count }, () => `
+        <button type="button" class="influence-pip" data-action="spend-ability-option" data-ability="${ability.id}" title="Wykorzystaj Możliwość"></button>
+    `).join("");
+    return `
+        <div class="ability-option-row">
+            <span class="ability-option-name">${escapeHtml(ability.name)}</span>
+            <div class="ability-option-controls">
+                ${pips}
+                <button type="button" class="btn btn-xs" data-action="add-ability-option" data-ability="${ability.id}">+1 Możliwości</button>
+            </div>
+        </div>
+    `;
+}
+
+function abilityOptionsHtml(charState, atutyData) {
+    const rows = charState.abilities
+        .map(id => atutyData.find(a => a.id === id))
+        .filter(a => a && a.attr !== "Pasywny")
+        .map(a => abilityOptionRow(a, charState.abilityOptions?.[a.id] || 0))
+        .join("");
+    if (!rows) return "";
+    return `<div class="sheet-block"><h4 class="sheet-block-title">Możliwości z Atutów</h4>${rows}</div>`;
+}
+
 function woundsHtml(wounds) {
     const serious = wounds.serious.map((w, i) => `
         <div class="wound-row">
@@ -240,6 +268,7 @@ function buildHtml(ctx, ui) {
                         <div class="char-tags-group">${darkSecrets}</div>
                         <div class="char-tags-group">${complications}</div>
                         <div class="char-abilities-list">${abilities}</div>
+                        ${abilityOptionsHtml(charState, data.atuty)}
                     </div>
 
                     <div class="char-sheet-center">
@@ -345,6 +374,33 @@ function wireEvents(root) {
         const complicationBtn = e.target.closest('[data-action="open-complication"]');
         if (complicationBtn) {
             openComplicationModal(root, complicationBtn.dataset.complication);
+            return;
+        }
+        const spendOption = e.target.closest('[data-action="spend-ability-option"]');
+        if (spendOption) {
+            const { data, characterKey, updateState } = root._ctx;
+            const charName = data.characters.characters.find(c => c.key === characterKey)?.name || characterKey;
+            const abilityId = spendOption.dataset.ability;
+            const abilityName = data.atuty.find(a => a.id === abilityId)?.name || abilityId;
+            let newCount = 0;
+            updateState(s => {
+                const charState = s.characters[characterKey];
+                if (!charState.abilityOptions) charState.abilityOptions = {};
+                newCount = Math.max(0, (charState.abilityOptions[abilityId] || 0) - 1);
+                charState.abilityOptions[abilityId] = newCount;
+            });
+            logEvent(updateState, `${charName}: wykorzystuje Możliwość z Atutu (${abilityName}) — pozostało ${newCount}`);
+            return;
+        }
+        const addOption = e.target.closest('[data-action="add-ability-option"]');
+        if (addOption) {
+            const { characterKey, updateState } = root._ctx;
+            const abilityId = addOption.dataset.ability;
+            updateState(s => {
+                const charState = s.characters[characterKey];
+                if (!charState.abilityOptions) charState.abilityOptions = {};
+                charState.abilityOptions[abilityId] = (charState.abilityOptions[abilityId] || 0) + 1;
+            });
             return;
         }
     });

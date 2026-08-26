@@ -43,7 +43,11 @@ function seedCharacterState(charDef, developmentLength) {
         abilities: charDef.abilities ? [...charDef.abilities] : [],
         // Punkty Wpływu MG per Atut (kluczowane id-kiem z data/atuty.json) - Komplikacje trzymają
         // swój licznik wprost na obiekcie (complications[i].influence), patrz panels/mg.js#buildInfluenceTab.
-        abilityInfluence: {}
+        abilityInfluence: {},
+        // Możliwości banked przez SAMĄ postać z Atutów (np. Szósty Zmysł: "wybierz do X możliwości
+        // i użyj ich w dowolnym momencie sesji") - osobny licznik od abilityInfluence (MG), patrz
+        // panels/character.js#abilityOptionsHtml.
+        abilityOptions: {}
     };
 }
 

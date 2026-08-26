@@ -407,6 +407,12 @@ button.divinity-pip { cursor: pointer; }
 .ability-chip:hover { color: var(--accent-bright); }
 .ability-chip:disabled { color: var(--fg-2); cursor: not-allowed; }
 
+/* Możliwości z Atutów (karta postaci, kolumna lewa - węższa niż karty MG, stąd układ pionowy
+   zamiast .influence-row z panelu MG). */
+.ability-option-row { margin-bottom: 10px; }
+.ability-option-name { display: block; font-size: 0.85rem; margin-bottom: 4px; }
+.ability-option-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
 /* Mandala nałożona na images/diagram cech.svg (proporcje 255x480) - węzły pozycjonowane
    procentowo wg geometrii tego pliku, patrz ATTR_POSITIONS w panels/character.js. */
 .attr-mandala-wrap {
