@@ -217,6 +217,53 @@ body {
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-xs { padding: 4px 8px; font-size: 0.8rem; }
 .btn-danger:hover { border-color: var(--danger); color: var(--danger); }
+.btn-gold {
+    background: var(--accent);
+    border-color: var(--accent-bright);
+    color: var(--fg-0);
+}
+.btn-gold:hover { background: var(--accent-bright); color: var(--bg-0); }
+
+/* Modal generyczny używany przez shared/soundboard/control-panel.js (mini-kreator playlisty,
+   podgląd playlisty) - NIEZALEŻNY od własnego systemu modali aplikacji (modal.js, klasy
+   .modal-overlay/.modal-box) - control-panel.js jest modułem współdzielonym i ma wpisane na
+   sztywno te konkretne nazwy klas, wzorem darkgraal3dashboard/styles.css. */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+.modal {
+    background: var(--bg-1);
+    border: 1px solid var(--accent-dim);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+.modal h2 { color: var(--accent-bright); margin-top: 0; }
+.modal h3 { color: var(--accent); font-size: 1.05rem; margin: 14px 0 4px; }
+.modal p { color: var(--fg-1); line-height: 1.55; font-size: 0.88rem; }
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+.inline-check { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.mg-legendary-modal-field { margin-top: 10px; }
+.mg-legendary-modal-field label { display: block; margin-bottom: 4px; }
+.mg-legendary-modal-field input[type="text"], .mg-legendary-modal-field select { width: 100%; }
 
 /* ── Karty tarota ─────────────────────────────────────────────────────────── */
 
@@ -316,6 +363,27 @@ body {
 .tarot-card-select input { position: absolute; top: 2px; left: 2px; z-index: 2; }
 .tarot-card-select.selected .tarot-card { outline: 2px solid var(--accent); }
 
+/* Nakładka "cofnij do talii" (panel MG) - patrz cardView.js#renderCard `removable`. */
+.tarot-card-slot { position: relative; display: inline-block; }
+.tarot-card-remove-btn {
+    position: absolute;
+    top: -6px; right: -6px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--fg-1);
+    font-size: 0.65rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+.tarot-card-remove-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+.give-card-module { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.give-card-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
 /* ── Tor Boskości ─────────────────────────────────────────────────────────── */
 
 .divinity-group { margin-bottom: 18px; }
@@ -334,6 +402,37 @@ body {
 }
 button.divinity-pip { cursor: pointer; }
 .divinity-pip.filled { background: var(--accent); border-color: var(--accent-bright); }
+
+/* ── Punkty Wpływu ────────────────────────────────────────────────────────── */
+
+.influence-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.influence-row-name {
+    min-width: 200px;
+    font-weight: 600;
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+    font-family: inherit;
+    font-size: inherit;
+    color: var(--fg-0);
+    cursor: pointer;
+}
+.influence-row-name:hover { color: var(--accent-bright); }
+.influence-pip-row { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.influence-pip {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 1px solid var(--accent-bright);
+    padding: 0;
+    cursor: pointer;
+}
+.influence-pip:hover { background: var(--danger); border-color: var(--danger); }
+/* Pusty pips na końcu rzędu w "Możliwości z Atutów" (character.js) - klik dodaje, nie zużywa,
+   stąd inny styl spoczynkowy/hover niż wypełnione pipsy powyżej. */
+.influence-pip-empty { background: transparent; border-style: dashed; }
+.influence-pip-empty:hover { background: var(--accent); border-style: solid; border-color: var(--accent-bright); }
 
 /* ── Karta postaci ────────────────────────────────────────────────────────── */
 
@@ -370,6 +469,12 @@ button.divinity-pip { cursor: pointer; }
 .ability-chip { background: none; border: none; padding: 0; text-align: left; font-family: inherit; font-size: 0.85rem; color: var(--fg-0); cursor: pointer; }
 .ability-chip:hover { color: var(--accent-bright); }
 .ability-chip:disabled { color: var(--fg-2); cursor: not-allowed; }
+
+/* Możliwości z Atutów (karta postaci, kolumna lewa - węższa niż karty MG, stąd układ pionowy
+   zamiast .influence-row z panelu MG). */
+.ability-option-row { margin-bottom: 10px; }
+.ability-option-name { display: block; font-size: 0.85rem; margin-bottom: 4px; }
+.ability-option-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
 /* Mandala nałożona na images/diagram cech.svg (proporcje 255x480) - węzły pozycjonowane
    procentowo wg geometrii tego pliku, patrz ATTR_POSITIONS w panels/character.js. */

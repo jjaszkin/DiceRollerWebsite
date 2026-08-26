@@ -7,6 +7,8 @@ import { loadGameData } from "./data.js";
 import { initStore, connectCampaign, getState, getData, subscribe, updateState, onSaveStatusChange } from "./store.js";
 import { showGate } from "./gate.js";
 import { buildModalHtml, wireModalGlobalEvents, subscribeModal } from "./modal.js";
+import { mountSoundboardPlayer } from "../../shared/soundboard/player-engine.js";
+import { advancePlaylistTrack } from "../../shared/soundboard/control-panel.js";
 
 import * as tarotPanel from "./panels/tarot.js";
 import * as divinityPanel from "./panels/divinity.js";
@@ -21,6 +23,7 @@ const changeCharacterBtn = document.getElementById("changeCharacterBtn");
 
 let session = null; // { role: "mg"|"player", pairKey: string|null, characterKeys: [string,string]|null }
 let cachedGameData = null;
+let soundboardMounted = false;
 
 function setBootStatus(text) {
     if (bootStatus) bootStatus.textContent = text;
@@ -39,6 +42,41 @@ function updateCharacterTabLabels() {
     const btnB = document.querySelector('.tab-btn[data-tab="charB"]');
     if (btnA) btnA.textContent = characterName(keyA);
     if (btnB) btnB.textContent = characterName(keyB);
+}
+
+/** Montuje silnik Soundboardu (shared/soundboard/) RAZ, dla KAŻDEJ roli (patrz #soundboardRoot w
+ *  index.html - stabilny węzeł POZA panelami, żeby <audio> przeżywało ich rerendery) - MG też ma
+ *  dostać dźwięk i FAB głośności, żeby móc odsłuchać miksu, który sam puszcza.
+ *  Tylko przeglądarka MG dostaje `onMusicEnded` - to ona jest "dyrygentem" playlist: gdy kończy się
+ *  utwór odtwarzany jako część playlisty (nie zapętlony pojedynczo), przesuwa wspólny stan na
+ *  kolejny utwór. Gdyby każda przeglądarka (gracze + MG) próbowała to robić niezależnie, urządzenia
+ *  mogłyby się rozjechać na różne "następne" utwory - patrz shared/soundboard/control-panel.js#advancePlaylistTrack. */
+function ensureSoundboardMounted() {
+    if (soundboardMounted || !session) return;
+    const root = document.getElementById("soundboardRoot");
+    if (!root) return;
+    const isMg = session.role === "mg";
+    mountSoundboardPlayer(root, {
+        manifest: getData()?.soundboard || [],
+        subscribe,
+        getState,
+        onMusicEnded: isMg
+            ? (playlistId, finishedKey) => advancePlaylistTrack({ state: getState(), updateState }, playlistId, finishedKey)
+            : undefined
+    });
+    soundboardMounted = true;
+}
+
+/** Zatrzymuje wspólne odtwarzanie (muzyka/playlista w tle) dla WSZYSTKICH - wywoływane, gdy MG
+ *  zamyka swój widok (patrz setupChangeCharacterButton). Bez tego muzyka/playlista zostałaby
+ *  puszczona dalej bez nikogo, kto by nią sterował - a playlisty w ogóle przestałyby się
+ *  automatycznie przesuwać, bo tylko przeglądarka MG jest "dyrygentem" (patrz
+ *  ensureSoundboardMounted, control-panel.js#advancePlaylistTrack). Efekty jednorazowe (sfxFired)
+ *  celowo zostają - to już i tak przebrzmiały, jednorazowy sygnał, nie ma czego zatrzymywać. */
+function stopSharedPlayback() {
+    const state = getState();
+    if (!state?.soundboard?.music) return;
+    updateState((s) => { if (s.soundboard) s.soundboard.music = null; });
 }
 
 function renderAll() {
@@ -130,12 +168,14 @@ function setupSaveIndicator() {
 function setupChangeCharacterButton() {
     if (!changeCharacterBtn) return;
     changeCharacterBtn.addEventListener("click", () => {
+        if (session?.role === "mg") stopSharedPlayback();
         showGate(cachedGameData, {
             allowCancel: true,
             onDone: (selection) => {
                 session = selection;
                 applyRoleVisibility();
                 renderAll();
+                ensureSoundboardMounted();
             }
         });
     });
@@ -165,7 +205,8 @@ async function bootstrap() {
                 session = selection;
                 applyRoleVisibility();
                 renderAll();
-                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/6 plików.`);
+                ensureSoundboardMounted();
+                setBootStatus(`Gotowe. Dane wczytane: ${Object.keys(gameData).length}/7 plików.`);
             }
         });
     } catch (err) {

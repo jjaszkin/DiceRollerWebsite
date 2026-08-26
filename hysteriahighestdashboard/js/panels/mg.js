@@ -7,11 +7,18 @@
 import { CROSS_POSITIONS } from "../state.js";
 import { renderCard, openCardModal } from "../cardView.js";
 import { getAvailableCards, drawRandomCard, isHouseMatch } from "../deck.js";
-import { escapeHtml, preserveScroll } from "../utils.js";
+import { escapeHtml, preserveScroll, renderMoveText } from "../utils.js";
+import { openModal } from "../modal.js";
 import {
     buildHandoutsControlHtml, handleHandoutsAction, reorderHandoutsOrder
 } from "../../../shared/handouts/control-panel.js";
 import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
+import {
+    buildSoundboardControlHtml, buildSoundboardPlaylistEditorHtml, buildPlaylistPreviewHtml,
+    handleSoundboardAction, reorderPlaylistEditorTrack, reorderMainOrder, setPlaylistEditorName,
+    updateSoundboardProgressInPlace
+} from "../../../shared/soundboard/control-panel.js";
+import { getNowPlaying } from "../../../shared/soundboard/player-engine.js";
 import * as journalPanel from "./journal.js";
 import { logEvent } from "../eventLog.js";
 
@@ -43,7 +50,7 @@ function buildTarotTab(ctx, ui) {
         return `
             <div class="cross-slot cross-slot-${pos}">
                 <span class="cross-slot-label">${POSITION_LABELS[pos]}</span>
-                ${renderCard(cards, key, { size: "md" })}
+                ${renderCard(cards, key, { size: "md", removable: !!key, removeData: { pos } })}
                 ${key ? `
                     <div class="cross-slot-controls">
                         <select class="cross-assign-select" data-pos="${pos}">${charOptions}</select>
@@ -75,7 +82,7 @@ function buildTarotTab(ctx, ui) {
         const chips = charState.cards.length ? charState.cards.map(k => `
             <div class="tarot-card-select ${selected.has(k) ? "selected" : ""}">
                 <input type="checkbox" data-action="toggle-select-card" data-char="${charDef.key}" data-card="${k}" ${selected.has(k) ? "checked" : ""}>
-                ${renderCard(cards, k, { size: "sm" })}
+                ${renderCard(cards, k, { size: "sm", removable: true, removeData: { char: charDef.key, card: k } })}
             </div>
         `).join("") : `<span class="placeholder-inline">brak kart</span>`;
 
@@ -106,8 +113,20 @@ function buildTarotTab(ctx, ui) {
                 <div class="mystic-cross">${cross}</div>
             </div>
             <div class="tarot-characters-area card">
-                <h3>Karty postaci</h3>
+                <h3>Ręka postaci</h3>
                 <div class="tarot-pairs-grid">${characters}</div>
+                <div class="give-card-module">
+                    <h4 class="sheet-block-title">Dodaj konkretną kartę postaci</h4>
+                    <div class="give-card-row">
+                        <select id="giveCardSelect" ${remaining ? "" : "disabled"}>
+                            ${remaining ? getAvailableCards(state, data).map(c => `<option value="${c.key}">${escapeHtml(c.name)}</option>`).join("") : `<option value="">Brak dostępnych kart</option>`}
+                        </select>
+                        <select id="giveCardCharSelect">
+                            ${orderedChars.map(c => `<option value="${c.key}">${escapeHtml(c.name)}</option>`).join("")}
+                        </select>
+                        <button class="btn btn-xs" data-action="give-card" ${remaining ? "" : "disabled"}>Przekaż kartę</button>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -146,6 +165,27 @@ function handleTarotAction(action, el, root) {
             s.cross[el.dataset.pos] = null;
             s.deck.discardKeys.push(key);
         });
+        return true;
+    }
+    if (action === "give-card") {
+        const cardKey = root.querySelector("#giveCardSelect")?.value;
+        const charKey = root.querySelector("#giveCardCharSelect")?.value;
+        if (!cardKey || !charKey) return true;
+        updateState(s => { s.characters[charKey].cards.push(cardKey); });
+        return true;
+    }
+    if (action === "return-card") {
+        const { pos, char: charKey, card: cardKey } = el.dataset;
+        updateState(s => {
+            if (pos) {
+                s.cross[pos] = null;
+            } else if (charKey && cardKey) {
+                const list = s.characters[charKey].cards;
+                const idx = list.indexOf(cardKey);
+                if (idx !== -1) list.splice(idx, 1);
+            }
+        });
+        if (charKey && cardKey) ui.selectedCards[charKey]?.delete(cardKey);
         return true;
     }
     if (action === "toggle-select-card") {
@@ -350,6 +390,141 @@ function handleCharactersChange(el, root) {
     return false;
 }
 
+// ── Zakładka: Punkty Wpływu ──────────────────────────────────────────────────────
+
+/** Bazowa nazwa Komplikacji (przed nawiasem z detalem, np. "Prześladowca (Nick 2.0)" ->
+ *  "Prześladowca") - dopasowanie do data/komplikacje.json, wzorem panels/character.js#baseLabel. */
+function baseLabel(label) {
+    return label.split(" (")[0].trim();
+}
+
+/** Treść modala z opisem/mechaniką Atutu lub Komplikacji - 1:1 z panels/character.js#mechanicsBodyHtml
+ *  (bez duplikowania importu, bo to jedyne dwa miejsca, które tego potrzebują). */
+function mechanicsBodyHtml(item) {
+    return `
+        ${item.attr ? `<div class="card-tooltip-kicker">${escapeHtml(item.attr)}</div>` : ""}
+        <div class="card-tooltip-desc">${escapeHtml(item.intro || "")}</div>
+        ${item.high ? `<div class="card-tooltip-row"><b>15+:</b></div>${renderMoveText(item.high)}` : ""}
+        ${item.mid ? `<div class="card-tooltip-row"><b>10-14:</b></div>${renderMoveText(item.mid)}` : ""}
+        ${item.low ? `<div class="card-tooltip-row"><b>≤9:</b></div>${renderMoveText(item.low)}` : ""}
+    `;
+}
+
+/** Klik na nazwę w "Punkty Wpływu" -> ten sam modal z opisem co u Graczy na karcie postaci (patrz
+ *  panels/character.js#openAbilityModal/openComplicationModal), ale BEZ przycisku "Rzuć" (MG tu
+ *  tylko sprawdza mechanikę, nie rzuca za postać) - stąd brak `rollLabel`/`onRoll` w openModal(). */
+function openInfluenceInfoModal(ctx, kind, refId, name) {
+    if (kind === "ability") {
+        const found = ctx.data.atuty.find(a => a.id === refId);
+        if (!found) return;
+        openModal({ title: `☆ ${escapeHtml(found.name)}`, bodyHtml: mechanicsBodyHtml(found) });
+        return;
+    }
+    const found = ctx.data.komplikacje.find(k => k.name.toLowerCase() === baseLabel(name).toLowerCase());
+    if (!found) return;
+    openModal({ title: `✧ ${escapeHtml(name)}`, bodyHtml: mechanicsBodyHtml(found) });
+}
+
+/** Wiersz Atutu/Komplikacji z licznikiem Punktów Wpływu MG (pipsy, klik = zużyj jeden + wpis do
+ *  Dziennika) i przyciskiem "+1 Wpływu" (przyznanie, bez wpisu do Dziennika - patrz uzasadnienie w
+ *  handleInfluenceAction). `kind`: "ability" (refId = id z data/atuty.json) | "complication"
+ *  (refId = index w charState.complications). Nazwa jest klikalna -> modal z opisem/mechaniką. */
+function influenceRowHtml({ charKey, kind, refId, name, count }) {
+    const pips = Array.from({ length: count }, () => `
+        <button type="button" class="influence-pip" data-action="spend-influence" data-char="${charKey}" data-kind="${kind}" data-ref="${refId}" title="Zużyj punkt Wpływu"></button>
+    `).join("");
+    return `
+        <div class="influence-row">
+            <button type="button" class="influence-row-name" data-action="open-influence-info" data-kind="${kind}" data-ref="${refId}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>
+            <div class="influence-pip-row">${pips}</div>
+            <button type="button" class="btn btn-xs" data-action="add-influence" data-char="${charKey}" data-kind="${kind}" data-ref="${refId}">+1 Wpływu</button>
+        </div>
+    `;
+}
+
+/** Dwie kolumny, sparowane per gracz (Strażnik po lewej, Absolwent po prawej) - ta sama kolejność
+ *  co "Ręka postaci" na tabie Tarot (patrz buildPairedCharacterRows w panels/tarot.js), więc Jasper
+ *  obok Jose, Nick obok X, Jesse obok Miguela, Paul obok Orlando - potwierdzone przez usera. */
+function buildInfluenceTab(ctx) {
+    const { state, data } = ctx;
+    const byKey = Object.fromEntries(data.characters.characters.map(c => [c.key, c]));
+    const orderedChars = [];
+    for (const pair of data.characters.pairs) {
+        const chars = pair.characters.map(k => byKey[k]);
+        orderedChars.push(chars.find(c => c.role === "straznik"), chars.find(c => c.role === "absolwent"));
+    }
+
+    const cards = orderedChars.map(charDef => {
+        const charState = state.characters[charDef.key];
+
+        const abilityRows = charState.abilities
+            .map(id => data.atuty.find(a => a.id === id))
+            .filter(a => a && a.attr !== "Pasywny")
+            .map(a => influenceRowHtml({
+                charKey: charDef.key, kind: "ability", refId: a.id, name: a.name,
+                count: charState.abilityInfluence?.[a.id] || 0
+            }))
+            .join("");
+
+        const complicationRows = charState.complications
+            .map((c, i) => influenceRowHtml({
+                charKey: charDef.key, kind: "complication", refId: String(i), name: c.label,
+                count: c.influence || 0
+            }))
+            .join("");
+
+        return `
+            <div class="card">
+                <h3>${escapeHtml(charDef.name)}</h3>
+                ${abilityRows ? `<h4 class="sheet-block-title">Atuty ☆</h4>${abilityRows}` : ""}
+                ${complicationRows ? `<h4 class="sheet-block-title">Komplikacje ✧</h4>${complicationRows}` : ""}
+                ${!abilityRows && !complicationRows ? `<p class="placeholder">Brak Atutów/Komplikacji.</p>` : ""}
+            </div>
+        `;
+    }).join("");
+
+    return `<div class="tarot-pairs-grid">${cards}</div>`;
+}
+
+function findInfluenceItemName(ctx, charKey, kind, refId) {
+    if (kind === "ability") {
+        return ctx.data.atuty.find(a => a.id === refId)?.name || refId;
+    }
+    return ctx.state.characters[charKey].complications[Number(refId)]?.label || "Komplikacja";
+}
+
+/** Przyznanie punktu ("+1 Wpływu") NIE trafia do Dziennika - dzieje się często i doraźnie przy
+ *  stole (po każdym częściowym/porażce na Komplikacji), więc logowanie zaśmiecałoby Dziennik.
+ *  Zużycie punktu (klik w pips) TRAFIA do Dziennika - to jest ta decyzja MG warta zapisania. */
+function handleInfluenceAction(action, el, root) {
+    if (action !== "add-influence" && action !== "spend-influence") return false;
+    const { data, updateState } = root._ctx;
+    const charKey = el.dataset.char;
+    const kind = el.dataset.kind;
+    const refId = el.dataset.ref;
+    const charName = data.characters.characters.find(c => c.key === charKey)?.name || charKey;
+    const itemName = findInfluenceItemName(root._ctx, charKey, kind, refId);
+    const delta = action === "add-influence" ? 1 : -1;
+    let newCount = 0;
+    updateState(s => {
+        const charState = s.characters[charKey];
+        if (kind === "ability") {
+            if (!charState.abilityInfluence) charState.abilityInfluence = {};
+            newCount = Math.max(0, (charState.abilityInfluence[refId] || 0) + delta);
+            charState.abilityInfluence[refId] = newCount;
+        } else {
+            const item = charState.complications[Number(refId)];
+            if (!item) return;
+            newCount = Math.max(0, (item.influence || 0) + delta);
+            item.influence = newCount;
+        }
+    });
+    if (action === "spend-influence") {
+        logEvent(updateState, `${charName}: MG zużywa punkt Wpływu (${itemName}) — pozostało ${newCount}`);
+    }
+    return true;
+}
+
 // ── Zakładka: Ustawienia ────────────────────────────────────────────────────────
 
 function buildSettingsTab(ctx) {
@@ -392,6 +567,8 @@ const TABS = [
     ["tarot", "Tarot"],
     ["divinity", "Tor Boskości"],
     ["characters", "Karty postaci"],
+    ["influence", "Punkty Wpływu"],
+    ["music", "Muzyka"],
     ["handouts", "Handouty"],
     ["journal", "Dziennik"],
     ["settings", "Ustawienia"]
@@ -402,10 +579,14 @@ function buildHtml(ctx, ui) {
         <button class="btn ${ui.activeTab === key ? "active" : ""}" data-action="mg-tab" data-tab="${key}">${label}</button>
     `).join("");
 
+    const nowPlaying = getNowPlaying();
+
     let body = "";
     if (ui.activeTab === "tarot") body = buildTarotTab(ctx, ui);
     else if (ui.activeTab === "divinity") body = buildDivinityTab(ctx);
     else if (ui.activeTab === "characters") body = buildCharactersTab(ctx, ui);
+    else if (ui.activeTab === "influence") body = buildInfluenceTab(ctx);
+    else if (ui.activeTab === "music") body = buildSoundboardControlHtml(ctx, nowPlaying);
     else if (ui.activeTab === "handouts") body = buildHandoutsControlHtml(ctx);
     else if (ui.activeTab === "journal") body = `<div id="mgJournalRoot"></div>`;
     else if (ui.activeTab === "settings") body = buildSettingsTab(ctx);
@@ -413,6 +594,8 @@ function buildHtml(ctx, ui) {
     return `
         <div class="mg-nav">${navButtons}</div>
         <div class="mg-body">${body}</div>
+        ${buildSoundboardPlaylistEditorHtml(ctx)}
+        ${buildPlaylistPreviewHtml(ctx, nowPlaying)}
     `;
 }
 
@@ -447,38 +630,97 @@ function wireEvents(root) {
             openCardModal(root._ctx.data.cards, btn.dataset.cardKey);
             return;
         }
+        if (action === "open-influence-info") {
+            openInfluenceInfoModal(root._ctx, btn.dataset.kind, btn.dataset.ref, btn.dataset.name);
+            return;
+        }
         if (handleTarotAction(action, btn, root)) { rerender(root); return; }
         if (handleDivinityAction(action, btn, root)) { rerender(root); return; }
         if (handleCharactersAction(action, btn, root)) { rerender(root); return; }
+        if (handleInfluenceAction(action, btn, root)) { rerender(root); return; }
         if (handleSettingsAction(action, btn, root)) { rerender(root); return; }
+
+        // Przewijanie (klik na pasku postępu) - poza handleSoundboardAction, bo control-panel.js
+        // (czyste HTML) nie zna `duration` żadnego <audio> - to wie tylko player-engine.js (patrz
+        // getNowPlaying()). Przewijanie = po prostu przesunięcie startedAt wstecz/w przód, bo cała
+        // synchronizacja odtwarzania już i tak liczy pozycję z (teraz - startedAt).
+        if (action === "sb-seek") {
+            const nowPlaying = getNowPlaying();
+            if (!nowPlaying) return;
+            const rect = btn.getBoundingClientRect();
+            const fraction = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+            const seekSeconds = fraction * nowPlaying.duration;
+            root._ctx.updateState((state) => {
+                if (state.soundboard?.music) state.soundboard.music.startedAt = Date.now() - seekSeconds * 1000;
+            });
+            rerender(root);
+            return;
+        }
+
+        // Akcje modułu Dźwięki (play/stop muzyki, wyzwolenie efektu, playlisty) - patrz shared/soundboard/.
+        if (handleSoundboardAction(action, btn, { ...root._ctx, updateState: root._ctx.updateState })) { rerender(root); return; }
         if (handleHandoutsAction(action, btn, { ...root._ctx, updateState: root._ctx.updateState })) { rerender(root); return; }
     });
 
     root.addEventListener("change", (e) => {
-        if (handleCharactersChange(e.target, root)) rerender(root);
+        if (handleCharactersChange(e.target, root)) { rerender(root); return; }
+        // Suwak głośności muzyki (<input type="range">) - patrz shared/soundboard/control-panel.js.
+        const action = e.target.dataset.action;
+        if (action && handleSoundboardAction(action, e.target, { ...root._ctx, updateState: root._ctx.updateState })) rerender(root);
     });
 
-    // Przeciąganie kolejności Handoutów - patrz darkgraal3dashboard/js/panels/mg.js dla wzorca.
+    // Nazwa playlisty w mini-kreatorze - zapisywana na bieżąco BEZ rerenderu (patrz
+    // control-panel.js#setPlaylistEditorName), żeby przetrwała rerender wywołany inną akcją w tym
+    // samym modalu (np. zaznaczenie utworu) i żeby pisanie nie gubiło kursora/fokusu.
+    root.addEventListener("input", (e) => {
+        if (e.target.id === "sbPlaylistNameInput") setPlaylistEditorName(e.target.value);
+    });
+
+    // Przeciąganie kolejności - osobne zdarzenia (dragstart/dragover/drop), bo to nie jest zwykły
+    // klik na [data-action]. Trzy konteksty dzielą tę samą obsługę, rozróżnione przez `scope`:
+    // kolejność utworów WEWNĄTRZ mini-kreatora playlisty (.sb-playlist-order-item, lokalny szkic,
+    // patrz reorderPlaylistEditorTrack), kolejność kart w głównej liście Dźwięki
+    // ([data-reorder-scope="sb-main"], patrz reorderMainOrder) i kolejność kart Handoutów
+    // ([data-reorder-scope="ho-main"], patrz reorderHandoutsOrder).
+    const REORDER_HANDLERS = {
+        playlist: (from, to) => reorderPlaylistEditorTrack(from, to),
+        "sb-main": (from, to) => reorderMainOrder({ ...root._ctx, updateState: root._ctx.updateState }, from, to),
+        "ho-main": (from, to) => reorderHandoutsOrder({ ...root._ctx, updateState: root._ctx.updateState }, from, to)
+    };
     let dragKey = null;
+    let dragScope = null;
+
+    function closestDraggable(target) {
+        const playlistItem = target.closest(".sb-playlist-order-item");
+        if (playlistItem) return { item: playlistItem, scope: "playlist" };
+        for (const scope of ["sb-main", "ho-main"]) {
+            const item = target.closest(`[data-reorder-scope='${scope}']`);
+            if (item) return { item, scope };
+        }
+        return null;
+    }
+
     root.addEventListener("dragstart", (e) => {
-        const item = e.target.closest('[data-reorder-scope="ho-main"]');
-        if (!item) return;
-        dragKey = item.dataset.key;
+        const found = closestDraggable(e.target);
+        if (!found) return;
+        dragKey = found.item.dataset.key;
+        dragScope = found.scope;
         e.dataTransfer.effectAllowed = "move";
     });
     root.addEventListener("dragover", (e) => {
         if (!dragKey) return;
-        const item = e.target.closest('[data-reorder-scope="ho-main"]');
-        if (!item) return;
+        const found = closestDraggable(e.target);
+        if (!found || found.scope !== dragScope) return;
         e.preventDefault();
     });
     root.addEventListener("drop", (e) => {
         if (!dragKey) return;
-        const item = e.target.closest('[data-reorder-scope="ho-main"]');
-        if (!item) return;
+        const found = closestDraggable(e.target);
+        if (!found || found.scope !== dragScope) return;
         e.preventDefault();
-        reorderHandoutsOrder({ ...root._ctx, updateState: root._ctx.updateState }, dragKey, item.dataset.key);
+        REORDER_HANDLERS[dragScope](dragKey, found.item.dataset.key);
         dragKey = null;
+        dragScope = null;
         rerender(root);
     });
 
@@ -505,5 +747,18 @@ export function render(root, ctx) {
     if (!root.dataset.wired) {
         wireEvents(root);
         root.dataset.wired = "1";
+        // Odświeża pasek postępu utworu co sekundę - TYLKO gdy zakładka Muzyka jest aktywna i coś
+        // faktycznie gra (patrz player-engine.js#getNowPlaying). Aktualizuje TYLKO pasek postępu w
+        // miejscu (patrz control-panel.js#updateSoundboardProgressInPlace) zamiast pełnego
+        // rerender() - pełne przerysowanie co sekundę niszczyłoby i odtwarzało od zera cały panel
+        // (m.in. retriggerując CSS :hover-transition przycisków i gubiąc fokus/wpisywaną wartość w
+        // innych polach tego samego korzenia DOM, patrz darkgraal3dashboard/js/panels/mg.js).
+        setInterval(() => {
+            if (getUi(root).activeTab !== "music") return;
+            const nowPlaying = getNowPlaying();
+            if (!nowPlaying) return;
+            const updated = updateSoundboardProgressInPlace(root, root._ctx.state, nowPlaying);
+            if (!updated) rerender(root);
+        }, 1000);
     }
 }

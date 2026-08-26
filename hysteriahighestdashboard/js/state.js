@@ -40,7 +40,14 @@ function seedCharacterState(charDef, developmentLength) {
         divinityProgress: 0,
         darkSecrets: charDef.darkSecrets ? charDef.darkSecrets.map(s => ({ ...s })) : [],
         complications: charDef.complications ? charDef.complications.map(c => ({ ...c })) : [],
-        abilities: charDef.abilities ? [...charDef.abilities] : []
+        abilities: charDef.abilities ? [...charDef.abilities] : [],
+        // Punkty Wpływu MG per Atut (kluczowane id-kiem z data/atuty.json) - Komplikacje trzymają
+        // swój licznik wprost na obiekcie (complications[i].influence), patrz panels/mg.js#buildInfluenceTab.
+        abilityInfluence: {},
+        // Możliwości banked przez SAMĄ postać z Atutów (np. Szósty Zmysł: "wybierz do X możliwości
+        // i użyj ich w dowolnym momencie sesji") - osobny licznik od abilityInfluence (MG), patrz
+        // panels/character.js#abilityOptionsHtml.
+        abilityOptions: {}
     };
 }
 
@@ -64,6 +71,10 @@ export function createDefaultState(gameData) {
         cross,
         characters,
         handouts: { visible: {}, order: [] },
+        // Stan odtwarzania Soundboardu (shared/soundboard/) - MIKROSKOPIJNE dane sterujące, NIE
+        // same pliki audio (te serwuje Netlify bezpośrednio, patrz data/soundboard.json). Patrz
+        // darkgraal3dashboard/js/state.js dla pełnego komentarza o znaczeniu każdego pola.
+        soundboard: { music: null, sfxFired: null, playlists: {}, trackOrder: [] },
         log: []
     };
 }

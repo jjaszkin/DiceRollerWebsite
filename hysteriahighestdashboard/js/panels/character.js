@@ -12,6 +12,10 @@ import { performRoll } from "../rollEngine.js";
 import { logRoll, logEvent } from "../eventLog.js";
 import { openModal } from "../modal.js";
 
+// Najwięcej Możliwości, jakie tekst Atutów każe bankować na raz to "do trzech" (patrz Szósty
+// Zmysł 15+) - stąd twardy limit 3 na Atut, żeby nie dało się dodawać bez ograniczeń.
+const MAX_ABILITY_OPTIONS = 3;
+
 const ATTR_LABELS = {
     silaWoli: "Siła Woli", odpornosc: "Odporność", refleks: "Refleks", rozum: "Rozum",
     intuicja: "Intuicja", percepcja: "Percepcja", opanowanie: "Opanowanie", przemoc: "Przemoc",
@@ -80,8 +84,16 @@ function resolveAbilityModifier(ability, attrs) {
     return { value: attrs[attrKey], note: extra ? `(${extra} - dolicz ręcznie)` : null, attrKey };
 }
 
+/** Atut "bankowalny", jeśli jego 15+/10-14 mówi "użyj ich w dowolnym momencie sesji/tej sceny" -
+ *  czyli wynik NIE rozwiązuje się od razu, tylko odkłada wybrane możliwości na później (np. Szósty
+ *  Zmysł), w odróżnieniu od Atutów, których "Wybierz możliwość" stosuje się natychmiast w bieżącej
+ *  akcji (np. Charyzmatyczna aura). Tylko te pierwsze uczestniczą w "Możliwościach z Atutów". */
+function isBankableAbility(ability) {
+    return /w dowolnym momencie/.test(ability.high || "") || /w dowolnym momencie/.test(ability.mid || "");
+}
+
 function performAndLogRoll(root, { label, moveId, baseModifier, rollType, mechanicsFor }) {
-    const { data, state, characterKey } = root._ctx;
+    const { data, state, characterKey, updateState } = root._ctx;
     const charState = state.characters[characterKey];
     const charDef = data.characters.characters.find(c => c.key === characterKey);
     const result = performRoll({ gameData: data, characterState: charState, baseModifier, moveId, rollType });
@@ -95,8 +107,19 @@ function performAndLogRoll(root, { label, moveId, baseModifier, rollType, mechan
         if (move) resultText = result.tier === "success" ? move.high : result.tier === "partial" ? move.mid : move.low;
     }
 
+    // Rzut na bankowalny Atut z wynikiem 15+/10-14 -> odkłada jedną Możliwość do wykorzystania
+    // później (patrz abilityOptionsHtml/isBankableAbility) - bez osobnego wpisu w Dzienniku, bo
+    // sam rzut już się tam loguje z pełnym tekstem wyniku.
+    if (rollType === "ability" && mechanicsFor && (result.tier === "success" || result.tier === "partial") && isBankableAbility(mechanicsFor)) {
+        updateState(s => {
+            const cs = s.characters[characterKey];
+            if (!cs.abilityOptions) cs.abilityOptions = {};
+            cs.abilityOptions[mechanicsFor.id] = Math.min(MAX_ABILITY_OPTIONS, (cs.abilityOptions[mechanicsFor.id] || 0) + 1);
+        });
+    }
+
     getUi(root).lastRoll = { label, result, resultText, tierLabel };
-    logRoll(root._ctx.updateState, {
+    logRoll(updateState, {
         characterName: charDef.name,
         source: rollType,
         label,
@@ -121,6 +144,42 @@ function complicationTag(item, komplikacjeData) {
     const found = komplikacjeData.find(k => k.name.toLowerCase() === baseLabel(item.label).toLowerCase());
     if (!found) return `<div class="char-tag">✧ ${escapeHtml(item.label)}</div>`;
     return `<button type="button" class="char-tag char-tag-clickable" data-action="open-complication" data-complication="${escapeHtml(item.label)}">✧ ${escapeHtml(item.label)}</button>`;
+}
+
+/** Wiersz Atutu z bankowanymi Możliwościami - wypełnione pipsy (klik zużywa jedną, loguje do
+ *  Dziennika, pips znika) + jeden dodatkowy pusty pips na końcu, o ile nie osiągnięto
+ *  MAX_ABILITY_OPTIONS (klik dodaje jedną, bez logowania - sam rzut, który ją przyznał, już się
+ *  zaloguje z pełnym tekstem wyniku, patrz performAndLogRoll). Bez osobnego przycisku "+1" -
+ *  zamiast tego zwiększanie/zużywanie dzieje się wprost przez klik w pipsy, analogicznie do Toru
+ *  Boskości w panelu MG (ale bez opcji "Zeruj"). */
+function abilityOptionRow(ability, count) {
+    const filledPips = Array.from({ length: count }, () => `
+        <button type="button" class="influence-pip" data-action="spend-ability-option" data-ability="${ability.id}" title="Wykorzystaj Możliwość"></button>
+    `).join("");
+    const addPip = count < MAX_ABILITY_OPTIONS
+        ? `<button type="button" class="influence-pip influence-pip-empty" data-action="add-ability-option" data-ability="${ability.id}" title="Dodaj Możliwość"></button>`
+        : "";
+    return `
+        <div class="ability-option-row">
+            <span class="ability-option-name">${escapeHtml(ability.name)}</span>
+            <div class="ability-option-controls">${filledPips}${addPip}</div>
+        </div>
+    `;
+}
+
+/** Tylko Atuty "bankowalne" (patrz isBankableAbility) i tylko te, w których postać ma aktualnie co
+ *  najmniej 1 Możliwość - zero-owe Atuty się tu nie pokazują (pierwsza Możliwość przybywa z rzutu,
+ *  patrz performAndLogRoll). Nigdy Komplikacje - te mają OSOBNY licznik Wpływu dla MG. */
+function abilityOptionsHtml(charState, atutyData) {
+    const rows = charState.abilities
+        .map(id => atutyData.find(a => a.id === id))
+        .filter(a => a && isBankableAbility(a))
+        .map(a => ({ ability: a, count: charState.abilityOptions?.[a.id] || 0 }))
+        .filter(({ count }) => count > 0)
+        .map(({ ability, count }) => abilityOptionRow(ability, count))
+        .join("");
+    if (!rows) return "";
+    return `<div class="sheet-block"><h4 class="sheet-block-title">Możliwości z Atutów</h4>${rows}</div>`;
 }
 
 function woundsHtml(wounds) {
@@ -240,6 +299,7 @@ function buildHtml(ctx, ui) {
                         <div class="char-tags-group">${darkSecrets}</div>
                         <div class="char-tags-group">${complications}</div>
                         <div class="char-abilities-list">${abilities}</div>
+                        ${abilityOptionsHtml(charState, data.atuty)}
                     </div>
 
                     <div class="char-sheet-center">
@@ -345,6 +405,33 @@ function wireEvents(root) {
         const complicationBtn = e.target.closest('[data-action="open-complication"]');
         if (complicationBtn) {
             openComplicationModal(root, complicationBtn.dataset.complication);
+            return;
+        }
+        const spendOption = e.target.closest('[data-action="spend-ability-option"]');
+        if (spendOption) {
+            const { data, characterKey, updateState } = root._ctx;
+            const charName = data.characters.characters.find(c => c.key === characterKey)?.name || characterKey;
+            const abilityId = spendOption.dataset.ability;
+            const abilityName = data.atuty.find(a => a.id === abilityId)?.name || abilityId;
+            let newCount = 0;
+            updateState(s => {
+                const charState = s.characters[characterKey];
+                if (!charState.abilityOptions) charState.abilityOptions = {};
+                newCount = Math.max(0, (charState.abilityOptions[abilityId] || 0) - 1);
+                charState.abilityOptions[abilityId] = newCount;
+            });
+            logEvent(updateState, `${charName}: wykorzystuje Możliwość z Atutu (${abilityName}) — pozostało ${newCount}`);
+            return;
+        }
+        const addOption = e.target.closest('[data-action="add-ability-option"]');
+        if (addOption) {
+            const { characterKey, updateState } = root._ctx;
+            const abilityId = addOption.dataset.ability;
+            updateState(s => {
+                const charState = s.characters[characterKey];
+                if (!charState.abilityOptions) charState.abilityOptions = {};
+                charState.abilityOptions[abilityId] = Math.min(MAX_ABILITY_OPTIONS, (charState.abilityOptions[abilityId] || 0) + 1);
+            });
             return;
         }
     });
