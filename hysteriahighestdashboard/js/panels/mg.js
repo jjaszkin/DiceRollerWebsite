@@ -7,7 +7,8 @@
 import { CROSS_POSITIONS } from "../state.js";
 import { renderCard, openCardModal } from "../cardView.js";
 import { getAvailableCards, drawRandomCard, isHouseMatch } from "../deck.js";
-import { escapeHtml, preserveScroll } from "../utils.js";
+import { escapeHtml, preserveScroll, renderMoveText } from "../utils.js";
+import { openModal } from "../modal.js";
 import {
     buildHandoutsControlHtml, handleHandoutsAction, reorderHandoutsOrder
 } from "../../../shared/handouts/control-panel.js";
@@ -391,17 +392,50 @@ function handleCharactersChange(el, root) {
 
 // ── Zakładka: Punkty Wpływu ──────────────────────────────────────────────────────
 
+/** Bazowa nazwa Komplikacji (przed nawiasem z detalem, np. "Prześladowca (Nick 2.0)" ->
+ *  "Prześladowca") - dopasowanie do data/komplikacje.json, wzorem panels/character.js#baseLabel. */
+function baseLabel(label) {
+    return label.split(" (")[0].trim();
+}
+
+/** Treść modala z opisem/mechaniką Atutu lub Komplikacji - 1:1 z panels/character.js#mechanicsBodyHtml
+ *  (bez duplikowania importu, bo to jedyne dwa miejsca, które tego potrzebują). */
+function mechanicsBodyHtml(item) {
+    return `
+        ${item.attr ? `<div class="card-tooltip-kicker">${escapeHtml(item.attr)}</div>` : ""}
+        <div class="card-tooltip-desc">${escapeHtml(item.intro || "")}</div>
+        ${item.high ? `<div class="card-tooltip-row"><b>15+:</b></div>${renderMoveText(item.high)}` : ""}
+        ${item.mid ? `<div class="card-tooltip-row"><b>10-14:</b></div>${renderMoveText(item.mid)}` : ""}
+        ${item.low ? `<div class="card-tooltip-row"><b>≤9:</b></div>${renderMoveText(item.low)}` : ""}
+    `;
+}
+
+/** Klik na nazwę w "Punkty Wpływu" -> ten sam modal z opisem co u Graczy na karcie postaci (patrz
+ *  panels/character.js#openAbilityModal/openComplicationModal), ale BEZ przycisku "Rzuć" (MG tu
+ *  tylko sprawdza mechanikę, nie rzuca za postać) - stąd brak `rollLabel`/`onRoll` w openModal(). */
+function openInfluenceInfoModal(ctx, kind, refId, name) {
+    if (kind === "ability") {
+        const found = ctx.data.atuty.find(a => a.id === refId);
+        if (!found) return;
+        openModal({ title: `☆ ${escapeHtml(found.name)}`, bodyHtml: mechanicsBodyHtml(found) });
+        return;
+    }
+    const found = ctx.data.komplikacje.find(k => k.name.toLowerCase() === baseLabel(name).toLowerCase());
+    if (!found) return;
+    openModal({ title: `✧ ${escapeHtml(name)}`, bodyHtml: mechanicsBodyHtml(found) });
+}
+
 /** Wiersz Atutu/Komplikacji z licznikiem Punktów Wpływu MG (pipsy, klik = zużyj jeden + wpis do
  *  Dziennika) i przyciskiem "+1 Wpływu" (przyznanie, bez wpisu do Dziennika - patrz uzasadnienie w
  *  handleInfluenceAction). `kind`: "ability" (refId = id z data/atuty.json) | "complication"
- *  (refId = index w charState.complications). */
+ *  (refId = index w charState.complications). Nazwa jest klikalna -> modal z opisem/mechaniką. */
 function influenceRowHtml({ charKey, kind, refId, name, count }) {
     const pips = Array.from({ length: count }, () => `
         <button type="button" class="influence-pip" data-action="spend-influence" data-char="${charKey}" data-kind="${kind}" data-ref="${refId}" title="Zużyj punkt Wpływu"></button>
     `).join("");
     return `
         <div class="influence-row">
-            <span class="influence-row-name">${escapeHtml(name)}</span>
+            <button type="button" class="influence-row-name" data-action="open-influence-info" data-kind="${kind}" data-ref="${refId}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>
             <div class="influence-pip-row">${pips}</div>
             <button type="button" class="btn btn-xs" data-action="add-influence" data-char="${charKey}" data-kind="${kind}" data-ref="${refId}">+1 Wpływu</button>
         </div>
@@ -594,6 +628,10 @@ function wireEvents(root) {
         }
         if (action === "open-card") {
             openCardModal(root._ctx.data.cards, btn.dataset.cardKey);
+            return;
+        }
+        if (action === "open-influence-info") {
+            openInfluenceInfoModal(root._ctx, btn.dataset.kind, btn.dataset.ref, btn.dataset.name);
             return;
         }
         if (handleTarotAction(action, btn, root)) { rerender(root); return; }
