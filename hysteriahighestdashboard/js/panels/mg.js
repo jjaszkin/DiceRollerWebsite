@@ -112,7 +112,7 @@ function buildTarotTab(ctx, ui) {
                 <div class="mystic-cross">${cross}</div>
             </div>
             <div class="tarot-characters-area card">
-                <h3>Karty postaci</h3>
+                <h3>Ręka postaci</h3>
                 <div class="tarot-pairs-grid">${characters}</div>
                 <div class="give-card-module">
                     <h4 class="sheet-block-title">Dodaj konkretną kartę postaci</h4>
@@ -408,6 +408,9 @@ function influenceRowHtml({ charKey, kind, refId, name, count }) {
     `;
 }
 
+/** Dwie kolumny, sparowane per gracz (Strażnik po lewej, Absolwent po prawej) - ta sama kolejność
+ *  co "Ręka postaci" na tabie Tarot (patrz buildPairedCharacterRows w panels/tarot.js), więc Jasper
+ *  obok Jose, Nick obok X, Jesse obok Miguela, Paul obok Orlando - potwierdzone przez usera. */
 function buildInfluenceTab(ctx) {
     const { state, data } = ctx;
     const byKey = Object.fromEntries(data.characters.characters.map(c => [c.key, c]));
@@ -417,7 +420,7 @@ function buildInfluenceTab(ctx) {
         orderedChars.push(chars.find(c => c.role === "straznik"), chars.find(c => c.role === "absolwent"));
     }
 
-    return orderedChars.map(charDef => {
+    const cards = orderedChars.map(charDef => {
         const charState = state.characters[charDef.key];
 
         const abilityRows = charState.abilities
@@ -445,6 +448,8 @@ function buildInfluenceTab(ctx) {
             </div>
         `;
     }).join("");
+
+    return `<div class="tarot-pairs-grid">${cards}</div>`;
 }
 
 function findInfluenceItemName(ctx, charKey, kind, refId) {
