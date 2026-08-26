@@ -12,6 +12,10 @@ import { performRoll } from "../rollEngine.js";
 import { logRoll, logEvent } from "../eventLog.js";
 import { openModal } from "../modal.js";
 
+// Najwięcej Możliwości, jakie tekst Atutów każe bankować na raz to "do trzech" (patrz Szósty
+// Zmysł 15+) - stąd twardy limit 3 na Atut, żeby nie dało się dodawać bez ograniczeń.
+const MAX_ABILITY_OPTIONS = 3;
+
 const ATTR_LABELS = {
     silaWoli: "Siła Woli", odpornosc: "Odporność", refleks: "Refleks", rozum: "Rozum",
     intuicja: "Intuicja", percepcja: "Percepcja", opanowanie: "Opanowanie", przemoc: "Przemoc",
@@ -110,7 +114,7 @@ function performAndLogRoll(root, { label, moveId, baseModifier, rollType, mechan
         updateState(s => {
             const cs = s.characters[characterKey];
             if (!cs.abilityOptions) cs.abilityOptions = {};
-            cs.abilityOptions[mechanicsFor.id] = (cs.abilityOptions[mechanicsFor.id] || 0) + 1;
+            cs.abilityOptions[mechanicsFor.id] = Math.min(MAX_ABILITY_OPTIONS, (cs.abilityOptions[mechanicsFor.id] || 0) + 1);
         });
     }
 
@@ -143,15 +147,18 @@ function complicationTag(item, komplikacjeData) {
 }
 
 /** Wiersz Atutu z bankowanymi Możliwościami - wypełnione pipsy (klik zużywa jedną, loguje do
- *  Dziennika, pips znika) + jeden dodatkowy pusty pips na końcu (klik dodaje jedną, bez logowania -
- *  sam rzut, który ją przyznał, już się zaloguje z pełnym tekstem wyniku, patrz performAndLogRoll).
- *  Bez osobnego przycisku "+1" - zamiast tego zwiększanie/zużywanie dzieje się wprost przez klik w
- *  pipsy, analogicznie do Toru Boskości w panelu MG (ale bez opcji "Zeruj"). */
+ *  Dziennika, pips znika) + jeden dodatkowy pusty pips na końcu, o ile nie osiągnięto
+ *  MAX_ABILITY_OPTIONS (klik dodaje jedną, bez logowania - sam rzut, który ją przyznał, już się
+ *  zaloguje z pełnym tekstem wyniku, patrz performAndLogRoll). Bez osobnego przycisku "+1" -
+ *  zamiast tego zwiększanie/zużywanie dzieje się wprost przez klik w pipsy, analogicznie do Toru
+ *  Boskości w panelu MG (ale bez opcji "Zeruj"). */
 function abilityOptionRow(ability, count) {
     const filledPips = Array.from({ length: count }, () => `
         <button type="button" class="influence-pip" data-action="spend-ability-option" data-ability="${ability.id}" title="Wykorzystaj Możliwość"></button>
     `).join("");
-    const addPip = `<button type="button" class="influence-pip influence-pip-empty" data-action="add-ability-option" data-ability="${ability.id}" title="Dodaj Możliwość"></button>`;
+    const addPip = count < MAX_ABILITY_OPTIONS
+        ? `<button type="button" class="influence-pip influence-pip-empty" data-action="add-ability-option" data-ability="${ability.id}" title="Dodaj Możliwość"></button>`
+        : "";
     return `
         <div class="ability-option-row">
             <span class="ability-option-name">${escapeHtml(ability.name)}</span>
@@ -423,7 +430,7 @@ function wireEvents(root) {
             updateState(s => {
                 const charState = s.characters[characterKey];
                 if (!charState.abilityOptions) charState.abilityOptions = {};
-                charState.abilityOptions[abilityId] = (charState.abilityOptions[abilityId] || 0) + 1;
+                charState.abilityOptions[abilityId] = Math.min(MAX_ABILITY_OPTIONS, (charState.abilityOptions[abilityId] || 0) + 1);
             });
             return;
         }
