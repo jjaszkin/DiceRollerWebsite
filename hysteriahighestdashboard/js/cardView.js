@@ -56,9 +56,11 @@ export function openCardModal(cards, key) {
 /**
  * Buduje znacznik pojedynczej karty (awers, klikalny -> modal z opisem). `size`: "sm" (chip w
  * liście postaci) | "md" (krzyż) | "lg" (podgląd MG). `showName`: false u Graczy (nazwa tylko w
- * modalu), true u MG. Puste sloty (key === null) renderują placeholder.
+ * modalu), true u MG. Puste sloty (key === null) renderują placeholder. `removable`: true dodaje
+ * mały "✕" w rogu (tylko panel MG - patrz panels/mg.js) z data-action="return-card" i atrybutami z
+ * `removeData` - cofa kartę do talii (usuwa z bieżącego miejsca, NIE trafia do discardKeys).
  */
-export function renderCard(cards, key, { size = "md", faceDown = false, showName = true } = {}) {
+export function renderCard(cards, key, { size = "md", faceDown = false, showName = true, removable = false, removeData = {} } = {}) {
     if (!key) {
         return `<div class="tarot-card tarot-card-empty tarot-card-${size}"></div>`;
     }
@@ -66,15 +68,22 @@ export function renderCard(cards, key, { size = "md", faceDown = false, showName
     if (!card) {
         return `<div class="tarot-card tarot-card-empty tarot-card-${size}">?</div>`;
     }
-    if (faceDown) {
-        return `<div class="tarot-card tarot-card-back tarot-card-${size}"></div>`;
-    }
+    const cardEl = faceDown
+        ? `<div class="tarot-card tarot-card-back tarot-card-${size}"></div>`
+        : `
+            <button type="button" class="tarot-card tarot-card-${size}" data-action="open-card" data-card-key="${key}">
+                <div class="tarot-card-face">
+                    <img class="tarot-card-img" src="${card.image}" alt="${escapeHtml(card.name)}" loading="lazy" onerror="this.parentElement.parentElement.classList.add('tarot-card-img-missing')">
+                    ${showName ? `<span class="tarot-card-label">${escapeHtml(card.name)}</span>` : ""}
+                </div>
+            </button>
+        `;
+    if (!removable) return cardEl;
+    const attrs = Object.entries(removeData).map(([k, v]) => `data-${k}="${escapeHtml(String(v))}"`).join(" ");
     return `
-        <button type="button" class="tarot-card tarot-card-${size}" data-action="open-card" data-card-key="${key}">
-            <div class="tarot-card-face">
-                <img class="tarot-card-img" src="${card.image}" alt="${escapeHtml(card.name)}" loading="lazy" onerror="this.parentElement.parentElement.classList.add('tarot-card-img-missing')">
-                ${showName ? `<span class="tarot-card-label">${escapeHtml(card.name)}</span>` : ""}
-            </div>
-        </button>
+        <div class="tarot-card-slot">
+            ${cardEl}
+            <button type="button" class="tarot-card-remove-btn" data-action="return-card" ${attrs} title="Cofnij kartę do talii" aria-label="Cofnij kartę do talii">✕</button>
+        </div>
     `;
 }

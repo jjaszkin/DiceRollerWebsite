@@ -316,6 +316,27 @@ body {
 .tarot-card-select input { position: absolute; top: 2px; left: 2px; z-index: 2; }
 .tarot-card-select.selected .tarot-card { outline: 2px solid var(--accent); }
 
+/* Nakładka "cofnij do talii" (panel MG) - patrz cardView.js#renderCard `removable`. */
+.tarot-card-slot { position: relative; display: inline-block; }
+.tarot-card-remove-btn {
+    position: absolute;
+    top: -6px; right: -6px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--fg-1);
+    font-size: 0.65rem;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+.tarot-card-remove-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+.give-card-module { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.give-card-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
 /* ── Tor Boskości ─────────────────────────────────────────────────────────── */
 
 .divinity-group { margin-bottom: 18px; }

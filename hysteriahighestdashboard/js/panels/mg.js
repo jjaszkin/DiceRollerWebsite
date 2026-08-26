@@ -43,7 +43,7 @@ function buildTarotTab(ctx, ui) {
         return `
             <div class="cross-slot cross-slot-${pos}">
                 <span class="cross-slot-label">${POSITION_LABELS[pos]}</span>
-                ${renderCard(cards, key, { size: "md" })}
+                ${renderCard(cards, key, { size: "md", removable: !!key, removeData: { pos } })}
                 ${key ? `
                     <div class="cross-slot-controls">
                         <select class="cross-assign-select" data-pos="${pos}">${charOptions}</select>
@@ -75,7 +75,7 @@ function buildTarotTab(ctx, ui) {
         const chips = charState.cards.length ? charState.cards.map(k => `
             <div class="tarot-card-select ${selected.has(k) ? "selected" : ""}">
                 <input type="checkbox" data-action="toggle-select-card" data-char="${charDef.key}" data-card="${k}" ${selected.has(k) ? "checked" : ""}>
-                ${renderCard(cards, k, { size: "sm" })}
+                ${renderCard(cards, k, { size: "sm", removable: true, removeData: { char: charDef.key, card: k } })}
             </div>
         `).join("") : `<span class="placeholder-inline">brak kart</span>`;
 
@@ -108,6 +108,18 @@ function buildTarotTab(ctx, ui) {
             <div class="tarot-characters-area card">
                 <h3>Karty postaci</h3>
                 <div class="tarot-pairs-grid">${characters}</div>
+                <div class="give-card-module">
+                    <h4 class="sheet-block-title">Dodaj konkretną kartę postaci</h4>
+                    <div class="give-card-row">
+                        <select id="giveCardSelect" ${remaining ? "" : "disabled"}>
+                            ${remaining ? getAvailableCards(state, data).map(c => `<option value="${c.key}">${escapeHtml(c.name)}</option>`).join("") : `<option value="">Brak dostępnych kart</option>`}
+                        </select>
+                        <select id="giveCardCharSelect">
+                            ${orderedChars.map(c => `<option value="${c.key}">${escapeHtml(c.name)}</option>`).join("")}
+                        </select>
+                        <button class="btn btn-xs" data-action="give-card" ${remaining ? "" : "disabled"}>Przekaż kartę</button>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -146,6 +158,27 @@ function handleTarotAction(action, el, root) {
             s.cross[el.dataset.pos] = null;
             s.deck.discardKeys.push(key);
         });
+        return true;
+    }
+    if (action === "give-card") {
+        const cardKey = root.querySelector("#giveCardSelect")?.value;
+        const charKey = root.querySelector("#giveCardCharSelect")?.value;
+        if (!cardKey || !charKey) return true;
+        updateState(s => { s.characters[charKey].cards.push(cardKey); });
+        return true;
+    }
+    if (action === "return-card") {
+        const { pos, char: charKey, card: cardKey } = el.dataset;
+        updateState(s => {
+            if (pos) {
+                s.cross[pos] = null;
+            } else if (charKey && cardKey) {
+                const list = s.characters[charKey].cards;
+                const idx = list.indexOf(cardKey);
+                if (idx !== -1) list.splice(idx, 1);
+            }
+        });
+        if (charKey && cardKey) ui.selectedCards[charKey]?.delete(cardKey);
         return true;
     }
     if (action === "toggle-select-card") {
