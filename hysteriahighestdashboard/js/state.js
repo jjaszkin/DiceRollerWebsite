@@ -71,6 +71,10 @@ export function createDefaultState(gameData) {
         cross,
         characters,
         handouts: { visible: {}, order: [] },
+        // Stan odtwarzania Soundboardu (shared/soundboard/) - MIKROSKOPIJNE dane sterujące, NIE
+        // same pliki audio (te serwuje Netlify bezpośrednio, patrz data/soundboard.json). Patrz
+        // darkgraal3dashboard/js/state.js dla pełnego komentarza o znaczeniu każdego pola.
+        soundboard: { music: null, sfxFired: null, playlists: {}, trackOrder: [] },
         log: []
     };
 }

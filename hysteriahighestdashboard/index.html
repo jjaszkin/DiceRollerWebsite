@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../shared/soundboard/soundboard.css">
     <link rel="stylesheet" href="../shared/handouts/handouts.css">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
     <title>Hysteria Highest — Dashboard</title>
@@ -82,6 +83,12 @@
         </main>
 
         <div id="mgUnifiedRoot" class="mg-unified-root hidden"></div>
+
+        <!-- Silnik Soundboardu (shared/soundboard/player-engine.js) - montowany RAZ, POZA panelami,
+             które robią pełny innerHTML rerender (patrz main.js#ensureSoundboardMounted), żeby
+             <audio> nie było niszczone i tworzone od nowa przy każdej zmianie stanu. Dla OBU ról -
+             MG też ma dostać dźwięk i FAB głośności, żeby móc odsłuchać miksu, który sam puszcza. -->
+        <div id="soundboardRoot"></div>
 
         <footer class="app-footer">
             <span id="bootStatus">Wczytywanie...</span>

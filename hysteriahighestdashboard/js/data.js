@@ -1,6 +1,6 @@
 // Hysteria Highest - Dashboard. Wczytywanie statycznych danych systemowych z data/*.json.
 
-const FILES = ["cards", "characters", "moves", "atuty", "komplikacje", "handouts"];
+const FILES = ["cards", "characters", "moves", "atuty", "komplikacje", "handouts", "soundboard"];
 
 export async function loadGameData() {
     const entries = await Promise.all(

@@ -217,6 +217,53 @@ body {
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-xs { padding: 4px 8px; font-size: 0.8rem; }
 .btn-danger:hover { border-color: var(--danger); color: var(--danger); }
+.btn-gold {
+    background: var(--accent);
+    border-color: var(--accent-bright);
+    color: var(--fg-0);
+}
+.btn-gold:hover { background: var(--accent-bright); color: var(--bg-0); }
+
+/* Modal generyczny używany przez shared/soundboard/control-panel.js (mini-kreator playlisty,
+   podgląd playlisty) - NIEZALEŻNY od własnego systemu modali aplikacji (modal.js, klasy
+   .modal-overlay/.modal-box) - control-panel.js jest modułem współdzielonym i ma wpisane na
+   sztywno te konkretne nazwy klas, wzorem darkgraal3dashboard/styles.css. */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+.modal {
+    background: var(--bg-1);
+    border: 1px solid var(--accent-dim);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+.modal h2 { color: var(--accent-bright); margin-top: 0; }
+.modal h3 { color: var(--accent); font-size: 1.05rem; margin: 14px 0 4px; }
+.modal p { color: var(--fg-1); line-height: 1.55; font-size: 0.88rem; }
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+.inline-check { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.mg-legendary-modal-field { margin-top: 10px; }
+.mg-legendary-modal-field label { display: block; margin-bottom: 4px; }
+.mg-legendary-modal-field input[type="text"], .mg-legendary-modal-field select { width: 100%; }
 
 /* ── Karty tarota ─────────────────────────────────────────────────────────── */
 
