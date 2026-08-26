@@ -356,6 +356,21 @@ body {
 button.divinity-pip { cursor: pointer; }
 .divinity-pip.filled { background: var(--accent); border-color: var(--accent-bright); }
 
+/* ── Punkty Wpływu ────────────────────────────────────────────────────────── */
+
+.influence-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.influence-row-name { min-width: 200px; font-weight: 600; }
+.influence-pip-row { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+.influence-pip {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 1px solid var(--accent-bright);
+    padding: 0;
+    cursor: pointer;
+}
+.influence-pip:hover { background: var(--danger); border-color: var(--danger); }
+
 /* ── Karta postaci ────────────────────────────────────────────────────────── */
 
 /* 12 kolumn: 8 karta postaci, 4 wyniki rzutów (patrz panels/character.js) */

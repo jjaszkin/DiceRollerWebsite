@@ -40,7 +40,10 @@ function seedCharacterState(charDef, developmentLength) {
         divinityProgress: 0,
         darkSecrets: charDef.darkSecrets ? charDef.darkSecrets.map(s => ({ ...s })) : [],
         complications: charDef.complications ? charDef.complications.map(c => ({ ...c })) : [],
-        abilities: charDef.abilities ? [...charDef.abilities] : []
+        abilities: charDef.abilities ? [...charDef.abilities] : [],
+        // Punkty Wpływu MG per Atut (kluczowane id-kiem z data/atuty.json) - Komplikacje trzymają
+        // swój licznik wprost na obiekcie (complications[i].influence), patrz panels/mg.js#buildInfluenceTab.
+        abilityInfluence: {}
     };
 }
 

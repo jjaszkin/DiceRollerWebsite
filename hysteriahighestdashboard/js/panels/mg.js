@@ -383,6 +383,103 @@ function handleCharactersChange(el, root) {
     return false;
 }
 
+// ── Zakładka: Punkty Wpływu ──────────────────────────────────────────────────────
+
+/** Wiersz Atutu/Komplikacji z licznikiem Punktów Wpływu MG (pipsy, klik = zużyj jeden + wpis do
+ *  Dziennika) i przyciskiem "+1 Wpływu" (przyznanie, bez wpisu do Dziennika - patrz uzasadnienie w
+ *  handleInfluenceAction). `kind`: "ability" (refId = id z data/atuty.json) | "complication"
+ *  (refId = index w charState.complications). */
+function influenceRowHtml({ charKey, kind, refId, name, count }) {
+    const pips = Array.from({ length: count }, () => `
+        <button type="button" class="influence-pip" data-action="spend-influence" data-char="${charKey}" data-kind="${kind}" data-ref="${refId}" title="Zużyj punkt Wpływu"></button>
+    `).join("");
+    return `
+        <div class="influence-row">
+            <span class="influence-row-name">${escapeHtml(name)}</span>
+            <div class="influence-pip-row">${pips}</div>
+            <button type="button" class="btn btn-xs" data-action="add-influence" data-char="${charKey}" data-kind="${kind}" data-ref="${refId}">+1 Wpływu</button>
+        </div>
+    `;
+}
+
+function buildInfluenceTab(ctx) {
+    const { state, data } = ctx;
+    const byKey = Object.fromEntries(data.characters.characters.map(c => [c.key, c]));
+    const orderedChars = [];
+    for (const pair of data.characters.pairs) {
+        const chars = pair.characters.map(k => byKey[k]);
+        orderedChars.push(chars.find(c => c.role === "straznik"), chars.find(c => c.role === "absolwent"));
+    }
+
+    return orderedChars.map(charDef => {
+        const charState = state.characters[charDef.key];
+
+        const abilityRows = charState.abilities
+            .map(id => data.atuty.find(a => a.id === id))
+            .filter(a => a && a.attr !== "Pasywny")
+            .map(a => influenceRowHtml({
+                charKey: charDef.key, kind: "ability", refId: a.id, name: a.name,
+                count: charState.abilityInfluence?.[a.id] || 0
+            }))
+            .join("");
+
+        const complicationRows = charState.complications
+            .map((c, i) => influenceRowHtml({
+                charKey: charDef.key, kind: "complication", refId: String(i), name: c.label,
+                count: c.influence || 0
+            }))
+            .join("");
+
+        return `
+            <div class="card">
+                <h3>${escapeHtml(charDef.name)}</h3>
+                ${abilityRows ? `<h4 class="sheet-block-title">Atuty ☆</h4>${abilityRows}` : ""}
+                ${complicationRows ? `<h4 class="sheet-block-title">Komplikacje ✧</h4>${complicationRows}` : ""}
+                ${!abilityRows && !complicationRows ? `<p class="placeholder">Brak Atutów/Komplikacji.</p>` : ""}
+            </div>
+        `;
+    }).join("");
+}
+
+function findInfluenceItemName(ctx, charKey, kind, refId) {
+    if (kind === "ability") {
+        return ctx.data.atuty.find(a => a.id === refId)?.name || refId;
+    }
+    return ctx.state.characters[charKey].complications[Number(refId)]?.label || "Komplikacja";
+}
+
+/** Przyznanie punktu ("+1 Wpływu") NIE trafia do Dziennika - dzieje się często i doraźnie przy
+ *  stole (po każdym częściowym/porażce na Komplikacji), więc logowanie zaśmiecałoby Dziennik.
+ *  Zużycie punktu (klik w pips) TRAFIA do Dziennika - to jest ta decyzja MG warta zapisania. */
+function handleInfluenceAction(action, el, root) {
+    if (action !== "add-influence" && action !== "spend-influence") return false;
+    const { data, updateState } = root._ctx;
+    const charKey = el.dataset.char;
+    const kind = el.dataset.kind;
+    const refId = el.dataset.ref;
+    const charName = data.characters.characters.find(c => c.key === charKey)?.name || charKey;
+    const itemName = findInfluenceItemName(root._ctx, charKey, kind, refId);
+    const delta = action === "add-influence" ? 1 : -1;
+    let newCount = 0;
+    updateState(s => {
+        const charState = s.characters[charKey];
+        if (kind === "ability") {
+            if (!charState.abilityInfluence) charState.abilityInfluence = {};
+            newCount = Math.max(0, (charState.abilityInfluence[refId] || 0) + delta);
+            charState.abilityInfluence[refId] = newCount;
+        } else {
+            const item = charState.complications[Number(refId)];
+            if (!item) return;
+            newCount = Math.max(0, (item.influence || 0) + delta);
+            item.influence = newCount;
+        }
+    });
+    if (action === "spend-influence") {
+        logEvent(updateState, `${charName}: MG zużywa punkt Wpływu (${itemName}) — pozostało ${newCount}`);
+    }
+    return true;
+}
+
 // ── Zakładka: Ustawienia ────────────────────────────────────────────────────────
 
 function buildSettingsTab(ctx) {
@@ -425,6 +522,7 @@ const TABS = [
     ["tarot", "Tarot"],
     ["divinity", "Tor Boskości"],
     ["characters", "Karty postaci"],
+    ["influence", "Punkty Wpływu"],
     ["handouts", "Handouty"],
     ["journal", "Dziennik"],
     ["settings", "Ustawienia"]
@@ -439,6 +537,7 @@ function buildHtml(ctx, ui) {
     if (ui.activeTab === "tarot") body = buildTarotTab(ctx, ui);
     else if (ui.activeTab === "divinity") body = buildDivinityTab(ctx);
     else if (ui.activeTab === "characters") body = buildCharactersTab(ctx, ui);
+    else if (ui.activeTab === "influence") body = buildInfluenceTab(ctx);
     else if (ui.activeTab === "handouts") body = buildHandoutsControlHtml(ctx);
     else if (ui.activeTab === "journal") body = `<div id="mgJournalRoot"></div>`;
     else if (ui.activeTab === "settings") body = buildSettingsTab(ctx);
@@ -483,6 +582,7 @@ function wireEvents(root) {
         if (handleTarotAction(action, btn, root)) { rerender(root); return; }
         if (handleDivinityAction(action, btn, root)) { rerender(root); return; }
         if (handleCharactersAction(action, btn, root)) { rerender(root); return; }
+        if (handleInfluenceAction(action, btn, root)) { rerender(root); return; }
         if (handleSettingsAction(action, btn, root)) { rerender(root); return; }
         if (handleHandoutsAction(action, btn, { ...root._ctx, updateState: root._ctx.updateState })) { rerender(root); return; }
     });
