@@ -78,7 +78,114 @@
         "intro": "Podczas pierwszej sesji gry i za każdym razem, gdy napotykasz obiekt swojego pożądania (lub coś, co go przypomina).",
         "high": "Utrzymujesz swoje pożądanie na wodzy.",
         "mid": "Rozbudza się w tobie pożądanie. MG zyskuje 1 punkt Wpływu.",
-        "low": "Pożądanie ma cię całkowicie w swojej mocy. MG zyskuje 3 punkty Wpływu.",
-        "todo": "Tekst mechaniki zrekonstruowany wg wzorca pozostałych Komplikacji (brak oryginalnego tekstu w Figmie) - do potwierdzenia przez Jakuba."
+        "low": "Pożądanie ma cię całkowicie w swojej mocy. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by rozpalić żądze jakiejś osoby i wpłynąć na jej zachowanie. Może się okazać, że ogarnęła ją niekontrolowana namiętność względem ciebie, że będzie próbowała cię zgwałcić, natarczywie proponowała seks, zapłonie zazdrością o ciebie albo skrzywdzi samą siebie lub innych dlatego, że cię pożąda."
+    },
+    {
+        "id": "poszukiwany",
+        "name": "Poszukiwany",
+        "attr": "+0",
+        "intro": "Jesteś poszukiwany przez władze – lokalne, stanowe lub państwowe – za popełnione przestępstwa. Za każdym razem, gdy ściągniesz na siebie uwagę lub zapomnisz o pozostawaniu w cieniu, rzuć +0, by ustalić, czy zostałeś odkryty:",
+        "high": "Jesteś na razie bezpieczny.",
+        "mid": "Popełniłeś jakiś błąd. MG zyskuje 1 punkt Wpływu.",
+        "low": "Wszystkie oczy są zwrócone na ciebie. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy w imieniu władz. Na przykład twoje zdjęcie może pojawić się w telewizji i gazetach, funkcjonariusze mogą usiłować złapać cię w pułapkę, władze mogą zatrzymać i przesłuchać kogoś ci bliskiego, skonfiskować twoją własność lub zwrócić twoją rodzinę czy przyjaciół przeciw tobie."
+    },
+    {
+        "id": "przymus-wewnetrzny",
+        "name": "Przymus wewnętrzny",
+        "attr": "+0",
+        "intro": "Jesteś skupiony na konkretnej idei lub działaniu do tego stopnia, że wpływa to na twoje życie. Określ przy wyborze tej Komplikacji, o jakiego rodzaju kompulsję chodzi (np. sprzątanie, liczenie, wielokrotne sprawdzanie czegoś, mycie się, zapamiętywanie, piromania, kleptomania, przeklinanie, wyznawanie swoich grzechów, jedzenie, hipochondria). W sytuacjach, gdy kompulsja może cię rozproszyć, rzuć +0:",
+        "high": "Opanowujesz kompulsję i możesz skupić się na czymś innym.",
+        "mid": "Rozpraszasz się i otrzymujesz −1 do wszystkich rzutów do czasu, aż przymus minie (ulegnie zmianie sytuacja, która wywołała kompulsję) lub poddasz się kompulsji, wykonując działania, które ją zaspokoją.",
+        "low": "Całkowicie poddajesz się kompulsji. Jeśli skupisz się na czymkolwiek innym, obniż Stabilność (−2)."
+    },
+    {
+        "id": "koszmary",
+        "name": "Koszmary",
+        "attr": "+0",
+        "intro": "Dręczą cię powracające koszmary, prawdopodobnie powiązane z twoimi Mrocznymi Sekretami. Podczas każdej sceny, w której śpisz, rzuć +0:",
+        "high": "Śpisz spokojnie.",
+        "mid": "Nawiedzają cię koszmary. MG może wykonać związany z nimi Ruch: na przykład może się okazać, że nie jesteś w stanie w ogóle spać tej nocy (−1 do wszystkich rzutów, dopóki się nie prześpisz), coś prześlizgnęło się za tobą z powrotem do rzeczywistości, koszmary dały ci wgląd w Prawdę lub po przebudzeniu jesteś zmuszony do zmierzenia się z jakąś traumą (Weź się w garść).",
+        "low": "Koszmary przejmują pełną kontrolę. Jesteś uwięziony we śnie, dopóki nie znajdziesz sposobu, by się obudzić, a wszystko, co ma miejsce we śnie, wpływa bezpośrednio na twoje śpiące ciało."
+    },
+    {
+        "id": "schizofrenia",
+        "name": "Schizofrenia",
+        "attr": "+0",
+        "intro": "Zmagasz się z nawracającymi epizodami psychotycznymi i straszliwymi halucynacjami. Podczas pierwszej sesji gry i za każdym razem, gdy przechodzisz jakieś trudne doświadczenie, rzuć +0:",
+        "high": "Zachowujesz poczytalność.",
+        "mid": "MG zyskuje 1 punkt Wpływu.",
+        "low": "Schizofrenia przejmuje kontrolę. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy reprezentujące twoją schizofrenię. Może się okazać na przykład, że jedna z twoich halucynacji przyjmuje fizyczną postać, postrzegasz otoczenie jako wrogie, doświadczasz strasznych halucynacji, masz mroczne wizje (prawdziwe lub nie) lub dostrzegasz w pobliżu kogoś, kogo tak naprawdę tam nie ma."
+    },
+    {
+        "id": "zla-reputacja",
+        "name": "Zła reputacja",
+        "attr": "+0",
+        "intro": "Z jakiegoś powodu ściągnąłeś na siebie dezaprobatę – a nawet wrogość – opinii publicznej. Być może opisano cię w tabloidach – słusznie lub nie – jako pedofila lub mordercę. Podczas pierwszej sesji gry i za każdym razem, gdy przyciągasz uwagę opinii publicznej, rzuć +0:",
+        "high": "Wtapiasz się w tłum. Nikt nie chce cię dopaść.",
+        "mid": "Zostałeś rozpoznany. MG zyskuje 1 punkt Wpływu.",
+        "low": "Rozpoznało cię wielu ludzi. Kierują nimi złość i strach. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy reprezentujące to, jak twoja zła reputacja za tobą podąża. Może się na przykład okazać, że ludzie odnoszą się do ciebie ze strachem i podejrzliwością, formuje się grupa żądająca linczu, twoja własność zostaje zniszczona przez wandali, twoi sojusznicy odwracają się od ciebie, tracisz pracę czy kontrakt, odchodzą od ciebie osoby bliskie."
+    },
+    {
+        "id": "nawiedzany",
+        "name": "Nawiedzany",
+        "attr": "+0",
+        "intro": "Nawiedzają cię nadnaturalne moce. Z pomocą MG określ, co według ciebie cię nawiedza. Podczas pierwszej sesji gry i za każdym razem, gdy jesteś rozproszony lub osłabiony, rzuć +0, by określić, czy istota zyskuje na ciebie wpływ.",
+        "high": "Istota zostawia cię w spokoju.",
+        "mid": "MG zyskuje 1 punkt Wpływu.",
+        "low": "MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy w imieniu nawiedzającej cię istoty. Może ona na przykład żądać, byś coś dla niej zrobił, i grozić konsekwencjami, jeśli odmówisz; może przejąć na jedną noc twoje ciało lub ujawnić wskazówkę co do swojej natury i tego, czego chce."
+    },
+    {
+        "id": "mimowolne-medium",
+        "name": "Mimowolne medium",
+        "attr": "+0",
+        "intro": "Jesteś łatwym celem dla każdego ducha lub demona, który poszukuje medium, aby przez nie przemówić, lub ciała, które mógłby wykorzystać do swoich celów. Za każdym razem, gdy napotykasz duchowe byty lub odwiedzasz nawiedzone miejsca, rzuć +0:",
+        "high": "Opierasz się opętaniu.",
+        "mid": "Istota oddziałuje na ciebie. MG zyskuje 1 punkt Wpływu.",
+        "low": "Istota przejmuje nad tobą władzę. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy w imieniu opętującej cię istoty. Na przykład może ona obdarzyć cię wizją, posłużyć się twoim ciałem, porozumiewać się z tobą lub z kimś innym przez ciebie, usiłować sprawić, byś kogoś zranił, podążać za tobą niezauważona, zażądać czegoś od ciebie lub zaciągnąć cię do innego wymiaru."
+    },
+    {
+        "id": "chciwy",
+        "name": "Chciwy",
+        "attr": "+0",
+        "intro": "Żywisz niezaspokojone pragnienie pieniędzy i bogactwa i jesteś gotów poświęcić zdrowie, rodzinę i przyjaciół, by wypełnić pustkę, którą odczuwasz gdzieś w środku. Za każdym razem, gdy pojawia się możliwość zwiększenia twojego bogactwa, rzuć +0, by określić, czy kontrolujesz swoje pragnienie:",
+        "high": "Trzymasz chciwość na wodzy.",
+        "mid": "Czarna otchłań wewnątrz żąda więcej. Tak długo, jak nie zniknie możliwość zwiększenia bogactwa, a ty jej nie wykorzystasz, otrzymujesz −1 do wszystkich rzutów.",
+        "low": "Musisz wykorzystać każdą możliwość wzbogacenia się lub obniżyć Stabilność (−2)."
+    },
+    {
+        "id": "klamca",
+        "name": "Kłamca",
+        "attr": "+0",
+        "intro": "Nie możesz powstrzymać się od kłamania; zmyślasz przy każdej nadarzającej się okazji, zwłaszcza gdy możesz na tym zyskać. Na początku każdej sesji rzuć +0, by ustalić, w jakie kłopoty wpakowały cię twoje kłamstwa tym razem:",
+        "high": "Udało ci się nie zaplątać się we własnych kłamstwach.",
+        "mid": "Powiedziałeś o jedno kłamstwo za dużo. MG zyskuje 1 punkt Wpływu.",
+        "low": "Sieć twoich kłamstw została zupełnie rozwikłana. MG zyskuje 3 punkty Wpływu. MG może wydać punkty Wpływu za każdym razem, gdy BG spotyka kogoś, kogo zna, by zapytać: „Jakie kłamstwo powiedziałeś tej osobie?”, lub wymyślić kłopotliwe oszustwo z przeszłości BG."
+    },
+    {
+        "id": "nemezis",
+        "name": "Nemezis",
+        "attr": "+0",
+        "intro": "Popełniłeś jakiś straszliwy czyn i zyskałeś wroga, który zrobi wszystko, co w jego mocy, by się zemścić. Określ, kim jest twoja nemezis i co sprawiło, że pragnie zemsty. Podczas pierwszej sesji gry i za każdym razem, gdy przestaniesz mieć się na baczności, rzuć +0, by określić, czy twoja nemezis działa przeciw tobie:",
+        "high": "Chwilowo jesteś bezpieczny.",
+        "mid": "Byłeś nieostrożny; twoja nemezis działa przeciw tobie. MG zyskuje 1 punkt Wpływu.",
+        "low": "Odsłoniłeś się i twoja nemezis uderza z całą siłą. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy w imieniu twojej nemezis. Na przykład twoja nemezis może uderzyć, gdy będziesz sam, użyć twoich tajemnic, by cię szantażować, zastraszyć cię, wynająć kogoś, by cię schwytał, albo zaatakować kogoś lub coś, co jest ci bliskie."
+    },
+    {
+        "id": "przeklety",
+        "name": "Przeklęty",
+        "attr": "+0",
+        "intro": "Jesteś przeklęty. Podczas pierwszej sesji gry i za każdym razem, gdy mierzysz się z czymś nadnaturalnym, rzuć +0, by określić, jak silnie wpływa na ciebie klątwa:",
+        "high": "Tymczasowo unikasz wpływu klątwy.",
+        "mid": "MG zyskuje 1 punkt Wpływu.",
+        "low": "MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu na wykonywanie Ruchów reprezentujących klątwę. Na przykład postać lub ktoś jej bliski ma wypadek, traci coś co należy do niej, doświadcza straszliwych wizji lub jest zmuszona podjąć jakieś działania, ryzykując poważnymi konsekwencjami w razie odmowy."
+    },
+    {
+        "id": "zaburzenia-na-tle-seksualnym",
+        "name": "Zaburzenia na tle seksualnym",
+        "attr": "+0",
+        "intro": "Seksualność jest niszczącą siłą, która opanowała twoje życie. Nieustannie poszukujesz przygodnych relacji seksualnych i jesteś gotów poniżyć się – lub nawet popełnić przestępstwo – by zaspokoić swoje fantazje. Za każdym razem, gdy masz okazję uprawiać z kimś seks za jego zgodą lub wykorzystać kogoś podatnego na twoje wdzięki, rzuć +0:",
+        "high": "Kontrolujesz swoje popędy.",
+        "mid": "Wybierz pomiędzy uprawianiem seksu z daną osobą lub obniżeniem Stabilności (−1).",
+        "low": "Nie możesz się oprzeć stosunkowi z daną osobą. MG wybiera jedną z możliwości:\n◊ Ranisz lub jesteś raniony przez swojego partnera (fizycznie lub psychicznie).\n◊ Granice między światami zacierają się, coś z drugiej strony wpada na trop – twój lub twojego kochanka.\n◊ Twój partner dostaje obsesji na twoim punkcie i zaczyna cię prześladować."
     }
 ]

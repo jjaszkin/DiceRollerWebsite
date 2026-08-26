@@ -261,5 +261,160 @@
         "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem).",
         "mid": "Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem).",
         "low": "Otrzymujesz jedną Przewagę, ale przyciągasz uwagę wrogów. MG wykonuje Ruch.\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem)."
+    },
+    {
+        "id": "instynkt",
+        "name": "Instynkt",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy Analizujesz sytuację i działasz w związku z odpowiedziami MG, otrzymujesz +2 zamiast +1 do rzutu.",
+        "passive": true
+    },
+    {
+        "id": "instynkt-przetrwania",
+        "name": "Instynkt przetrwania",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy otrzymujesz poważne lub krytyczne obrażenia, ale nie poddajesz się, rzuć +Przemoc. W przypadku sukcesu możesz tymczasowo zignorować efekty ran, ale będziesz potrzebował leczenia, jak tylko upłynie limit czasu:",
+        "high": "Ignorujesz swoje rany do końca konfliktu, wybierz też jedną z poniższych możliwości:\n◊ Zawziętość: +1 do Ruchu Przystąp do walki na czas potyczki.\n◊ Skok adrenaliny: +1 do Ruchu Znieś Obrażenia na czas walki.",
+        "mid": "Ignorujesz efekty ran do końca konfliktu.",
+        "low": "Przeciążasz się i po kilku chwilach twoje rany sprawiają, że upadasz i tracisz przytomność. Po twojej następnej akcji MG decyduje, kiedy i w jaki sposób to się dzieje."
+    },
+    {
+        "id": "kodeks-honorowy",
+        "name": "Kodeks honorowy",
+        "attr": "Pasywny",
+        "intro": "Stosujesz się do sztywnego kodeksu honorowego. Zdefiniuj go. Za każdym razem, gdy podejmujesz ryzyko lub poświęcasz coś w imię swojego kodeksu honorowego, zwiększ Stabilność (+1).",
+        "passive": true
+    },
+    {
+        "id": "mowa-zwierzat",
+        "name": "Mowa zwierząt",
+        "attr": "+Intuicja",
+        "intro": "Potrafisz rozumieć i kontrolować zwierzęta. Za każdym razem, gdy usiłujesz kontrolować zwierzę, rzuć +Intuicja:",
+        "high": "Wybierz trzy możliwości. Do dwóch z nich możesz zachować do wykorzystania później.\n◊ Spraw, że zwierzę zadziała przeciw własnemu instynktowi.\n◊ Spraw, że zwierzę będzie za tobą podążać.\n◊ Spraw, że zwierzę będzie cię bronić przed atakami.",
+        "mid": "Wybierz dwie możliwości. Jedną z nich możesz zachować do wykorzystania później.\n◊ Spraw, że zwierzę zadziała przeciw własnemu instynktowi.\n◊ Spraw, że zwierzę będzie za tobą podążać.\n◊ Spraw, że zwierzę będzie cię bronić przed atakami.",
+        "low": "Wybierz jedną z możliwości. Twoje wspomnienia i Komplikacje wpływają na zwierzę. MG wykonuje Ruch.\n◊ Spraw, że zwierzę zadziała przeciw własnemu instynktowi.\n◊ Spraw, że zwierzę będzie za tobą podążać.\n◊ Spraw, że zwierzę będzie cię bronić przed atakami."
+    },
+    {
+        "id": "szal",
+        "name": "Szał",
+        "attr": "Pasywny",
+        "intro": "W trakcie walki możesz wpaść w szał. Obniż Stabilność (−1) i zapisz 1 punkt Szału. Kiedy otrzymasz ranę lub pokonasz przeciwnika, zwiększ Szał (+1). Szał trwa do końca walki. Podczas walki możesz wydać 1 punkt Szału, by wybrać 1 Przewagę:\n◊ Brutalny atak: Twój atak zadaje +1 punkt Obrażeń.\n◊ Zignoruj ból: Otrzymujesz +2 do Ruchu Znieś Obrażenia.\n◊ Zatracony w szale: Otrząśnij się i zignoruj wszelkie nadnaturalne lub psychologiczne wpływy.",
+        "passive": true
+    },
+    {
+        "id": "magnetyczne-przyciaganie",
+        "name": "Magnetyczne przyciąganie",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy przyciągasz uwagę wszystkich, rzuć +Dusza:",
+        "high": "Wybierz do trzech możliwości. Do dwóch z nich możesz zostawić na później do wykorzystania w tej scenie.\n◊ Ludzie zapominają o tym, co robią, i mogą tylko wpatrywać się w ciebie.\n◊ Przyciągnij kogoś do siebie.\n◊ Spraw, że ktoś zrobi to, o co poprosisz.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Ludzie zapominają o tym, co robią, i mogą tylko wpatrywać się w ciebie.\n◊ Przyciągnij kogoś do siebie.\n◊ Spraw, że ktoś zrobi to, o co poprosisz.",
+        "low": "Wybierz jedną z możliwości. Ktoś z obecnych dostaje obsesji: chce cię mieć, zatrzymać i posiadać tylko dla siebie. MG wykonuje Ruch.\n◊ Ludzie zapominają o tym, co robią, i mogą tylko wpatrywać się w ciebie.\n◊ Przyciągnij kogoś do siebie.\n◊ Spraw, że ktoś zrobi to, o co poprosisz."
+    },
+    {
+        "id": "geniusz",
+        "name": "Geniusz",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy znajdziesz się w sytuacji zagrażającej życiu, rzuć +Dusza, by sprawdzić, czy uda ci się odkryć z niej wyjście:",
+        "high": "Wybierz do trzech Przewag, których możesz użyć w dowolnym momencie sceny, dopóki wciąż jesteś zagrożony.\n◊ Logiczne myślenie: Wymyślasz efektywny sposób poradzenia sobie z zagrożeniem. Zadaj +1 punkt Obrażeń, kiedy go wykorzystujesz.\n◊ Bystry: Wiesz, jak uchronić się przed Ranami. Potraktuj to tak, jakbyś wyrzucił (15+) na Ruch Uniknij Obrażeń w momencie, gdy wykorzystujesz tę wiedzę.\n◊ Racjonalny: Wiesz, jak ocalić skórę, poświęcając kogoś innego. Wybierz osobę, którą się posługujesz, by uciec zagrożeniu.",
+        "mid": "Wybierz do dwóch Przewag, których możesz użyć w dowolnym momencie sceny, dopóki wciąż jesteś zagrożony.\n◊ Logiczne myślenie: Wymyślasz efektywny sposób poradzenia sobie z zagrożeniem. Zadaj +1 punkt Obrażeń, kiedy go wykorzystujesz.\n◊ Bystry: Wiesz, jak uchronić się przed Ranami. Potraktuj to tak, jakbyś wyrzucił (15+) na Ruch Uniknij Obrażeń w momencie, gdy wykorzystujesz tę wiedzę.\n◊ Racjonalny: Wiesz, jak ocalić skórę, poświęcając kogoś innego. Wybierz osobę, którą się posługujesz, by uciec zagrożeniu.",
+        "low": "Wybierz jedną Przewagę. Przyciągasz też niepożądaną uwagę. MG wykonuje Ruch.\n◊ Logiczne myślenie: Wymyślasz efektywny sposób poradzenia sobie z zagrożeniem. Zadaj +1 punkt Obrażeń, kiedy go wykorzystujesz.\n◊ Bystry: Wiesz, jak uchronić się przed Ranami. Potraktuj to tak, jakbyś wyrzucił (15+) na Ruch Uniknij Obrażeń w momencie, gdy wykorzystujesz tę wiedzę.\n◊ Racjonalny: Wiesz, jak ocalić skórę, poświęcając kogoś innego. Wybierz osobę, którą się posługujesz, by uciec zagrożeniu."
+    },
+    {
+        "id": "medycyna-polowa",
+        "name": "Medycyna polowa",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy opatrujesz ranę, nawet jeśli nie masz dostępu do sprzętu medycznego, rzuć +Rozum:",
+        "high": "Wybierz dwie możliwości.\n◊ Improwizacja: Opatrujesz 1 Ranę bez dostępu do sprzętu medycznego.\n◊ Efektywny: Opatrujesz 2 Rany zamiast jednej.\n◊ Staranny: Opatrujesz Ranę; zaleczy się ona znacznie szybciej niż normalnie.",
+        "mid": "Możesz wybrać jedną z możliwości, musisz jednak wybrać też jakieś negatywne skutki (blizny lub defekty urody - pacjent obniża Stabilność (−2); efekty uboczne - −1 do wszystkich rzutów, na jakie mogłaby wpłynąć rana, do czasu jej całkowitego wyleczenia; lub pacjent pozostaje nieprzytomny do czasu, aż MG uzna, że się budzi).\n◊ Improwizacja: Opatrujesz 1 Ranę bez dostępu do sprzętu medycznego.\n◊ Efektywny: Opatrujesz 2 Rany zamiast jednej.\n◊ Staranny: Opatrujesz Ranę; zaleczy się ona znacznie szybciej niż normalnie.",
+        "low": "Opatrujesz ranę, nawet bez sprzętu medycznego, ale występują nieprzewidziane i potencjalnie groźne konsekwencje, takie jak infekcje, deformacje lub inne poważne efekty uboczne. MG wykonuje Ruch."
+    },
+    {
+        "id": "naukowiec-badanie",
+        "name": "Naukowiec",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy Badasz przedmiot lub istotę przy pomocy odpowiednich narzędzi, możesz - oprócz standardowych pytań - wybrać spośród poniższych:\n◊ Jakie to ma właściwości? (Otrzymujesz +1 do wszystkich rzutów przeciw podobnym istotom lub przedmiotom następnym razem, gdy je napotkasz).\n◊ Jak mogę tego użyć? (Otrzymujesz +1 do wszystkich rzutów związanych z używaniem tego przedmiotu).\n◊ Jaka jest jego funkcja?",
+        "passive": true
+    },
+    {
+        "id": "poszukiwacz-tajemnic",
+        "name": "Poszukiwacz tajemnic",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy podróżujesz do innych światów lub spotykasz istoty z innych wymiarów, możesz zadeklarować, że czytałeś o tym miejscu lub istocie wcześniej. Zapytaj MG, czego się dowiedziałeś w toku swoich badań.",
+        "passive": true
+    },
+    {
+        "id": "pracoholik",
+        "name": "Pracoholik",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy coś stworzysz lub przeprowadzisz eksperyment, zwiększ Stabilność (+1).",
+        "passive": true
+    },
+    {
+        "id": "wynalazca",
+        "name": "Wynalazca",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy chcesz coś skonstruować lub naprawić, opisz, co chcesz zrobić. MG powie ci, czego potrzebujesz, a gdy zdobędziesz te rzeczy, możesz rzucić +Rozum:",
+        "high": "Konstrukcja lub naprawa się udaje; możesz wybrać dwie z poniższych możliwości.\n◊ Wytrzymała: Konstrukcja może zostać wielokrotnie wykorzystana i nie psuje się łatwo.\n◊ Efektywna: Konstrukcja daje +1 do rzutów, w których jest używana zgodnie z przeznaczeniem.\n◊ Śmiertelna: Konstrukcja zadaje +1 punkt Obrażeń.\n◊ Ochronna: Konstrukcja daje +1 punkt Pancerza.",
+        "mid": "Konstrukcja ma niewielkie wady. Możesz wybrać jedną z poniższych możliwości.\n◊ Wytrzymała: Konstrukcja może zostać wielokrotnie wykorzystana i nie psuje się łatwo.\n◊ Efektywna: Konstrukcja daje +1 do rzutów, w których jest używana zgodnie z przeznaczeniem.\n◊ Śmiertelna: Konstrukcja zadaje +1 punkt Obrażeń.\n◊ Ochronna: Konstrukcja daje +1 punkt Pancerza.",
+        "low": "Kończysz konstrukcję (lub naprawę), ale ma ona poważne wady, w tym niektóre ukryte. MG wykonuje Ruch."
+    },
+    {
+        "id": "zaszczepienie-rozkazu",
+        "name": "Zaszczepienie rozkazu",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy eksperymentujesz na człowieku, możesz wszczepić mu rozkaz. Rzuć +Dusza:",
+        "high": "Twoja Władza nad tą osobą wynosi 2. Tak długo, jak masz nad tą osobą Władzę, otrzymuje ona 1 Poważną Ranę, gdy odmawia wykonania twojego rozkazu lub się mu sprzeciwia. Odmowa lub sprzeciw zmniejszają jednak twoją Władzę o 1. Jeśli osoba wykona twój rozkaz, cała twoja pozostała Władza nad nią znika.",
+        "mid": "Twoja Władza nad tą osobą wynosi 1. Tak długo, jak masz nad tą osobą Władzę, otrzymuje ona 1 Poważną Ranę, gdy odmawia wykonania twojego rozkazu lub się mu sprzeciwia. Odmowa lub sprzeciw zmniejszają jednak twoją Władzę o 1. Jeśli osoba wykona twój rozkaz, cała twoja pozostała Władza nad nią znika.",
+        "low": "Coś idzie nie tak; na przykład osoba zostaje zraniona w trakcie wykonywania rozkazu lub wynik jej starań jest inny niż oczekiwany. MG wykonuje Ruch."
+    },
+    {
+        "id": "atrakcyjny",
+        "name": "Atrakcyjny",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy starasz się zainteresować sobą BN-a, rzuć +Charyzma:",
+        "high": "Wybierz do trzech możliwości w dowolnym momencie sceny.\n◊ Dana osoba musi cię zaliczyć; porzuci swoje normalne zachowanie, byle to osiągnąć.\n◊ Dana osoba jest rozproszona z twojego powodu tak długo, jak długo znajdujesz się w pobliżu, i nie może skupić się na niczym innym.\n◊ Dana osoba staje się zazdrosna o twoją uwagę i usiłuje pozbyć się konkurencji wszelkimi dostępnymi środkami.\n◊ Sprawiasz, że dana osoba staje się niepewna i skołowana. Otrzymujesz +1 do wszystkich rzutów przeciw niej podczas tej sceny.",
+        "mid": "Wybierz do dwóch możliwości w dowolnym momencie sceny.\n◊ Dana osoba musi cię zaliczyć; porzuci swoje normalne zachowanie, byle to osiągnąć.\n◊ Dana osoba jest rozproszona z twojego powodu tak długo, jak długo znajdujesz się w pobliżu, i nie może skupić się na niczym innym.\n◊ Dana osoba staje się zazdrosna o twoją uwagę i usiłuje pozbyć się konkurencji wszelkimi dostępnymi środkami.\n◊ Sprawiasz, że dana osoba staje się niepewna i skołowana. Otrzymujesz +1 do wszystkich rzutów przeciw niej podczas tej sceny.",
+        "low": "Wybierz jedną możliwość w dowolnym momencie sceny, ale istota zainteresowania jest inna, niż się spodziewałeś. MG wykonuje Ruch.\n◊ Dana osoba musi cię zaliczyć; porzuci swoje normalne zachowanie, byle to osiągnąć.\n◊ Dana osoba jest rozproszona z twojego powodu tak długo, jak długo znajdujesz się w pobliżu, i nie może skupić się na niczym innym.\n◊ Dana osoba staje się zazdrosna o twoją uwagę i usiłuje pozbyć się konkurencji wszelkimi dostępnymi środkami.\n◊ Sprawiasz, że dana osoba staje się niepewna i skołowana. Otrzymujesz +1 do wszystkich rzutów przeciw niej podczas tej sceny."
+    },
+    {
+        "id": "cios-w-plecy",
+        "name": "Cios w plecy",
+        "attr": "+Opanowanie",
+        "intro": "Za każdym razem, gdy atakujesz kogoś, kto nie jest na to przygotowany, rzuć +Opanowanie:",
+        "high": "Wybierz dwie możliwości.\n◊ Celuj we wrażliwy punkt: Zadaj +1 punkt Obrażeń.\n◊ Ogłusz: Jeśli celem jest BN, automatycznie traci przytomność. Jeśli celem jest BG, wykonuje on Ruch Znieś Obrażenia i zostaje unieszkodliwiony przy wyniku (–9).\n◊ Ostrożny: Działasz bezgłośnie, a jeśli twój przeciwnik zginie – nie zostawiasz śladów.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Celuj we wrażliwy punkt: Zadaj +1 punkt Obrażeń.\n◊ Ogłusz: Jeśli celem jest BN, automatycznie traci przytomność. Jeśli celem jest BG, wykonuje on Ruch Znieś Obrażenia i zostaje unieszkodliwiony przy wyniku (–9).\n◊ Ostrożny: Działasz bezgłośnie, a jeśli twój przeciwnik zginie – nie zostawiasz śladów.",
+        "low": "Niechcący się ujawniasz, a twój cel może zareagować na atak normalnie. MG wykonuje Ruch."
+    },
+    {
+        "id": "manipulator",
+        "name": "Manipulator",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy wyświadczysz komuś przysługę lub poznasz sekret tej osoby, możesz wybrać jedną z poniższych możliwości i przypomnieć tej osobie o wyświadczonej przysłudze lub zasugerować, że coś o niej wiesz:\n◊ Otrzymujesz +2 do Ruchu Wpłyń na innych w związku z tą osobą.\n◊ Otrzymujesz +2 do Ruchu Przeszkodź przeciwko tej osobie.",
+        "passive": true
+    },
+    {
+        "id": "uraza",
+        "name": "Uraza",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy ktoś bezpośrednio lub pośrednio zniweczy twoje plany, otrzymujesz +1 do wszystkich rzutów przeciw tej osobie do czasu, aż wywrzesz zemstę lub otrzymasz odpowiednie zadośćuczynienie.",
+        "passive": true
+    },
+    {
+        "id": "utrzymanek",
+        "name": "Utrzymanek",
+        "attr": "+Charyzma",
+        "intro": "Utrzymujesz relacje z wieloma osobami, które wierzą, że jesteście sobie przeznaczeni, ale nie znają się nawzajem. Za każdym razem, gdy potrzebujesz pieniędzy, kryjówki, ochrony lub innej pomocy, której może udzielić jedna z twoich ofiar, opisz ją i rzuć +Charyzma:",
+        "high": "Otrzymujesz to, czego potrzebujesz.",
+        "mid": "Jedna z osób może ci pomóc, ale będziesz musiał ją do tego przekonać.",
+        "low": "Znasz kogoś, kto może ci pomóc, ale ta osoba przejrzała twoją grę. Jeśli chcesz jej pomocy, musisz uciec się do gróźb lub szantażu."
+    },
+    {
+        "id": "uwodziciel",
+        "name": "Uwodziciel",
+        "attr": "+Charyzma",
+        "intro": "Potrafisz świadomie sprawić, że ludzie się w tobie zakochują. Za każdym razem, gdy przeżywasz z kimś intymne chwile, rzuć +Charyzma:",
+        "high": "Wybierz do trzech możliwości i użyj ich w dowolnym momencie opowieści.\n◊ Dana osoba daje ci coś, czego chcesz.\n◊ Dana osoba zdradza ci sekret.\n◊ Dana osoba walczy, by cię chronić.",
+        "mid": "Wybierz do dwóch możliwości i użyj ich w dowolnym momencie opowieści.\n◊ Dana osoba daje ci coś, czego chcesz.\n◊ Dana osoba zdradza ci sekret.\n◊ Dana osoba walczy, by cię chronić.",
+        "low": "Wybierz jedną z możliwości i użyj jej w dowolnym momencie opowieści, ale sam również zaczynasz coś czuć do tej osoby. Zwiększ Relację z nią o +1.\n◊ Dana osoba daje ci coś, czego chcesz.\n◊ Dana osoba zdradza ci sekret.\n◊ Dana osoba walczy, by cię chronić."
     }
 ]

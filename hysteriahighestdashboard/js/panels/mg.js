@@ -309,6 +309,7 @@ function buildCharactersTab(ctx, ui) {
                 </select>
             </label>
             <h4 class="sheet-block-title">Mroczne sekrety ✦</h4>
+            <p class="placeholder">Bazowa nazwa (przed nawiasem) dopasowywana do data/mroczneSekrety.json - stąd hover z opisem u Gracza.</p>
             ${listEditorHtml(charState.darkSecrets, activeKey, "darkSecrets", "✦", "Dodaj sekret")}
             <h4 class="sheet-block-title">Komplikacje ✧</h4>
             <p class="placeholder">Bazowa nazwa (przed nawiasem, np. "Prześladowca" w "Prześladowca (Nick 2.0)") dopasowywana do data/komplikacje.json - stąd hover z mechaniką i przycisk Rzuć u Gracza.</p>

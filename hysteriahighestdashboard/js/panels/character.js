@@ -134,9 +134,19 @@ function abilityChip(abilityId, atutyData) {
     return `<button type="button" class="ability-chip" data-action="open-ability" data-ability="${abilityId}">☆ ${escapeHtml(found.name)}</button>`;
 }
 
-function darkSecretTag(item) {
-    const cls = item.active ? "char-tag" : "char-tag char-tag-inactive";
-    return `<div class="${cls}">✦ ${escapeHtml(item.label)}</div>`;
+function darkSecretBodyHtml(item) {
+    const motywacje = (item.motywacje || []).map(m => `<div class="card-tooltip-row">◊ ${escapeHtml(m)}</div>`).join("");
+    return `
+        <div class="card-tooltip-desc">${escapeHtml(item.intro || "")}</div>
+        ${motywacje ? `<div class="card-tooltip-row"><b>Proponowane motywacje:</b></div>${motywacje}` : ""}
+    `;
+}
+
+function darkSecretTag(item, mroczneSekretyData) {
+    if (!item.active) return `<div class="char-tag char-tag-inactive">✦ ${escapeHtml(item.label)}</div>`;
+    const found = mroczneSekretyData.find(s => s.name.toLowerCase() === baseLabel(item.label).toLowerCase());
+    if (!found) return `<div class="char-tag">✦ ${escapeHtml(item.label)}</div>`;
+    return `<button type="button" class="char-tag char-tag-clickable" data-action="open-dark-secret" data-dark-secret="${escapeHtml(item.label)}">✦ ${escapeHtml(item.label)}</button>`;
 }
 
 function complicationTag(item, komplikacjeData) {
@@ -282,7 +292,7 @@ function buildHtml(ctx, ui) {
         : `<span class="placeholder-inline">brak</span>`;
 
     const darkSecrets = charState.darkSecrets.length
-        ? charState.darkSecrets.map(darkSecretTag).join("")
+        ? charState.darkSecrets.map(s => darkSecretTag(s, data.mroczneSekrety)).join("")
         : `<div class="char-tag char-tag-inactive">✦ brak</div>`;
 
     const complications = charState.complications.length
@@ -390,6 +400,16 @@ function openComplicationModal(root, label) {
     });
 }
 
+function openDarkSecretModal(root, label) {
+    const { data } = root._ctx;
+    const found = data.mroczneSekrety.find(s => s.name.toLowerCase() === baseLabel(label).toLowerCase());
+    if (!found) return;
+    openModal({
+        title: `✦ ${escapeHtml(label)}`,
+        bodyHtml: darkSecretBodyHtml(found)
+    });
+}
+
 function wireEvents(root) {
     root.addEventListener("click", (e) => {
         const rollBtn = e.target.closest('[data-action="roll-attr"]');
@@ -405,6 +425,11 @@ function wireEvents(root) {
         const complicationBtn = e.target.closest('[data-action="open-complication"]');
         if (complicationBtn) {
             openComplicationModal(root, complicationBtn.dataset.complication);
+            return;
+        }
+        const darkSecretBtn = e.target.closest('[data-action="open-dark-secret"]');
+        if (darkSecretBtn) {
+            openDarkSecretModal(root, darkSecretBtn.dataset.darkSecret);
             return;
         }
         const spendOption = e.target.closest('[data-action="spend-ability-option"]');
