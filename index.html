@@ -3,48 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon">
-    <title>Panel Rzucania Kostkami</title>
+    <title>Mini-serwisy</title>
 </head>
 <body>
-    <div class="container">
-        
-        <div class="dice-panel">
-            <h1>Jaszkin's Dice Roller</h1>
-            <input type="text" id="characterName" placeholder="Imię postaci">
-            <div class="dice-inputs">
-                <label for="diceType">Typ kostki:</label>
-                <select id="diceType">
-                    <option value="2">K2</option>
-                    <option value="4">K4</option>
-                    <option value="6">K6</option>
-                    <option value="8">K8</option>
-                    <option value="10">K10</option>
-                    <option value="12">K12</option>
-                    <option value="20">K20</option>
-                    <option value="100">K100</option>
-                </select>
-                <label for="diceQuantity">Ilość kostek:</label>
-                <input type="number" id="diceQuantity" min="1" value="1">
-            </div>
-            <input type="number" id="attribute" placeholder="Atrybut (opcjonalny)">
-            <input type="number" id="modifier" placeholder="Modyfikator (opcjonalny)">
-            <button id="rollButton">RZUT!</button>
-            <div id="results"></div>
-            <h2>Historia Rzutów:</h2>
-            <ul id="rollHistory"></ul>
-            <button id="testFirebaseButton">TESTUJ FIREBASE</button>
 
-        </div>
-        <div class="resizer"></div>
-        <div class="figma-embed">
-            <!-- Tutaj wstaw link do prototypu z Figmy -->
-            <iframe style="background-color: #000; border: 1px solid rgba(0, 0, 0, 0.1);" src="https://embed.figma.com/proto/vSTjed6QZD0fJTc8kHwGSN/KULT-HH-handouty?page-id=127%3A758&node-id=127-759&node-type=frame&viewport=589%2C173%2C0.03&scaling=scale-down&content-scaling=fixed&embed-host=share"></iframe>
-        </div>
-        
+    <div id="lockScreen" class="lock-screen">
+        <form id="pinForm" class="pin-form">
+            <h1>Mini-serwisy</h1>
+            <label for="pinInput">PIN</label>
+            <input type="password" id="pinInput" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="****">
+            <button type="submit" id="pinSubmit">Odblokuj</button>
+            <p id="pinError" class="pin-error"></p>
+        </form>
     </div>
-    <script type="module" src="script.js"></script>
-    </script>
+
+    <div id="dashboard" class="dashboard hidden">
+        <header class="dashboard-header">
+            <h1>Mini-serwisy</h1>
+            <button id="changePinToggle" class="ghost-button">Zmień PIN</button>
+        </header>
+
+        <form id="changePinForm" class="change-pin-form hidden">
+            <input type="password" id="newPin" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Nowy PIN">
+            <input type="password" id="confirmPin" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Powtórz nowy PIN">
+            <button type="submit">Zapisz</button>
+            <p id="changePinMessage" class="change-pin-message"></p>
+        </form>
+
+        <p id="listStatus" class="list-status">Ładowanie listy...</p>
+        <div id="cardGrid" class="card-grid"></div>
+    </div>
+
+    <script type="module" src="dashboard.js"></script>
 </body>
 </html>

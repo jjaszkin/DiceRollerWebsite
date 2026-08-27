@@ -2,12 +2,6 @@
   publish = ".."
   ignore  = "exit 0"
 
-# darkgraal3 serwowane z roota — 301 zachowuje relatywne ścieżki w HTML
-[[redirects]]
-  from = "/"
-  to   = "/darkgraal3/"
-  status = 301
-
 [[redirects]]
   from = "/gmpanel"
   to   = "/darkgraal3/gmpanel.html"

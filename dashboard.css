@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #000;
+    color: #fff;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.lock-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.pin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+}
+
+.pin-form h1 {
+    margin: 0 0 12px;
+    font-size: 1.4rem;
+}
+
+.pin-form label {
+    font-size: 0.85rem;
+    color: #aaa;
+    text-align: left;
+}
+
+.pin-form input,
+.change-pin-form input {
+    padding: 10px 12px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #111;
+    color: #fff;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.pin-form button,
+.change-pin-form button,
+.ghost-button {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #fff;
+    color: #000;
+    font-weight: 600;
+}
+
+.pin-form button:hover,
+.change-pin-form button:hover {
+    background-color: #ddd;
+}
+
+.pin-error {
+    min-height: 1.2em;
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.dashboard {
+    padding: 24px clamp(16px, 5vw, 48px) 48px;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+.ghost-button {
+    background-color: transparent;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.ghost-button:hover {
+    background-color: #191919;
+}
+
+.change-pin-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 14px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #0d0d0d;
+}
+
+.change-pin-message {
+    width: 100%;
+    margin: 0;
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.list-status {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+}
+
+.service-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    background-color: #0d0d0d;
+    color: #fff;
+    text-decoration: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.service-card:hover {
+    border-color: #777;
+    background-color: #161616;
+}
+
+.service-card img {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    background-color: #1a1a1a;
+    object-fit: contain;
+}
+
+.service-card .card-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.service-card .card-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.service-card .card-date {
+    font-size: 0.78rem;
+    color: #999;
+}
