@@ -1098,5 +1098,12 @@
         "high": "Wybierz trzy możliwości. Do dwóch z nich możesz wykorzystać później w tej scenie.\n◊ Spraw, że ktoś będzie chciał cię chronić.\n◊ Spraw, że agresywna osoba nie będzie chciała cię zranić.\n◊ Spraw, że ktoś ci się zwierzy.",
         "mid": "Wybierz jedną z możliwości.\n◊ Spraw, że ktoś będzie chciał cię chronić.\n◊ Spraw, że agresywna osoba nie będzie chciała cię zranić.\n◊ Spraw, że ktoś ci się zwierzy.",
         "low": "Ktoś usiłuje wykorzystać ciebie i twoje położenie. MG wykonuje Ruch."
+    },
+    {
+        "id": "glod-wiedzy",
+        "name": "Głód wiedzy",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy dowiesz się czegoś nowego o innych wymiarach, nadnaturalnej istocie lub jakiejś Sile Wyższej, zwiększ Stabilność (+1).",
+        "passive": true
     }
 ]
