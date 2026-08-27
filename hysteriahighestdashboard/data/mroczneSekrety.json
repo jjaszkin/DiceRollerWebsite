@@ -166,5 +166,42 @@
             "Pozyskaj nowych członków kultu.",
             "Dowiedz się prawdy o swoim przeznaczeniu."
         ]
+    },
+    {
+        "id": "ofiara-eksperymentow-medycznych",
+        "name": "Ofiara eksperymentów medycznych",
+        "intro": "Czy to za swoją zgodą, czy bez niej – zostałeś poddany eksperymentom medycznym z niespodziewanymi wynikami. Eksperymenty te wywołały trwałe psychiczne lub fizyczne skutki uboczne. Być może dzięki nim zajrzałeś do innych wymiarów – co doprowadziło cię do szaleństwa. Skutki te wciąż na tobie ciążą, a pozbycie się ich wymaga odnalezienia odpowiedzialnych za eksperymenty. Możliwe również, że eksperymentom poddano twoich rodziców, a ty odziedziczyłeś niepożądane cechy.",
+        "motywacje": [
+            "Wyśledź odpowiedzialnych za eksperymenty.",
+            "Odzyskaj swoje dawne życie.",
+            "Zemścij się na osobach odpowiedzialnych za eksperymenty.",
+            "Znajdź sposób, by pogodzić się z tym, kim jesteś teraz.",
+            "Odkrywaj inne wymiary.",
+            "Ujawnij światu prawdę."
+        ]
+    },
+    {
+        "id": "okultystyczne-doswiadczenie",
+        "name": "Okultystyczne doświadczenie",
+        "intro": "Byłeś świadkiem wydarzeń związanych z okultyzmem, co zmieniło twój pogląd na rzeczywistość. Mogłeś uczestniczyć w tajemnych rytuałach, ujawnić działania kultów służących mrocznym bytom lub ujrzeć rzeczy dowodzące, że świat nie jest tym, czym się wydaje. Twoje doświadczenia utrudniają zaakceptowanie Iluzji, w której żyje większość.",
+        "motywacje": [
+            "Odkryj więcej Prawdy.",
+            "Szukaj pokuty za swoje czyny.",
+            "Pomóż innym odkryć Prawdę.",
+            "Zdobądź więcej okultystycznej wiedzy i mocy.",
+            "Walcz z demonami."
+        ]
+    },
+    {
+        "id": "wieczny-tulacz",
+        "name": "Wieczny tułacz",
+        "intro": "Twoja rodzina zawsze pozostawała w ruchu. Rodzice nigdy nie powiedzieli ci dlaczego, ale przerażone spojrzenia i szeptane rozmowy wskazywały, że uciekacie przed czymś przerażającym. Budzili cię w środku nocy, zostawialiście za sobą wszystko, co mieliście, byle się wymknąć. W końcu opuścili także ciebie. Może wciąż uciekają, a może cokolwiek ich ścigało – w końcu ich dopadło. Uczucie, że ktoś cię śledzi, nigdy do końca nie daje ci spokoju, a gdziekolwiek nie trafisz, i tak wkrótce znowu wyruszasz w drogę. Nie wiesz, co dokładnie by się stało, gdybyś przestał uciekać, ale przeczuwasz, że byłoby to coś strasznego.",
+        "motywacje": [
+            "Dowiedz się, co cię ściga.",
+            "Znajdź miejsce, gdzie możesz odetchnąć.",
+            "Wymknij się temu, co cię ściga.",
+            "Odnajdź swoich rodziców.",
+            "Znajdź przyczyny tej sytuacji."
+        ]
     }
 ]

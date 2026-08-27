@@ -187,5 +187,123 @@
         "high": "Kontrolujesz swoje popędy.",
         "mid": "Wybierz pomiędzy uprawianiem seksu z daną osobą lub obniżeniem Stabilności (−1).",
         "low": "Nie możesz się oprzeć stosunkowi z daną osobą. MG wybiera jedną z możliwości:\n◊ Ranisz lub jesteś raniony przez swojego partnera (fizycznie lub psychicznie).\n◊ Granice między światami zacierają się, coś z drugiej strony wpada na trop – twój lub twojego kochanka.\n◊ Twój partner dostaje obsesji na twoim punkcie i zaczyna cię prześladować."
+    },
+    {
+        "id": "chory",
+        "name": "Chory",
+        "attr": "+0",
+        "intro": "Cierpisz na niebezpieczną, być może przewlekłą chorobę; na przykład masz chore serce, nadciśnienie, cierpisz na otyłość lub wrzody żołądka. Za każdym razem, gdy doświadczasz znacznego napięcia fizycznego lub psychicznego, rzuć +0:",
+        "high": "Twoja choroba jest pod kontrolą.",
+        "mid": "Twoja choroba daje o sobie znać, sprawiając ból i oszałamiając cię (−1 do wszystkich rzutów do końca sceny).",
+        "low": "Twój stan pogarsza się i może zagrażać życiu (Znieś obrażenia z 2 Obrażeniami)."
+    },
+    {
+        "id": "cudza-wlasnosc",
+        "name": "Cudza własność",
+        "attr": "+0",
+        "intro": "Byłeś w przeszłości osobistą własnością niebezpiecznego człowieka, dobrowolnie lub nie. Odkąd uciekłeś, twój były właściciel wciąż cię szuka. Określ, kim on jest. Podczas pierwszej sesji gry i za każdym razem, gdy zwracasz na siebie publicznie uwagę, rzuć +0:",
+        "high": "Jesteś chwilowo bezpieczny.",
+        "mid": "Twój były właściciel wpada na twój trop. MG zyskuje 1 punkt Wpływu.",
+        "low": "Twój właściciel odnajduje cię. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy w imieniu twojego byłego właściciela. Na przykład może on niespodziewanie pojawić się, by nakłonić cię do powrotu, nasłać na ciebie swoje sługi, porwać lub skrzywdzić kogoś, na kim ci zależy, grozić ci, zniszczyć coś dla ciebie ważnego, usiłować cię okaleczyć, by nikt więcej cię nie zechciał, lub po prostu cię zabić, byś nie mógł już należeć do nikogo innego."
+    },
+    {
+        "id": "depresja",
+        "name": "Depresja",
+        "attr": "+0",
+        "intro": "Nieustannie zmagasz się z depresją; porażki i dezaprobata tylko ją pogłębiają. Za każdym razem, gdy doświadczasz osobistych niepowodzeń, rzuć +0:",
+        "high": "Opanowujesz się.",
+        "mid": "Odczuwasz chwilowy niepokój, spada twoja pewność siebie lub brakuje ci siły woli. Otrzymujesz karę −1 do swojego następnego rzutu.",
+        "low": "Poddajesz się poczuciu beznadziei lub winy i wymierzasz sobie karę; obniż Stabilność (−2). Apatia i autodestrukcyjne skłonności nie znikają, dopóki nie otępisz się lekami, narkotykami lub alkoholem."
+    },
+    {
+        "id": "fobia",
+        "name": "Fobia",
+        "attr": "+0",
+        "intro": "Istnieje coś, co napawa cię obezwładniającym strachem. Określ, co to za bodziec. Za każdym razem, gdy mierzysz się z obiektem swojej fobii, musisz Wziąć się w garść."
+    },
+    {
+        "id": "konkurent",
+        "name": "Konkurent",
+        "attr": "+0",
+        "intro": "Masz w świecie przestępczym konkurenta, którego pole zainteresowań pokrywa się z twoim. Za każdym razem, gdy zaniedbasz ochronę swoich interesów lub jesteś zajęty czymś innym, rzuć +0, by określić, czy twojemu konkurentowi udało się ci zaszkodzić:",
+        "high": "W tej chwili twój konkurent nie stanowi zagrożenia.",
+        "mid": "Byłeś nieostrożny. Twój konkurent może w ciebie uderzyć. MG zyskuje 1 punkt Wpływu.",
+        "low": "Niechcący stwarzasz swojemu konkurentowi doskonałą okazję do działania; uderza on w twoje interesy. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, aby wykonywać Ruchy w imieniu twojego konkurenta. Na przykład może on przejąć część twoich interesów, poznać jedną z twoich tajemnic, sabotować aktywa czy przekupić lub zranić kogoś, komu ufasz i o kogo dbasz."
+    },
+    {
+        "id": "naznaczony",
+        "name": "Naznaczony",
+        "attr": "+0",
+        "intro": "Ciemność cię naznaczyła. Owo piętno mogło przybrać kształt tatuażu na całym ciele, demonicznej części ciała, takiej jak szczątkowe ramię, dodatkowe oko lub usta, połączonych z ciałem części mechanicznych lub czegoś podobnego. Za każdym razem, gdy świadomie zadajesz komuś Obrażenia, rzuć +0:",
+        "high": "Zachowujesz kontrolę.",
+        "mid": "Ciemność karmi się twoim uczynkiem. MG zyskuje 1 punkt Wpływu.",
+        "low": "Ciemność zyskuje nad tobą kontrolę. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy reprezentujące ciemność, która w tobie żyje. Na przykład może ona wysysać twoją energię życiową, zmusić cię do zabójstwa, tak aby mogła się na nim pożywić, przejąć twoje ciało tak, że gdy odzyskasz kontrolę, będziesz mieć jedynie fragmentaryczne wspomnienia o tym, co zaszło, zmusić cię do skrzywdzenia kogoś w pobliżu lub tymczasowo przemienić twoje ciało w coś nieludzkiego. Może się zdarzyć, że będziesz zmuszony Wziąć się w garść, by odeprzeć wpływ ciemności."
+    },
+    {
+        "id": "potepiony",
+        "name": "Potępiony",
+        "attr": "+0",
+        "intro": "Czas: Twój los został przypieczętowany. Być może umierasz z powodu choroby, zostałeś przyrzeczony jako ofiara dla zapomnianego boga lub sprzedałeś duszę jakiejś istocie, która czeka, by zaciągnąć cię do piekła, gdy nadejdzie czas. Na początku każdej sesji rzuć +0:",
+        "high": "Wciąż masz jeszcze trochę czasu.",
+        "mid": "Twój los się zbliża. MG wybiera jedną z poniższych możliwości:\n◊ Gracz zaznacza 1 pole Czasu.\n◊ Dręczą cię sny lub wizje dotyczące twojego losu. Zmniejsz Stabilność (−2).\n◊ Byt lub wspomnienie o zdarzeniu, które przypieczętowały twój los, prześladują cię.\n◊ Twój los negatywnie wpływa na kogoś w pobliżu.\n◊ Coś daje ci fałszywą nadzieję ucieczki przed twoim losem.",
+        "low": "Koniec jest bliski. MG wybiera dwie możliwości z listy powyżej albo zaznacza 2 pola Czasu. Kiedy w końcu zabraknie ci pustych pól Czasu, spotykasz swój ostateczny los.",
+        "todo": "Mechanika oparta na torze 'Czas' (pola do zaznaczenia), a nie na standardowym zysku Wpływu MG jak pozostałe Komplikacje - opis pozostawiony w formie informacyjnej, bez dedykowanego licznika w UI."
+    },
+    {
+        "id": "przesladowany",
+        "name": "Prześladowany",
+        "attr": "+0",
+        "intro": "Z jakichś powodów – osobistych lub innych – ludzie, w szczególności władze, mają skłonność do prześladowania cię. Podczas pierwszej sesji gry i za każdym razem, gdy zwracasz na siebie uwagę, rzuć +0, by określić, czy będziesz napastowany:",
+        "high": "Udaje ci się uniknąć napastowania.",
+        "mid": "MG zyskuje 1 punkt Wpływu.",
+        "low": "MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy w imieniu tych, którzy cię prześladują. Na przykład może się okazać, że ktoś zniszczy twoją własność, ludzie uprzedzeni w stosunku do ciebie będą cię gnębić i atakować, władze odbiorą ci coś siłą (prawa, własność, zasoby), ktoś ci bliski będzie prześladowany z powodu zadawania się z tobą lub ze względu na tożsamość odebrane zostaną ci podstawowe prawa."
+    },
+    {
+        "id": "racjonalista",
+        "name": "Racjonalista",
+        "attr": "+0",
+        "intro": "Odmawiasz wiary w cokolwiek niepotwierdzonego jako fakt przez współczesną naukę, nawet jeśli widzisz to na własne oczy. Za każdym razem, gdy wykonujesz Ruch Przejrzyj Iluzję, i za każdym razem, gdy Iluzja rozpada się, MG może, oprócz standardowych efektów, wybrać jedną z możliwości:\n◊ Twoja obecność karmi Iluzję, wzmacniając ją i czyniąc trudniejszą do przejrzenia.\n◊ Twoja oszołomiona psychika tworzy w Iluzji lustrzane odbicia znajomych miejsc i osób.\n◊ Przyciągasz istoty z innych wymiarów.\n◊ Zaprzeczasz temu, co widzisz, nawet na własną szkodę."
+    },
+    {
+        "id": "rozbity",
+        "name": "Rozbity",
+        "attr": "+0",
+        "intro": "Jakieś wydarzenie z przeszłości zrujnowało twoją psychikę do tego stopnia, że nie jesteś w stanie się pozbierać. Co za tym idzie, twoja Stabilność nigdy nie może wzrosnąć powyżej Przestraszonego (6)."
+    },
+    {
+        "id": "rywal",
+        "name": "Rywal",
+        "attr": "+0",
+        "intro": "Masz ambitnego rywala, który zrobi wszystko, by zająć twoje miejsce. Określ, kim jest. Podczas pierwszej sesji gry i za każdym razem, gdy popełnisz błąd lub stracisz czujność, rzuć +0:",
+        "high": "Wszystko w porządku. Twój rywal nie działa przeciw tobie.",
+        "mid": "Dałeś rywalowi okazję do działania. MG zyskuje 1 punkt Wpływu.",
+        "low": "Nieumyślnie dostarczyłeś rywalowi okazję, by mógł zupełnie podważyć twoją pozycję. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy w imieniu twojego rywala. Rywal może na przykład zyskać ważnego sojusznika, sabotować jeden z twoich projektów, szantażować cię materiałami potencjalnie szkodliwymi dla twojej reputacji lub podjąć desperackie kroki, by pozbyć się ciebie na zawsze."
+    },
+    {
+        "id": "wyparte-wspomnienia",
+        "name": "Wyparte wspomnienia",
+        "attr": "+0",
+        "intro": "Wyparłeś szczególnie nieprzyjemne wydarzenie z przeszłości, ale jego wspomnienie niekiedy powraca. Może to być przestępstwo lub jakiś straszny czyn, który popełniłeś, którego byłeś ofiarą lub który widziałeś. MG określa naturę wypartego wspomnienia, zwykle opierając się na twoim Mrocznym Sekrecie. W sytuacjach związanych z twoimi wypartymi wspomnieniami, rzuć +0, by ustalić czy wspomnienia powracają:",
+        "high": "Nadal wypierasz wspomnienia.",
+        "mid": "Wspomnienia częściowo wracają w formie pojedynczych obrazów lub halucynacji. Musisz Wziąć się w garść.",
+        "low": "Jesteś przytłoczony wspomnieniami; całkowicie się im poddajesz. MG wykonuje twardy Ruch, a ty obniżasz Stabilność (−2)."
+    },
+    {
+        "id": "zagubiona-tozsamosc",
+        "name": "Zagubiona tożsamość",
+        "attr": "+0",
+        "intro": "Twoja prawdziwa tożsamość została wymazana w trakcie wojskowego lub prywatnego programu szpiegowskiego. Nie pamiętasz niczego ze swojego życia przed zatrudnieniem. Ostatnio jednak zaczęły do ciebie wracać wspomnienia o prawdziwej tożsamości. Podczas pierwszej sesji gry i za każdym razem, gdy napotykasz coś ze swojej wymazanej przeszłości, rzuć +0:",
+        "high": "Tłumisz wspomnienia o swojej prawdziwej tożsamości i trzymasz się teraźniejszości.",
+        "mid": "Masz przebłyski na temat swojej prawdziwej tożsamości. MG zyskuje 1 punkt Wpływu.",
+        "low": "Twoja prawdziwa tożsamość przejmuje kontrolę. MG zyskuje 3 punkty Wpływu. MG może wydawać punkty Wpływu, by wykonywać Ruchy reprezentujące twoją prawdziwą tożsamość. Może okazać się na przykład, że rozpoznajesz nieznane ci miejsca lub osoby, kontaktują się z tobą ludzie lub organizacje związane z twoim dawnym życiem, twoja dawna tożsamość wpływa na to, jak myślisz i działasz, lub doświadczasz traumatycznych wspomnień."
+    },
+    {
+        "id": "zazdrosc",
+        "name": "Zazdrość",
+        "attr": "+0",
+        "intro": "Zazdrościsz komuś jego życia i zrobisz wszystko, by żyć tak, jak on. Za każdym razem, gdy natrafiasz na osobę, której zazdrościsz, lub część jej życia (przedmioty, rodzinę, przyjaciół itd.) rzuć +0, by sprawdzić, czy jesteś w stanie się opanować:",
+        "high": "Zachowujesz kontrolę nad swoją zazdrością.",
+        "mid": "Ogarnia cię zazdrość. Otrzymujesz −1 do wszystkich rzutów tak długo, jak długo pozostajesz w pobliżu jej przyczyny i nie stłumisz uczucia zazdrości.",
+        "low": "Zazdrość przejmuje nad tobą kontrolę. Musisz Wziąć się w garść, by nie zranić osoby, której zazdrościsz, oraz niczego jej nie zniszczyć ani nie ukraść."
     }
 ]
