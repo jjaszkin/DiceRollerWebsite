@@ -312,13 +312,13 @@ function buildCharactersTab(ctx, ui) {
                     ${data.characters.stabilityLevels.map(lvl => `<option value="${lvl.value}" ${charState.stability === lvl.value ? "selected" : ""}>${lvl.value} — ${escapeHtml(lvl.label)}</option>`).join("")}
                 </select>
             </label>
-            <h4 class="sheet-block-title">Mroczne sekrety ✦</h4>
-            ${catalogChecklistHtml(activeKey, "darkSecrets", charState.darkSecrets, data.mroczneSekrety, { customLabel: false })}
-            <h4 class="sheet-block-title">Komplikacje ✧</h4>
-            ${catalogChecklistHtml(activeKey, "complications", charState.complications, data.komplikacje, { customLabel: true })}
             <h4 class="sheet-block-title">Cechy</h4>
             <div class="mg-attr-grid">${attrInputs}</div>
-            <h4 class="sheet-block-title">Zdolności / Atuty ☆</h4>
+            <h4 class="sheet-block-title">✦ Mroczne sekrety</h4>
+            ${catalogChecklistHtml(activeKey, "darkSecrets", charState.darkSecrets, data.mroczneSekrety, { customLabel: false })}
+            <h4 class="sheet-block-title">✧ Komplikacje</h4>
+            ${catalogChecklistHtml(activeKey, "complications", charState.complications, data.komplikacje, { customLabel: true })}
+            <h4 class="sheet-block-title">☆ Zdolności / Atuty</h4>
             ${catalogChecklistHtml(activeKey, "abilities", charState.abilities, data.atuty, { customLabel: false })}
         </div>
     `;

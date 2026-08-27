@@ -559,8 +559,11 @@ button.divinity-pip { cursor: pointer; }
 .mg-catalog-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
 .mg-catalog-label { flex: 1; background: none; border: none; padding: 0; text-align: left; font-family: inherit; font-size: inherit; color: var(--fg-0); cursor: pointer; }
 .mg-catalog-label:hover { color: var(--accent-bright); }
-.mg-catalog-custom { width: 120px; flex-shrink: 0; background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 3px 6px; font-size: 0.75rem; }
-.mg-catalog-custom:disabled { opacity: 0.3; }
+/* Specificity musi pobić ".mg-body input[type=text] { width: 100% }" (0,2,0 vs 0,1,0) - stąd
+   kwalifikacja przez rodzica .mg-catalog-row, inaczej pole rozciąga się na całą szerokość i
+   wywołuje poziomy scroll w .mg-catalog-list. */
+.mg-catalog-row input.mg-catalog-custom { width: 80px; flex-shrink: 0; background: var(--bg-1); border: 1px solid var(--line); color: var(--fg-0); border-radius: 6px; padding: 3px 6px; font-size: 0.75rem; }
+.mg-catalog-row input.mg-catalog-custom:disabled { opacity: 0.3; }
 .mg-catalog-eye { flex-shrink: 0; background: none; border: none; padding: 0 2px; font-size: 0.9rem; cursor: pointer; line-height: 1; opacity: 1; filter: none; }
 .mg-catalog-eye:disabled { opacity: 0.15; cursor: not-allowed; }
 .mg-catalog-eye-off { opacity: 0.35; filter: grayscale(1); }
