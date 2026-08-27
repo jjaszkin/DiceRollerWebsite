@@ -2,15 +2,17 @@
 // DWUKROTNIE przez main.js - raz na #panel-charA, raz na #panel-charB, sparametryzowana przez
 // ctx.characterKey). Układ 12-kolumnowy: 8 kolumn karta postaci, 4 kolumny wyniki rzutów (patrz
 // .char-sheet-grid w styles.css). Mandala 10 cech nałożona na images/diagram cech.svg (pozycje
-// węzłów wyliczone raz z geometrii tego SVG - patrz ATTR_POSITIONS). Atuty/Komplikacje klikalne ->
-// modal z opisem (+ przycisk Rzuć, jeśli nie są Pasywne) - wynik loguje się do wspólnego Dziennika
-// (state.log) i pokazuje w kolumnie wyników. Mroczne sekrety/Komplikacje/Atuty oznaczone w danych
-// jako `active:false` są wygaszone i nieklikalne (patrz Figma node 895-298).
+// węzłów wyliczone raz z geometrii tego SVG - patrz ATTR_POSITIONS). Atuty/Komplikacje/Mroczne
+// Sekrety klikalne -> modal z opisem (+ przycisk Rzuć, jeśli nie są Pasywne/nie są Mrocznym
+// Sekretem) - wynik loguje się do wspólnego Dziennika (state.log) i pokazuje w kolumnie wyników.
+// Wpisy oznaczone w danych jako `active:false` są wygaszone i nieklikalne (patrz Figma node
+// 895-298) - przełączane osobno od samego posiadania przez ikonkę oka w panelu MG.
 
 import { escapeHtml, renderMoveText } from "../utils.js";
 import { performRoll } from "../rollEngine.js";
 import { logRoll, logEvent } from "../eventLog.js";
 import { openModal } from "../modal.js";
+import { mechanicsBodyHtml, darkSecretBodyHtml } from "../mechanicsView.js";
 
 // Najwięcej Możliwości, jakie tekst Atutów każe bankować na raz to "do trzech" (patrz Szósty
 // Zmysł 15+) - stąd twardy limit 3 na Atut, żeby nie dało się dodawać bez ograniczeń.
@@ -47,10 +49,6 @@ function getUi(root) {
     return root._ui;
 }
 
-function baseLabel(label) {
-    return label.split(" (")[0].trim();
-}
-
 function attrBadge(attrKey, value) {
     const pos = ATTR_POSITIONS[attrKey];
     return `
@@ -58,16 +56,6 @@ function attrBadge(attrKey, value) {
             <span class="attr-node-value">${value >= 0 ? "+" + value : value}</span>
             <span class="attr-node-label">${ATTR_LABELS[attrKey]}</span>
         </button>
-    `;
-}
-
-function mechanicsBodyHtml(item) {
-    return `
-        ${item.attr ? `<div class="card-tooltip-kicker">${escapeHtml(item.attr)}</div>` : ""}
-        <div class="card-tooltip-desc">${escapeHtml(item.intro || "")}</div>
-        ${item.high ? `<div class="card-tooltip-row"><b>15+:</b></div>${renderMoveText(item.high)}` : ""}
-        ${item.mid ? `<div class="card-tooltip-row"><b>10-14:</b></div>${renderMoveText(item.mid)}` : ""}
-        ${item.low ? `<div class="card-tooltip-row"><b>≤9:</b></div>${renderMoveText(item.low)}` : ""}
     `;
 }
 
@@ -128,32 +116,33 @@ function performAndLogRoll(root, { label, moveId, baseModifier, rollType, mechan
     });
 }
 
-function abilityChip(abilityId, atutyData) {
-    const found = atutyData.find(a => a.id === abilityId);
-    if (!found) return `<button type="button" class="ability-chip" disabled>☆ ${escapeHtml(abilityId)}</button>`;
-    return `<button type="button" class="ability-chip" data-action="open-ability" data-ability="${abilityId}">☆ ${escapeHtml(found.name)}</button>`;
+function abilityChip(item, atutyData) {
+    const found = atutyData.find(a => a.id === item.id);
+    if (!found) return null;
+    if (!item.active) return `<div class="ability-chip ability-chip-inactive">☆ ${escapeHtml(found.name)}</div>`;
+    return `<button type="button" class="ability-chip" data-action="open-ability" data-ability="${item.id}">☆ ${escapeHtml(found.name)}</button>`;
 }
 
-function darkSecretBodyHtml(item) {
-    const motywacje = (item.motywacje || []).map(m => `<div class="card-tooltip-row">◊ ${escapeHtml(m)}</div>`).join("");
-    return `
-        <div class="card-tooltip-desc">${escapeHtml(item.intro || "")}</div>
-        ${motywacje ? `<div class="card-tooltip-row"><b>Proponowane motywacje:</b></div>${motywacje}` : ""}
-    `;
+/** Nazwa do wyświetlenia dla Komplikacji: nazwa z katalogu + opcjonalny dopisek gracza w nawiasie
+ *  (np. "Prześladowca (Nick 2.0)") - customLabel to WOLNY tekst wpisywany przez MG, stąd escapeHtml
+ *  osobno od nazwy katalogowej. */
+function complicationDisplayName(found, item) {
+    return item.customLabel ? `${found.name} (${item.customLabel})` : found.name;
 }
 
 function darkSecretTag(item, mroczneSekretyData) {
-    if (!item.active) return `<div class="char-tag char-tag-inactive">✦ ${escapeHtml(item.label)}</div>`;
-    const found = mroczneSekretyData.find(s => s.name.toLowerCase() === baseLabel(item.label).toLowerCase());
-    if (!found) return `<div class="char-tag">✦ ${escapeHtml(item.label)}</div>`;
-    return `<button type="button" class="char-tag char-tag-clickable" data-action="open-dark-secret" data-dark-secret="${escapeHtml(item.label)}">✦ ${escapeHtml(item.label)}</button>`;
+    const found = mroczneSekretyData.find(s => s.id === item.id);
+    if (!found) return null;
+    if (!item.active) return `<div class="char-tag char-tag-inactive">✦ ${escapeHtml(found.name)}</div>`;
+    return `<button type="button" class="char-tag char-tag-clickable" data-action="open-dark-secret" data-dark-secret="${item.id}">✦ ${escapeHtml(found.name)}</button>`;
 }
 
 function complicationTag(item, komplikacjeData) {
-    if (!item.active) return `<div class="char-tag char-tag-inactive">✧ ${escapeHtml(item.label)}</div>`;
-    const found = komplikacjeData.find(k => k.name.toLowerCase() === baseLabel(item.label).toLowerCase());
-    if (!found) return `<div class="char-tag">✧ ${escapeHtml(item.label)}</div>`;
-    return `<button type="button" class="char-tag char-tag-clickable" data-action="open-complication" data-complication="${escapeHtml(item.label)}">✧ ${escapeHtml(item.label)}</button>`;
+    const found = komplikacjeData.find(k => k.id === item.id);
+    if (!found) return null;
+    const name = complicationDisplayName(found, item);
+    if (!item.active) return `<div class="char-tag char-tag-inactive">✧ ${escapeHtml(name)}</div>`;
+    return `<button type="button" class="char-tag char-tag-clickable" data-action="open-complication" data-complication="${item.id}">✧ ${escapeHtml(name)}</button>`;
 }
 
 /** Wiersz Atutu z bankowanymi Możliwościami - wypełnione pipsy (klik zużywa jedną, loguje do
@@ -177,12 +166,14 @@ function abilityOptionRow(ability, count) {
     `;
 }
 
-/** Tylko Atuty "bankowalne" (patrz isBankableAbility) i tylko te, w których postać ma aktualnie co
- *  najmniej 1 Możliwość - zero-owe Atuty się tu nie pokazują (pierwsza Możliwość przybywa z rzutu,
- *  patrz performAndLogRoll). Nigdy Komplikacje - te mają OSOBNY licznik Wpływu dla MG. */
+/** Tylko Atuty "bankowalne" (patrz isBankableAbility), obecnie AKTYWNE (nie wygaszone ikonką oka
+ *  w panelu MG) i tylko te, w których postać ma aktualnie co najmniej 1 Możliwość - zero-owe Atuty
+ *  się tu nie pokazują (pierwsza Możliwość przybywa z rzutu, patrz performAndLogRoll). Nigdy
+ *  Komplikacje - te mają OSOBNY licznik Wpływu dla MG. */
 function abilityOptionsHtml(charState, atutyData) {
     const rows = charState.abilities
-        .map(id => atutyData.find(a => a.id === id))
+        .filter(item => item.active)
+        .map(item => atutyData.find(a => a.id === item.id))
         .filter(a => a && isBankableAbility(a))
         .map(a => ({ ability: a, count: charState.abilityOptions?.[a.id] || 0 }))
         .filter(({ count }) => count > 0)
@@ -287,17 +278,14 @@ function buildHtml(ctx, ui) {
     const attrOrder = data.characters.attrOrder;
     const attrGrid = attrOrder.map(k => attrBadge(k, charState.attrs[k])).join("");
 
-    const abilities = charState.abilities.length
-        ? charState.abilities.map(id => abilityChip(id, data.atuty)).join("")
-        : `<span class="placeholder-inline">brak</span>`;
+    const abilities = charState.abilities.map(item => abilityChip(item, data.atuty)).filter(Boolean).join("")
+        || `<span class="placeholder-inline">brak</span>`;
 
-    const darkSecrets = charState.darkSecrets.length
-        ? charState.darkSecrets.map(s => darkSecretTag(s, data.mroczneSekrety)).join("")
-        : `<div class="char-tag char-tag-inactive">✦ brak</div>`;
+    const darkSecrets = charState.darkSecrets.map(s => darkSecretTag(s, data.mroczneSekrety)).filter(Boolean).join("")
+        || `<div class="char-tag char-tag-inactive">✦ brak</div>`;
 
-    const complications = charState.complications.length
-        ? charState.complications.map(c => complicationTag(c, data.komplikacje)).join("")
-        : `<div class="char-tag char-tag-inactive">✧ brak</div>`;
+    const complications = charState.complications.map(c => complicationTag(c, data.komplikacje)).filter(Boolean).join("")
+        || `<div class="char-tag char-tag-inactive">✧ brak</div>`;
 
     const milestones = data.characters.developmentMilestonesByRole[charDef.role];
 
@@ -382,10 +370,12 @@ function openAttrModal(root, attrKey) {
     });
 }
 
-function openComplicationModal(root, label) {
-    const { data } = root._ctx;
-    const found = data.komplikacje.find(k => k.name.toLowerCase() === baseLabel(label).toLowerCase());
+function openComplicationModal(root, complicationId) {
+    const { data, state, characterKey } = root._ctx;
+    const found = data.komplikacje.find(k => k.id === complicationId);
     if (!found) return;
+    const item = state.characters[characterKey].complications.find(c => c.id === complicationId);
+    const label = item ? complicationDisplayName(found, item) : found.name;
     openModal({
         title: `✧ ${escapeHtml(label)}`,
         bodyHtml: mechanicsBodyHtml(found),
@@ -400,12 +390,12 @@ function openComplicationModal(root, label) {
     });
 }
 
-function openDarkSecretModal(root, label) {
+function openDarkSecretModal(root, darkSecretId) {
     const { data } = root._ctx;
-    const found = data.mroczneSekrety.find(s => s.name.toLowerCase() === baseLabel(label).toLowerCase());
+    const found = data.mroczneSekrety.find(s => s.id === darkSecretId);
     if (!found) return;
     openModal({
-        title: `✦ ${escapeHtml(label)}`,
+        title: `✦ ${escapeHtml(found.name)}`,
         bodyHtml: darkSecretBodyHtml(found)
     });
 }
