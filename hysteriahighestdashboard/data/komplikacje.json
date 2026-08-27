@@ -219,7 +219,8 @@
         "id": "fobia",
         "name": "Fobia",
         "attr": "+0",
-        "intro": "Istnieje coś, co napawa cię obezwładniającym strachem. Określ, co to za bodziec. Za każdym razem, gdy mierzysz się z obiektem swojej fobii, musisz Wziąć się w garść."
+        "intro": "Istnieje coś, co napawa cię obezwładniającym strachem. Określ, co to za bodziec. Za każdym razem, gdy mierzysz się z obiektem swojej fobii, musisz Wziąć się w garść.",
+        "noRoll": true
     },
     {
         "id": "konkurent",
@@ -262,13 +263,15 @@
         "id": "racjonalista",
         "name": "Racjonalista",
         "attr": "+0",
-        "intro": "Odmawiasz wiary w cokolwiek niepotwierdzonego jako fakt przez współczesną naukę, nawet jeśli widzisz to na własne oczy. Za każdym razem, gdy wykonujesz Ruch Przejrzyj Iluzję, i za każdym razem, gdy Iluzja rozpada się, MG może, oprócz standardowych efektów, wybrać jedną z możliwości:\n◊ Twoja obecność karmi Iluzję, wzmacniając ją i czyniąc trudniejszą do przejrzenia.\n◊ Twoja oszołomiona psychika tworzy w Iluzji lustrzane odbicia znajomych miejsc i osób.\n◊ Przyciągasz istoty z innych wymiarów.\n◊ Zaprzeczasz temu, co widzisz, nawet na własną szkodę."
+        "intro": "Odmawiasz wiary w cokolwiek niepotwierdzonego jako fakt przez współczesną naukę, nawet jeśli widzisz to na własne oczy. Za każdym razem, gdy wykonujesz Ruch Przejrzyj Iluzję, i za każdym razem, gdy Iluzja rozpada się, MG może, oprócz standardowych efektów, wybrać jedną z możliwości:\n◊ Twoja obecność karmi Iluzję, wzmacniając ją i czyniąc trudniejszą do przejrzenia.\n◊ Twoja oszołomiona psychika tworzy w Iluzji lustrzane odbicia znajomych miejsc i osób.\n◊ Przyciągasz istoty z innych wymiarów.\n◊ Zaprzeczasz temu, co widzisz, nawet na własną szkodę.",
+        "noRoll": true
     },
     {
         "id": "rozbity",
         "name": "Rozbity",
         "attr": "+0",
-        "intro": "Jakieś wydarzenie z przeszłości zrujnowało twoją psychikę do tego stopnia, że nie jesteś w stanie się pozbierać. Co za tym idzie, twoja Stabilność nigdy nie może wzrosnąć powyżej Przestraszonego (6)."
+        "intro": "Jakieś wydarzenie z przeszłości zrujnowało twoją psychikę do tego stopnia, że nie jesteś w stanie się pozbierać. Co za tym idzie, twoja Stabilność nigdy nie może wzrosnąć powyżej Przestraszonego (6).",
+        "noRoll": true
     },
     {
         "id": "rywal",

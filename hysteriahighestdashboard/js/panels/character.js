@@ -376,17 +376,22 @@ function openComplicationModal(root, complicationId) {
     if (!found) return;
     const item = state.characters[characterKey].complications.find(c => c.id === complicationId);
     const label = item ? complicationDisplayName(found, item) : found.name;
+    // Kilka Komplikacji (np. Fobia, Racjonalista, Rozbity) nie ma w KULT-cie żadnego rzutu - to
+    // efekt stały albo uruchamiany przez INNY Ruch (np. Weź się w garść), nie przez samą tę
+    // Komplikację, stąd `noRoll` w data/komplikacje.json i brak "Rzuć" tutaj (bez tego gracz mógłby
+    // rzucić 2k10+0 i dostać pusty wynik, bo nie ma high/mid/low do pokazania).
+    const rollable = !found.noRoll;
     openModal({
         title: `✧ ${escapeHtml(label)}`,
         bodyHtml: mechanicsBodyHtml(found),
-        rollLabel: "Rzuć",
-        onRoll: () => performAndLogRoll(root, {
+        rollLabel: rollable ? "Rzuć" : null,
+        onRoll: rollable ? () => performAndLogRoll(root, {
             label,
             moveId: null,
             baseModifier: 0,
             rollType: "complication",
             mechanicsFor: found
-        })
+        }) : null
     });
 }
 

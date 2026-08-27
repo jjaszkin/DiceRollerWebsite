@@ -429,6 +429,16 @@ function openInfluenceInfoModal(ctx, kind, refId) {
     openCatalogInfoModal(ctx, kind === "ability" ? "abilities" : "complications", refId);
 }
 
+/** Tylko wpisy, których 10-14/-9 faktycznie mówią "MG zyskuje X punkt(y) Wpływu" trafiają na tę
+ *  zakładkę - u większości Atutów (i garstki Komplikacji, np. Fanatyk, Koszmary) wynik -9 to
+ *  bezpośrednia kara (obniż Stabilność, -1 do rzutów) albo jednorazowy "MG wykonuje Ruch", NIE
+ *  bankowalny punkt Wpływu, więc licznik pipsów/przycisk "+1 Wpływu" byłby tam myślący. Wyjątki
+ *  wśród Atutów: Okultystyczna biblioteka i Przygotowany faktycznie dają MG Wpływu na -9. */
+function grantsMgInfluence(item) {
+    const text = `${item.mid || ""} ${item.low || ""}`.toLowerCase();
+    return text.includes("wpływu");
+}
+
 /** Wiersz Atutu/Komplikacji z licznikiem Punktów Wpływu MG (pipsy, klik = zużyj jeden + wpis do
  *  Dziennika) i przyciskiem "+1 Wpływu" (przyznanie, bez wpisu do Dziennika - patrz uzasadnienie w
  *  handleInfluenceAction). `kind`: "ability" | "complication", `refId` = id z odpowiedniego katalogu
@@ -463,7 +473,7 @@ function buildInfluenceTab(ctx) {
 
         const abilityRows = charState.abilities
             .map(item => data.atuty.find(a => a.id === item.id))
-            .filter(a => a && a.attr !== "Pasywny")
+            .filter(a => a && a.attr !== "Pasywny" && grantsMgInfluence(a))
             .map(a => influenceRowHtml({
                 charKey: charDef.key, kind: "ability", refId: a.id, name: a.name,
                 count: charState.abilityInfluence?.[a.id] || 0
@@ -473,7 +483,7 @@ function buildInfluenceTab(ctx) {
         const complicationRows = charState.complications
             .map(item => {
                 const found = data.komplikacje.find(k => k.id === item.id);
-                if (!found) return null;
+                if (!found || !grantsMgInfluence(found)) return null;
                 const name = item.customLabel ? `${found.name} (${item.customLabel})` : found.name;
                 return influenceRowHtml({
                     charKey: charDef.key, kind: "complication", refId: item.id, name,
