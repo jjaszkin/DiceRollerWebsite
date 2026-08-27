@@ -62,13 +62,18 @@
             "attrs": { "silaWoli": 2, "odpornosc": 4, "refleks": 1, "rozum": 0, "intuicja": -1, "percepcja": 2, "opanowanie": 1, "przemoc": 4, "charyzma": -2, "dusza": 3 },
             "stability": -4,
             "darkSecrets": [
-                { "label": "Strażnik", "active": false },
-                { "label": "Powrót z Tamtej strony", "active": true }
+                { "id": "strażnik", "active": false },
+                { "id": "powrót-z-tamtej-strony", "active": true }
             ],
             "complications": [
-                { "label": "Poczucie winy", "active": true }
+                { "id": "poczucie-winy", "customLabel": "", "active": true }
             ],
-            "abilities": ["przerazajacy", "oko-za-oko", "rozwinięta-swiadomosc", "regeneracja"]
+            "abilities": [
+                { "id": "przerazajacy", "active": true },
+                { "id": "oko-za-oko", "active": true },
+                { "id": "rozwinięta-swiadomosc", "active": true },
+                { "id": "regeneracja", "active": true }
+            ]
         },
         {
             "key": "nick",
@@ -80,13 +85,18 @@
             "attrs": { "silaWoli": 3, "odpornosc": 0, "refleks": 1, "rozum": 1, "intuicja": 2, "percepcja": 5, "opanowanie": 3, "przemoc": -2, "charyzma": -1, "dusza": 0 },
             "stability": -2,
             "darkSecrets": [
-                { "label": "Strażnik", "active": false },
-                { "label": "Zakazana wiedza", "active": true }
+                { "id": "strażnik", "active": false },
+                { "id": "zakazana-wiedza", "active": true }
             ],
             "complications": [
-                { "label": "Prześladowca (Nick 2.0)", "active": true }
+                { "id": "przesladowca", "customLabel": "Nick 2.0", "active": true }
             ],
-            "abilities": ["mistrz-przeslucha", "sledczy", "rozwinięta-swiadomosc", "manipulacja-iluzja"]
+            "abilities": [
+                { "id": "mistrz-przeslucha", "active": true },
+                { "id": "sledczy", "active": true },
+                { "id": "rozwinięta-swiadomosc", "active": true },
+                { "id": "manipulacja-iluzja", "active": true }
+            ]
         },
         {
             "key": "jesse",
@@ -98,13 +108,19 @@
             "attrs": { "silaWoli": 3, "odpornosc": 0, "refleks": 1, "rozum": 0, "intuicja": 2, "percepcja": 2, "opanowanie": 2, "przemoc": 5, "charyzma": 3, "dusza": 2 },
             "stability": -2,
             "darkSecrets": [
-                { "label": "Strażnik", "active": false },
-                { "label": "Powrót z Tamtej strony", "active": true }
+                { "id": "strażnik", "active": false },
+                { "id": "powrót-z-tamtej-strony", "active": true }
             ],
             "complications": [
-                { "label": "Przysięga zemsty (Golab)", "active": true }
+                { "id": "przysiega-zemsty", "customLabel": "Golab", "active": true }
             ],
-            "abilities": ["lowca", "sztuka-przetrwania", "twardziel", "rozwinięta-swiadomosc", "bron-naturalna"]
+            "abilities": [
+                { "id": "lowca", "active": true },
+                { "id": "sztuka-przetrwania", "active": true },
+                { "id": "twardziel", "active": true },
+                { "id": "rozwinięta-swiadomosc", "active": true },
+                { "id": "bron-naturalna", "active": true }
+            ]
         },
         {
             "key": "paul",
@@ -116,14 +132,19 @@
             "attrs": { "silaWoli": 3, "odpornosc": 1, "refleks": 2, "rozum": 2, "intuicja": 0, "percepcja": -1, "opanowanie": 4, "przemoc": -2, "charyzma": 1, "dusza": 5 },
             "stability": -3,
             "darkSecrets": [
-                { "label": "Strażnik", "active": false },
-                { "label": "Klątwa", "active": false },
-                { "label": "Zakazana wiedza", "active": true }
+                { "id": "strażnik", "active": false },
+                { "id": "klątwa", "active": false },
+                { "id": "zakazana-wiedza", "active": true }
             ],
             "complications": [
-                { "label": "Obsesja (moc)", "active": true }
+                { "id": "obsesja", "customLabel": "moc", "active": true }
             ],
-            "abilities": ["rozwinięta-swiadomosc", "manipulator-umyslow", "zakazana-inspiracja", "eteryczny"]
+            "abilities": [
+                { "id": "rozwinięta-swiadomosc", "active": true },
+                { "id": "manipulator-umyslow", "active": true },
+                { "id": "zakazana-inspiracja", "active": true },
+                { "id": "eteryczny", "active": true }
+            ]
         },
         {
             "key": "jose",
@@ -135,13 +156,19 @@
             "attrs": { "silaWoli": 1, "odpornosc": 2, "refleks": 0, "rozum": -1, "intuicja": 1, "percepcja": 2, "opanowanie": 0, "przemoc": -2, "charyzma": 1, "dusza": 3 },
             "stability": -2,
             "darkSecrets": [
-                { "label": "Okultystyczne dośw.", "active": false },
-                { "label": "Wybraniec (Gaja)", "active": true }
+                { "id": "okultystyczne-doswiadczenie", "active": false },
+                { "id": "wybraniec", "active": true }
             ],
             "complications": [
-                { "label": "Fanatyk (Gaja)", "active": true }
+                { "id": "fanatyk", "customLabel": "Gaja", "active": true }
             ],
-            "abilities": ["ryzykant", "szosty-zmysl", "magiczna-intuicja", "charyzmatyczna-aura", "nalozenie-rak"]
+            "abilities": [
+                { "id": "ryzykant", "active": true },
+                { "id": "szosty-zmysl", "active": true },
+                { "id": "magiczna-intuicja", "active": true },
+                { "id": "charyzmatyczna-aura", "active": true },
+                { "id": "nalozenie-rak", "active": true }
+            ]
         },
         {
             "key": "luis",
@@ -153,13 +180,20 @@
             "attrs": { "silaWoli": 2, "odpornosc": 1, "refleks": 0, "rozum": 0, "intuicja": 1, "percepcja": -1, "opanowanie": 2, "przemoc": -2, "charyzma": 1, "dusza": 4 },
             "stability": 0,
             "darkSecrets": [
-                { "label": "Nawiedzenia", "active": false },
-                { "label": "Mroczny pakt (Gamaliel)", "active": true }
+                { "id": "nawiedzenia", "active": false },
+                { "id": "mroczny-pakt", "active": true }
             ],
             "complications": [
-                { "label": "Ofiara własnych namiętności", "active": true }
+                { "id": "ofiara-wlasnych-namietnosci", "customLabel": "", "active": true }
             ],
-            "abilities": ["rozwinięta-swiadomosc", "magiczna-intuicja", "amator-okultyzmu", "egzorcysta", "podstepny", "uparty"]
+            "abilities": [
+                { "id": "rozwinięta-swiadomosc", "active": true },
+                { "id": "magiczna-intuicja", "active": true },
+                { "id": "amator-okultyzmu", "active": true },
+                { "id": "egzorcysta", "active": true },
+                { "id": "podstepny", "active": true },
+                { "id": "uparty", "active": true }
+            ]
         },
         {
             "key": "miguel",
@@ -171,14 +205,20 @@
             "attrs": { "silaWoli": 0, "odpornosc": 1, "refleks": 2, "rozum": 2, "intuicja": 3, "percepcja": 0, "opanowanie": 1, "przemoc": -2, "charyzma": 1, "dusza": -1 },
             "stability": -2,
             "darkSecrets": [
-                { "label": "Ofiara przestępstwa", "active": true },
-                { "label": "Mroczny Pakt (Tiferet)", "active": true }
+                { "id": "ofiara-przestępstwa", "active": true },
+                { "id": "mroczny-pakt", "active": true }
             ],
             "complications": [
-                { "label": "Obiekt pożądania", "active": false },
-                { "label": "Narkoman", "active": true }
+                { "id": "obiekt-pozadania", "customLabel": "", "active": false },
+                { "id": "narkoman", "customLabel": "", "active": true }
             ],
-            "abilities": ["zimna-krew", "cichociemny", "zacisniete-zeby", "twardziel", "uwazny"]
+            "abilities": [
+                { "id": "zimna-krew", "active": true },
+                { "id": "cichociemny", "active": true },
+                { "id": "zacisniete-zeby", "active": true },
+                { "id": "twardziel", "active": true },
+                { "id": "uwazny", "active": true }
+            ]
         },
         {
             "key": "orlando",
@@ -190,13 +230,18 @@
             "attrs": { "silaWoli": 2, "odpornosc": 1, "refleks": 0, "rozum": 0, "intuicja": 1, "percepcja": -1, "opanowanie": 3, "przemoc": -2, "charyzma": 3, "dusza": 2 },
             "stability": -2,
             "darkSecrets": [
-                { "label": "Okultystyczne dośw.", "active": false },
-                { "label": "Wybraniec", "active": true }
+                { "id": "okultystyczne-doswiadczenie", "active": false },
+                { "id": "wybraniec", "active": true }
             ],
             "complications": [
-                { "label": "Nieudany eksperyment", "active": true }
+                { "id": "nieudany-eksperyment", "customLabel": "", "active": true }
             ],
-            "abilities": ["boski", "cichociemny", "wewnetrzna-moc", "odporny"]
+            "abilities": [
+                { "id": "boski", "active": true },
+                { "id": "cichociemny", "active": true },
+                { "id": "wewnetrzna-moc", "active": true },
+                { "id": "odporny", "active": true }
+            ]
         }
     ]
 }

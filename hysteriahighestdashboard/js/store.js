@@ -40,14 +40,14 @@ export function connectCampaign() {
 
             if (!resolved) {
                 const defaults = createDefaultState(gameData);
-                state = remoteState ? mergeWithDefaults(defaults, migrateLoadedState(remoteState)) : defaults;
+                state = remoteState ? mergeWithDefaults(defaults, migrateLoadedState(remoteState, gameData)) : defaults;
                 connected = true;
                 resolved = true;
                 resolve(state);
             } else {
                 if (saveInFlight) return;
                 const defaults = createDefaultState(gameData);
-                state = remoteState ? mergeWithDefaults(defaults, migrateLoadedState(remoteState)) : defaults;
+                state = remoteState ? mergeWithDefaults(defaults, migrateLoadedState(remoteState, gameData)) : defaults;
                 notify();
             }
         });

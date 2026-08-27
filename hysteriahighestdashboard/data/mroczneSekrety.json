@@ -1,0 +1,207 @@
+[
+    {
+        "id": "strażnik",
+        "name": "Strażnik",
+        "intro": "Zostałeś wybrany, by chronić ważny przedmiot, miejsce lub osobę. Być może odziedziczyłeś ten obowiązek, przydzielono ci go lub nałożono na ciebie na twoją własną prośbę. Niewykluczone, że to, co chronisz, zostanie w przyszłości użyte do osiągnięcia jakiegoś wielkiego celu – a może po prostu masz nie dopuścić, by wpadło w niepowołane ręce.",
+        "motywacje": [
+            "Ochroń to, co ci powierzono.",
+            "Dowiedz się więcej o poprzednich strażnikach i o tym, co chronisz.",
+            "Przekaż swój obowiązek odpowiedniej osobie.",
+            "Wypełnij swoje zadanie."
+        ]
+    },
+    {
+        "id": "tajemnicze-zniknięcie",
+        "name": "Tajemnicze zniknięcie",
+        "intro": "Ktoś tobie bliski zniknął po tym, jak za bardzo zbliżył się do prawdy w trakcie badania jakiejś sprawy. Nie masz pojęcia, co się stało, ale ktoś niedawno przesłał ci tajemniczą wiadomość, w której namawia cię, abyś dokończył to, co zaginiony rozpoczął. Od czasu zniknięcia stałeś się ofiarą nieznanych prześladowców.",
+        "motywacje": [
+            "Poznaj los zaginionej osoby.",
+            "Zakończ śledztwo, które rozpoczęła.",
+            "Wymknij się prześladowcom.",
+            "Wymierz winnym sprawiedliwość.",
+            "Ujawnij światu prawdę."
+        ]
+    },
+    {
+        "id": "zakazana-wiedza",
+        "name": "Zakazana wiedza",
+        "intro": "Odkryłeś jakąś straszną prawdę, która sprawia, że kwestionujesz naturę rzeczywistości. Może to być sposób na poruszanie się między wymiarami, ujawnienie prawdziwej, demonicznej twarzy burmistrza, odnalezienie dowodów na to, że historia została zafałszowana, lub odkrycie, że świat, jaki znamy, jest iluzją. Teraz strażnicy Iluzji ścigają cię i pozostaje kwestią czasu, nim cię znajdą.",
+        "motywacje": [
+            "Ujawnij światu Prawdę.",
+            "Zdobądź wiedzę lub potęgę.",
+            "Zbadaj zakazaną wiedzę.",
+            "Walcz z przeciwnikiem.",
+            "Wymknij się prześladowcom."
+        ]
+    },
+    {
+        "id": "choroba-psychiczna",
+        "name": "Choroba psychiczna",
+        "intro": "Ty lub ktoś z twoich najbliższych cierpicie na chorobę psychiczną. Istnieje duża szansa, że na własne oczy widziałeś (lub słyszałeś od tej osoby), że rzeczywistość jest jedynie iluzją. Ale kto by tam wierzył wariatowi? Placówki zdrowia psychicznego kryją liczne tajemnice, a wielu lekarzy ma ukryte motywy. Tych obłąkanych, którzy kończą na ulicy, chętnie przyjmują pod swoje skrzydła zwichrowani mentorzy, gotowi wprowadzić ich w Prawdę.",
+        "motywacje": [
+            "Zbadaj Iluzję.",
+            "Ujawnij spisek.",
+            "Zemścij się na swoich lekarzach i innych opiekunach.",
+            "Odkryj prawdę o swoim krewnym.",
+            "Odszukaj swojego chorego psychicznie krewnego, który zaginął."
+        ]
+    },
+    {
+        "id": "dziedzic",
+        "name": "Dziedzic",
+        "intro": "Otrzymałeś od przyjaciół lub krewnych wyjątkowe dziedzictwo. Może to być niewielki przedmiot lub coś większego, na przykład dom. Dziedzictwo to wywołuje w tobie nienaturalną obsesję. Wiesz, że skrywa sekrety, a może nawet nieznane moce. Czy dzięki niemu uda się ujawnić, co stało się z jego poprzednim właścicielem? Inni także chcą posiąść twoje dziedzictwo i podejrzewasz, że nie cofną się przed niczym, by je zdobyć.",
+        "motywacje": [
+            "Odkryj prawdę o swoim dziedzictwie.",
+            "Chroń swoje dziedzictwo.",
+            "Zbadaj, co stało się z poprzednim właścicielem.",
+            "Zmierz się z tymi, którzy chcą przejąć twoje dziedzictwo."
+        ]
+    },
+    {
+        "id": "klątwa",
+        "name": "Klątwa",
+        "intro": "Czy o tym wiesz, czy nie – znajdujesz się pod wpływem klątwy. Zaczęła ona oddziaływać na twoje życie i musisz znaleźć sposób, by się jej pozbyć. Klątwę mogłeś odziedziczyć lub ściągnąć ją na siebie własnymi poczynaniami. Jej działanie sprawia, że tracisz kontakt z rzeczywistością i możesz zaszkodzić swoim najbliższym.",
+        "motywacje": [
+            "Dowiedz się więcej o swojej klątwie.",
+            "Odkryj, jak przełamać klątwę.",
+            "Przenieś klątwę na kogoś innego.",
+            "Znajdź sposób na zaakceptowanie swojego losu.",
+            "Zemścij się na osobie odpowiedzialnej za klątwę."
+        ]
+    },
+    {
+        "id": "mroczny-pakt",
+        "name": "Mroczny pakt",
+        "intro": "Zawarłeś pakt z potężną istotą. Mogłeś to zrobić celowo lub zostać weń wplątany podstępem. Tak czy inaczej, istota ta ma teraz na ciebie wpływ. Niewykluczone, że wiele zyskałeś dzięki paktowi, ale ceną za to może być dosłownie twoja dusza. Zdajesz sobie sprawę, że musisz znaleźć sposób, by podstępem skłonić tę istotę do zerwania paktu – pytanie brzmi jak?",
+        "motywacje": [
+            "Znajdź sposób na zerwanie paktu.",
+            "Oszukaj śmierć.",
+            "Zabij istotę, z którą zawarłeś pakt.",
+            "Zdobądź więcej władzy i powodzenia.",
+            "Zemścij się na tym, kto podstępnie wplątał cię w pakt."
+        ]
+    },
+    {
+        "id": "ofiara-przestępstwa",
+        "name": "Ofiara przestępstwa",
+        "intro": "Padłeś ofiarą straszliwego przestępstwa. To wydarzenie naznaczyło całe twoje życie i nie potrafisz o nim zapomnieć, nieważne, jak mocno próbujesz. Strach, wstyd, złość i bezradność cię prześladują; by zwalczyć tę traumę, musisz znaleźć sposób na uleczenie ran.",
+        "motywacje": [
+            "Zemścij się na sprawcy.",
+            "Znów padnij ofiarą tego przestępstwa – lub tym razem je popełnij.",
+            "Dowiedz się, dlaczego ci się to przydarzyło.",
+            "Zwalczaj podobne przestępstwa.",
+            "Odnajdź sprawcę i mu przebacz."
+        ]
+    },
+    {
+        "id": "powrót-z-tamtej-strony",
+        "name": "Powrót z tamtej strony",
+        "intro": "Uczestniczyłeś w wydarzeniu, podczas którego doszło do całkowitego strzaskania Iluzji, i jako jedyny przeżyłeś. Twój blok mieszkalny mógł trafić do innego wymiaru, nagle wymazany z historii. Samolot mógł zniknąć w przestworzach, a ciebie odnaleziono dwadzieścia lat później; utraciłeś wspomnienia, lecz nie postarzałeś się nawet o jeden dzień. Kompania żołnierzy w Afganistanie mogła dosłownie wejść do piekła i tylko ty wróciłeś, skąpany we krwi swoich towarzyszy. W głębi duszy czujesz, że nie miałeś przetrwać, i coś ściga cię, by przywrócić równowagę i porządek.",
+        "motywacje": [
+            "Odkryj prawdę o tym wydarzeniu.",
+            "Ujawnij światu, co ci się przydarzyło.",
+            "Uniknij złego losu.",
+            "Wróć na miejsce zdarzenia.",
+            "Odnajdź zaginionych krewnych lub przyjaciół."
+        ]
+    },
+    {
+        "id": "nawiedzenia",
+        "name": "Nawiedzenia",
+        "intro": "Zdarza się, że nawiedzają cię istoty z innych światów. Mogą to być członkowie rodziny lub przyjaciele odszukujący cię po śmierci, byty napotkane w nawiedzonych miejscach lub interesujące się tobą nieludzkie moce. Nieważne, co zrobisz, nie jesteś w stanie się od nich uwolnić. Zawsze, gdy sądzisz, że wreszcie się udało, one znów się pojawiają. Nigdy nie jesteś tak naprawdę wolny.",
+        "motywacje": [
+            "Dowiedz się, dlaczego duchy cię nawiedzają.",
+            "Pomóż duchom odnaleźć spokój po śmierci.",
+            "Zmierz się ze złymi bytami.",
+            "Pomóż ludziom kontaktować się ze zmarłymi.",
+            "Wymknij się ścigającej cię istocie."
+        ]
+    },
+    {
+        "id": "odpowiedzialny-za-eksperymenty-medyczne",
+        "name": "Odpowiedzialny za eksperymenty medyczne",
+        "intro": "Byłeś odpowiedzialny za podejrzane eksperymenty medyczne, które miały straszliwe konsekwencje, lub pomagałeś w nich. Niezależnie od tego, czy pacjenci wzięli w nich udział dobrowolnie, czy nie – teraz są martwi, zaginęli lub przemienili się w coś nieludzkiego. Zżera cię poczucie winy, a oprócz tego być może ścigają cię twoi dawni pacjenci, ich rodziny, prawo, byli koledzy, mocodawcy lub bezimienne siły próbujące cię uciszyć.",
+        "motywacje": [
+            "Uniknij odpowiedzialności za eksperymenty.",
+            "Staraj się o przebaczenie od pacjentów i/lub ich rodzin.",
+            "Zbierz dowody w celu zdemaskowania byłego mocodawcy.",
+            "Dokończ przerwane lub nieudane eksperymenty.",
+            "Kontynuuj analizę rezultatów.",
+            "Pomóż pacjentom odzyskać ich dawne życie."
+        ]
+    },
+    {
+        "id": "winny-zbrodni",
+        "name": "Winny zbrodni",
+        "intro": "Masz niekończące się wyrzuty sumienia z powodu zbrodni, którą popełniłeś. Niezależnie od tego, czy uczyniłeś to z własnej inicjatywy, czy zostałeś przymuszony przez innych, masz poczucie, że jesteś jedynym winnym. Ofiara, jej rodzina lub organy ścigania prawdopodobnie cię poszukują.",
+        "motywacje": [
+            "Uniknij sprawiedliwości.",
+            "Skonfrontuj się z ofiarą lub jej rodziną.",
+            "Wymierz sobie karę.",
+            "Pomóż innym ludziom.",
+            "Zadbaj, by pozostałych sprawców spotkała kara – z rąk wymiaru sprawiedliwości bądź twoich własnych.",
+            "Zemścij się na tych, którzy przymusili cię do przestępstwa."
+        ]
+    },
+    {
+        "id": "rodzinna-tajemnica",
+        "name": "Rodzinna tajemnica",
+        "intro": "Twoja rodzina posiada dobrze strzeżony sekret, który prześladował cię przez całe życie. Mogła należeć do tajemniczego kultu lub znaleźć się pod wpływem jakiejś straszliwej grozy. Niewykluczone, że wtajemniczono cię jako dziecko – a może sam odkryłeś prawdę dopiero niedawno, jako dorosły. Tajemnica ta spędza ci sen z powiek i może zniszczyć całe twoje życie. Powinieneś podjąć działania, by ocalić siebie i swoją rodzinę.",
+        "motywacje": [
+            "Dochowaj tajemnicy.",
+            "Unikaj swojej rodziny.",
+            "Skonfrontuj się z rodziną.",
+            "Pomóż swojej rodzinie.",
+            "Dowiedz się całej prawdy."
+        ]
+    },
+    {
+        "id": "wybraniec",
+        "name": "Wybraniec",
+        "intro": "Zostałeś wybrany przez jakiegoś boga, by stać się czempionem lub barankiem ofiarnym. Jego wyznawcy strzegą cię, czekając na dzień twojego wyniesienia. Mogłeś wychować się w ich sekcie lub zostać przez nich odkryty już jako dorosły. Jak by nie było, jesteś pewien, że mają wobec ciebie straszne plany. Usiłowałeś uciec wyznawcom, ale zawsze w końcu cię znajdują.",
+        "motywacje": [
+            "Uniknij swoich prześladowców.",
+            "Walcz z kultem i jego bogiem.",
+            "Wypełnij żądania swojego boga.",
+            "Pozyskaj nowych członków kultu.",
+            "Dowiedz się prawdy o swoim przeznaczeniu."
+        ]
+    },
+    {
+        "id": "ofiara-eksperymentow-medycznych",
+        "name": "Ofiara eksperymentów medycznych",
+        "intro": "Czy to za swoją zgodą, czy bez niej – zostałeś poddany eksperymentom medycznym z niespodziewanymi wynikami. Eksperymenty te wywołały trwałe psychiczne lub fizyczne skutki uboczne. Być może dzięki nim zajrzałeś do innych wymiarów – co doprowadziło cię do szaleństwa. Skutki te wciąż na tobie ciążą, a pozbycie się ich wymaga odnalezienia odpowiedzialnych za eksperymenty. Możliwe również, że eksperymentom poddano twoich rodziców, a ty odziedziczyłeś niepożądane cechy.",
+        "motywacje": [
+            "Wyśledź odpowiedzialnych za eksperymenty.",
+            "Odzyskaj swoje dawne życie.",
+            "Zemścij się na osobach odpowiedzialnych za eksperymenty.",
+            "Znajdź sposób, by pogodzić się z tym, kim jesteś teraz.",
+            "Odkrywaj inne wymiary.",
+            "Ujawnij światu prawdę."
+        ]
+    },
+    {
+        "id": "okultystyczne-doswiadczenie",
+        "name": "Okultystyczne doświadczenie",
+        "intro": "Byłeś świadkiem wydarzeń związanych z okultyzmem, co zmieniło twój pogląd na rzeczywistość. Mogłeś uczestniczyć w tajemnych rytuałach, ujawnić działania kultów służących mrocznym bytom lub ujrzeć rzeczy dowodzące, że świat nie jest tym, czym się wydaje. Twoje doświadczenia utrudniają zaakceptowanie Iluzji, w której żyje większość.",
+        "motywacje": [
+            "Odkryj więcej Prawdy.",
+            "Szukaj pokuty za swoje czyny.",
+            "Pomóż innym odkryć Prawdę.",
+            "Zdobądź więcej okultystycznej wiedzy i mocy.",
+            "Walcz z demonami."
+        ]
+    },
+    {
+        "id": "wieczny-tulacz",
+        "name": "Wieczny tułacz",
+        "intro": "Twoja rodzina zawsze pozostawała w ruchu. Rodzice nigdy nie powiedzieli ci dlaczego, ale przerażone spojrzenia i szeptane rozmowy wskazywały, że uciekacie przed czymś przerażającym. Budzili cię w środku nocy, zostawialiście za sobą wszystko, co mieliście, byle się wymknąć. W końcu opuścili także ciebie. Może wciąż uciekają, a może cokolwiek ich ścigało – w końcu ich dopadło. Uczucie, że ktoś cię śledzi, nigdy do końca nie daje ci spokoju, a gdziekolwiek nie trafisz, i tak wkrótce znowu wyruszasz w drogę. Nie wiesz, co dokładnie by się stało, gdybyś przestał uciekać, ale przeczuwasz, że byłoby to coś strasznego.",
+        "motywacje": [
+            "Dowiedz się, co cię ściga.",
+            "Znajdź miejsce, gdzie możesz odetchnąć.",
+            "Wymknij się temu, co cię ściga.",
+            "Odnajdź swoich rodziców.",
+            "Znajdź przyczyny tej sytuacji."
+        ]
+    }
+]

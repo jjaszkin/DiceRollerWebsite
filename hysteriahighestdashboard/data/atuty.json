@@ -261,5 +261,849 @@
         "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem).",
         "mid": "Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie sceny:\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem).",
         "low": "Otrzymujesz jedną Przewagę, ale przyciągasz uwagę wrogów. MG wykonuje Ruch.\n◊ Uniknij ataku.\n◊ Złap coś lub zwędź.\n◊ Zajmij lepszą pozycję.\n◊ Wmanewruj kogoś w trudne położenie (wszyscy otrzymują +2 do Ruchów związanych z atakiem)."
+    },
+    {
+        "id": "instynkt",
+        "name": "Instynkt",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy Analizujesz sytuację i działasz w związku z odpowiedziami MG, otrzymujesz +2 zamiast +1 do rzutu.",
+        "passive": true
+    },
+    {
+        "id": "instynkt-przetrwania",
+        "name": "Instynkt przetrwania",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy otrzymujesz poważne lub krytyczne obrażenia, ale nie poddajesz się, rzuć +Przemoc. W przypadku sukcesu możesz tymczasowo zignorować efekty ran, ale będziesz potrzebował leczenia, jak tylko upłynie limit czasu:",
+        "high": "Ignorujesz swoje rany do końca konfliktu, wybierz też jedną z poniższych możliwości:\n◊ Zawziętość: +1 do Ruchu Przystąp do walki na czas potyczki.\n◊ Skok adrenaliny: +1 do Ruchu Znieś Obrażenia na czas walki.",
+        "mid": "Ignorujesz efekty ran do końca konfliktu.",
+        "low": "Przeciążasz się i po kilku chwilach twoje rany sprawiają, że upadasz i tracisz przytomność. Po twojej następnej akcji MG decyduje, kiedy i w jaki sposób to się dzieje."
+    },
+    {
+        "id": "kodeks-honorowy",
+        "name": "Kodeks honorowy",
+        "attr": "Pasywny",
+        "intro": "Stosujesz się do sztywnego kodeksu honorowego. Zdefiniuj go. Za każdym razem, gdy podejmujesz ryzyko lub poświęcasz coś w imię swojego kodeksu honorowego, zwiększ Stabilność (+1).",
+        "passive": true
+    },
+    {
+        "id": "mowa-zwierzat",
+        "name": "Mowa zwierząt",
+        "attr": "+Intuicja",
+        "intro": "Potrafisz rozumieć i kontrolować zwierzęta. Za każdym razem, gdy usiłujesz kontrolować zwierzę, rzuć +Intuicja:",
+        "high": "Wybierz trzy możliwości. Do dwóch z nich możesz zachować do wykorzystania później.\n◊ Spraw, że zwierzę zadziała przeciw własnemu instynktowi.\n◊ Spraw, że zwierzę będzie za tobą podążać.\n◊ Spraw, że zwierzę będzie cię bronić przed atakami.",
+        "mid": "Wybierz dwie możliwości. Jedną z nich możesz zachować do wykorzystania później.\n◊ Spraw, że zwierzę zadziała przeciw własnemu instynktowi.\n◊ Spraw, że zwierzę będzie za tobą podążać.\n◊ Spraw, że zwierzę będzie cię bronić przed atakami.",
+        "low": "Wybierz jedną z możliwości. Twoje wspomnienia i Komplikacje wpływają na zwierzę. MG wykonuje Ruch.\n◊ Spraw, że zwierzę zadziała przeciw własnemu instynktowi.\n◊ Spraw, że zwierzę będzie za tobą podążać.\n◊ Spraw, że zwierzę będzie cię bronić przed atakami."
+    },
+    {
+        "id": "szal",
+        "name": "Szał",
+        "attr": "Pasywny",
+        "intro": "W trakcie walki możesz wpaść w szał. Obniż Stabilność (−1) i zapisz 1 punkt Szału. Kiedy otrzymasz ranę lub pokonasz przeciwnika, zwiększ Szał (+1). Szał trwa do końca walki. Podczas walki możesz wydać 1 punkt Szału, by wybrać 1 Przewagę:\n◊ Brutalny atak: Twój atak zadaje +1 punkt Obrażeń.\n◊ Zignoruj ból: Otrzymujesz +2 do Ruchu Znieś Obrażenia.\n◊ Zatracony w szale: Otrząśnij się i zignoruj wszelkie nadnaturalne lub psychologiczne wpływy.",
+        "passive": true
+    },
+    {
+        "id": "magnetyczne-przyciaganie",
+        "name": "Magnetyczne przyciąganie",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy przyciągasz uwagę wszystkich, rzuć +Dusza:",
+        "high": "Wybierz do trzech możliwości. Do dwóch z nich możesz zostawić na później do wykorzystania w tej scenie.\n◊ Ludzie zapominają o tym, co robią, i mogą tylko wpatrywać się w ciebie.\n◊ Przyciągnij kogoś do siebie.\n◊ Spraw, że ktoś zrobi to, o co poprosisz.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Ludzie zapominają o tym, co robią, i mogą tylko wpatrywać się w ciebie.\n◊ Przyciągnij kogoś do siebie.\n◊ Spraw, że ktoś zrobi to, o co poprosisz.",
+        "low": "Wybierz jedną z możliwości. Ktoś z obecnych dostaje obsesji: chce cię mieć, zatrzymać i posiadać tylko dla siebie. MG wykonuje Ruch.\n◊ Ludzie zapominają o tym, co robią, i mogą tylko wpatrywać się w ciebie.\n◊ Przyciągnij kogoś do siebie.\n◊ Spraw, że ktoś zrobi to, o co poprosisz."
+    },
+    {
+        "id": "geniusz",
+        "name": "Geniusz",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy znajdziesz się w sytuacji zagrażającej życiu, rzuć +Dusza, by sprawdzić, czy uda ci się odkryć z niej wyjście:",
+        "high": "Wybierz do trzech Przewag, których możesz użyć w dowolnym momencie sceny, dopóki wciąż jesteś zagrożony.\n◊ Logiczne myślenie: Wymyślasz efektywny sposób poradzenia sobie z zagrożeniem. Zadaj +1 punkt Obrażeń, kiedy go wykorzystujesz.\n◊ Bystry: Wiesz, jak uchronić się przed Ranami. Potraktuj to tak, jakbyś wyrzucił (15+) na Ruch Uniknij Obrażeń w momencie, gdy wykorzystujesz tę wiedzę.\n◊ Racjonalny: Wiesz, jak ocalić skórę, poświęcając kogoś innego. Wybierz osobę, którą się posługujesz, by uciec zagrożeniu.",
+        "mid": "Wybierz do dwóch Przewag, których możesz użyć w dowolnym momencie sceny, dopóki wciąż jesteś zagrożony.\n◊ Logiczne myślenie: Wymyślasz efektywny sposób poradzenia sobie z zagrożeniem. Zadaj +1 punkt Obrażeń, kiedy go wykorzystujesz.\n◊ Bystry: Wiesz, jak uchronić się przed Ranami. Potraktuj to tak, jakbyś wyrzucił (15+) na Ruch Uniknij Obrażeń w momencie, gdy wykorzystujesz tę wiedzę.\n◊ Racjonalny: Wiesz, jak ocalić skórę, poświęcając kogoś innego. Wybierz osobę, którą się posługujesz, by uciec zagrożeniu.",
+        "low": "Wybierz jedną Przewagę. Przyciągasz też niepożądaną uwagę. MG wykonuje Ruch.\n◊ Logiczne myślenie: Wymyślasz efektywny sposób poradzenia sobie z zagrożeniem. Zadaj +1 punkt Obrażeń, kiedy go wykorzystujesz.\n◊ Bystry: Wiesz, jak uchronić się przed Ranami. Potraktuj to tak, jakbyś wyrzucił (15+) na Ruch Uniknij Obrażeń w momencie, gdy wykorzystujesz tę wiedzę.\n◊ Racjonalny: Wiesz, jak ocalić skórę, poświęcając kogoś innego. Wybierz osobę, którą się posługujesz, by uciec zagrożeniu."
+    },
+    {
+        "id": "medycyna-polowa",
+        "name": "Medycyna polowa",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy opatrujesz ranę, nawet jeśli nie masz dostępu do sprzętu medycznego, rzuć +Rozum:",
+        "high": "Wybierz dwie możliwości.\n◊ Improwizacja: Opatrujesz 1 Ranę bez dostępu do sprzętu medycznego.\n◊ Efektywny: Opatrujesz 2 Rany zamiast jednej.\n◊ Staranny: Opatrujesz Ranę; zaleczy się ona znacznie szybciej niż normalnie.",
+        "mid": "Możesz wybrać jedną z możliwości, musisz jednak wybrać też jakieś negatywne skutki (blizny lub defekty urody - pacjent obniża Stabilność (−2); efekty uboczne - −1 do wszystkich rzutów, na jakie mogłaby wpłynąć rana, do czasu jej całkowitego wyleczenia; lub pacjent pozostaje nieprzytomny do czasu, aż MG uzna, że się budzi).\n◊ Improwizacja: Opatrujesz 1 Ranę bez dostępu do sprzętu medycznego.\n◊ Efektywny: Opatrujesz 2 Rany zamiast jednej.\n◊ Staranny: Opatrujesz Ranę; zaleczy się ona znacznie szybciej niż normalnie.",
+        "low": "Opatrujesz ranę, nawet bez sprzętu medycznego, ale występują nieprzewidziane i potencjalnie groźne konsekwencje, takie jak infekcje, deformacje lub inne poważne efekty uboczne. MG wykonuje Ruch."
+    },
+    {
+        "id": "naukowiec-badanie",
+        "name": "Naukowiec",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy Badasz przedmiot lub istotę przy pomocy odpowiednich narzędzi, możesz - oprócz standardowych pytań - wybrać spośród poniższych:\n◊ Jakie to ma właściwości? (Otrzymujesz +1 do wszystkich rzutów przeciw podobnym istotom lub przedmiotom następnym razem, gdy je napotkasz).\n◊ Jak mogę tego użyć? (Otrzymujesz +1 do wszystkich rzutów związanych z używaniem tego przedmiotu).\n◊ Jaka jest jego funkcja?",
+        "passive": true
+    },
+    {
+        "id": "poszukiwacz-tajemnic",
+        "name": "Poszukiwacz tajemnic",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy podróżujesz do innych światów lub spotykasz istoty z innych wymiarów, możesz zadeklarować, że czytałeś o tym miejscu lub istocie wcześniej. Zapytaj MG, czego się dowiedziałeś w toku swoich badań.",
+        "passive": true
+    },
+    {
+        "id": "pracoholik",
+        "name": "Pracoholik",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy coś stworzysz lub przeprowadzisz eksperyment, zwiększ Stabilność (+1).",
+        "passive": true
+    },
+    {
+        "id": "wynalazca",
+        "name": "Wynalazca",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy chcesz coś skonstruować lub naprawić, opisz, co chcesz zrobić. MG powie ci, czego potrzebujesz, a gdy zdobędziesz te rzeczy, możesz rzucić +Rozum:",
+        "high": "Konstrukcja lub naprawa się udaje; możesz wybrać dwie z poniższych możliwości.\n◊ Wytrzymała: Konstrukcja może zostać wielokrotnie wykorzystana i nie psuje się łatwo.\n◊ Efektywna: Konstrukcja daje +1 do rzutów, w których jest używana zgodnie z przeznaczeniem.\n◊ Śmiertelna: Konstrukcja zadaje +1 punkt Obrażeń.\n◊ Ochronna: Konstrukcja daje +1 punkt Pancerza.",
+        "mid": "Konstrukcja ma niewielkie wady. Możesz wybrać jedną z poniższych możliwości.\n◊ Wytrzymała: Konstrukcja może zostać wielokrotnie wykorzystana i nie psuje się łatwo.\n◊ Efektywna: Konstrukcja daje +1 do rzutów, w których jest używana zgodnie z przeznaczeniem.\n◊ Śmiertelna: Konstrukcja zadaje +1 punkt Obrażeń.\n◊ Ochronna: Konstrukcja daje +1 punkt Pancerza.",
+        "low": "Kończysz konstrukcję (lub naprawę), ale ma ona poważne wady, w tym niektóre ukryte. MG wykonuje Ruch."
+    },
+    {
+        "id": "zaszczepienie-rozkazu",
+        "name": "Zaszczepienie rozkazu",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy eksperymentujesz na człowieku, możesz wszczepić mu rozkaz. Rzuć +Dusza:",
+        "high": "Twoja Władza nad tą osobą wynosi 2. Tak długo, jak masz nad tą osobą Władzę, otrzymuje ona 1 Poważną Ranę, gdy odmawia wykonania twojego rozkazu lub się mu sprzeciwia. Odmowa lub sprzeciw zmniejszają jednak twoją Władzę o 1. Jeśli osoba wykona twój rozkaz, cała twoja pozostała Władza nad nią znika.",
+        "mid": "Twoja Władza nad tą osobą wynosi 1. Tak długo, jak masz nad tą osobą Władzę, otrzymuje ona 1 Poważną Ranę, gdy odmawia wykonania twojego rozkazu lub się mu sprzeciwia. Odmowa lub sprzeciw zmniejszają jednak twoją Władzę o 1. Jeśli osoba wykona twój rozkaz, cała twoja pozostała Władza nad nią znika.",
+        "low": "Coś idzie nie tak; na przykład osoba zostaje zraniona w trakcie wykonywania rozkazu lub wynik jej starań jest inny niż oczekiwany. MG wykonuje Ruch."
+    },
+    {
+        "id": "atrakcyjny",
+        "name": "Atrakcyjny",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy starasz się zainteresować sobą BN-a, rzuć +Charyzma:",
+        "high": "Wybierz do trzech możliwości w dowolnym momencie sceny.\n◊ Dana osoba musi cię zaliczyć; porzuci swoje normalne zachowanie, byle to osiągnąć.\n◊ Dana osoba jest rozproszona z twojego powodu tak długo, jak długo znajdujesz się w pobliżu, i nie może skupić się na niczym innym.\n◊ Dana osoba staje się zazdrosna o twoją uwagę i usiłuje pozbyć się konkurencji wszelkimi dostępnymi środkami.\n◊ Sprawiasz, że dana osoba staje się niepewna i skołowana. Otrzymujesz +1 do wszystkich rzutów przeciw niej podczas tej sceny.",
+        "mid": "Wybierz do dwóch możliwości w dowolnym momencie sceny.\n◊ Dana osoba musi cię zaliczyć; porzuci swoje normalne zachowanie, byle to osiągnąć.\n◊ Dana osoba jest rozproszona z twojego powodu tak długo, jak długo znajdujesz się w pobliżu, i nie może skupić się na niczym innym.\n◊ Dana osoba staje się zazdrosna o twoją uwagę i usiłuje pozbyć się konkurencji wszelkimi dostępnymi środkami.\n◊ Sprawiasz, że dana osoba staje się niepewna i skołowana. Otrzymujesz +1 do wszystkich rzutów przeciw niej podczas tej sceny.",
+        "low": "Wybierz jedną możliwość w dowolnym momencie sceny, ale istota zainteresowania jest inna, niż się spodziewałeś. MG wykonuje Ruch.\n◊ Dana osoba musi cię zaliczyć; porzuci swoje normalne zachowanie, byle to osiągnąć.\n◊ Dana osoba jest rozproszona z twojego powodu tak długo, jak długo znajdujesz się w pobliżu, i nie może skupić się na niczym innym.\n◊ Dana osoba staje się zazdrosna o twoją uwagę i usiłuje pozbyć się konkurencji wszelkimi dostępnymi środkami.\n◊ Sprawiasz, że dana osoba staje się niepewna i skołowana. Otrzymujesz +1 do wszystkich rzutów przeciw niej podczas tej sceny."
+    },
+    {
+        "id": "cios-w-plecy",
+        "name": "Cios w plecy",
+        "attr": "+Opanowanie",
+        "intro": "Za każdym razem, gdy atakujesz kogoś, kto nie jest na to przygotowany, rzuć +Opanowanie:",
+        "high": "Wybierz dwie możliwości.\n◊ Celuj we wrażliwy punkt: Zadaj +1 punkt Obrażeń.\n◊ Ogłusz: Jeśli celem jest BN, automatycznie traci przytomność. Jeśli celem jest BG, wykonuje on Ruch Znieś Obrażenia i zostaje unieszkodliwiony przy wyniku (–9).\n◊ Ostrożny: Działasz bezgłośnie, a jeśli twój przeciwnik zginie – nie zostawiasz śladów.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Celuj we wrażliwy punkt: Zadaj +1 punkt Obrażeń.\n◊ Ogłusz: Jeśli celem jest BN, automatycznie traci przytomność. Jeśli celem jest BG, wykonuje on Ruch Znieś Obrażenia i zostaje unieszkodliwiony przy wyniku (–9).\n◊ Ostrożny: Działasz bezgłośnie, a jeśli twój przeciwnik zginie – nie zostawiasz śladów.",
+        "low": "Niechcący się ujawniasz, a twój cel może zareagować na atak normalnie. MG wykonuje Ruch."
+    },
+    {
+        "id": "manipulator",
+        "name": "Manipulator",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy wyświadczysz komuś przysługę lub poznasz sekret tej osoby, możesz wybrać jedną z poniższych możliwości i przypomnieć tej osobie o wyświadczonej przysłudze lub zasugerować, że coś o niej wiesz:\n◊ Otrzymujesz +2 do Ruchu Wpłyń na innych w związku z tą osobą.\n◊ Otrzymujesz +2 do Ruchu Przeszkodź przeciwko tej osobie.",
+        "passive": true
+    },
+    {
+        "id": "uraza",
+        "name": "Uraza",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy ktoś bezpośrednio lub pośrednio zniweczy twoje plany, otrzymujesz +1 do wszystkich rzutów przeciw tej osobie do czasu, aż wywrzesz zemstę lub otrzymasz odpowiednie zadośćuczynienie.",
+        "passive": true
+    },
+    {
+        "id": "utrzymanek",
+        "name": "Utrzymanek",
+        "attr": "+Charyzma",
+        "intro": "Utrzymujesz relacje z wieloma osobami, które wierzą, że jesteście sobie przeznaczeni, ale nie znają się nawzajem. Za każdym razem, gdy potrzebujesz pieniędzy, kryjówki, ochrony lub innej pomocy, której może udzielić jedna z twoich ofiar, opisz ją i rzuć +Charyzma:",
+        "high": "Otrzymujesz to, czego potrzebujesz.",
+        "mid": "Jedna z osób może ci pomóc, ale będziesz musiał ją do tego przekonać.",
+        "low": "Znasz kogoś, kto może ci pomóc, ale ta osoba przejrzała twoją grę. Jeśli chcesz jej pomocy, musisz uciec się do gróźb lub szantażu."
+    },
+    {
+        "id": "uwodziciel",
+        "name": "Uwodziciel",
+        "attr": "+Charyzma",
+        "intro": "Potrafisz świadomie sprawić, że ludzie się w tobie zakochują. Za każdym razem, gdy przeżywasz z kimś intymne chwile, rzuć +Charyzma:",
+        "high": "Wybierz do trzech możliwości i użyj ich w dowolnym momencie opowieści.\n◊ Dana osoba daje ci coś, czego chcesz.\n◊ Dana osoba zdradza ci sekret.\n◊ Dana osoba walczy, by cię chronić.",
+        "mid": "Wybierz do dwóch możliwości i użyj ich w dowolnym momencie opowieści.\n◊ Dana osoba daje ci coś, czego chcesz.\n◊ Dana osoba zdradza ci sekret.\n◊ Dana osoba walczy, by cię chronić.",
+        "low": "Wybierz jedną z możliwości i użyj jej w dowolnym momencie opowieści, ale sam również zaczynasz coś czuć do tej osoby. Zwiększ Relację z nią o +1.\n◊ Dana osoba daje ci coś, czego chcesz.\n◊ Dana osoba zdradza ci sekret.\n◊ Dana osoba walczy, by cię chronić."
+    },
+    {
+        "id": "agent-terenowy",
+        "name": "Agent terenowy",
+        "attr": "+Przemoc",
+        "intro": "Zostałeś przeszkolony przez agencję wywiadu do walki w terenie. Za każdym razem, gdy wkraczasz do walki, rzuć +Przemoc:",
+        "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Kryj się: Uniknij ataku dystansowego dzięki schowaniu się za przedmiotem lub osobą.\n◊ Chwyt: Załóż przeciwnikowi (człowiekowi) chwyt, z którego nie może się wyrwać, o ile nie przyjmie 1 punktu Obrażeń.\n◊ Rozbrojenie: Pozbaw przeciwnika broni w walce wręcz.\n◊ Improwizowana broń: Wykonaj śmiercionośny atak w walce w zwarciu przy użyciu niewinnie wyglądającego przedmiotu (atak z zaskoczenia [2] [zasięg: ramię]).",
+        "mid": "Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Kryj się: Uniknij ataku dystansowego dzięki schowaniu się za przedmiotem lub osobą.\n◊ Chwyt: Załóż przeciwnikowi (człowiekowi) chwyt, z którego nie może się wyrwać, o ile nie przyjmie 1 punktu Obrażeń.\n◊ Rozbrojenie: Pozbaw przeciwnika broni w walce wręcz.\n◊ Improwizowana broń: Wykonaj śmiercionośny atak w walce w zwarciu przy użyciu niewinnie wyglądającego przedmiotu (atak z zaskoczenia [2] [zasięg: ramię]).",
+        "low": "Otrzymujesz jedną Przewagę, ale podjąłeś jakąś złą decyzję. MG wykonuje Ruch.\n◊ Kryj się: Uniknij ataku dystansowego dzięki schowaniu się za przedmiotem lub osobą.\n◊ Chwyt: Załóż przeciwnikowi (człowiekowi) chwyt, z którego nie może się wyrwać, o ile nie przyjmie 1 punktu Obrażeń.\n◊ Rozbrojenie: Pozbaw przeciwnika broni w walce wręcz.\n◊ Improwizowana broń: Wykonaj śmiercionośny atak w walce w zwarciu przy użyciu niewinnie wyglądającego przedmiotu (atak z zaskoczenia [2] [zasięg: ramię])."
+    },
+    {
+        "id": "pirotechnik",
+        "name": "Pirotechnik",
+        "attr": "+Rozum",
+        "intro": "Potrafisz budować i rozbrajać bomby. Jeśli posiadasz dość czasu i zasobów, możesz skonstruować każdą bombę. Jednakże, jeśli konstruujesz improwizowaną bombę pod presją czasu, rzuć +Rozum:",
+        "high": "Konstruujesz działającą bombę (patrz: Materiały wybuchowe w Rozdziale 4: Bohater gracza).",
+        "mid": "Potencjał niszczący bomby jest mniejszy niż zakładany (zmniejsz zadawane Obrażenia o −1).",
+        "low": "Bomba działa w nieprzewidywalny sposób. Może nie eksploduje, wybucha przedwcześnie lub jest potężniejsza i bardziej niestabilna, niż zakładałeś. MG wykonuje Ruch. Kiedy rozbrajasz bombę, rzuć +Rozum: (15+) Rozbrajasz bombę. (10–14) Sprawy się gmatwają: nie potrafisz całkowicie jej wyłączyć, opóźniłeś jedynie zapalnik czasowy, osłabiłeś eksplozję lub pojawiły się inne problemy. (−9) Bomba może wybuchnąć ci w rękach, zapalnik czasowy odlicza 10, 9, 8, 7... lub dzieje się coś jeszcze gorszego. MG wykonuje Ruch."
+    },
+    {
+        "id": "analityk",
+        "name": "Analityk",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, wykonujesz Ruch Zbadaj, możesz wybrać także spośród poniższych dodatkowych pytań:\n◊ Jakie organizacje, grupy lub ludzie mogą być z tym związani?\n◊ Czy jest związek między tym a innym zdarzeniem?\n◊ Jaki byłby prawdopodobny motyw?",
+        "passive": true
+    },
+    {
+        "id": "bystrzak",
+        "name": "Bystrzak",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy rozpoczynasz niebezpieczną misję, rzuć +Rozum:",
+        "high": "W dowolnym momencie misji wybierz do trzech możliwości.\n◊ Przypominasz sobie coś, co pomoże ci w negocjacjach. Zapytaj MG, co to takiego.\n◊ Masz przedmiot, którego możesz użyć, by wybrnąć z trudnej sytuacji. Zapytaj MG, co to jest.\n◊ Przeszedłeś specjalne szkolenie terenowe, które pomoże ci w pokonaniu jednej z przeszkód. Zapytaj MG, jakie to szkolenie.",
+        "mid": "W dowolnym momencie misji wybierz do dwóch możliwości.\n◊ Przypominasz sobie coś, co pomoże ci w negocjacjach. Zapytaj MG, co to takiego.\n◊ Masz przedmiot, którego możesz użyć, by wybrnąć z trudnej sytuacji. Zapytaj MG, co to jest.\n◊ Przeszedłeś specjalne szkolenie terenowe, które pomoże ci w pokonaniu jednej z przeszkód. Zapytaj MG, jakie to szkolenie.",
+        "low": "W dowolnym momencie misji wybierz jedną z możliwości. Czegoś jednak nie wziąłeś pod uwagę. MG wykonuje Ruch.\n◊ Przypominasz sobie coś, co pomoże ci w negocjacjach. Zapytaj MG, co to takiego.\n◊ Masz przedmiot, którego możesz użyć, by wybrnąć z trudnej sytuacji. Zapytaj MG, co to jest.\n◊ Przeszedłeś specjalne szkolenie terenowe, które pomoże ci w pokonaniu jednej z przeszkód. Zapytaj MG, jakie to szkolenie."
+    },
+    {
+        "id": "wlamywacz",
+        "name": "Włamywacz",
+        "attr": "+Opanowanie",
+        "intro": "Za każdym razem, gdy korzystasz ze swojego doświadczenia we włamaniach, rzuć +Opanowanie:",
+        "high": "Wybierz trzy możliwości. Możesz wykorzystać je w dowolnym momencie sceny.\n◊ W kilka chwil otwierasz po cichu zamknięte drzwi.\n◊ Unieszkodliwiasz alarm.\n◊ Otwierasz skrytkę lub sejf w mniej niż dwie minuty.\n◊ Unikasz wykrycia.\n◊ Na jakiś czas przekonujesz kogoś, że jesteś właściwą osobą we właściwym miejscu (np. jesteś tu ochroniarzem).",
+        "mid": "Wybierz dwie możliwości. Możesz wykorzystać je w dowolnym momencie sceny.\n◊ W kilka chwil otwierasz po cichu zamknięte drzwi.\n◊ Unieszkodliwiasz alarm.\n◊ Otwierasz skrytkę lub sejf w mniej niż dwie minuty.\n◊ Unikasz wykrycia.\n◊ Na jakiś czas przekonujesz kogoś, że jesteś właściwą osobą we właściwym miejscu (np. jesteś tu ochroniarzem).",
+        "low": "Wybierz jedną z możliwości. Pojawia się jakiś problem. MG wykonuje Ruch.\n◊ W kilka chwil otwierasz po cichu zamknięte drzwi.\n◊ Unieszkodliwiasz alarm.\n◊ Otwierasz skrytkę lub sejf w mniej niż dwie minuty.\n◊ Unikasz wykrycia.\n◊ Na jakiś czas przekonujesz kogoś, że jesteś właściwą osobą we właściwym miejscu (np. jesteś tu ochroniarzem)."
+    },
+    {
+        "id": "wtyki",
+        "name": "Wtyki",
+        "attr": "+Charyzma",
+        "intro": "Umieściłeś parę wtyk w interesujących cię grupach lub organizacjach takich jak konkurenci biznesowi, rządy czy kulty. Za każdym razem, gdy kontaktujesz się z wtyką, by zdobyć informację lub usługi, określ, do jakiej grupy należy, nadaj jej imię i rzuć +Charyzma:",
+        "high": "Możesz skorzystać z obu poniższych możliwości.\n◊ Wtyka przedostała się do struktur kierowniczych organizacji, jednak jej wpływ jest ograniczony.\n◊ Wtyka jest ci winna przysługę, musisz jednak zrobić to, czego od ciebie żąda.",
+        "mid": "Możesz skorzystać z jednej z poniższych możliwości.\n◊ Wtyka przedostała się do struktur kierowniczych organizacji, jednak jej wpływ jest ograniczony.\n◊ Wtyka jest ci winna przysługę, musisz jednak zrobić to, czego od ciebie żąda.",
+        "low": "Lojalność wtyki jest wątpliwa. Czy możesz jej ufać? MG wykonuje Ruch."
+    },
+    {
+        "id": "lokalizator",
+        "name": "Lokalizator",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy używasz swojej siatki wywiadowczej, by śledzić coś lub kogoś, rzuć +Rozum:",
+        "high": "Zadaj do trzech pytań z poniższej listy.\n◊ Gdzie ten przedmiot lub ta osoba byli ostatnio widziani?\n◊ Jacy ludzie wiązali się z tym, czego szukam?\n◊ Jakie to coś zostawiło ślady i znaki?\n◊ Kto jeszcze chce znaleźć to, czego szukam?",
+        "mid": "Zadaj do dwóch pytań z poniższej listy.\n◊ Gdzie ten przedmiot lub ta osoba byli ostatnio widziani?\n◊ Jacy ludzie wiązali się z tym, czego szukam?\n◊ Jakie to coś zostawiło ślady i znaki?\n◊ Kto jeszcze chce znaleźć to, czego szukam?",
+        "low": "Zadaj jedno pytanie. Ktoś zauważa twoją aktywność. Może to być ktoś, komu nie chciałbyś się ujawnić lub zdrajca w twojej siatce wywiadowczej.\n◊ Gdzie ten przedmiot lub ta osoba byli ostatnio widziani?\n◊ Jacy ludzie wiązali się z tym, czego szukam?\n◊ Jakie to coś zostawiło ślady i znaki?\n◊ Kto jeszcze chce znaleźć to, czego szukam?"
+    },
+    {
+        "id": "swiadomosc-ciala",
+        "name": "Świadomość ciała",
+        "attr": "+Percepcja",
+        "intro": "Twoje ciało i umysł są niczym jedno. Za każdym razem, gdy wykonujesz akrobacje lub popisy zręczności, rzuć +Percepcja:",
+        "high": "Wybierz jedną z możliwości.\n◊ Wydostań się z więzów.\n◊ Omiń przeszkodę (stworzenie lub obiekt).\n◊ Dostań się do miejsca lub przejdź przez miejsce, które normalnie byłoby poza zasięgiem.",
+        "mid": "Wybierz jedną z możliwości, ale wystawiasz się na zagrożenie lub musisz ponieść jakąś cenę.\n◊ Wydostań się z więzów.\n◊ Omiń przeszkodę (stworzenie lub obiekt).\n◊ Dostań się do miejsca lub przejdź przez miejsce, które normalnie byłoby poza zasięgiem.",
+        "low": "Wybierz jedną z możliwości, ale coś idzie bardzo nie tak. MG wykonuje Ruch.\n◊ Wydostań się z więzów.\n◊ Omiń przeszkodę (stworzenie lub obiekt).\n◊ Dostań się do miejsca lub przejdź przez miejsce, które normalnie byłoby poza zasięgiem."
+    },
+    {
+        "id": "talent-artystyczny",
+        "name": "Talent artystyczny",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy uprawiasz swoją dziedzinę sztuki lub pokazujesz swoje prace publiczności, rzuć +Charyzma, by wpłynąć na publiczność w dowolnym momencie sceny:",
+        "high": "Wybierz do dwóch możliwości w dowolnym momencie sceny.\n◊ Ludzie chcą zobaczyć więcej twoich dzieł sztuki.\n◊ Ludzie doświadczają emocji, jaką chcesz przekazać (np. złość, żal, strach, radość, żądza itd.).\n◊ Ludzie podziwiają cię (otrzymujesz +1 do wszystkich testów w stosunku do publiczności na czas tej sceny).\n◊ Uwaga ludzi skupia się wyłącznie na tobie przez cały czas występu.",
+        "mid": "Wybierz jedną z możliwości w dowolnym momencie sceny.\n◊ Ludzie chcą zobaczyć więcej twoich dzieł sztuki.\n◊ Ludzie doświadczają emocji, jaką chcesz przekazać (np. złość, żal, strach, radość, żądza itd.).\n◊ Ludzie podziwiają cię (otrzymujesz +1 do wszystkich testów w stosunku do publiczności na czas tej sceny).\n◊ Uwaga ludzi skupia się wyłącznie na tobie przez cały czas występu.",
+        "low": "Wybierz jedną z możliwości. Sprawy się gmatwają lub pojawia się zagrożenie. MG wykonuje Ruch.\n◊ Ludzie chcą zobaczyć więcej twoich dzieł sztuki.\n◊ Ludzie doświadczają emocji, jaką chcesz przekazać (np. złość, żal, strach, radość, żądza itd.).\n◊ Ludzie podziwiają cię (otrzymujesz +1 do wszystkich testów w stosunku do publiczności na czas tej sceny).\n◊ Uwaga ludzi skupia się wyłącznie na tobie przez cały czas występu."
+    },
+    {
+        "id": "fascynacja",
+        "name": "Fascynacja",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy używasz sztuki, by uwieść BN-a, rzuć +Charyzma:",
+        "high": "Wybierz jedną z możliwości.\n◊ Dana osoba jest tobą zainteresowana.\n◊ Dana osoba zapomina o swoich troskach, gdy obcuje z twoją sztuką.\n◊ Dana osoba jest całkowicie pochłonięta twoją sztuką i zapomina o swoim otoczeniu.",
+        "mid": "Wybierz jedną możliwość; MG zaś wybiera jedno z poniższych: osoba dostaje obsesji na twoim punkcie, lub osoba pragnie cię tu i teraz.\n◊ Dana osoba jest tobą zainteresowana.\n◊ Dana osoba zapomina o swoich troskach, gdy obcuje z twoją sztuką.\n◊ Dana osoba jest całkowicie pochłonięta twoją sztuką i zapomina o swoim otoczeniu.",
+        "low": "Wpływasz na tę osobę, ale w nieprzewidziany sposób lub zainteresowała się ona tobą tak bardzo, że to aż nieprzyjemne – ty wybierasz. MG wykonuje Ruch."
+    },
+    {
+        "id": "znany",
+        "name": "Znany",
+        "attr": "+Charyzma",
+        "intro": "Jesteś znany w swojej dziedzinie. Za każdym razem, gdy spotykasz kogoś, kto prawdopodobnie o tobie słyszał, rzuć +Charyzma:",
+        "high": "Dana osoba zna twoją reputację; możesz zadecydować, co słyszała. MG będzie ją odpowiednio odgrywać. Otrzymujesz +2 do następnego rzutu na Ruch Wpłyń na innych przeciwko tej osobie.",
+        "mid": "Dana osoba zna twoją reputację; możesz zadecydować, co słyszała.",
+        "low": "Dana osoba zna twoją reputację. MG decyduje, co słyszała."
+    },
+    {
+        "id": "zaklinacz-wezy",
+        "name": "Zaklinacz węży",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy uprawiasz swoją sztukę dla inteligentnego, potwornego stworzenia, rzuć +Dusza, by obudzić w nim pożądanie:",
+        "high": "Wybierz natychmiast jedną z możliwości; możesz wybrać do dwóch kolejnych w dowolnym momencie w przyszłości.\n◊ Poproś stworzenie o pomoc w rozwiązaniu problemu.\n◊ Poproś stworzenie o coś, czego pragniesz.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Poproś stworzenie o pomoc w rozwiązaniu problemu.\n◊ Poproś stworzenie o coś, czego pragniesz.",
+        "low": "Stworzenie nie radzi sobie ze swoim silnym pożądaniem. Nie może się powstrzymać przed próbą pożarcia lub uwięzienia cię."
+    },
+    {
+        "id": "cien",
+        "name": "Cień",
+        "attr": "+Percepcja",
+        "intro": "Kiedy kogoś śledzisz, rzuć +Percepcja. Z kolei kiedy chcesz zgubić ogon, rzuć +Percepcja:",
+        "high": "Śledzenie: unikasz wykrycia, podążasz za celem aż do końca i dowiadujesz się o nim czegoś, co możesz wykorzystać później. Gubienie ogona: gubisz tych, którzy cię śledzą, i możesz teraz zacząć ich śledzić.",
+        "mid": "Śledzenie: unikasz wykrycia i podążasz za celem aż do końca. Gubienie ogona: gubisz tych, którzy cię śledzą.",
+        "low": "Śledzenie: zostajesz zauważony lub napotykasz po drodze problem. Gubienie ogona: nie udaje ci się zgubić ogona; co więcej, twoi prześladowcy mogą zastawić na ciebie zasadzkę, zniknąć bez śladu (by pojawić się znów w najmniej oczekiwanym momencie) lub odmówić odejścia. MG wykonuje Ruch."
+    },
+    {
+        "id": "gladka-gadka",
+        "name": "Gładka gadka",
+        "attr": "+Opanowanie",
+        "intro": "Za każdym razem, gdy rozmawiasz z BN-em, by przyciągnąć jego uwagę, rzuć +Opanowanie:",
+        "high": "Wybierz dwie możliwości.\n◊ Spraw, że BN nie zauważy czegoś w swoim bezpośrednim otoczeniu.\n◊ Spraw, że BN ujawni coś ważnego (o szczegółach opowie MG).\n◊ Rozprosz BN-a. Otrzymujesz +1 do następnego rzutu przeciw niemu.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Spraw, że BN nie zauważy czegoś w swoim bezpośrednim otoczeniu.\n◊ Spraw, że BN ujawni coś ważnego (o szczegółach opowie MG).\n◊ Rozprosz BN-a. Otrzymujesz +1 do następnego rzutu przeciw niemu.",
+        "low": "Wybierz jedną z możliwości, ale osoba ta staje się podejrzliwa wobec twoich motywów. MG wykonuje Ruch.\n◊ Spraw, że BN nie zauważy czegoś w swoim bezpośrednim otoczeniu.\n◊ Spraw, że BN ujawni coś ważnego (o szczegółach opowie MG).\n◊ Rozprosz BN-a. Otrzymujesz +1 do następnego rzutu przeciw niemu."
+    },
+    {
+        "id": "zasiegniecie-jezyka",
+        "name": "Zasięgnięcie języka",
+        "attr": "+Percepcja",
+        "intro": "Za każdym razem, gdy poruszasz się w niewielkim tłumie, by pozyskać informacje, rzuć +Percepcja. Przykłady „niewielkiego tłumu” obejmują przyjęcie, bar/restaurację czy biuro. Ty decydujesz, jakiej konkretnie informacji szukasz, ale posiadanie jej przez członków danego tłumu musi mieć sens.",
+        "high": "Zadaj trzy pytania.\n◊ Kto tutaj posiada informacje, których szukam?\n◊ Gdzie mogę znaleźć to, czego szukam?\n◊ Kto mnie obserwuje?\n◊ Czy jest tu jeszcze coś interesującego?",
+        "mid": "Zadaj dwa pytania. Przyciągasz niechcianą uwagę.\n◊ Kto tutaj posiada informacje, których szukam?\n◊ Gdzie mogę znaleźć to, czego szukam?\n◊ Kto mnie obserwuje?\n◊ Czy jest tu jeszcze coś interesującego?",
+        "low": "Zadaj jedno pytanie. Zostałeś odkryty. Ci, którzy mają to, czego szukasz, będą cię oczekiwać. MG wykonuje Ruch.\n◊ Kto tutaj posiada informacje, których szukam?\n◊ Gdzie mogę znaleźć to, czego szukam?\n◊ Kto mnie obserwuje?\n◊ Czy jest tu jeszcze coś interesującego?"
+    },
+    {
+        "id": "marzyciel",
+        "name": "Marzyciel",
+        "attr": "+Dusza",
+        "intro": "Jesteś utalentowanym sennym wędrowcem-samoukiem. Za każdym razem, gdy chcesz kogoś spotkać we Śnie lub dowiedzieć się tam prawdy o czymś, rzuć +Dusza:",
+        "high": "Spotykasz pożądaną osobę lub docierasz do konkretnego miejsca we Śnie.",
+        "mid": "Spotykasz pożądaną osobę lub docierasz do konkretnego miejsca we Śnie, ale jakiś element uległ zmianie albo coś podążyło za tobą lub osobą, której szukałeś.",
+        "low": "Zagubiłeś się we Śnie i nie możesz się zbudzić, dopóki nie odnajdziesz drogi z powrotem."
+    },
+    {
+        "id": "budzacy-podziw",
+        "name": "Budzący podziw",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy ostentacyjnie okazujesz wyższość, rzuć +Charyzma:",
+        "high": "Ludzie wokół ciebie akceptują cię jako lidera i słuchają cię. Otrzymujesz +1 do wszystkich testów przeciw ludziom w tej scenie.",
+        "mid": "Ludzie czują, że nadawałbyś się na lidera, i okazują ci szacunek. Wybierz jednego, który szczególnie zgadza się z tym, co myślisz. Otrzymujesz +1 do wszystkich testów przeciwko tej osobie do końca sceny.",
+        "low": "Ludzie traktują cię jak lidera, ale jeden z nich usiłuje ci odebrać ten status. MG wykonuje Ruch."
+    },
+    {
+        "id": "za-wszelka-cene",
+        "name": "Za wszelką cenę",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy naprawdę czegoś pożądasz, możesz otrzymać +2 do rzutu w zamian za obniżenie Stabilności (−2).",
+        "passive": true
+    },
+    {
+        "id": "lalkarz",
+        "name": "Lalkarz",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy wykonujesz plan, wykorzystując innych ludzi jak pionki, rzuć +Rozum:",
+        "high": "Każda zaangażowana osoba otrzymuje +1 do testów związanych z wykonaniem planu, a ty otrzymujesz 1 punkt Doświadczenia, jeśli plan zadziała.",
+        "mid": "Otrzymujesz 1 punkt Doświadczenia, jeśli plan zadziała, ale coś przeoczyłeś lub źle oceniłeś.",
+        "low": "Twój plan jest nieodpowiedni lub nieprzemyślany albo zostaje odkryty. MG wykonuje Ruch."
+    },
+    {
+        "id": "oportunista",
+        "name": "Oportunista",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy poświęcisz kogoś innego, by zrealizować swoje plany, zwiększ Stabilność (+1).",
+        "passive": true
+    },
+    {
+        "id": "siec-kontaktow",
+        "name": "Sieć kontaktów",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy pytasz swoje kontakty o wybraną przez ciebie osobę, rzuć +Charyzma:",
+        "high": "Możesz zadać trzy pytania z poniższej listy.\n◊ Jakimi zasobami dysponuje ta osoba?\n◊ Z kim ma układy biznesowe?\n◊ Gdzie mogę ją znaleźć?\n◊ Czego chce?\n◊ Co najbardziej boi się stracić?",
+        "mid": "Możesz zadać dwa pytania z poniższej listy.\n◊ Jakimi zasobami dysponuje ta osoba?\n◊ Z kim ma układy biznesowe?\n◊ Gdzie mogę ją znaleźć?\n◊ Czego chce?\n◊ Co najbardziej boi się stracić?",
+        "low": "Możesz zadać jedno pytanie z poniższej listy, ale osoba, o którą pytasz, dowiaduje się o tym. MG wykonuje Ruch.\n◊ Jakimi zasobami dysponuje ta osoba?\n◊ Z kim ma układy biznesowe?\n◊ Gdzie mogę ją znaleźć?\n◊ Czego chce?\n◊ Co najbardziej boi się stracić?"
+    },
+    {
+        "id": "wplywowi-przyjaciele",
+        "name": "Wpływowi przyjaciele",
+        "attr": "+Charyzma",
+        "intro": "Masz przyjaciół dysponujących władzą i wpływami. Za każdym razem, gdy potrzebujesz zdobyć jakiś przedmiot, dostać się do niedostępnych miejsc lub spotkać z konkretną osobą, rzuć +Charyzma:",
+        "high": "Twoi przyjaciele mogą załatwić ci to, czego potrzebujesz.",
+        "mid": "Mogą ci to załatwić, ale musisz im się później odwdzięczyć.",
+        "low": "Mogą ci załatwić to, czego chcesz, ale narażasz się komuś potężnemu lub wywołujesz niechciany rozgłos. MG wykonuje Ruch."
+    },
+    {
+        "id": "uliczny-wojownik",
+        "name": "Uliczny wojownik",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy walczysz w zwarciu, rzuć +Przemoc:",
+        "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Unik: Unikasz ataku.\n◊ Grad ciosów: Otrzymujesz +2 do następnego rzutu, w którym atakujesz przeciwnika.\n◊ Nieczysta walka: Ogłuszasz na chwilę przeciwnika przez bolesne uderzenie, np. w oko, krocze czy ucho...",
+        "mid": "Otrzymujesz dwie Przewagi, ale MG może również wybrać jeden problem: ryzykujesz utratę kontroli podczas walki (Weź się w garść, by temu zapobiec) lub zyskujesz wroga, który będzie chciał zemścić się później.\n◊ Unik: Unikasz ataku.\n◊ Grad ciosów: Otrzymujesz +2 do następnego rzutu, w którym atakujesz przeciwnika.\n◊ Nieczysta walka: Ogłuszasz na chwilę przeciwnika przez bolesne uderzenie, np. w oko, krocze czy ucho...",
+        "low": "Jesteś rozproszony i tracisz kontrolę. MG wykonuje Ruch."
+    },
+    {
+        "id": "drab",
+        "name": "Drab",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy komuś grozisz – pośrednio lub bezpośrednio – w wiarygodny sposób, rzuć +Przemoc:",
+        "high": "Dana osoba musi zdecydować, czy zrobić, co każesz, czy sprzeciwić się, wiedząc, że możesz zrealizować groźbę.",
+        "mid": "Musisz dać jej trzecie wyjście. Wybierz jedno:\n◊ Oferuje ci coś, czego według niej chcesz bardziej niż tego, czego żądasz.\n◊ Wycofuje się ze sceny.\n◊ Jest przerażona. Otrzymujesz +1 do wszystkich rzutów przeciw niej, dopóki nie udowodni, że się ciebie nie boi.\n◊ Atakuje cię z niekorzystnej pozycji. Otrzymujesz +2 do Ruchu Przystąp do walki, jeśli podejmujesz walkę.",
+        "low": "Okazuje się, że nie masz takiej przewagi, jaką zakładałeś. MG wykonuje Ruch."
+    },
+    {
+        "id": "herszt-gangu",
+        "name": "Herszt gangu",
+        "attr": "+Przemoc",
+        "intro": "Jesteś szefem niewielkiego gangu. Za każdym razem, gdy wydajesz swoim gangsterom rozkazy, które są ryzykowne lub których wykonanie może ich wiele kosztować, rzuć +Przemoc:",
+        "high": "Wykonują twoje rozkazy bez szemrania.",
+        "mid": "Robią to, czego chcesz, ale sprawy się gmatwają (wybierz jedną z możliwości): jeden z nich sprzeciwia ci się na oczach innych, albo wszyscy członkowie gangu będą przez jakiś czas niezadowoleni.",
+        "low": "Pojawiają się problemy. Być może coś idzie nie tak podczas wykonywania twoich rozkazów albo też członkowie wątpią w twoje zdolności przywódcze. MG wykonuje Ruch."
+    },
+    {
+        "id": "mistrz-ucieczek",
+        "name": "Mistrz ucieczek",
+        "attr": "+Opanowanie",
+        "intro": "Jesteś mistrzem w ulatnianiu się, kiedy szambo wybija. Za każdym razem, gdy potrzebujesz wymknąć się w niebezpiecznej sytuacji, nakreśl swój plan i rzuć +Opanowanie:",
+        "high": "Wymykasz się bez trudności.",
+        "mid": "Możesz pozostać albo uciec i ponieść jakąś cenę, na przykład pozostawić coś ważnego lub zabrać ze sobą coś, co pozwoli cię wyśledzić. MG decyduje, na czym dokładnie polega owa „cena”.",
+        "low": "Już prawie uciekłeś, ale nagle wpadasz w duże kłopoty. MG wykonuje Ruch."
+    },
+    {
+        "id": "zabojcze-spojrzenie",
+        "name": "Zabójcze spojrzenie",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy znajdziesz się w napiętej sytuacji, rzuć +Przemoc:",
+        "high": "Patrzysz BN-owi w oczy i sprawiasz, że zamiera w bezruchu i nie jest w stanie nic zrobić, dopóki nie przerwiesz kontaktu wzrokowego. Otrzymujesz też +2 do wszystkich testów przeciw niemu.",
+        "mid": "Patrzysz BN-owi w oczy i sprawiasz, że zamiera w bezruchu i nie jest w stanie nic zrobić, dopóki nie przerwiesz kontaktu wzrokowego.",
+        "low": "Twoi przeciwnicy postrzegają cię jako główne zagrożenie."
+    },
+    {
+        "id": "znajomosc-polswiatka",
+        "name": "Znajomość półświatka",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy chcesz pozyskać przedmioty lub usługi w świecie przestępczym, rzuć +Charyzma:",
+        "high": "Nie ma problemu: otrzymujesz to, czego chcesz. Ktoś ci zaraz pomoże.",
+        "mid": "MG wybiera jedną możliwość: będzie cię to dodatkowo kosztować (zapłata w towarze, wyświadczona przysługa czy zawyżona cena), możesz to załatwić tylko u osoby, u której masz już dług, albo dostajesz propozycję zastępczą (kto inny, coś w zamian).",
+        "low": "Myślisz, że znalazłeś to, czego szukałeś; jednak pozyskanie tej rzeczy okazuje się kosztowne lub wiąże się z dużymi utrudnieniami, lub sama rzecz ma znaczne wady. MG wykonuje Ruch."
+    },
+    {
+        "id": "okultystyczna-biblioteka",
+        "name": "Okultystyczna biblioteka",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy szukasz w swojej bibliotece czegoś o zjawiskach nadnaturalnych, rzuć +Rozum:",
+        "high": "Zadaj MG dwa pytania z poniższej listy.\n◊ Z którą z sił wyższych to coś ma związek?\n◊ Czego potrzebuję lub co muszę zrobić, by wygnać lub kontrolować tę istotę?\n◊ Z którym wymiarem jest to związane?\n◊ Co muszę zrobić, by się przed tym chronić?",
+        "mid": "Zadaj MG jedno pytanie z poniższej listy.\n◊ Z którą z sił wyższych to coś ma związek?\n◊ Czego potrzebuję lub co muszę zrobić, by wygnać lub kontrolować tę istotę?\n◊ Z którym wymiarem jest to związane?\n◊ Co muszę zrobić, by się przed tym chronić?",
+        "low": "Zdaj MG jedno pytanie z poniższej listy. Przeoczyłeś coś kluczowego. MG zyskuje 1 punkt Wpływu, który może wydać w dowolnym momencie na wykonanie twardego lub miękkiego Ruchu.\n◊ Z którą z sił wyższych to coś ma związek?\n◊ Czego potrzebuję lub co muszę zrobić, by wygnać lub kontrolować tę istotę?\n◊ Z którym wymiarem jest to związane?\n◊ Co muszę zrobić, by się przed tym chronić?"
+    },
+    {
+        "id": "drobiazgowy",
+        "name": "Drobiazgowy",
+        "attr": "+Percepcja",
+        "intro": "Za każdym razem, gdy miałeś okazję przyglądać się komuś przez jakiś czas, rzuć +Percepcja:",
+        "high": "Zadaj trzy pytania z listy poniżej.\n◊ Skąd pochodzisz?\n◊ Czy jesteś zdolny do przemocy?\n◊ Jak mogę cię uwieść lub skusić?\n◊ Dlaczego tu jesteś?\n◊ Nad czym pracujesz?",
+        "mid": "Zadaj dwa pytania z listy poniżej.\n◊ Skąd pochodzisz?\n◊ Czy jesteś zdolny do przemocy?\n◊ Jak mogę cię uwieść lub skusić?\n◊ Dlaczego tu jesteś?\n◊ Nad czym pracujesz?",
+        "low": "Zadaj jedno pytanie z listy poniżej, ale osoba, którą obserwujesz, dostrzega twoje zainteresowanie. MG wykonuje Ruch.\n◊ Skąd pochodzisz?\n◊ Czy jesteś zdolny do przemocy?\n◊ Jak mogę cię uwieść lub skusić?\n◊ Dlaczego tu jesteś?\n◊ Nad czym pracujesz?"
+    },
+    {
+        "id": "empatyczny",
+        "name": "Empatyczny",
+        "attr": "Pasywny",
+        "intro": "Potrafisz wyczuć ludzkie motywy przez podświadome analizowanie języka ciała, doboru słów i zachowania. Za każdym razem, gdy Rozeznajesz intencje, możesz zadać jedno dodatkowe pytanie niezależnie od wyniku rzutu.",
+        "passive": true
+    },
+    {
+        "id": "przygotowany",
+        "name": "Przygotowany",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy szukasz informacji o jakimś miejscu, zanim się do niego udasz, rzuć +Rozum:",
+        "high": "Wybierz trzy możliwości.\n◊ Znajdź lub stwórz mapę miejsca.\n◊ Znajdź informacje na temat wszystkich systemów bezpieczeństwa lub innych przeszkód.\n◊ Wskaż położenie czegoś, czego szukasz.",
+        "mid": "Wybierz dwie możliwości.\n◊ Znajdź lub stwórz mapę miejsca.\n◊ Znajdź informacje na temat wszystkich systemów bezpieczeństwa lub innych przeszkód.\n◊ Wskaż położenie czegoś, czego szukasz.",
+        "low": "Wybierz jedną z możliwości. Przeoczyłeś coś kluczowego. MG zyskuje 1 punkt Wpływu, który może wykorzystać w dowolnym momencie później, by wykonać miękki lub twardy Ruch związany z danym miejscem.\n◊ Znajdź lub stwórz mapę miejsca.\n◊ Znajdź informacje na temat wszystkich systemów bezpieczeństwa lub innych przeszkód.\n◊ Wskaż położenie czegoś, czego szukasz."
+    },
+    {
+        "id": "bystrooki",
+        "name": "Bystrooki",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy Analizujesz sytuację, możesz - oprócz standardowych pytań - wybrać spośród poniższych:\n◊ Jaką dana osoba ma słabość, którą mogę wykorzystać?\n◊ Jakie dana osoba ma mocne strony, na które muszę uważać?",
+        "passive": true
+    },
+    {
+        "id": "dostep-do-darknetu",
+        "name": "Dostęp do Darknetu",
+        "attr": "+Percepcja",
+        "intro": "Za każdym razem, gdy przeszukujesz Darknet w poszukiwaniu informacji, rzadkich przedmiotów lub mitów, rzuć +Percepcja:",
+        "high": "Znajdujesz to, czego szukasz, możesz też wybrać jedną z możliwości:\n◊ Odkrywasz portal do innego wymiaru i ścieżkę, po której możesz do niego wrócić później.\n◊ Kontaktujesz się z kimś – lub czymś – kto za odpowiednią cenę może ci pomóc.\n◊ Znajdujesz coś cennego lub istotnego oprócz tego, czego szukałeś. MG powie ci, co to jest.",
+        "mid": "Znajdujesz to, czego szukasz, ale napotykasz również na coś odrażającego lub strasznego. Musisz Wziąć się w garść, by ustalić, jak to na ciebie wpływa.",
+        "low": "Znajdujesz to, czego szukasz, ale napotykasz także coś bardzo groźnego. Może usiłować się z tobą związać lub podążyć za tobą z powrotem do rzeczywistości. MG wykonuje Ruch."
+    },
+    {
+        "id": "haker",
+        "name": "Haker",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy grzebiesz w sieciach elektronicznych w poszukiwaniu zastrzeżonych informacji, pirackich programów lub w celu wyłączenia systemów bezpieczeństwa, rzuć +Rozum:",
+        "high": "Bez problemu osiągasz swój cel.",
+        "mid": "Pojawiają się utrudnienia. Wybierz jedną z możliwości:\n◊ Ktoś odkrywa twój włam. Możesz kontynuować, ale będzie to ryzykowane; możesz też pójść na ustępstwo i osiągnąć mniej, niż zamierzałeś.\n◊ Zostawiasz za sobą ślady.",
+        "low": "Nie zdajesz sobie z tego sprawy, ale twoje działania nie zakończyły się zgodnie z planem. Być może nie poszło ci tak dobrze, jak zakładałeś, a może osobiści wrogowie, stróże prawa albo coś innego, co czai się w sieci, wpadli na twój trop. MG wykonuje Ruch."
+    },
+    {
+        "id": "parkour",
+        "name": "Parkour",
+        "attr": "+Opanowanie",
+        "intro": "Świetnie biegasz i skaczesz, nawet w trudnym terenie. Za każdym razem, gdy korzystasz z manewrów akrobatycznych, rzuć +Opanowanie:",
+        "high": "Wybierz dwie możliwości. Jedną możesz wykorzystać później.\n◊ Pokonaj pozornie niemożliwą przeszkodę.\n◊ Wykonaj pozornie śmiertelny skok bez otrzymywania Obrażeń.\n◊ Z powodzeniem uniknij zagrożenia.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Pokonaj pozornie niemożliwą przeszkodę.\n◊ Wykonaj pozornie śmiertelny skok bez otrzymywania Obrażeń.\n◊ Z powodzeniem uniknij zagrożenia.",
+        "low": "Wybierz jedną z możliwości, ale pojawia się też jakieś utrudnienie, nowe zagrożenie lub trzeba ponieść jakąś cenę. MG wykonuje Ruch.\n◊ Pokonaj pozornie niemożliwą przeszkodę.\n◊ Wykonaj pozornie śmiertelny skok bez otrzymywania Obrażeń.\n◊ Z powodzeniem uniknij zagrożenia."
+    },
+    {
+        "id": "as-w-rekawie",
+        "name": "As w rękawie",
+        "attr": "+Opanowanie",
+        "intro": "Za każdym razem, gdy ktoś przyprze cię do muru lub postawi w trudnej sytuacji, rzuć +Opanowanie:",
+        "high": "Dostajesz dwie Przewagi. Możesz wydać je w dowolnym momencie sceny.\n◊ Posiadasz niewielką, ukrytą zabójczą broń (sztylet lub coś podobnego), której możesz niezauważenie dobyć.\n◊ Zdajesz sobie sprawę, że twój przeciwnik ma słabość, którą możesz wykorzystać (otrzymujesz +2 do następnego rzutu, jeśli dotyczy on wykorzystania tej słabości). Zapytaj MG, na czym polega ta słabość.\n◊ Zauważasz drogę ucieczki. Zapytaj MG jaką. Otrzymujesz +2 do następnego rzutu, w którym spróbujesz z niej skorzystać.",
+        "mid": "Zdobywasz jedną Przewagę. Możesz wydać ją w dowolnym momencie sceny.\n◊ Posiadasz niewielką, ukrytą zabójczą broń (sztylet lub coś podobnego), której możesz niezauważenie dobyć.\n◊ Zdajesz sobie sprawę, że twój przeciwnik ma słabość, którą możesz wykorzystać (otrzymujesz +2 do następnego rzutu, jeśli dotyczy on wykorzystania tej słabości). Zapytaj MG, na czym polega ta słabość.\n◊ Zauważasz drogę ucieczki. Zapytaj MG jaką. Otrzymujesz +2 do następnego rzutu, w którym spróbujesz z niej skorzystać.",
+        "low": "Zdobywasz jedną Przewagę, ale sytuacja jest gorsza, niż myślałeś. MG wykonuje Ruch."
+    },
+    {
+        "id": "szantazysta",
+        "name": "Szantażysta",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy Rozeznajesz intencje, możesz - oprócz standardowych pytań - wybrać spośród poniższych:\n◊ Czego się boisz?\n◊ Co jest dla ciebie cenne?",
+        "passive": true
+    },
+    {
+        "id": "boss",
+        "name": "Boss",
+        "attr": "+Opanowanie",
+        "intro": "Masz na swoje usługi od pięciu do dziesięciu popleczników, którzy są wobec ciebie lojalni, zwykle tak długo, jak im płacisz. Za każdym razem, gdy wysyłasz poplecznika, by wykonali ryzykowne zadanie, rzuć +Opanowanie:",
+        "high": "Wykonują twoje rozkazy i wszystko idzie zgodnie z planem.",
+        "mid": "Wykonują twoje rozkazy, ale MG wybiera jedną z możliwości: ktoś wpadł w kłopoty, zadanie nie zostało wykonane i należy zrobić coś jeszcze, lub w przyszłości pojawią się konsekwencje.",
+        "low": "MG decyduje, co poszło nie tak i czy wiadomo o tym od razu, czy okaże się to później. MG wykonuje Ruch."
+    },
+    {
+        "id": "swiatowiec",
+        "name": "Światowiec",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy przybędziesz do nowego miejsca w świecie śmiertelników, zdecyduj, czy już w nim byłeś, a jeśli tak – opisz jakiś istotny dla ciebie szczegół. Określ też, czy kogoś tu spotkałeś i co tu zostawiłeś. MG powie ci, co zmieniło się od tego czasu.",
+        "passive": true
+    },
+    {
+        "id": "gadzi-jezyk",
+        "name": "Gadzi język",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy kimś manipulujesz, rzuć +Charyzma:",
+        "high": "Wybierz jedną z możliwości:\n◊ Dana osoba ci ufa (BG przypisuje +1 do Relacji z tobą).\n◊ Dana osoba jest tobą oczarowana (otrzymujesz +1 do wszystkich testów przeciw niej w tej scenie).\n◊ Dana osoba ujawnia jakąś słabość, którą możesz wykorzystać później.\n◊ Osoba ta widzi cię jako przyjaciela, do którego może się zwrócić w potrzebie.\n◊ Osoba ta zakochuje się w tobie.",
+        "mid": "Wybierz jedną z możliwości z listy powyżej, ale występuje też jakieś utrudnienie wybrane przez MG lub gracza: osoba ta poczuje się zdradzona, opuszczona, poniżona lub zmanipulowana, jeśli kiedykolwiek nadużyjesz jej zaufania.",
+        "low": "Dana osoba przejrzała cię na wskroś; będzie działać tak, jak uzna za stosowne."
+    },
+    {
+        "id": "studia-okultystyczne",
+        "name": "Studia okultystyczne",
+        "attr": "+Rozum",
+        "intro": "Jesteś adeptem okultyzmu. Za każdym razem, gdy po raz pierwszy spotykasz się z jakąś magiczną dyscypliną, istotą lub zjawiskiem, rzuć +Rozum:",
+        "high": "Wykorzystaj obie poniższe możliwości.\n◊ Wiesz coś na ten temat (zapytaj MG, co wiesz; otrzymujesz +1 na resztę sceny do testów, w których wykorzystujesz wiedzę z odpowiedzi).\n◊ Wiesz, gdzie możesz znaleźć na dany temat więcej informacji (zapytaj MG, gdzie ich szukać).",
+        "mid": "Wybierz jedną z możliwości.\n◊ Wiesz coś na ten temat (zapytaj MG, co wiesz; otrzymujesz +1 na resztę sceny do testów, w których wykorzystujesz wiedzę z odpowiedzi).\n◊ Wiesz, gdzie możesz znaleźć na dany temat więcej informacji (zapytaj MG, gdzie ich szukać).",
+        "low": "Masz mgliste wspomnienie, że już spotkałeś się z czymś podobnym, ale nie jesteś pewien. MG opisuje, co pamiętasz."
+    },
+    {
+        "id": "bezwzgledny",
+        "name": "Bezwzględny",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy poświęcasz kogoś innego, by ocalić własną skórę, rzuć +Przemoc:",
+        "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Ludzka tarcza: Zmuś kogoś do przyjęcia za ciebie wszystkich punktów Obrażeń z jednego ataku.\n◊ Przynęta: Wystaw kogoś na zagrożenie, by oflankować przeciwnika (zadajesz +1 punkt Obrażeń).\n◊ Ofiara: Wystaw kogoś przeciwnikowi, a sam ucieknij.",
+        "mid": "Otrzymujesz dwie Przewagi.\n◊ Ludzka tarcza: Zmuś kogoś do przyjęcia za ciebie wszystkich punktów Obrażeń z jednego ataku.\n◊ Przynęta: Wystaw kogoś na zagrożenie, by oflankować przeciwnika (zadajesz +1 punkt Obrażeń).\n◊ Ofiara: Wystaw kogoś przeciwnikowi, a sam ucieknij.",
+        "low": "Wydarzenia przybierają dla ciebie zły obrót. MG wykonuje Ruch."
+    },
+    {
+        "id": "desperat",
+        "name": "Desperat",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy usiłujesz pokonać przytłaczające trudności, otrzymujesz +1 do wszystkich rzutów, dopóki zagrożenie nie minie.",
+        "passive": true
+    },
+    {
+        "id": "zwiazany",
+        "name": "Związany",
+        "attr": "+Dusza",
+        "intro": "Jesteś związany z istotą z innego świata, z której mocy możesz korzystać. Określ, czym ona jest według ciebie. Na początku każdej sesji gry, rzuć +Dusza:",
+        "high": "W dowolnym momencie sesji możesz wybrać do trzech możliwości.\n◊ Ujrzyj prawdziwą postać jakiegoś stworzenia lub miejsca.\n◊ Rozprosz magię, która na ciebie wpływa.\n◊ Wezwij istotę na pomoc.",
+        "mid": "W dowolnym momencie sesji możesz wybrać jedną z możliwości.\n◊ Ujrzyj prawdziwą postać jakiegoś stworzenia lub miejsca.\n◊ Rozprosz magię, która na ciebie wpływa.\n◊ Wezwij istotę na pomoc.",
+        "low": "W dowolnym momencie sesji możesz wybrać jedną z możliwości, ale w którymś jej momencie MG wykona Ruch w imieniu istoty.\n◊ Ujrzyj prawdziwą postać jakiegoś stworzenia lub miejsca.\n◊ Rozprosz magię, która na ciebie wpływa.\n◊ Wezwij istotę na pomoc."
+    },
+    {
+        "id": "przypieczetowany-los",
+        "name": "Przypieczętowany los",
+        "attr": "Pasywny",
+        "intro": "Wymaga Komplikacji Potępiony. Za każdym razem, gdy otrzymujesz Ranę Krytyczną, możesz zaznaczyć 1 pole Czasu przy Komplikacji Potępiony, by natychmiast potraktować ją jak opatrzoną Ranę. Za każdym razem, gdy umierasz, zaznacz 2 pola Czasu przy Komplikacji Potępiony, by się obudzić – ranny i osłabiony, ale żywy. Wszystkie twoje Rany liczą się jako opatrzone.",
+        "passive": true
+    },
+    {
+        "id": "do-ostatniego-tchu",
+        "name": "Do ostatniego tchu",
+        "attr": "Pasywny",
+        "intro": "Wymaga Komplikacji Potępiony. Gdy odmawiasz poddania się nawet, gdy wszystkie szanse są przeciwko tobie, zaznacz 1 pole Czasu, by przerzucić kości.",
+        "passive": true
+    },
+    {
+        "id": "berserk",
+        "name": "Berserk",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy walczysz bez oglądania się na własne bezpieczeństwo, rzuć +Przemoc:",
+        "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Rozochocony: Przystąp do walki z dodatkowym przeciwnikiem.\n◊ Zawzięty: Zadaj +2 punkty Obrażeń jednym atakiem.\n◊ Rozszalały: Znajdź się w odległości pozwalającej na atak.\n◊ Nieostrożny: Przeraź przeciwników, kpiąc sobie ze śmierci (+1 do wszystkich testów podczas walki).",
+        "mid": "Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Rozochocony: Przystąp do walki z dodatkowym przeciwnikiem.\n◊ Zawzięty: Zadaj +2 punkty Obrażeń jednym atakiem.\n◊ Rozszalały: Znajdź się w odległości pozwalającej na atak.\n◊ Nieostrożny: Przeraź przeciwników, kpiąc sobie ze śmierci (+1 do wszystkich testów podczas walki).",
+        "low": "Otrzymujesz jedną Przewagę, ale później odkrywasz, że zostałeś ranny, choć tego nie zauważyłeś (Znieś Obrażenia; MG określa liczbę Obrażeń w oparciu o to, kto i jak cię zaatakował)."
+    },
+    {
+        "id": "glos-szalenstwa",
+        "name": "Głos szaleństwa",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy manipulujesz tłumem, rzuć +Dusza:",
+        "high": "Wybierz do trzech możliwości i użyj ich w dowolnym momencie sceny.\n◊ Zachęć innych ludzi, by przyłączyli się do tłumu.\n◊ Spraw, że ludzie z tłumu oddadzą ci wszystkie swoje wartościowe przedmioty.\n◊ Zjednocz tłum, by dla ciebie walczył.\n◊ Wywołaj w tłumie niepohamowane emocje: seksualną żądzę, gniew, smutek, pragnienie przemocy, hojność lub radość, w zależności od tego, jakie idee mu zaszczepiasz.\n◊ Spraw, że tłum rozejdzie się spokojnie do swoich zwyczajnych zajęć.",
+        "mid": "Wybierz do dwóch możliwości i użyj ich w dowolnym momencie sceny.\n◊ Zachęć innych ludzi, by przyłączyli się do tłumu.\n◊ Spraw, że ludzie z tłumu oddadzą ci wszystkie swoje wartościowe przedmioty.\n◊ Zjednocz tłum, by dla ciebie walczył.\n◊ Wywołaj w tłumie niepohamowane emocje: seksualną żądzę, gniew, smutek, pragnienie przemocy, hojność lub radość, w zależności od tego, jakie idee mu zaszczepiasz.\n◊ Spraw, że tłum rozejdzie się spokojnie do swoich zwyczajnych zajęć.",
+        "low": "Wybierz jedną z możliwości i użyj jej w dowolnym momencie sceny. Tłum staje się jednak niemożliwy do okiełznania i skłonny do agresji; nie można go też rozproszyć. MG wykonuje Ruch."
+    },
+    {
+        "id": "dobry-samarytanin",
+        "name": "Dobry samarytanin",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy pomagasz innym ze szkodą dla siebie, zwiększ Stabilność (+1).",
+        "passive": true
+    },
+    {
+        "id": "przywodca-kultu",
+        "name": "Przywódca kultu",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy ty i twoi wyznawcy odprawiacie rytuał, rzuć +Dusza:",
+        "high": "Otrzymujesz do trzech wizji, które wybierasz z listy poniżej.\n◊ Prawdziwa forma jakiejś istoty.\n◊ Portal między wymiarami.\n◊ Wrogowie kultu.\n◊ Zastosowanie przedmiotu.\n◊ Życzenia twojego bóstwa (otrzymujesz +1 do wszystkich rzutów przy wykonywaniu jego życzeń).",
+        "mid": "Otrzymujesz do dwóch wizji, które wybierasz z listy poniżej.\n◊ Prawdziwa forma jakiejś istoty.\n◊ Portal między wymiarami.\n◊ Wrogowie kultu.\n◊ Zastosowanie przedmiotu.\n◊ Życzenia twojego bóstwa (otrzymujesz +1 do wszystkich rzutów przy wykonywaniu jego życzeń).",
+        "low": "Wybierz jedną wizję. Iluzja rozdziera się. Możesz zostać tymczasowo przeniesiony do innego wymiaru, przyciągnąć uwagę demonicznego bytu lub ujrzeć przerażający omen. MG wykonuje Ruch."
+    },
+    {
+        "id": "boski-czempion",
+        "name": "Boski czempion",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy walczysz z wrogami swojego bóstwa lub bronisz świętego przedmiotu, zadajesz +1 punkt Obrażeń i otrzymujesz +1 do Ruchu Znieś obrażenia. Jeśli przegrasz taką walkę, twoje bóstwo się gniewa i otrzymujesz −1 do wszystkich rzutów z nim związanych, dopóki nie odpokutujesz za swoją porażkę.",
+        "passive": true
+    },
+    {
+        "id": "bez-sladu",
+        "name": "Bez śladu",
+        "attr": "+Percepcja",
+        "intro": "Za każdym razem, gdy zabiłeś kogoś w tajemnicy i opuszczasz miejsce zbrodni, rzuć +Percepcja:",
+        "high": "Możesz wykorzystać wszystkie trzy poniższe możliwości.\n◊ Opuszczasz miejsce zbrodni niezauważony i docierasz do bezpiecznej kryjówki w pobliżu. Opisz jak.\n◊ Nie pozostawiłeś żadnych śladów, które mogą do ciebie doprowadzić.\n◊ Ciało jest dobrze ukryte i przez jakiś czas nie zostanie odnalezione.",
+        "mid": "Wybierz dwie z poniższych możliwości.\n◊ Opuszczasz miejsce zbrodni niezauważony i docierasz do bezpiecznej kryjówki w pobliżu. Opisz jak.\n◊ Nie pozostawiłeś żadnych śladów, które mogą do ciebie doprowadzić.\n◊ Ciało jest dobrze ukryte i przez jakiś czas nie zostanie odnalezione.",
+        "low": "Wybierz jedną z możliwości. Ryzykujesz odkrycie lub mierzysz się z niespodziewaną przeszkodą. MG wykonuje Ruch."
+    },
+    {
+        "id": "snajper",
+        "name": "Snajper",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy strzelasz do odległego celu przy użyciu karabinu z lunetą, rzuć +Przemoc:",
+        "high": "Strzelasz celnie. Wybierz dwie możliwości.\n◊ Zadajesz +1 punkt Obrażeń.\n◊ Trafiasz w dodatkowy cel.\n◊ Unieruchamiasz twój cel.\n◊ Sprawiasz, że cel straci nad czymś kontrolę.\n◊ Nie ujawniasz swojej pozycji.",
+        "mid": "Strzelasz celnie. Wybierz jedną z możliwości.\n◊ Zadajesz +1 punkt Obrażeń.\n◊ Trafiasz w dodatkowy cel.\n◊ Unieruchamiasz twój cel.\n◊ Sprawiasz, że cel straci nad czymś kontrolę.\n◊ Nie ujawniasz swojej pozycji.",
+        "low": "Kula nie trafiła tam, gdzie chciałeś, lub ujawniłeś przeciwnikowi swoją pozycję. Spodziewaj się świadków, pościgu ze strony przeciwników w czasie ucieczki lub innych problemów. MG wykonuje Ruch."
+    },
+    {
+        "id": "kameleon",
+        "name": "Kameleon",
+        "attr": "+Intuicja",
+        "intro": "Za każdym razem, gdy przebierasz się za kogoś innego lub ukrywasz swoją tożsamość, by kogoś oszukać, rzuć +Intuicja:",
+        "high": "Twoja charakteryzacja jest przekonująca tak długo, jak długo pozostajesz w roli.",
+        "mid": "Udaje ci się oszukać każdego, kto nie przyjrzy ci się dokładnie, ale pojawia się też jakiś problem:\n◊ Nie możesz zbyt długo podtrzymywać oszustwa. Musisz działać szybko, jeśli nie chcesz zostać odkryty.\n◊ Pozostawiasz ślady i wskazówki, które mogą później zostać połączone z tobą.",
+        "low": "Twoje przebranie działa tylko w pewnej odległości. Jeśli ściągniesz na siebie uwagę, zostaniesz odkryty."
+    },
+    {
+        "id": "mistrz-broni",
+        "name": "Mistrz broni",
+        "attr": "Pasywny",
+        "intro": "Jesteś mistrzem walki bronią białą lub palną. Wybierz specjalizację:\nWalka bronią białą: Rzuć +Opanowanie zamiast Przemocy, by Przystąpić do walki w zwarciu. W trakcie walki bronią białą możesz korzystać także z poniższych ataków:\n◊ Wypad [2] [zasięg: pomieszczenie].\n◊ Precyzyjny atak [2] [zasięg: ramię; ignoruje pancerz].\n◊ Podcięcie [2] [zasięg: ramię; cel przewraca się].\nWalka bronią palną: Rzuć +Opanowanie zamiast Przemocy, by Przystąpić do walki podczas strzelaniny. Możesz także korzystać z poniższych ataków:\n◊ Dwa strzały w pierś i jeden w głowę [4] [zasięg: pomieszczenie; −2 jednostki amunicji].\n◊ Rozbrojenie [1] [zasięg: pomieszczenie; −1 jednostka amunicji, cel musi Działać pod presją].",
+        "passive": true
+    },
+    {
+        "id": "pies-gonczy",
+        "name": "Pies gończy",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy poszukujesz informacji o kimś, rzuć +Rozum:",
+        "high": "Zadaj MG trzy pytania z poniższej listy.",
+        "mid": "Zadaj MG dwa pytania z poniższej listy.",
+        "low": "Zadaj jedno pytanie z poniższej listy. Ktoś dowiaduje się, że o niego pytasz. MG wykonuje Ruch."
+    },
+    {
+        "id": "szybki-jak-blyskawica",
+        "name": "Szybki jak błyskawica",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy niezwykle szybko poruszasz się w walce, rzuć +Przemoc:",
+        "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Unik: Uniknij ataku.\n◊ Zawrotna prędkość: Przystąp do walki z każdym przeciwnikiem w zasięgu twojej broni, traktując to jako jeden atak. Jeśli używasz broni palnej, zużywasz całą amunicję.\n◊ Niezwykła precyzja: traf przeciwnika w czuły punkt. Zadajesz +1 punkt Obrażeń.",
+        "mid": "Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Unik: Uniknij ataku.\n◊ Zawrotna prędkość: Przystąp do walki z każdym przeciwnikiem w zasięgu twojej broni, traktując to jako jeden atak. Jeśli używasz broni palnej, zużywasz całą amunicję.\n◊ Niezwykła precyzja: traf przeciwnika w czuły punkt. Zadajesz +1 punkt Obrażeń.",
+        "low": "Otrzymujesz jedną Przewagę, ale lądujesz na gorszej pozycji lub mierzysz się z nieoczekiwanym oporem. MG wykonuje Ruch."
+    },
+    {
+        "id": "znuzony",
+        "name": "Znużony",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy wyrzucisz (10–14) podczas Ruchu Weź się w garść, możesz stłumić emocje i opóźnić ich skutki do następnej sceny.",
+        "passive": true
+    },
+    {
+        "id": "artefakt",
+        "name": "Artefakt",
+        "attr": "+Dusza",
+        "intro": "Posiadasz pozornie zwyczajny przedmiot, który jednak skrywa mistyczne moce. Można ich użyć; w tym celu trzeba wykonać jakąś określoną czynność, na przykład napełnić przedmiot krwią bądź wyszeptać zakazane słowa (ty decydujesz). Za każdym razem, gdy używasz mocy przedmiotu, rzuć +Dusza:",
+        "high": "Wybierz jedną z możliwości (MG decyduje, co się dzieje).\n◊ Zobacz prawdziwą postać jakiejś istoty lub miejsca.\n◊ Otrzymaj wizję tego, co ci zagraża.\n◊ Wydostań się z trudnej sytuacji.\n◊ Wezwij istotę związaną z artefaktem i targuj się z nią.",
+        "mid": "Wybierz jedną z możliwości (MG decyduje, co się dzieje). Moce artefaktu wymagają jednak dodatkowej ceny (MG decyduje jakiej).\n◊ Zobacz prawdziwą postać jakiejś istoty lub miejsca.\n◊ Otrzymaj wizję tego, co ci zagraża.\n◊ Wydostań się z trudnej sytuacji.\n◊ Wezwij istotę związaną z artefaktem i targuj się z nią.",
+        "low": "Moce artefaktu wywołują jakiś nieprzewidziany, prawdopodobnie niebezpieczny efekt. MG wykonuje Ruch."
+    },
+    {
+        "id": "obserwatorzy",
+        "name": "Obserwatorzy",
+        "attr": "Pasywny",
+        "intro": "Jesteś obserwowany i chroniony przez grupę tajemniczych ludzi, którzy chcą utrzymać cię przy życiu dla swoich własnych, niejasnych celów. Za każdym razem, gdy jesteś śmiertelnie zagrożony, możesz zdać się na swoich obserwatorów. Jeśli to zrobisz, MG zyskuje 1 punkt Wpływu. Obserwatorzy działają jak mały/średni/duży gang (2/3/3 punkty Obrażeń, 5/10/15 Ran) w zależności od powagi zagrożenia. Ich jedynym celem jest niedopuszczenie do twojej krzywdy. MG może również wydawać punkty Wpływu, by wykonywać przeciwko tobie Ruchy w imieniu obserwatorów.",
+        "passive": true
+    },
+    {
+        "id": "kontakty-naukowe",
+        "name": "Kontakty naukowe",
+        "attr": "+Charyzma",
+        "intro": "Masz kontakty naukowe na uniwersytetach w wielu miejscach świata. Za każdym razem, gdy przydałoby się znać kogoś na jakimś uniwersytecie, podaj imię tej osoby, jej specjalizację naukową i to, jak się poznaliście, po czym rzuć +Charyzma:",
+        "high": "Osoba ta jest przyjacielem (Relacja +1).",
+        "mid": "Osoba ta jest znajomym (Relacja +0).",
+        "low": "Znacie się, ale jest między wami dawna wrogość (Relacja +0)."
+    },
+    {
+        "id": "autorytet",
+        "name": "Autorytet",
+        "attr": "+Charyzma",
+        "intro": "Jesteś autorytetem naukowym w swojej dziedzinie, a w gazetach, periodykach naukowych i na panelach dyskusyjnych często pojawia się twoje nazwisko. Na początku każdej sesji gry rzuć +Charyzma:",
+        "high": "Podczas tej sesji gry wybierz do trzech możliwości.\n◊ Wpłyń na kogoś, kto słyszał o twoim naukowym autorytecie, tak jakbyś wyrzucił (15+).\n◊ Zdobądź dostęp do zasobów uniwersytetu takich jak laboratoria i wyposażenie, badacze czy archiwa.\n◊ Wygłoś zdanie o kimś lub o czymś w mediach masowych.\n◊ Zdobądź kontakty do ludzi i dostęp do miejsc pod pretekstem prowadzenia badań.",
+        "mid": "Podczas tej sesji gry wybierz do dwóch możliwości.\n◊ Wpłyń na kogoś, kto słyszał o twoim naukowym autorytecie, tak jakbyś wyrzucił (15+).\n◊ Zdobądź dostęp do zasobów uniwersytetu takich jak laboratoria i wyposażenie, badacze czy archiwa.\n◊ Wygłoś zdanie o kimś lub o czymś w mediach masowych.\n◊ Zdobądź kontakty do ludzi i dostęp do miejsc pod pretekstem prowadzenia badań.",
+        "low": "Podczas tej sesji gry możesz wybrać jedną możliwość; przyciągasz też uwagę ze strony prześladowców, rywali z branży, konkurentów czy wrogich sił. MG wykonuje za nich Ruch podczas sesji."
+    },
+    {
+        "id": "profesjonalny-sportowiec",
+        "name": "Profesjonalny sportowiec",
+        "attr": "Pasywny",
+        "intro": "Byłeś profesjonalnym sportowcem, co zapewniło ci stypendium na finansowanie badań. Wybierz sport:\n◊ Szermierka: Kiedy używasz mieczy, możesz wykonać ripostę [3] [zasięg: ramię; zaatakuj bezpośrednio po parowaniu]. Masz w domu rapier [broń kłującą].\n◊ Baseball/krykiet/piłka ręczna/piłka nożna/tenis: Otrzymujesz +1 do testów biegania, rzucania lub chwytania przedmiotów.\n◊ Hokej: Otrzymujesz +1 do Ruchu Znieś Obrażenia przeciwko atakom w walce w zwarciu.",
+        "passive": true
+    },
+    {
+        "id": "ekspert",
+        "name": "Ekspert",
+        "attr": "Pasywny",
+        "intro": "Jesteś ekspertem w pewnych dziedzinach wiedzy. Za każdym razem, gdy Badasz coś związanego z jedną z wybranych przez ciebie dziedzin, możesz zadać jedno (dowolne) dodatkowe pytanie niezależnie od wyniku rzutu. Wybierz dwa obszary specjalizacji: archeologia, ekonomia, historia, komparatystyka, psychologia, socjologia, teologia, (inny).",
+        "passive": true
+    },
+    {
+        "id": "elitarne-wyksztalcenie",
+        "name": "Elitarne wykształcenie",
+        "attr": "+Charyzma",
+        "intro": "Uczęszczałeś do jednej z najbardziej prestiżowych szkół wyższych na świecie i nawiązałeś kontakty dysponujące władzą i wpływami. Za każdym razem, gdy prosisz swoje kontakty o przysługę, rzuć +Charyzma:",
+        "high": "Wybierz do trzech możliwości.\n◊ Poproś o przysługę kogoś z administracji kraju (np. o wypuszczenie z więzienia, pominięcie odprawy celnej lub pomoc od policji).\n◊ Zdobądź dostęp do miejsca niedostępnego dla postronnych.\n◊ Zlokalizuj lub wyśledź ukrywającą się lub zaginioną osobę.\n◊ Zabezpiecz ucieczkę i zdobądź bezpieczną kryjówkę.",
+        "mid": "Wybierz do dwóch możliwości.\n◊ Poproś o przysługę kogoś z administracji kraju (np. o wypuszczenie z więzienia, pominięcie odprawy celnej lub pomoc od policji).\n◊ Zdobądź dostęp do miejsca niedostępnego dla postronnych.\n◊ Zlokalizuj lub wyśledź ukrywającą się lub zaginioną osobę.\n◊ Zabezpiecz ucieczkę i zdobądź bezpieczną kryjówkę.",
+        "low": "Wybierz jedną możliwość, ale wiąże się ona z zaciągnięciem długu. Trzeba go będzie spłacić w wybranym przez MG momencie opowieści."
+    },
+    {
+        "id": "wyszukiwanie-danych",
+        "name": "Wyszukiwanie danych",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy poszukujesz informacji w bibliotece, archiwum lub Internecie, rzuć +Rozum. W zależności od tego, czego szukasz, MG powie ci, co udało ci się znaleźć, z taką szczegółowością, jakiej można się spodziewać po źródle:",
+        "high": "Zadaj trzy pytania.\n◊ Jakie jest pochodzenie tej rzeczy?\n◊ Do czego to służy?\n◊ Jak działa?",
+        "mid": "Zadaj dwa pytania.\n◊ Jakie jest pochodzenie tej rzeczy?\n◊ Do czego to służy?\n◊ Jak działa?",
+        "low": "Zadaj jedno pytanie. Odkrywasz również coś niespodziewanego. MG wykonuje Ruch.\n◊ Jakie jest pochodzenie tej rzeczy?\n◊ Do czego to służy?\n◊ Jak działa?"
+    },
+    {
+        "id": "kolekcjoner",
+        "name": "Kolekcjoner",
+        "attr": "+Rozum",
+        "intro": "Za każdym razem, gdy szukasz niezwykłego lub rzadkiego przedmiotu, rzuć +Rozum:",
+        "high": "Wiesz dokładnie, gdzie ten przedmiot znaleźć, jak go dostać i jak zminimalizować zagrożenia, przeszkody lub koszty.",
+        "mid": "Wiesz mniej więcej, gdzie ten przedmiot znaleźć i jakie wiążą się z tym zagrożenia, przeszkody lub koszty.",
+        "low": "Wiesz mniej więcej, gdzie zacząć tego przedmiotu szukać, ale nie znasz zagrożeń ani kosztów z tym związanych."
+    },
+    {
+        "id": "oficer",
+        "name": "Oficer",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy uczestniczysz w walce wraz z przynajmniej jednym sprzymierzeńcem, rzuć +Przemoc:",
+        "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Atak! Jeden ze sprzymierzeńców otrzymuje +2 do następnego Ruchu Przystąp do walki.\n◊ Skoordynowany ogień! Wszyscy sprzymierzeńcy otrzymują +1 do Ruchu Przystąp do walki przy użyciu broni palnej.\n◊ Celować w głowę! Ty lub jeden z twoich sprzymierzeńców zadajecie +1 punkt Obrażeń, gdy Przystępujecie do walki.\n◊ Kryć się! Ty lub jeden ze sprzymierzeńców otrzymujecie +2 punkty Pancerza przeciwko atakowi dystansowemu.",
+        "mid": "Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Atak! Jeden ze sprzymierzeńców otrzymuje +2 do następnego Ruchu Przystąp do walki.\n◊ Skoordynowany ogień! Wszyscy sprzymierzeńcy otrzymują +1 do Ruchu Przystąp do walki przy użyciu broni palnej.\n◊ Celować w głowę! Ty lub jeden z twoich sprzymierzeńców zadajecie +1 punkt Obrażeń, gdy Przystępujecie do walki.\n◊ Kryć się! Ty lub jeden ze sprzymierzeńców otrzymujecie +2 punkty Pancerza przeciwko atakowi dystansowemu.",
+        "low": "Błędnie oceniasz sytuację. Zdecyduj, czy w niebezpieczeństwie znalazłeś się ty, czy jeden z twoich sojuszników. MG wykonuje Ruch w imieniu przeciwnika."
+    },
+    {
+        "id": "glos-bolu",
+        "name": "Głos bólu",
+        "attr": "+Dusza",
+        "intro": "Gdy jakiś przeciwnik po raz pierwszy poważnie lub krytycznie cię rani, możesz czegoś się dowiedzieć dzięki bólowi. Rzuć +Dusza:",
+        "high": "Wybierz dwie możliwości.\n◊ Orientujesz się, jak przebić osłonę przeciwnika (otrzymujesz +1 do wykonania przeciw niemu Ruchu Przystąp do walki).\n◊ Odnajdujesz słaby punkt wroga (zadaj +1 punkt Obrażeń za każdym razem, gdy Przystępujesz do walki z tym przeciwnikiem).\n◊ Dostrzegasz prawidłowości w atakach przeciwnika (otrzymujesz +1 do Ruchu Uniknij Obrażeń za każdym razem, gdy cię atakuje). Powyższe efekty utrzymują się na stałe dla danego przeciwnika.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Orientujesz się, jak przebić osłonę przeciwnika (otrzymujesz +1 do wykonania przeciw niemu Ruchu Przystąp do walki).\n◊ Odnajdujesz słaby punkt wroga (zadaj +1 punkt Obrażeń za każdym razem, gdy Przystępujesz do walki z tym przeciwnikiem).\n◊ Dostrzegasz prawidłowości w atakach przeciwnika (otrzymujesz +1 do Ruchu Uniknij Obrażeń za każdym razem, gdy cię atakuje). Powyższe efekty utrzymują się na stałe dla danego przeciwnika.",
+        "low": "Wybierz jedną z możliwości; ból w końcu cię pokona i stracisz przytomność."
+    },
+    {
+        "id": "strzelec-wyborowy",
+        "name": "Strzelec wyborowy",
+        "attr": "Pasywny",
+        "intro": "Jesteś doświadczonym strzelcem. Zadajesz +1 punkt Obrażeń zawsze, kiedy używasz broni palnej.",
+        "passive": true
+    },
+    {
+        "id": "mistrz-sztuk-walki",
+        "name": "Mistrz sztuk walki",
+        "attr": "+Przemoc",
+        "intro": "Za każdym razem, gdy walczysz w zwarciu, rzuć +Przemoc:",
+        "high": "Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie tej sceny.\n◊ Blok: Uniknij ataku wręcz.\n◊ Wirujący cios: Przystąp do walki z kilkoma przeciwnikami, którzy cię otaczają; potraktuj to jako jeden atak.\n◊ Rozbrojenie: Pozbaw przeciwnika broni.\n◊ Rzut: Przemieść przeciwnika lub powal go na ziemię.",
+        "mid": "Otrzymujesz jedną Przewagę.\n◊ Blok: Uniknij ataku wręcz.\n◊ Wirujący cios: Przystąp do walki z kilkoma przeciwnikami, którzy cię otaczają; potraktuj to jako jeden atak.\n◊ Rozbrojenie: Pozbaw przeciwnika broni.\n◊ Rzut: Przemieść przeciwnika lub powal go na ziemię.",
+        "low": "Otrzymujesz jedną Przewagę, ale nie doceniasz przeciwników; może ich być więcej lub mogą być lepiej wyszkoleni, niż początkowo zakładałeś. MG wykonuje Ruch."
+    },
+    {
+        "id": "kontakty-uliczne",
+        "name": "Kontakty uliczne",
+        "attr": "+Charyzma",
+        "intro": "Masz kontakty wśród bezdomnych, szaleńców i innych wyrzutków społeczeństwa. Za każdym razem, gdy potrzebujesz się czegoś dowiedzieć i skomunikować się ze swoimi kontaktami, rzuć +Charyzma:",
+        "high": "Zadaj do trzech pytań.\n◊ Co wiesz o [budynku/osobie/organizacji/zdarzeniu]?\n◊ Jakie plotki krążą teraz po ulicach?\n◊ Jak mogę się dostać do [miejsca]?\n◊ Kto w tym mieście mógłby wiedzieć więcej o tej nadnaturalnej rzeczy?",
+        "mid": "Zadaj jedno pytanie.\n◊ Co wiesz o [budynku/osobie/organizacji/zdarzeniu]?\n◊ Jakie plotki krążą teraz po ulicach?\n◊ Jak mogę się dostać do [miejsca]?\n◊ Kto w tym mieście mógłby wiedzieć więcej o tej nadnaturalnej rzeczy?",
+        "low": "Zadaj jedno pytanie, ale ktoś stanie się podejrzliwy lub agresywny. MG wykonuje Ruch."
+    },
+    {
+        "id": "mimetyzm",
+        "name": "Mimetyzm",
+        "attr": "+Intuicja",
+        "intro": "Za każdym razem, gdy usiłujesz wtopić się w tłum poprzez przyjęcie wyglądu i zachowania innych, rzuć +Intuicja:",
+        "high": "Wybierz trzy możliwości. Do dwóch z nich możesz zostawić do wykorzystania później.\n◊ Uspokój kogoś, kto robi się podejrzliwy.\n◊ Zdobądź dostęp do miejsca, do którego nie mają wstępu osoby z zewnątrz.\n◊ Spraw, że ktoś opowie ci o tajemnicach tego miejsca.\n◊ Spraw, że ktoś ci w czymś pomoże.",
+        "mid": "Wybierz dwie możliwości. Jedną z nich możesz zostawić do wykorzystania później.\n◊ Uspokój kogoś, kto robi się podejrzliwy.\n◊ Zdobądź dostęp do miejsca, do którego nie mają wstępu osoby z zewnątrz.\n◊ Spraw, że ktoś opowie ci o tajemnicach tego miejsca.\n◊ Spraw, że ktoś ci w czymś pomoże.",
+        "low": "Wybierz jedną z możliwości, ale coś idzie niezgodnie z planem. MG wykonuje Ruch."
+    },
+    {
+        "id": "czujny",
+        "name": "Czujny",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy Rozeznajesz intencje, możesz dodatkowo zadać jedno z poniższych pytań:\n◊ Czy ukrywasz coś przede mną?\n◊ Co naprawdę do mnie czujesz?",
+        "passive": true
+    },
+    {
+        "id": "improwizator",
+        "name": "Improwizator",
+        "attr": "+Opanowanie",
+        "intro": "Za każdym razem, gdy usiłujesz wybrnąć z niebezpiecznej sytuacji, korzystając z zaimprowizowanych rozwiązań, rzuć +Opanowanie:",
+        "high": "Wybierz dwie możliwości.\n◊ Wymyśl przekonujące kłamstwo.\n◊ Znajdź coś, czego możesz użyć jako broni improwizowanej (2 punkty Obrażeń rąbanych/kłutych/miażdżonych).\n◊ Schowaj się przed ścigającym.\n◊ Zastaw pułapkę, która da ci przewagę zaskoczenia (+2 do pierwszego Ruchu związanego z atakiem).",
+        "mid": "Wybierz jedną z możliwości.\n◊ Wymyśl przekonujące kłamstwo.\n◊ Znajdź coś, czego możesz użyć jako broni improwizowanej (2 punkty Obrażeń rąbanych/kłutych/miażdżonych).\n◊ Schowaj się przed ścigającym.\n◊ Zastaw pułapkę, która da ci przewagę zaskoczenia (+2 do pierwszego Ruchu związanego z atakiem).",
+        "low": "Twoja improwizacja pogarsza sytuację. MG wykonuje Ruch."
+    },
+    {
+        "id": "wedrowiec",
+        "name": "Wędrowiec",
+        "attr": "+Percepcja",
+        "intro": "Za każdym razem, gdy wyruszasz do innej społeczności lub innej części miasta, rzuć +Percepcja:",
+        "high": "Byłeś tu już kiedyś. Wybierz dwie możliwości w dowolnym momencie wizyty.\n◊ Zadaj MG jedno pytanie na temat tego miejsca.\n◊ Masz w tym miejscu kontakt, który za namową może ci pomóc.\n◊ Masz tu kryjówkę, gdzie możesz się ukryć i odpocząć.\n◊ Wiesz coś o tym miejscu. Powiedz innym, co to jest.",
+        "mid": "Słyszałeś o tym miejscu. Wybierz jedną z możliwości w dowolnym momencie wizyty.\n◊ Zadaj MG jedno pytanie na temat tego miejsca.\n◊ Masz w tym miejscu kontakt, który za namową może ci pomóc.\n◊ Masz tu kryjówkę, gdzie możesz się ukryć i odpocząć.\n◊ Wiesz coś o tym miejscu. Powiedz innym, co to jest.",
+        "low": "Byłeś tu już kiedyś, ale wydarzyło się coś złego. Wybierz jedną z możliwości w dowolnym momencie wizyty. MG wyjaśnia, jaki problem tu na ciebie czeka, i wykonuje Ruch.\n◊ Zadaj MG jedno pytanie na temat tego miejsca.\n◊ Masz w tym miejscu kontakt, który za namową może ci pomóc.\n◊ Masz tu kryjówkę, gdzie możesz się ukryć i odpocząć.\n◊ Wiesz coś o tym miejscu. Powiedz innym, co to jest."
+    },
+    {
+        "id": "kierowca",
+        "name": "Kierowca",
+        "attr": "+Opanowanie",
+        "intro": "Jesteś zawodowcem, jeśli chodzi o kierowanie pojazdami mechanicznymi (samochodami i motocyklami). Za każdym razem, gdy prowadzisz pojazd pod presją i w niebezpiecznej sytuacji, rzuć +Opanowanie:",
+        "high": "Otrzymujesz trzy Przewagi. Możesz wydać je w dowolnym momencie sceny.\n◊ Wykonaj ryzykowny manewr, by zejść z drogi komuś lub czemuś.\n◊ Zgub jeden ze ścigających cię pojazdów.\n◊ Użyj pojazdu jako broni przeciwko pieszemu (2/3/4 punkty Obrażeń w zależności od prędkości).\n◊ Zepchnij inny pojazd z drogi.",
+        "mid": "Otrzymujesz dwie Przewagi. Możesz wydać je w dowolnym momencie sceny.\n◊ Wykonaj ryzykowny manewr, by zejść z drogi komuś lub czemuś.\n◊ Zgub jeden ze ścigających cię pojazdów.\n◊ Użyj pojazdu jako broni przeciwko pieszemu (2/3/4 punkty Obrażeń w zależności od prędkości).\n◊ Zepchnij inny pojazd z drogi.",
+        "low": "Otrzymujesz jedną Przewagę, którą możesz wydać w dowolnym momencie sceny, ale sytuacja się pogarsza – być może przekraczasz prędkość tuż obok policyjnego radiowozu, zaczynają cię ścigać kolejne pojazdy lub twój pojazd zostaje uszkodzony lub ty – ranny. MG wykonuje Ruch."
+    },
+    {
+        "id": "przewodnik",
+        "name": "Przewodnik",
+        "attr": "+Dusza",
+        "intro": "Za każdym razem, gdy poruszasz się między dwoma punktami w mieście i pozwalasz się prowadzić swojemu szaleństwu, rzuć +Dusza:",
+        "high": "Odkrywasz skrót przez alejki, którym docierasz do celu w kilka minut niezależnie od prawdziwej odległości.",
+        "mid": "Odkrywasz skrót, ale znajduje się tam również przeszkoda, którą musisz pokonać.",
+        "low": "Odkrywasz skrót, ale skorzystanie z niego wiąże się z niebezpieczeństwem, takim jak trafienie do leża potwora czy wpadnięcie w zasadzkę gangu. MG wykonuje Ruch."
+    },
+    {
+        "id": "wieczna-ofiara",
+        "name": "Wieczna ofiara",
+        "attr": "+Charyzma",
+        "intro": "Za każdym razem, gdy wydajesz się bezbronny w niebezpiecznej sytuacji, rzuć +Charyzma:",
+        "high": "Wybierz trzy możliwości. Do dwóch z nich możesz wykorzystać później w tej scenie.\n◊ Spraw, że ktoś będzie chciał cię chronić.\n◊ Spraw, że agresywna osoba nie będzie chciała cię zranić.\n◊ Spraw, że ktoś ci się zwierzy.",
+        "mid": "Wybierz jedną z możliwości.\n◊ Spraw, że ktoś będzie chciał cię chronić.\n◊ Spraw, że agresywna osoba nie będzie chciała cię zranić.\n◊ Spraw, że ktoś ci się zwierzy.",
+        "low": "Ktoś usiłuje wykorzystać ciebie i twoje położenie. MG wykonuje Ruch."
+    },
+    {
+        "id": "glod-wiedzy",
+        "name": "Głód wiedzy",
+        "attr": "Pasywny",
+        "intro": "Za każdym razem, gdy dowiesz się czegoś nowego o innych wymiarach, nadnaturalnej istocie lub jakiejś Sile Wyższej, zwiększ Stabilność (+1).",
+        "passive": true
     }
 ]

@@ -7,8 +7,9 @@
 import { CROSS_POSITIONS } from "../state.js";
 import { renderCard, openCardModal } from "../cardView.js";
 import { getAvailableCards, drawRandomCard, isHouseMatch } from "../deck.js";
-import { escapeHtml, preserveScroll, renderMoveText } from "../utils.js";
+import { escapeHtml, preserveScroll } from "../utils.js";
 import { openModal } from "../modal.js";
+import { mechanicsBodyHtml, darkSecretBodyHtml } from "../mechanicsView.js";
 import {
     buildHandoutsControlHtml, handleHandoutsAction, reorderHandoutsOrder
 } from "../../../shared/handouts/control-panel.js";
@@ -250,21 +251,31 @@ function handleDivinityAction(action, el, root) {
 
 // ── Zakładka: Karty postaci ─────────────────────────────────────────────────────
 
-/** Wiersz edytora Mrocznych sekretów (✦) / Komplikacji (✧): checkbox "aktywny" (odpowiada opacity
- *  20% na karcie u Gracza, patrz Figma 895-298) + pole tekstowe + usuń. Komplikacje: baza nazwy
- *  (przed nawiasem) powinna odpowiadać wpisowi w data/komplikacje.json, żeby dostać hover+rzut. */
-function listEditorHtml(items, charKey, field, symbol, addLabel) {
-    const rows = items.map((item, i) => `
-        <div class="mg-list-row">
-            <input type="checkbox" data-action="toggle-item-active" data-char="${charKey}" data-field="${field}" data-index="${i}" ${item.active ? "checked" : ""} title="Aktywny (widoczny/klikalny u Gracza)">
-            <input type="text" data-action="set-item-label" data-char="${charKey}" data-field="${field}" data-index="${i}" value="${escapeHtml(item.label)}">
-            <button type="button" class="btn btn-xs btn-danger" data-action="remove-item" data-char="${charKey}" data-field="${field}" data-index="${i}">✕</button>
-        </div>
-    `).join("");
-    return `
-        <div class="mg-list-editor">${rows}</div>
-        <button type="button" class="btn btn-xs" data-action="add-item" data-char="${charKey}" data-field="${field}">+ ${addLabel}</button>
-    `;
+/** Lista zaznaczalna z pełnego katalogu (data.atuty / data.komplikacje / data.mroczneSekrety) -
+ *  wspólny wzorzec dla Atutów ☆, Komplikacji ✧ i Mrocznych Sekretów ✦ w panelu MG:
+ *  - checkbox = postać POSIADA ten wpis (dodaje/usuwa go w charState[field], patrz "toggle-catalog-item")
+ *  - etykieta = klik otwiera modal z opisem/mechaniką - działa NIEZALEŻNIE od stanu checkboxa, żeby
+ *    MG mógł przejrzeć cały katalog, zanim coś przypisze (patrz "open-catalog-info")
+ *  - ikonka oka = aktywny/wygaszony (odpowiada opacity 20% na karcie u Gracza, patrz Figma 895-298),
+ *    aktywna TYLKO gdy checkbox jest zaznaczony - wygaszanie czegoś, czego postać nie ma, nie ma sensu
+ *  - pole tekstowe (tylko gdy opts.customLabel) = opcjonalny dopisek gracza w nawiasie, np.
+ *    "Prześladowca (Nick 2.0)" - WYŁĄCZNIE Komplikacje go mają (patrz komentarz w state.js) */
+function catalogChecklistHtml(charKey, field, charItems, catalog, opts) {
+    const byId = new Map(charItems.map(item => [item.id, item]));
+    const rows = catalog.map(entry => {
+        const item = byId.get(entry.id);
+        const checked = !!item;
+        const active = checked && item.active !== false;
+        return `
+            <div class="mg-catalog-row">
+                <input type="checkbox" data-action="toggle-catalog-item" data-char="${charKey}" data-field="${field}" data-id="${entry.id}" ${checked ? "checked" : ""}>
+                <button type="button" class="mg-catalog-label" data-action="open-catalog-info" data-field="${field}" data-id="${entry.id}">${escapeHtml(entry.name)}</button>
+                ${opts.customLabel ? `<input type="text" class="mg-catalog-custom" placeholder="np. Nick 2.0" data-action="set-catalog-custom" data-char="${charKey}" data-field="${field}" data-id="${entry.id}" value="${escapeHtml(item?.customLabel || "")}" ${checked ? "" : "disabled"}>` : ""}
+                <button type="button" class="mg-catalog-eye ${active ? "" : "mg-catalog-eye-off"}" data-action="toggle-catalog-active" data-char="${charKey}" data-field="${field}" data-id="${entry.id}" title="${active ? "Aktywny - kliknij, by wygasić" : "Wygaszony - kliknij, by aktywować"}" ${checked ? "" : "disabled"}>👁</button>
+            </div>
+        `;
+    }).join("");
+    return `<div class="mg-catalog-list">${rows}</div>`;
 }
 
 function buildCharactersTab(ctx, ui) {
@@ -281,13 +292,6 @@ function buildCharactersTab(ctx, ui) {
         <label class="mg-attr-input">
             ${k}
             <input type="number" data-action="set-attr" data-char="${activeKey}" data-attr="${k}" value="${charState.attrs[k]}">
-        </label>
-    `).join("");
-
-    const abilityChecks = data.atuty.map(a => `
-        <label class="ability-check">
-            <input type="checkbox" data-action="toggle-ability" data-char="${activeKey}" data-ability="${a.id}" ${charState.abilities.includes(a.id) ? "checked" : ""}>
-            ${escapeHtml(a.name)}
         </label>
     `).join("");
 
@@ -308,17 +312,41 @@ function buildCharactersTab(ctx, ui) {
                     ${data.characters.stabilityLevels.map(lvl => `<option value="${lvl.value}" ${charState.stability === lvl.value ? "selected" : ""}>${lvl.value} — ${escapeHtml(lvl.label)}</option>`).join("")}
                 </select>
             </label>
-            <h4 class="sheet-block-title">Mroczne sekrety ✦</h4>
-            ${listEditorHtml(charState.darkSecrets, activeKey, "darkSecrets", "✦", "Dodaj sekret")}
-            <h4 class="sheet-block-title">Komplikacje ✧</h4>
-            <p class="placeholder">Bazowa nazwa (przed nawiasem, np. "Prześladowca" w "Prześladowca (Nick 2.0)") dopasowywana do data/komplikacje.json - stąd hover z mechaniką i przycisk Rzuć u Gracza.</p>
-            ${listEditorHtml(charState.complications, activeKey, "complications", "✧", "Dodaj komplikację")}
             <h4 class="sheet-block-title">Cechy</h4>
             <div class="mg-attr-grid">${attrInputs}</div>
-            <h4 class="sheet-block-title">Zdolności / Atuty</h4>
-            <div class="mg-ability-list">${abilityChecks}</div>
+            <div class="mg-catalog-columns">
+                <div class="mg-catalog-column">
+                    <h4 class="sheet-block-title">✦ Mroczne sekrety</h4>
+                    ${catalogChecklistHtml(activeKey, "darkSecrets", charState.darkSecrets, data.mroczneSekrety, { customLabel: false })}
+                </div>
+                <div class="mg-catalog-column">
+                    <h4 class="sheet-block-title">✧ Komplikacje</h4>
+                    ${catalogChecklistHtml(activeKey, "complications", charState.complications, data.komplikacje, { customLabel: true })}
+                </div>
+                <div class="mg-catalog-column">
+                    <h4 class="sheet-block-title">☆ Zdolności / Atuty</h4>
+                    ${catalogChecklistHtml(activeKey, "abilities", charState.abilities, data.atuty, { customLabel: false })}
+                </div>
+            </div>
         </div>
     `;
+}
+
+/** Klik na etykietę w liście katalogowej (patrz catalogChecklistHtml) - modal z opisem/mechaniką,
+ *  bez przycisku "Rzuć" (MG tu tylko sprawdza mechanikę, nie rzuca za postać). Działa niezależnie od
+ *  tego, czy postać dany wpis aktualnie posiada. */
+function openCatalogInfoModal(ctx, field, id) {
+    if (field === "darkSecrets") {
+        const found = ctx.data.mroczneSekrety.find(s => s.id === id);
+        if (!found) return;
+        openModal({ title: `✦ ${escapeHtml(found.name)}`, bodyHtml: darkSecretBodyHtml(found) });
+        return;
+    }
+    const catalog = field === "abilities" ? ctx.data.atuty : ctx.data.komplikacje;
+    const symbol = field === "abilities" ? "☆" : "✧";
+    const found = catalog.find(x => x.id === id);
+    if (!found) return;
+    openModal({ title: `${symbol} ${escapeHtml(found.name)}`, bodyHtml: mechanicsBodyHtml(found) });
 }
 
 function handleCharactersAction(action, el, root) {
@@ -329,27 +357,14 @@ function handleCharactersAction(action, el, root) {
         ui.activeCharKey = el.dataset.char;
         return true;
     }
-    if (action === "toggle-ability") {
+    if (action === "toggle-catalog-active") {
         const charKey = el.dataset.char;
-        const abilityId = el.dataset.ability;
+        const field = el.dataset.field;
+        const id = el.dataset.id;
         updateState(s => {
-            const list = s.characters[charKey].abilities;
-            const idx = list.indexOf(abilityId);
-            if (idx === -1) list.push(abilityId); else list.splice(idx, 1);
+            const item = s.characters[charKey][field].find(x => x.id === id);
+            if (item) item.active = item.active === false;
         });
-        return true;
-    }
-    if (action === "add-item") {
-        const charKey = el.dataset.char;
-        const field = el.dataset.field;
-        updateState(s => { s.characters[charKey][field].push({ label: "Nowy wpis", active: true }); });
-        return true;
-    }
-    if (action === "remove-item") {
-        const charKey = el.dataset.char;
-        const field = el.dataset.field;
-        const index = Number(el.dataset.index);
-        updateState(s => { s.characters[charKey][field].splice(index, 1); });
         return true;
     }
     return false;
@@ -375,16 +390,31 @@ function handleCharactersChange(el, root) {
         logEvent(updateState, `${charName}: Stabilność → ${value} ${level ? level.label : ""} (MG)`);
         return true;
     }
-    if (action === "toggle-item-active") {
+    if (action === "toggle-catalog-item") {
         const field = el.dataset.field;
-        const index = Number(el.dataset.index);
-        updateState(s => { s.characters[charKey][field][index].active = el.checked; });
+        const id = el.dataset.id;
+        updateState(s => {
+            const list = s.characters[charKey][field];
+            const idx = list.findIndex(x => x.id === id);
+            if (el.checked) {
+                if (idx === -1) {
+                    const entry = { id, active: true };
+                    if (field === "complications") entry.customLabel = "";
+                    list.push(entry);
+                }
+            } else if (idx !== -1) {
+                list.splice(idx, 1);
+            }
+        });
         return true;
     }
-    if (action === "set-item-label") {
+    if (action === "set-catalog-custom") {
         const field = el.dataset.field;
-        const index = Number(el.dataset.index);
-        updateState(s => { s.characters[charKey][field][index].label = el.value; });
+        const id = el.dataset.id;
+        updateState(s => {
+            const item = s.characters[charKey][field].find(x => x.id === id);
+            if (item) item.customLabel = el.value;
+        });
         return true;
     }
     return false;
@@ -392,50 +422,34 @@ function handleCharactersChange(el, root) {
 
 // ── Zakładka: Punkty Wpływu ──────────────────────────────────────────────────────
 
-/** Bazowa nazwa Komplikacji (przed nawiasem z detalem, np. "Prześladowca (Nick 2.0)" ->
- *  "Prześladowca") - dopasowanie do data/komplikacje.json, wzorem panels/character.js#baseLabel. */
-function baseLabel(label) {
-    return label.split(" (")[0].trim();
+/** Klik na nazwę w "Punkty Wpływu" -> ten sam modal co w liście katalogowej (patrz
+ *  openCatalogInfoModal), bez przycisku "Rzuć" (MG tu tylko sprawdza mechanikę, nie rzuca za
+ *  postać). `kind` "ability"/"complication" -> pole "abilities"/"complications" w charState. */
+function openInfluenceInfoModal(ctx, kind, refId) {
+    openCatalogInfoModal(ctx, kind === "ability" ? "abilities" : "complications", refId);
 }
 
-/** Treść modala z opisem/mechaniką Atutu lub Komplikacji - 1:1 z panels/character.js#mechanicsBodyHtml
- *  (bez duplikowania importu, bo to jedyne dwa miejsca, które tego potrzebują). */
-function mechanicsBodyHtml(item) {
-    return `
-        ${item.attr ? `<div class="card-tooltip-kicker">${escapeHtml(item.attr)}</div>` : ""}
-        <div class="card-tooltip-desc">${escapeHtml(item.intro || "")}</div>
-        ${item.high ? `<div class="card-tooltip-row"><b>15+:</b></div>${renderMoveText(item.high)}` : ""}
-        ${item.mid ? `<div class="card-tooltip-row"><b>10-14:</b></div>${renderMoveText(item.mid)}` : ""}
-        ${item.low ? `<div class="card-tooltip-row"><b>≤9:</b></div>${renderMoveText(item.low)}` : ""}
-    `;
-}
-
-/** Klik na nazwę w "Punkty Wpływu" -> ten sam modal z opisem co u Graczy na karcie postaci (patrz
- *  panels/character.js#openAbilityModal/openComplicationModal), ale BEZ przycisku "Rzuć" (MG tu
- *  tylko sprawdza mechanikę, nie rzuca za postać) - stąd brak `rollLabel`/`onRoll` w openModal(). */
-function openInfluenceInfoModal(ctx, kind, refId, name) {
-    if (kind === "ability") {
-        const found = ctx.data.atuty.find(a => a.id === refId);
-        if (!found) return;
-        openModal({ title: `☆ ${escapeHtml(found.name)}`, bodyHtml: mechanicsBodyHtml(found) });
-        return;
-    }
-    const found = ctx.data.komplikacje.find(k => k.name.toLowerCase() === baseLabel(name).toLowerCase());
-    if (!found) return;
-    openModal({ title: `✧ ${escapeHtml(name)}`, bodyHtml: mechanicsBodyHtml(found) });
+/** Tylko wpisy, których 10-14/-9 faktycznie mówią "MG zyskuje X punkt(y) Wpływu" trafiają na tę
+ *  zakładkę - u większości Atutów (i garstki Komplikacji, np. Fanatyk, Koszmary) wynik -9 to
+ *  bezpośrednia kara (obniż Stabilność, -1 do rzutów) albo jednorazowy "MG wykonuje Ruch", NIE
+ *  bankowalny punkt Wpływu, więc licznik pipsów/przycisk "+1 Wpływu" byłby tam myślący. Wyjątki
+ *  wśród Atutów: Okultystyczna biblioteka i Przygotowany faktycznie dają MG Wpływu na -9. */
+function grantsMgInfluence(item) {
+    const text = `${item.mid || ""} ${item.low || ""}`.toLowerCase();
+    return text.includes("wpływu");
 }
 
 /** Wiersz Atutu/Komplikacji z licznikiem Punktów Wpływu MG (pipsy, klik = zużyj jeden + wpis do
  *  Dziennika) i przyciskiem "+1 Wpływu" (przyznanie, bez wpisu do Dziennika - patrz uzasadnienie w
- *  handleInfluenceAction). `kind`: "ability" (refId = id z data/atuty.json) | "complication"
- *  (refId = index w charState.complications). Nazwa jest klikalna -> modal z opisem/mechaniką. */
+ *  handleInfluenceAction). `kind`: "ability" | "complication", `refId` = id z odpowiedniego katalogu
+ *  w obu przypadkach. Nazwa jest klikalna -> modal z opisem/mechaniką. */
 function influenceRowHtml({ charKey, kind, refId, name, count }) {
     const pips = Array.from({ length: count }, () => `
         <button type="button" class="influence-pip" data-action="spend-influence" data-char="${charKey}" data-kind="${kind}" data-ref="${refId}" title="Zużyj punkt Wpływu"></button>
     `).join("");
     return `
         <div class="influence-row">
-            <button type="button" class="influence-row-name" data-action="open-influence-info" data-kind="${kind}" data-ref="${refId}" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>
+            <button type="button" class="influence-row-name" data-action="open-influence-info" data-kind="${kind}" data-ref="${refId}">${escapeHtml(name)}</button>
             <div class="influence-pip-row">${pips}</div>
             <button type="button" class="btn btn-xs" data-action="add-influence" data-char="${charKey}" data-kind="${kind}" data-ref="${refId}">+1 Wpływu</button>
         </div>
@@ -458,8 +472,8 @@ function buildInfluenceTab(ctx) {
         const charState = state.characters[charDef.key];
 
         const abilityRows = charState.abilities
-            .map(id => data.atuty.find(a => a.id === id))
-            .filter(a => a && a.attr !== "Pasywny")
+            .map(item => data.atuty.find(a => a.id === item.id))
+            .filter(a => a && a.attr !== "Pasywny" && grantsMgInfluence(a))
             .map(a => influenceRowHtml({
                 charKey: charDef.key, kind: "ability", refId: a.id, name: a.name,
                 count: charState.abilityInfluence?.[a.id] || 0
@@ -467,10 +481,16 @@ function buildInfluenceTab(ctx) {
             .join("");
 
         const complicationRows = charState.complications
-            .map((c, i) => influenceRowHtml({
-                charKey: charDef.key, kind: "complication", refId: String(i), name: c.label,
-                count: c.influence || 0
-            }))
+            .map(item => {
+                const found = data.komplikacje.find(k => k.id === item.id);
+                if (!found || !grantsMgInfluence(found)) return null;
+                const name = item.customLabel ? `${found.name} (${item.customLabel})` : found.name;
+                return influenceRowHtml({
+                    charKey: charDef.key, kind: "complication", refId: item.id, name,
+                    count: charState.complicationInfluence?.[item.id] || 0
+                });
+            })
+            .filter(Boolean)
             .join("");
 
         return `
@@ -490,7 +510,10 @@ function findInfluenceItemName(ctx, charKey, kind, refId) {
     if (kind === "ability") {
         return ctx.data.atuty.find(a => a.id === refId)?.name || refId;
     }
-    return ctx.state.characters[charKey].complications[Number(refId)]?.label || "Komplikacja";
+    const item = ctx.state.characters[charKey].complications.find(c => c.id === refId);
+    const found = ctx.data.komplikacje.find(k => k.id === refId);
+    if (!found) return "Komplikacja";
+    return item?.customLabel ? `${found.name} (${item.customLabel})` : found.name;
 }
 
 /** Przyznanie punktu ("+1 Wpływu") NIE trafia do Dziennika - dzieje się często i doraźnie przy
@@ -505,19 +528,13 @@ function handleInfluenceAction(action, el, root) {
     const charName = data.characters.characters.find(c => c.key === charKey)?.name || charKey;
     const itemName = findInfluenceItemName(root._ctx, charKey, kind, refId);
     const delta = action === "add-influence" ? 1 : -1;
+    const field = kind === "ability" ? "abilityInfluence" : "complicationInfluence";
     let newCount = 0;
     updateState(s => {
         const charState = s.characters[charKey];
-        if (kind === "ability") {
-            if (!charState.abilityInfluence) charState.abilityInfluence = {};
-            newCount = Math.max(0, (charState.abilityInfluence[refId] || 0) + delta);
-            charState.abilityInfluence[refId] = newCount;
-        } else {
-            const item = charState.complications[Number(refId)];
-            if (!item) return;
-            newCount = Math.max(0, (item.influence || 0) + delta);
-            item.influence = newCount;
-        }
+        if (!charState[field]) charState[field] = {};
+        newCount = Math.max(0, (charState[field][refId] || 0) + delta);
+        charState[field][refId] = newCount;
     });
     if (action === "spend-influence") {
         logEvent(updateState, `${charName}: MG zużywa punkt Wpływu (${itemName}) — pozostało ${newCount}`);
@@ -631,7 +648,11 @@ function wireEvents(root) {
             return;
         }
         if (action === "open-influence-info") {
-            openInfluenceInfoModal(root._ctx, btn.dataset.kind, btn.dataset.ref, btn.dataset.name);
+            openInfluenceInfoModal(root._ctx, btn.dataset.kind, btn.dataset.ref);
+            return;
+        }
+        if (action === "open-catalog-info") {
+            openCatalogInfoModal(root._ctx, btn.dataset.field, btn.dataset.id);
             return;
         }
         if (handleTarotAction(action, btn, root)) { rerender(root); return; }
