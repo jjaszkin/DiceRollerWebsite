@@ -24,6 +24,7 @@ const BRANCH = "master";
 const SITE_BASE = "https://dicerollerwebsite.netlify.app/";
 
 const FOLDERS = [
+    "battletrackerklatwa",
     "darkgraal2",
     "darkgraal2-MG",
     "darkgraal3",

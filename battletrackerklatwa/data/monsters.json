@@ -1,0 +1,299 @@
+[
+    {
+        "name": "Baba Lysaga",
+        "type": "boss",
+        "forms": [
+            {
+                "formId": "witch-mother",
+                "label": "Matka Wiedźm",
+                "sizeType": "Średni humanoid (człowiek, zmiennokształtny), chaotyczny zły",
+                "ac": 15,
+                "acNote": "naturalny pancerz",
+                "hp": { "max": 135 },
+                "hpNote": "18k8 + 54",
+                "speed": "30 stóp, latanie 30 stóp (w swojej latającej czaszce)",
+                "abilities": { "str": 18, "dex": 10, "con": 16, "int": 20, "wis": 17, "cha": 13 },
+                "savingThrows": "Kon +7, Mdr +7",
+                "skills": "Wiedza tajemna +13, Religia +13",
+                "senses": "widzenie w ciemności 60 stóp, bierna Percepcja 13",
+                "languages": "Otchłanny, Wspólny, Draconic, Krasnoludzki, Olbrzymi",
+                "cr": "10",
+                "proficiencyBonus": 4,
+                "resistances": [],
+                "immunities": [],
+                "vulnerabilities": [],
+                "conditionImmunities": [],
+                "traits": [
+                    { "id": "blessing-mother-night", "name": "Błogosławieństwo Matki Nocy", "text": "Baba Lysaga jest chroniona przed magią wróżbiarską, jakby znajdowała się pod działaniem zaklęcia nondetection." },
+                    { "id": "skilled-casting", "name": "Biegłe Rzucanie Zaklęć", "text": "Baba Lysaga może jednocześnie skupiać się na maksymalnie trzech zaklęciach. Jeśli straci koncentrację na jednym z nich, traci ją na wszystkich." },
+                    { "id": "flying-skull-trait", "name": "Latająca Czaszka", "text": "Dosiadając swojej latającej olbrzymiej czaszki, Baba Lysaga zyskuje prędkość lotu 30 stóp i ma trzy czwarte osłony (+5 do KP i rzutów obronnych Zwi). Pełne statystyki czaszki widoczne są jako osobny licznik na karcie tego uczestnika - włącz go, gdy Baba Lysaga wsiada do czaszki." },
+                    { "id": "swallowed-by-swamp", "name": "Pochłonięta przez Bagno", "text": "Gdy Baba Lysaga zostaje zredukowana do 0 punktów wytrzymałości, zapada się lub tonie w bagnie Berezu, po czym wynurza się dosiadając wieży bagiennych pnączy. Jej statystyki natychmiast zostają zastąpione przez drugą formę (Z Bagna). Wartość inicjatywy się nie zmienia, nadmiarowe obrażenia nie są przenoszone, a ona traci wszystkie warunki z poprzedniej formy. Przełącz formę ręcznie na karcie uczestnika." }
+                ],
+                "secondaryTrackers": [
+                    {
+                        "id": "flying-skull",
+                        "label": "Latająca Czaszka (Argynvost)",
+                        "ac": 15,
+                        "hp": { "max": 50 },
+                        "immunities": ["trujące", "psychiczne"],
+                        "notes": "Mieści Babę Lysagę i jedno średnie stworzenie (osłona 3/4: +5 KP i rzutów Zwi dla pasażera). Steruje wyłącznie Baba Lysaga. Po spadku do 0 PW ląduje w błocie Berezu i staje się nieożywiona - jeśli przetrwa nienaruszona, Baba Lysaga może ją ponownie zaczarować po długim odpoczynku. To skradziona czaszka srebrnego smoka Argynvosta - jej zniszczenie na stałe uniemożliwia zapalenie sygnału w Argynvostholt."
+                    }
+                ],
+                "actions": [
+                    {
+                        "id": "multiattack",
+                        "name": "Wielokrotny Atak",
+                        "kind": "multiattack",
+                        "text": "Baba Lysaga używa Ostrzy Włosów dwa razy, albo dwa razy rzuca Iskrą Kwasu przy pomocy Rzucania Zaklęć.",
+                        "multiattackOptions": [
+                            { "label": "Ostrza Włosów x2", "repeat": [{ "actionId": "hair-blades", "times": 2 }] },
+                            { "label": "Iskra Kwasu x2", "repeat": [{ "actionId": "acid-splash-wm", "times": 2 }] }
+                        ]
+                    },
+                    {
+                        "id": "hair-blades",
+                        "name": "Ostrza Włosów",
+                        "kind": "attack",
+                        "attackBonus": 9,
+                        "reach": "5 stóp",
+                        "target": "jedno stworzenie",
+                        "damage": [
+                            { "formula": "1d8+5", "type": "sieczące" },
+                            { "formula": "1d8", "type": "trujące" }
+                        ],
+                        "text": "Cel musi zdać rzut obronny Kon ST 17, inaczej zostaje zatruty na 1 minutę lub do otrzymania magicznego leczenia. Zatruty w ten sposób cel wykonuje rzut Kon ST 17 na koniec każdej swojej tury: porażka - staje się spowolniony (jeśli zatruty) lub sparaliżowany (jeśli spowolniony); sukces - staje się spowolniony (jeśli sparaliżowany), zatruty (jeśli spowolniony) lub przestaje być zatruty (jeśli zatruty). Naturalna 20 na tym rzucie od razu usuwa zatrucie."
+                    },
+                    {
+                        "id": "spellcasting-wm",
+                        "name": "Rzucanie Zaklęć",
+                        "kind": "text",
+                        "text": "Baba Lysaga rzuca jedno z poniższych zaklęć, używając Inteligencji jako zdolności zaklinania (ZB 17, +9 do trafienia atakiem zaklęciem). Dowolne: iskra kwasu (3k6 obrażeń), dłoń maga, wykrycie magii, pocisk mocy (wersja 2. poziomu), sen (wersja 2. poziomu), błyskawica. 3/dzień: czarne macki Evarda, polimorfia. 1/dzień: podglądanie, zaprogramowana iluzja, mirage arcane.",
+                        "spells": [
+                            {
+                                "id": "acid-splash-wm",
+                                "name": "Iskra Kwasu",
+                                "kind": "save",
+                                "save": { "dc": 17, "ability": "Zwi", "halfOnSuccess": true },
+                                "damage": [{ "formula": "3d6", "type": "kwas" }]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "devouring-flies",
+                        "name": "Rój Pożerających Much",
+                        "kind": "save",
+                        "save": { "dc": 17, "ability": "Kon", "halfOnSuccess": true },
+                        "damage": [{ "formula": "2d10", "type": "kłute" }],
+                        "target": "sfera o promieniu 10 stóp wyśrodkowana w punkcie widzianym przez Babę Lysagę w zasięgu 60 stóp",
+                        "text": "Niezależnie od wyniku rzutu obronnego, wszelkie zaklęcia 3. poziomu lub niższe na celu kończą działanie (można wydać reakcję i slot zaklęcia 1. poziomu lub wyższy, by temu zapobiec)."
+                    }
+                ],
+                "bonusActions": [
+                    { "id": "swarm-bonus", "name": "Rój", "kind": "text", "text": "Baba Lysaga magicznie przemienia się w rój owadów (much), leci do 30 stóp, po czym wraca do prawdziwej postaci. Wszystko, co niesie, przemienia się razem z nią. W formie roju ataki bronią w zwarciu wymierzone w nią mają utrudnienie." }
+                ],
+                "reactions": [
+                    { "id": "reactions-note", "name": "Limit reakcji", "kind": "text", "text": "Baba Lysaga może wykonać do pięciu reakcji na rundę, ale tylko jedną na turę. Jeśli efekt lub warunek uniemożliwiłby jej wykonanie reakcji, traci zamiast tego jedną reakcję." },
+                    { "id": "indomitable-wm", "name": "Niezłomność", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga powtarza rzut obronny przeciw jednemu efektowi lub warunkowi, który obecnie na nią działa." },
+                    { "id": "parry-wm", "name": "Parowanie", "kind": "text", "text": "Wyzwalacz: Baba Lysaga zostaje trafiona atakiem w zwarciu. Efekt: jej ostrza z włosów próbują zablokować atak, zmuszając atakującego do ponownego rzutu na trafienie. Jeśli nowy rzut to krytyczne pudło, Baba Lysaga może od razu użyć Ostrzy Włosów przeciw atakującemu. Reakcja nie działa, jeśli pierwszy atak był krytycznym trafieniem." },
+                    { "id": "swarm-reaction", "name": "Rój (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy turę, lub Baba Lysaga otrzymuje obrażenia od upadku. Efekt: Baba Lysaga używa Roju. Jeśli miała otrzymać obrażenia od upadku, nie otrzymuje ich." },
+                    { "id": "hair-blades-reaction", "name": "Ostrza Włosów (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy turę po zaatakowaniu Baby Lysagi atakiem w zwarciu. Efekt: Baba Lysaga używa Ostrzy Włosów przeciw temu stworzeniu." },
+                    { "id": "insect-shield", "name": "Tarcza Owadzia (1/rundę)", "kind": "text", "text": "Wyzwalacz: Baba Lysaga otrzymuje obrażenia od zaklęcia w kształcie stożka lub linii, albo od ataku zaklęciem na odległość. Efekt: zmusza rzucającego do rzutu obronnego ST 17 właściwą zdolnością zaklinania. Porażka - Baba Lysaga nie otrzymuje w tej turze obrażeń od tego zaklęcia." },
+                    { "id": "lightning-bolt-reaction", "name": "Błyskawica (1/rundę)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga używa Rzucania Zaklęć, by rzucić błyskawicę." }
+                ]
+            },
+            {
+                "formId": "of-the-swamp",
+                "label": "Z Bagna",
+                "sizeType": "Duży humanoid (człowiek, zmiennokształtny), chaotyczny zły",
+                "ac": 15,
+                "acNote": "naturalny pancerz",
+                "hp": { "max": 135 },
+                "hpNote": "18k8 + 54",
+                "speed": "30 stóp",
+                "abilities": { "str": 18, "dex": 10, "con": 16, "int": 20, "wis": 17, "cha": 13 },
+                "savingThrows": "Kon +7, Mdr +7",
+                "skills": "Wiedza tajemna +13, Religia +13",
+                "senses": "widzenie w ciemności 60 stóp, bierna Percepcja 13",
+                "languages": "Otchłanny, Wspólny, Draconic, Krasnoludzki, Olbrzymi",
+                "cr": "10",
+                "proficiencyBonus": 4,
+                "resistances": [],
+                "immunities": [],
+                "vulnerabilities": [],
+                "conditionImmunities": [],
+                "traits": [
+                    { "id": "blessing-mother-night-2", "name": "Błogosławieństwo Matki Nocy", "text": "Baba Lysaga jest chroniona przed magią wróżbiarską, jakby znajdowała się pod działaniem zaklęcia nondetection." },
+                    { "id": "skilled-casting-2", "name": "Biegłe Rzucanie Zaklęć", "text": "Baba Lysaga może jednocześnie skupiać się na maksymalnie trzech zaklęciach. Jeśli straci koncentrację na jednym z nich, traci ją na wszystkich." }
+                ],
+                "secondaryTrackers": [],
+                "actions": [
+                    {
+                        "id": "spellcasting-swamp",
+                        "name": "Rzucanie Zaklęć",
+                        "kind": "text",
+                        "text": "Baba Lysaga rzuca jedno z poniższych zaklęć, używając Inteligencji jako zdolności zaklinania (ZB 18, +10 do trafienia atakiem zaklęciem). Dowolne: iskra kwasu (3k6 obrażeń), kontrola wody. 1/dzień: olbrzymi owad (stonoga), ściana cierni.",
+                        "spells": [
+                            {
+                                "id": "acid-splash-swamp",
+                                "name": "Iskra Kwasu",
+                                "kind": "save",
+                                "save": { "dc": 18, "ability": "Zwi", "halfOnSuccess": true },
+                                "damage": [{ "formula": "3d6", "type": "kwas" }]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "grasping-vine",
+                        "name": "Pnącze Chwytające",
+                        "kind": "text",
+                        "attackBonus": 10,
+                        "text": "Baba Lysaga rzuca lub atakuje zaklęciem pnącze chwytające, używając Inteligencji jako zdolności zaklinania (ZB 18, +10 do trafienia). Rzucone w ten sposób zaklęcie wymaga akcji, by powtórzyć atak w kolejnych turach. Zaklęcie użyte tu w wersji z Podręcznika Gracza 2024 - dokładne obrażenia/efekt dopisz ręcznie w karcie tego uczestnika, źródło sesji nie podaje wartości kości."
+                    }
+                ],
+                "bonusActions": [
+                    { "id": "swampwalk", "name": "Bagienny Chód", "kind": "text", "text": "Jeśli Baba Lysaga jest w Berezie, zanurza się w wodzie lub ziemi pod sobą, po czym wyłania się z pola wody lub ziemi 5x5 stóp w zasięgu 30 stóp." }
+                ],
+                "reactions": [
+                    { "id": "reactions-note-2", "name": "Limit reakcji", "kind": "text", "text": "Baba Lysaga może wykonać do pięciu reakcji na rundę, ale tylko jedną na turę. Jeśli efekt lub warunek uniemożliwiłby jej wykonanie reakcji, traci zamiast tego jedną reakcję." },
+                    { "id": "indomitable-swamp", "name": "Niezłomność", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga powtarza rzut obronny przeciw jednemu efektowi lub warunkowi, który obecnie na nią działa." },
+                    { "id": "parry-swamp", "name": "Parowanie", "kind": "text", "text": "Wyzwalacz: Baba Lysaga zostaje trafiona atakiem. Efekt: rzuca i próbuje sparować atak pnączem chwytającym, zmuszając atakującego do ponownego rzutu na trafienie (nie może w tej turze zaatakować pnączem). Jeśli nowy rzut to krytyczne pudło, Baba Lysaga może od razu zaatakować pnączem atakującego. Nie działa, jeśli pierwszy atak był krytycznym trafieniem." },
+                    { "id": "swampwalk-reaction", "name": "Bagienny Chód (1/rundę)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga używa Bagiennego Chodu." },
+                    { "id": "grasping-vine-reaction", "name": "Pnącze Chwytające (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga używa Pnącza Chwytającego przeciw temu stworzeniu." }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Wędrująca Chatka",
+        "type": "boss",
+        "forms": [
+            {
+                "formId": "creeping-hut",
+                "label": "Wędrująca Chatka",
+                "sizeType": "Gigantyczny konstrukt, neutralny",
+                "ac": 16,
+                "acNote": "naturalny pancerz",
+                "hp": { "max": 263 },
+                "hpNote": "17k20 + 85",
+                "speed": "30 stóp",
+                "abilities": { "str": 26, "dex": 7, "con": 20, "int": 1, "wis": 3, "cha": 3 },
+                "savingThrows": "Sił +12",
+                "skills": "",
+                "senses": "wyczucie drgań 120 stóp (ślepa poza tym zasięgiem), bierna Percepcja 6",
+                "languages": "-",
+                "cr": "15 (8 400 PD)",
+                "proficiencyBonus": 4,
+                "resistances": ["obuchowe", "zimno", "kłute"],
+                "immunities": ["trujące", "psychiczne"],
+                "vulnerabilities": [],
+                "conditionImmunities": ["oślepiony", "oczarowany", "ogłuszony", "wyczerpanie", "przerażony", "sparaliżowany", "skamieniały", "powalony"],
+                "traits": [
+                    { "id": "close-quarters", "name": "Walcząca w Zwarciu", "text": "Chatka nie ma utrudnienia przy atakach dystansowych, gdy w zasięgu 5 stóp znajduje się wrogie stworzenie." },
+                    { "id": "immutable-form", "name": "Niezmienna Forma", "text": "Chatka jest odporna na wszelkie zaklęcia lub efekty, które zmieniłyby jej formę." },
+                    { "id": "siege-monster", "name": "Potwór Oblężniczy", "text": "Chatka zadaje podwójne obrażenia obiektom i budowlom." },
+                    { "id": "stolen-gem", "name": "Skradziony Klejnot", "text": "Chatka jest ożywiana magicznym klejnotem w kształcie wiridianowej szyszki, osadzonym w pniu pod podłogą, przytrzymywanym przez czarny korzeń (KP 15, 10 PW, podatność na ogień, odporność na truciznę i obrażenia psychiczne). Gracz, który usunie deski podłogowe chatki, odsłania klejnot i może go usunąć niszcząc korzeń lub zdając test Siły ST 15. Chatka umiera, gdy klejnot zostanie usunięty." }
+                ],
+                "secondaryTrackers": [
+                    { "id": "root-guard", "label": "Korzeń chroniący klejnot", "ac": 15, "hp": { "max": 10 }, "resistances": [], "immunities": ["trujące", "psychiczne"], "vulnerabilities": ["ogień"], "notes": "Chroni wiridianowy klejnot pod podłogą. Zniszczenie korzenia lub zdanie testu Siły ST 15 pozwala usunąć klejnot - chatka wtedy umiera." }
+                ],
+                "actions": [
+                    {
+                        "id": "root",
+                        "name": "Korzeń",
+                        "kind": "attack",
+                        "attackBonus": 12,
+                        "reach": "20 stóp",
+                        "target": "jeden cel",
+                        "damage": [{ "formula": "3d10+8", "type": "obuchowe" }],
+                        "text": "Cel musi zdać rzut obronny Siły ST 20, inaczej zostaje powalony lub odepchnięty do 10 stóp. Jeśli oblał rzut o 10 lub więcej, chatka może go zamiast tego chwycić (test ucieczki ST 20)."
+                    },
+                    {
+                        "id": "throw",
+                        "name": "Rzut",
+                        "kind": "save",
+                        "save": { "dc": 20, "ability": "Sił" },
+                        "text": "Stworzenie schwytane przez chatkę musi zdać rzut obronny Siły ST 20, inaczej zostaje rzucone 60 stóp dalej. Rzucone w ten sposób stworzenie spada 20 stóp i ląduje powalone (obrażenia od upadku - standardowo 2k6)."
+                    },
+                    {
+                        "id": "rock",
+                        "name": "Głaz",
+                        "kind": "attack",
+                        "attackBonus": 12,
+                        "reach": "zasięg 120 stóp",
+                        "target": "jeden cel",
+                        "damage": [{ "formula": "3d8+8", "type": "obuchowe" }]
+                    }
+                ],
+                "bonusActions": [],
+                "reactions": [
+                    { "id": "reactions-note-hut", "name": "Limit reakcji", "kind": "text", "text": "Chatka może wykonać do trzech reakcji na rundę, ale tylko jedną na turę. Jeśli efekt lub warunek uniemożliwiłby jej wykonanie reakcji, traci zamiast tego jedną reakcję." },
+                    { "id": "indomitable-hut", "name": "Niezłomność", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: chatka powtarza rzut obronny przeciw jednemu efektowi lub warunkowi, który obecnie na nią działa." },
+                    { "id": "root-reaction", "name": "Korzeń (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy turę w zasięgu 20 stóp od chatki. Efekt: chatka atakuje to stworzenie Korzeniem." },
+                    {
+                        "id": "bite",
+                        "name": "Ugryzienie",
+                        "kind": "save",
+                        "save": { "dc": 20, "ability": "Zwi" },
+                        "damage": [{ "formula": "2d8", "type": "kłute" }],
+                        "text": "Wyzwalacz: stworzenie próbuje odzyskać klejnot z pnia chatki. Efekt: chatka gryzie ramię lub ciało tego stworzenia deskami podłogowymi. Porażka - schwytane (test ucieczki ST 20); dopóki jest schwytane w ten sposób, ma utrudnienie w testach odzyskania klejnotu."
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Walter Durst",
+        "type": "boss",
+        "forms": [
+            {
+                "formId": "flesh-mound",
+                "label": "Mięsny Kopiec",
+                "sizeType": "Duża roślina, neutralny",
+                "ac": 15,
+                "acNote": "",
+                "hp": { "max": 136 },
+                "hpNote": "",
+                "speed": "20 stóp, pływanie 20 stóp",
+                "abilities": { "str": 18, "dex": 8, "con": 16, "int": 5, "wis": 10, "cha": 5 },
+                "savingThrows": "",
+                "skills": "Ukrywanie się +2",
+                "senses": "wyczucie drgań 60 stóp (ślepa poza tym zasięgiem), bierna Percepcja 10",
+                "languages": "-",
+                "cr": "5 (1 800 PD)",
+                "proficiencyBonus": 3,
+                "resistances": ["zimno", "ogień"],
+                "immunities": ["piorunowe"],
+                "vulnerabilities": [],
+                "conditionImmunities": ["oślepiony", "ogłuszony", "wyczerpanie"],
+                "traits": [
+                    { "id": "innocent-heart", "name": "Niewinne Serce", "text": "Zwłoki niemowlęcia Waltera leżą w sercu Mięsnego Kopca, płacząc i przerażone. Jeśli stworzenie zostanie pochłonięte, każ graczowi rzucić k4 - na wyniku 2 lub 4 widzi Waltera wewnątrz mięsa i flaków. Serce Waltera śledzone jest jako osobny licznik na karcie tego uczestnika. Jeśli jego PW spadną do 0 lub zostanie w inny sposób oczyszczone, Mięsny Kopiec rozpada się na zawsze, a duch Waltera zaznaje spokoju." }
+                ],
+                "secondaryTrackers": [
+                    { "id": "walter-heart", "label": "Serce Waltera", "ac": 10, "hp": { "max": 5 }, "notes": "Zniszczenie lub oczyszczenie serca rozwiązuje Mięsny Kopiec na zawsze - duch Waltera zaznaje spokoju." }
+                ],
+                "actions": [
+                    {
+                        "id": "slam",
+                        "name": "Uderzenie",
+                        "kind": "attack",
+                        "attackBonus": 7,
+                        "reach": "5 stóp",
+                        "target": "jeden cel",
+                        "damage": [{ "formula": "2d8+4", "type": "obuchowe" }]
+                    },
+                    {
+                        "id": "engulf",
+                        "name": "Pochłonięcie",
+                        "kind": "attack",
+                        "attackBonus": 0,
+                        "target": "średnie lub mniejsze stworzenie schwytane przez kopiec",
+                        "damage": [{ "formula": "1d4", "type": "obuchowe" }],
+                        "text": "Pochłonięty cel jest unieruchomiony i nie może oddychać. Na początku każdej tury kopca musi zdać rzut obronny Kon ST 14, inaczej otrzymuje 1k4 obrażeń obuchowych. Jeśli kopiec się porusza, pochłonięty cel porusza się razem z nim. Kopiec może mieć pochłonięte tylko jedno stworzenie naraz."
+                    }
+                ],
+                "bonusActions": [],
+                "reactions": []
+            }
+        ]
+    }
+]
