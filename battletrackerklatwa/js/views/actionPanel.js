@@ -8,7 +8,7 @@ import { updateState } from "../store.js";
 import { escapeHtml, uid, clamp } from "../utils.js";
 import { resolveAttack, resolveDamage, resolveSave, applyDamageMitigation } from "../diceEngine.js";
 import { buildStatblockHeaderHtml, buildTraitsHtml } from "../components/statblock.js";
-import { buildConditionPickerHtml } from "../components/conditionPicker.js";
+import { buildConditionPickerHtml, CONDITION_INFO } from "../components/conditionPicker.js";
 
 const DAMAGE_TYPES = [
     "obuchowe", "kłute", "sieczące", "kwas", "zimno", "ogień", "siłowe",
@@ -95,7 +95,7 @@ function renderMonsterCard(root, { state, battle, participant }) {
             </div>
 
             ${renderDamageForm()}
-            ${renderConditionsBlock(participant)}
+            ${renderConditionsBlock(participant, form.conditionImmunities)}
             ${participant.secondaryTrackers?.length ? renderSecondaryTrackers(participant) : ""}
 
             <label class="target-select-row">Cel akcji
@@ -110,7 +110,7 @@ function renderMonsterCard(root, { state, battle, participant }) {
 
             ${renderActionGroup("Akcje", form.actions)}
             ${renderActionGroup("Akcje Dodatkowe", form.bonusActions)}
-            ${renderActionGroup("Reakcje", form.reactions)}
+            ${renderActionGroup("Reakcje", form.reactions, form.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${form.reactionLimit}` : "")}
         </div>
     `;
 
@@ -129,6 +129,7 @@ function renderMonsterCard(root, { state, battle, participant }) {
             p.ac = newForm.ac ?? null;
             p.hp = { current: newForm.hp?.max ?? null, max: newForm.hp?.max ?? null };
             p.conditions = [];
+            p.reactionsUsedThisRound = 0;
             p.secondaryTrackers = (newForm.secondaryTrackers || []).map((t) => ({
                 id: t.id, label: t.label, ac: t.ac ?? null,
                 hp: { current: t.hp?.max ?? null, max: t.hp?.max ?? null }, active: false
@@ -197,15 +198,18 @@ function wireDamageForm(root, { battle, participant, mitigationTarget }) {
     });
 }
 
-function renderConditionsBlock(participant) {
-    const chips = (participant.conditions || []).map((c) => `
-        <span class="condition-chip">${escapeHtml(c.label)}${c.note ? `: ${escapeHtml(c.note)}` : ""} <button type="button" class="chip-remove" data-remove-condition="${c.id}">×</button></span>
-    `).join("");
+function renderConditionsBlock(participant, immunities = []) {
+    const chips = (participant.conditions || []).map((c) => {
+        const info = CONDITION_INFO[c.label] || "";
+        return `
+            <span class="condition-chip${info ? " info-tip" : ""}"${info ? ` data-tooltip="${escapeHtml(info)}"` : ""}>${escapeHtml(c.label)}${c.note ? `: ${escapeHtml(c.note)}` : ""} <button type="button" class="chip-remove" data-remove-condition="${c.id}">×</button></span>
+        `;
+    }).join("");
     return `
         <div class="conditions-block">
-            <h4>Warunki</h4>
+            <h4>Stany</h4>
             <div class="conditions-chip-row">${chips || '<span class="placeholder">Brak</span>'}</div>
-            ${buildConditionPickerHtml()}
+            ${buildConditionPickerHtml(immunities)}
         </div>
     `;
 }
@@ -300,11 +304,11 @@ function wireHpFields(root, battleId, instanceId) {
 
 // -- Akcje --------------------------------------------------------------------------------------
 
-function renderActionGroup(title, actions) {
+function renderActionGroup(title, actions, countText = "") {
     if (!actions?.length) return "";
     return `
         <div class="action-group">
-            <h4>${escapeHtml(title)}</h4>
+            <h4>${escapeHtml(title)}${countText ? ` <span class="action-group-count">${escapeHtml(countText)}</span>` : ""}</h4>
             <div class="action-list">${actions.map(renderActionRow).join("")}</div>
         </div>
     `;
@@ -325,13 +329,13 @@ function renderActionRow(action) {
         buttons = action.multiattackOptions
             .map((opt, i) => `<button type="button" class="btn btn-xs use-multiattack-btn" data-action-id="${action.id}" data-option-index="${i}">${escapeHtml(opt.label)}</button>`)
             .join("");
-    } else if (action.kind === "attack" || action.kind === "save") {
+    } else if (action.kind === "attack" || action.kind === "save" || action.kind === "damage") {
         buttons = `
             <button type="button" class="btn btn-xs use-action-btn" data-action-id="${action.id}">Rzuć</button>
-            <button type="button" class="btn btn-xs btn-secondary log-action-btn" data-action-id="${action.id}">Zaloguj</button>
+            <button type="button" class="btn btn-xs btn-secondary log-action-btn" data-action-id="${action.id}">Użyj</button>
         `;
     } else {
-        buttons = `<button type="button" class="btn btn-xs btn-secondary log-action-btn" data-action-id="${action.id}">Zaloguj</button>`;
+        buttons = `<button type="button" class="btn btn-xs btn-secondary log-action-btn" data-action-id="${action.id}">Użyj</button>`;
     }
 
     const spellsHtml = action.spells?.length ? `<div class="action-spells">${action.spells.map(renderActionRow).join("")}</div>` : "";
@@ -362,6 +366,23 @@ function findAction(form, actionId) {
 }
 
 function wireActionButtons(root, { battle, actor, actorForm, getTarget, getTargetForm }) {
+    const reactionIds = new Set((actorForm.reactions || []).map((r) => r.id));
+
+    /** Zużywa jedną reakcję z puli tego uczestnika na tę rundę, jeśli akcja jest reakcją i forma ma
+     *  ustawiony limit. Zwraca `false` (i loguje wpis o zablokowaniu) gdy limit jest wyczerpany. */
+    function tryConsumeReaction(s, action) {
+        if (!reactionIds.has(action.id) || !actorForm.reactionLimit) return true;
+        const b = s.battles[battle.id];
+        const liveActor = b.participants.find((p) => p.instanceId === actor.instanceId);
+        const used = liveActor.reactionsUsedThisRound || 0;
+        if (used >= actorForm.reactionLimit) {
+            addHistoryEntry(b, "event", `${escapeHtml(actor.name)} nie może użyć reakcji <strong>${escapeHtml(action.name)}</strong> - limit ${actorForm.reactionLimit} reakcji na rundę wyczerpany.`);
+            return false;
+        }
+        liveActor.reactionsUsedThisRound = used + 1;
+        return true;
+    }
+
     root.querySelectorAll(".use-action-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
             const action = findAction(actorForm, btn.dataset.actionId);
@@ -370,6 +391,7 @@ function wireActionButtons(root, { battle, actor, actorForm, getTarget, getTarge
             const targetForm = getTargetForm(target);
             updateState((s) => {
                 const b = s.battles[battle.id];
+                if (!tryConsumeReaction(s, action)) return;
                 const line = resolveActionOnce({ s, battleId: battle.id, actorName: actor.name, action, targetInstanceId: target?.instanceId ?? null, targetForm });
                 addHistoryEntry(b, "roll", line);
             });
@@ -381,6 +403,7 @@ function wireActionButtons(root, { battle, actor, actorForm, getTarget, getTarge
             const action = findAction(actorForm, btn.dataset.actionId);
             if (!action) return;
             updateState((s) => {
+                if (!tryConsumeReaction(s, action)) return;
                 addHistoryEntry(s.battles[battle.id], "event", `${escapeHtml(actor.name)} używa: ${escapeHtml(action.name)}.`);
             });
         });
@@ -448,7 +471,17 @@ function resolveActionOnce({ s, battleId, actorName, action, targetInstanceId, t
         } else if (attack.hit === null) {
             line += " - brak ustawionego KP celu, oceń trafienie ręcznie.";
         }
-        if (action.text) line += ` (${escapeHtml(action.text)})`;
+        if (action.shortEffect && attack.hit === true) line += ` (${escapeHtml(action.shortEffect)})`;
+        return line;
+    }
+
+    if (action.kind === "damage") {
+        const dmg = resolveDamage({ damageEntries: action.damage, target: targetForm, crit: false });
+        if (target) applyDamageToParticipant(target, dmg.adjustedTotal);
+        let line = `${escapeHtml(actorName)} używa <strong>${escapeHtml(action.name)}</strong>${target ? ` na ${escapeHtml(target.name)}` : ""}: automatyczne trafienie.`;
+        line += ` Obrażenia: ${dmg.adjustedTotal}${dmg.adjustedTotal !== dmg.rawTotal ? ` (surowo ${dmg.rawTotal})` : ""} [${dmg.parts.map((p) => `${escapeHtml(p.type)} ${p.adjusted}`).join(" + ")}]`;
+        if (target) line += ` PW ${escapeHtml(target.name)}: ${target.hp.current}/${target.hp.max ?? "-"}.`;
+        if (action.shortEffect) line += ` (${escapeHtml(action.shortEffect)})`;
         return line;
     }
 
@@ -473,14 +506,15 @@ function resolveActionOnce({ s, battleId, actorName, action, targetInstanceId, t
         } else {
             line += ` = ${saveResult.total}${saveResult.roll != null ? ` (k20: ${saveResult.roll})` : ""} - ${saveResult.success ? "sukces" : "porażka"}.`;
             const halved = saveResult.success && action.save?.halfOnSuccess;
-            if (action.damage?.length && (!saveResult.success || action.save?.halfOnSuccess)) {
+            const effectApplies = !saveResult.success || action.save?.halfOnSuccess;
+            if (action.damage?.length && effectApplies) {
                 const dmg = resolveDamage({ damageEntries: action.damage, target: targetForm, crit: false, halved: !!halved });
                 if (target) applyDamageToParticipant(target, dmg.adjustedTotal);
                 line += ` Obrażenia: ${dmg.adjustedTotal}${halved ? " (połowa)" : ""} [${dmg.parts.map((p) => `${escapeHtml(p.type)} ${p.adjusted}`).join(" + ")}]`;
                 if (target) line += ` PW ${escapeHtml(target.name)}: ${target.hp.current}/${target.hp.max ?? "-"}.`;
             }
+            if (action.shortEffect && effectApplies) line += ` (${escapeHtml(action.shortEffect)})`;
         }
-        if (action.text) line += ` (${escapeHtml(action.text)})`;
         return line;
     }
 

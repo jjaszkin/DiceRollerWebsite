@@ -90,7 +90,7 @@ export function openBattleCreator({ state, onCreate }) {
                 sourceId: p.id,
                 formId: null,
                 name: p.name,
-                ac: p.ac,
+                ac: p.ac ?? null,
                 hp: { current: p.hp?.max ?? null, max: p.hp?.max ?? null },
                 initiative: 0,
                 conditions: []
@@ -111,6 +111,7 @@ export function openBattleCreator({ state, onCreate }) {
                 hp: { current: form?.hp?.max ?? null, max: form?.hp?.max ?? null },
                 initiative: 0,
                 conditions: [],
+                reactionsUsedThisRound: 0,
                 secondaryTrackers: (form?.secondaryTrackers || []).map((t) => ({
                     id: t.id,
                     label: t.label,
