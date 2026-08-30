@@ -51,6 +51,7 @@ function seedMonsters(entries) {
                 languages: f.languages || "",
                 cr: f.cr || "",
                 proficiencyBonus: f.proficiencyBonus ?? null,
+                reactionLimit: f.reactionLimit ?? null,
                 resistances: [...(f.resistances || [])],
                 immunities: [...(f.immunities || [])],
                 vulnerabilities: [...(f.vulnerabilities || [])],

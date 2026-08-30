@@ -20,14 +20,13 @@ export function renderInitiativePanel(root, { battle, selectedId, onSelect }) {
     `;
 
     root.querySelector('[data-round-action="dec"]').addEventListener("click", () => {
-        updateState((s) => { const b = s.battles[battle.id]; b.round = Math.max(1, (b.round || 1) - 1); });
+        setRound(battle.id, Math.max(1, (battle.round || 1) - 1));
     });
     root.querySelector('[data-round-action="inc"]').addEventListener("click", () => {
-        updateState((s) => { s.battles[battle.id].round = (s.battles[battle.id].round || 1) + 1; });
+        setRound(battle.id, (battle.round || 1) + 1);
     });
     root.querySelector(".initiative-round-input").addEventListener("change", (e) => {
-        const val = Math.max(1, Number(e.target.value) || 1);
-        updateState((s) => { s.battles[battle.id].round = val; });
+        setRound(battle.id, Math.max(1, Number(e.target.value) || 1));
     });
 
     root.querySelectorAll("[data-select-instance]").forEach((el) => {
@@ -38,6 +37,25 @@ export function renderInitiativePanel(root, { battle, selectedId, onSelect }) {
     });
     root.querySelectorAll("[data-move-down]").forEach((el) => {
         el.addEventListener("click", (e) => { e.stopPropagation(); moveParticipant(battle.id, el.dataset.moveDown, 1); });
+    });
+    root.querySelectorAll("[data-initiative-input]").forEach((el) => {
+        el.addEventListener("click", (e) => e.stopPropagation());
+        el.addEventListener("change", (e) => {
+            const val = e.target.value === "" ? 0 : Number(e.target.value) || 0;
+            updateState((s) => {
+                s.battles[battle.id].participants.find((p) => p.instanceId === el.dataset.initiativeInput).initiative = val;
+            });
+        });
+    });
+}
+
+/** Zmienia rundę i zeruje pulę zużytych reakcji WSZYSTKICH uczestników (nowa runda = świeży
+ *  limit reakcji, patrz actionPanel.js#reactionLimit). */
+function setRound(battleId, newRound) {
+    updateState((s) => {
+        const b = s.battles[battleId];
+        b.round = newRound;
+        for (const p of b.participants) p.reactionsUsedThisRound = 0;
     });
 }
 
@@ -61,6 +79,7 @@ function renderParticipantRow(p, index, total, selectedId) {
                 <button type="button" class="btn btn-icon btn-xs" data-move-up="${p.instanceId}" ${index === 0 ? "disabled" : ""}>↑</button>
                 <button type="button" class="btn btn-icon btn-xs" data-move-down="${p.instanceId}" ${index === total - 1 ? "disabled" : ""}>↓</button>
             </div>
+            <input type="number" class="initiative-value-input" data-initiative-input="${p.instanceId}" value="${p.initiative ?? 0}" title="Wartość inicjatywy">
             <div class="initiative-row-body">
                 <div class="initiative-row-name">${escapeHtml(p.name)}</div>
                 <div class="initiative-row-hp">PW: ${hpText}</div>

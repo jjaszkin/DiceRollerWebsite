@@ -4,6 +4,7 @@
 
 import { watchState, persistState } from "./firebase.js";
 import { createDefaultState, mergeWithDefaults, migrateLoadedState } from "./state.js";
+import { sanitizeForFirebase } from "./utils.js";
 
 let state = null;
 let gameData = null;
@@ -104,7 +105,7 @@ function scheduleSave() {
     saveTimer = setTimeout(async () => {
         try {
             onSaveStatus("saving");
-            await persistState(state);
+            await persistState(sanitizeForFirebase(state));
             onSaveStatus("saved");
         } catch (err) {
             console.error("[BattleTrackerKlatwa] Błąd zapisu do Firebase:", err);

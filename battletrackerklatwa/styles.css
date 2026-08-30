@@ -342,6 +342,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
 .initiative-row:hover { border-color: var(--gold-dim); }
 .initiative-row-active { border-color: var(--gold); background: var(--bg-3); }
 .initiative-row-order { display: flex; flex-direction: column; gap: 2px; }
+.initiative-value-input { width: 3.2em; text-align: center; font-family: var(--mono); flex-shrink: 0; }
 .initiative-row-body { flex: 1; min-width: 0; }
 .initiative-row-name { font-weight: 700; color: var(--fg-0); font-size: 0.9rem; }
 .initiative-row-hp { color: var(--fg-2); font-size: 0.78rem; }
@@ -423,8 +424,33 @@ input[type="checkbox"] { accent-color: var(--gold); }
     cursor: pointer;
 }
 .condition-pick-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright); }
+.condition-pick-chip-immune { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+.condition-pick-chip-immune:hover { border-color: var(--line-strong); color: var(--fg-1); }
 .condition-custom-row { display: flex; gap: 8px; }
 .condition-custom-input { flex: 1; }
+
+/* -- Podpowiedź "co ten stan robi" (hover) --------------------------------------------------- */
+
+.info-tip { position: relative; cursor: help; }
+.info-tip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    z-index: 60;
+    width: max-content;
+    max-width: 260px;
+    background: var(--bg-0);
+    border: 1px solid var(--gold-dim);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--fg-1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    white-space: normal;
+    pointer-events: none;
+}
 
 .secondary-trackers { margin-bottom: 12px; }
 .secondary-tracker-row {
@@ -465,6 +491,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
 /* -- Akcje ------------------------------------------------------------------------------------- */
 
 .action-group { margin-top: 14px; }
+.action-group-count { color: var(--fg-dim); font-size: 0.75rem; text-transform: none; letter-spacing: normal; font-weight: 400; }
 .action-list { display: flex; flex-direction: column; gap: 8px; }
 .action-card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; }
 .action-card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }

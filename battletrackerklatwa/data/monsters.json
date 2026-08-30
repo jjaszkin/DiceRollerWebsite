@@ -23,6 +23,7 @@
                 "immunities": [],
                 "vulnerabilities": [],
                 "conditionImmunities": [],
+                "reactionLimit": 5,
                 "traits": [
                     { "id": "blessing-mother-night", "name": "Błogosławieństwo Matki Nocy", "text": "Baba Lysaga jest chroniona przed magią wróżbiarską, jakby znajdowała się pod działaniem zaklęcia nondetection." },
                     { "id": "skilled-casting", "name": "Biegłe Rzucanie Zaklęć", "text": "Baba Lysaga może jednocześnie skupiać się na maksymalnie trzech zaklęciach. Jeśli straci koncentrację na jednym z nich, traci ją na wszystkich." },
@@ -61,6 +62,7 @@
                             { "formula": "1d8+5", "type": "sieczące" },
                             { "formula": "1d8", "type": "trujące" }
                         ],
+                        "shortEffect": "Kon ST 17: zatrucie → spowolnienie/paraliż",
                         "text": "Cel musi zdać rzut obronny Kon ST 17, inaczej zostaje zatruty na 1 minutę lub do otrzymania magicznego leczenia. Zatruty w ten sposób cel wykonuje rzut Kon ST 17 na koniec każdej swojej tury: porażka - staje się spowolniony (jeśli zatruty) lub sparaliżowany (jeśli spowolniony); sukces - staje się spowolniony (jeśli sparaliżowany), zatruty (jeśli spowolniony) lub przestaje być zatruty (jeśli zatruty). Naturalna 20 na tym rzucie od razu usuwa zatrucie."
                     },
                     {
@@ -75,6 +77,74 @@
                                 "kind": "save",
                                 "save": { "dc": 17, "ability": "Zwi", "halfOnSuccess": true },
                                 "damage": [{ "formula": "3d6", "type": "kwas" }]
+                            },
+                            {
+                                "id": "mage-hand-wm",
+                                "name": "Dłoń Maga",
+                                "kind": "text",
+                                "text": "Widmowa dłoń unosi się w zasięgu 30 stóp i może manipulować przedmiotem, otworzyć niezamkniętą skrytkę/drzwi, schować/wyjąć przedmiot z pojemnika lub przelać zawartość naczynia. Bez wartości bojowej - użycie sytuacyjne."
+                            },
+                            {
+                                "id": "detect-magic-wm",
+                                "name": "Wykrycie Magii",
+                                "kind": "text",
+                                "text": "Przez 10 minut Baba Lysaga wyczuwa obecność magii w zasięgu 30 stóp i widzi słabą poświatę wokół widocznych magicznych przedmiotów/stworzeń/miejsc, rozpoznając szkołę magii przy Studiowaniu."
+                            },
+                            {
+                                "id": "magic-missile-wm",
+                                "name": "Pocisk Mocy (2. poziomu)",
+                                "kind": "damage",
+                                "damage": [{ "formula": "4d4+4", "type": "siłowe" }],
+                                "text": "4 świetliste pociski automatycznie trafiają (bez rzutu na trafienie ani rzutu obronnego celu), każdy 1d4+1 obrażeń siłowych - można rozdzielić między kilka celów, tu policzone łącznie jako jeden cel."
+                            },
+                            {
+                                "id": "sleep-wm",
+                                "name": "Sen (2. poziomu)",
+                                "kind": "text",
+                                "text": "Bez rzutu na trafienie ani rzutu obronnego. Rzuć 7k8 (5k8 bazowo + 2k8 za 2. poziom, średnio ~31) - to pula PW. Stworzenia w zasięgu 20 stóp od punktu w zasięgu 60 stóp zasypiają kolejno od najniższych aktualnych PW (nieprzytomne stwory i konstrukty/nieumarli są odporni), aż pula się wyczerpie. Śpiące stworzenie budzi się, jeśli otrzyma obrażenia lub ktoś zużyje akcję, by je obudzić."
+                            },
+                            {
+                                "id": "lightning-bolt-wm",
+                                "name": "Błyskawica",
+                                "kind": "save",
+                                "save": { "dc": 17, "ability": "Zwi", "halfOnSuccess": true },
+                                "damage": [{ "formula": "8d6", "type": "piorunowe" }],
+                                "text": "Linia 100 stóp długości, 5 stóp szerokości."
+                            },
+                            {
+                                "id": "black-tentacles-wm",
+                                "name": "Czarne Macki Evarda (3/dzień)",
+                                "kind": "save",
+                                "save": { "dc": 17, "ability": "Zwi" },
+                                "damage": [{ "formula": "3d6", "type": "obuchowe" }],
+                                "shortEffect": "porażka: obrażenia + chwyt",
+                                "text": "Kwadrat 20x20 stóp trudnego terenu pokryty mackami. Stworzenie wchodzące na obszar lub zaczynające tam turę wykonuje rzut obronny - porażka: obrażenia i chwycone (test ucieczki ZB 17 Sił lub Zwi); sukces: brak obrażeń i brak chwytu. Trwa do 1 minuty (koncentracja)."
+                            },
+                            {
+                                "id": "polymorph-wm",
+                                "name": "Polimorfia (3/dzień)",
+                                "kind": "save",
+                                "save": { "dc": 17, "ability": "Mdr" },
+                                "shortEffect": "porażka: przemiana w bestię",
+                                "text": "Cel niechętny wykonuje rzut obronny Mdr, by uniknąć przemiany w formę bestii (maks. stopień wyzwania równy celowi lub niższy) na 1 godzinę, do 0 PW w nowej formie, lub do zakończenia zaklęcia akcją."
+                            },
+                            {
+                                "id": "scrying-wm",
+                                "name": "Podglądanie (1/dzień)",
+                                "kind": "text",
+                                "text": "Baba Lysaga widzi i słyszy wybrany cel gdziekolwiek na tym samym planie egzystencji. Cel świadomy i niechętny wykonuje rzut obronny Mdr (ZB 17) - sukces uniemożliwia podglądanie."
+                            },
+                            {
+                                "id": "programmed-illusion-wm",
+                                "name": "Zaprogramowana Iluzja (1/dzień)",
+                                "kind": "text",
+                                "text": "Tworzy iluzję obrazu/dźwięku/zapachu w zasięgu 120 stóp, uruchamianą określonym warunkiem, trwającą do 5 minut po aktywacji. Interakcja fizyczna lub test Investigation (ZB 17) mogą ją zdemaskować jako nierealną."
+                            },
+                            {
+                                "id": "mirage-arcane-wm",
+                                "name": "Mirage Arcane (1/dzień)",
+                                "kind": "text",
+                                "text": "Przekształca wygląd terenu (las, bagno, budowle...) w obszarze 1 mili kwadratowej na do 10 dni - czysto iluzoryczne, teren fizycznie pozostaje bez zmian (choć dźwięki/zapachy/tekstury oszukują zmysły). Test Investigation demaskuje iluzję z bliska."
                             }
                         ]
                     },
@@ -85,6 +155,7 @@
                         "save": { "dc": 17, "ability": "Kon", "halfOnSuccess": true },
                         "damage": [{ "formula": "2d10", "type": "kłute" }],
                         "target": "sfera o promieniu 10 stóp wyśrodkowana w punkcie widzianym przez Babę Lysagę w zasięgu 60 stóp",
+                        "shortEffect": "kończy zaklęcia ≤3 poz. na celu",
                         "text": "Niezależnie od wyniku rzutu obronnego, wszelkie zaklęcia 3. poziomu lub niższe na celu kończą działanie (można wydać reakcję i slot zaklęcia 1. poziomu lub wyższy, by temu zapobiec)."
                     }
                 ],
@@ -92,7 +163,6 @@
                     { "id": "swarm-bonus", "name": "Rój", "kind": "text", "text": "Baba Lysaga magicznie przemienia się w rój owadów (much), leci do 30 stóp, po czym wraca do prawdziwej postaci. Wszystko, co niesie, przemienia się razem z nią. W formie roju ataki bronią w zwarciu wymierzone w nią mają utrudnienie." }
                 ],
                 "reactions": [
-                    { "id": "reactions-note", "name": "Limit reakcji", "kind": "text", "text": "Baba Lysaga może wykonać do pięciu reakcji na rundę, ale tylko jedną na turę. Jeśli efekt lub warunek uniemożliwiłby jej wykonanie reakcji, traci zamiast tego jedną reakcję." },
                     { "id": "indomitable-wm", "name": "Niezłomność", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga powtarza rzut obronny przeciw jednemu efektowi lub warunkowi, który obecnie na nią działa." },
                     { "id": "parry-wm", "name": "Parowanie", "kind": "text", "text": "Wyzwalacz: Baba Lysaga zostaje trafiona atakiem w zwarciu. Efekt: jej ostrza z włosów próbują zablokować atak, zmuszając atakującego do ponownego rzutu na trafienie. Jeśli nowy rzut to krytyczne pudło, Baba Lysaga może od razu użyć Ostrzy Włosów przeciw atakującemu. Reakcja nie działa, jeśli pierwszy atak był krytycznym trafieniem." },
                     { "id": "swarm-reaction", "name": "Rój (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy turę, lub Baba Lysaga otrzymuje obrażenia od upadku. Efekt: Baba Lysaga używa Roju. Jeśli miała otrzymać obrażenia od upadku, nie otrzymuje ich." },
@@ -121,6 +191,7 @@
                 "immunities": [],
                 "vulnerabilities": [],
                 "conditionImmunities": [],
+                "reactionLimit": 5,
                 "traits": [
                     { "id": "blessing-mother-night-2", "name": "Błogosławieństwo Matki Nocy", "text": "Baba Lysaga jest chroniona przed magią wróżbiarską, jakby znajdowała się pod działaniem zaklęcia nondetection." },
                     { "id": "skilled-casting-2", "name": "Biegłe Rzucanie Zaklęć", "text": "Baba Lysaga może jednocześnie skupiać się na maksymalnie trzech zaklęciach. Jeśli straci koncentrację na jednym z nich, traci ją na wszystkich." }
@@ -139,6 +210,26 @@
                                 "kind": "save",
                                 "save": { "dc": 18, "ability": "Zwi", "halfOnSuccess": true },
                                 "damage": [{ "formula": "3d6", "type": "kwas" }]
+                            },
+                            {
+                                "id": "control-water-swamp",
+                                "name": "Kontrola Wody",
+                                "kind": "text",
+                                "text": "W zasięgu 300 stóp, obszar wody do 2 mil kwadratowych, do 10 minut (koncentracja). Do wyboru jeden efekt: Powódź (podnosi poziom wody, zalewa okolicę), Rozstąpienie Wody (tworzy suchy rów, ściany wody po bokach), Przekierowanie Fali (odchyla istniejącą falę/prąd) lub Wir (tworzy lej wodny - stworzenie w wirze wykonuje rzut Sił ZB 18: porażka - 2k8 obrażeń obuchowych i wciągnięcie w głąb; sukces - połowa obrażeń, brak wciągnięcia)."
+                            },
+                            {
+                                "id": "giant-insect-swamp",
+                                "name": "Olbrzymi Owad - Stonogi (1/dzień)",
+                                "kind": "text",
+                                "text": "Zamienia do 10 zwykłych stonóg w zasięgu 60 stóp w olbrzymie stonogi na 10 minut, posłuszne Babie Lysadze. Każda olbrzymia stonoga: Ukąszenie +4 do trafienia, 4 (1d4+2) obrażeń kłutych, cel wykonuje rzut Kon ST 11 - porażka: 10 (3k6) obrażeń trujących i zatrucie na 1 minutę; sukces: połowa obrażeń, brak zatrucia."
+                            },
+                            {
+                                "id": "wall-of-thorns-swamp",
+                                "name": "Ściana Cierni (1/dzień)",
+                                "kind": "save",
+                                "save": { "dc": 18, "ability": "Zwi", "halfOnSuccess": true },
+                                "damage": [{ "formula": "7d8", "type": "sieczące" }],
+                                "text": "Tworzy mur splątanych, kolczastych pnączy do 60 stóp długości, 10 stóp wysokości i 5 stóp grubości (albo pierścień/kopułę), blokujący ruch i widoczność, trudny teren wokół. Stworzenie zmuszone w ścianę lub wchodzące w nią dobrowolnie wykonuje ten rzut obronny za każdym razem."
                             }
                         ]
                     },
@@ -147,14 +238,13 @@
                         "name": "Pnącze Chwytające",
                         "kind": "text",
                         "attackBonus": 10,
-                        "text": "Baba Lysaga rzuca lub atakuje zaklęciem pnącze chwytające, używając Inteligencji jako zdolności zaklinania (ZB 18, +10 do trafienia). Rzucone w ten sposób zaklęcie wymaga akcji, by powtórzyć atak w kolejnych turach. Zaklęcie użyte tu w wersji z Podręcznika Gracza 2024 - dokładne obrażenia/efekt dopisz ręcznie w karcie tego uczestnika, źródło sesji nie podaje wartości kości."
+                        "text": "Baba Lysaga rzuca lub atakuje zaklęciem pnącze chwytające, używając Inteligencji jako zdolności zaklinania (ZB 18, +10 do trafienia). Rzucone w ten sposób zaklęcie wymaga akcji, by powtórzyć atak w kolejnych turach. Zaklęcie użyte tu w wersji z Podręcznika Gracza 2024 - dokładne obrażenia/efekt dopisz ręcznie w karcie tego uczestnika, źródło sesji nie podaje wartości kości (nie jest to oficjalna nazwa zaklęcia z SRD, którą mógłbym jednoznacznie zidentyfikować - podaj, na jakim zaklęciu bazuje, jeśli chcesz, żebym uzupełnił kości)."
                     }
                 ],
                 "bonusActions": [
                     { "id": "swampwalk", "name": "Bagienny Chód", "kind": "text", "text": "Jeśli Baba Lysaga jest w Berezie, zanurza się w wodzie lub ziemi pod sobą, po czym wyłania się z pola wody lub ziemi 5x5 stóp w zasięgu 30 stóp." }
                 ],
                 "reactions": [
-                    { "id": "reactions-note-2", "name": "Limit reakcji", "kind": "text", "text": "Baba Lysaga może wykonać do pięciu reakcji na rundę, ale tylko jedną na turę. Jeśli efekt lub warunek uniemożliwiłby jej wykonanie reakcji, traci zamiast tego jedną reakcję." },
                     { "id": "indomitable-swamp", "name": "Niezłomność", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga powtarza rzut obronny przeciw jednemu efektowi lub warunkowi, który obecnie na nią działa." },
                     { "id": "parry-swamp", "name": "Parowanie", "kind": "text", "text": "Wyzwalacz: Baba Lysaga zostaje trafiona atakiem. Efekt: rzuca i próbuje sparować atak pnączem chwytającym, zmuszając atakującego do ponownego rzutu na trafienie (nie może w tej turze zaatakować pnączem). Jeśli nowy rzut to krytyczne pudło, Baba Lysaga może od razu zaatakować pnączem atakującego. Nie działa, jeśli pierwszy atak był krytycznym trafieniem." },
                     { "id": "swampwalk-reaction", "name": "Bagienny Chód (1/rundę)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga używa Bagiennego Chodu." },
@@ -186,7 +276,8 @@
                 "resistances": ["obuchowe", "zimno", "kłute"],
                 "immunities": ["trujące", "psychiczne"],
                 "vulnerabilities": [],
-                "conditionImmunities": ["oślepiony", "oczarowany", "ogłuszony", "wyczerpanie", "przerażony", "sparaliżowany", "skamieniały", "powalony"],
+                "conditionImmunities": ["oślepiony", "oczarowany", "ogłuszony", "wyczerpanie", "przestraszony", "sparaliżowany", "skamieniały", "powalony"],
+                "reactionLimit": 3,
                 "traits": [
                     { "id": "close-quarters", "name": "Walcząca w Zwarciu", "text": "Chatka nie ma utrudnienia przy atakach dystansowych, gdy w zasięgu 5 stóp znajduje się wrogie stworzenie." },
                     { "id": "immutable-form", "name": "Niezmienna Forma", "text": "Chatka jest odporna na wszelkie zaklęcia lub efekty, które zmieniłyby jej formę." },
@@ -205,6 +296,7 @@
                         "reach": "20 stóp",
                         "target": "jeden cel",
                         "damage": [{ "formula": "3d10+8", "type": "obuchowe" }],
+                        "shortEffect": "Sił ST 20: powalenie/odepchnięcie lub chwyt",
                         "text": "Cel musi zdać rzut obronny Siły ST 20, inaczej zostaje powalony lub odepchnięty do 10 stóp. Jeśli oblał rzut o 10 lub więcej, chatka może go zamiast tego chwycić (test ucieczki ST 20)."
                     },
                     {
@@ -212,6 +304,7 @@
                         "name": "Rzut",
                         "kind": "save",
                         "save": { "dc": 20, "ability": "Sił" },
+                        "shortEffect": "porażka: rzucenie 60 stóp, upadek",
                         "text": "Stworzenie schwytane przez chatkę musi zdać rzut obronny Siły ST 20, inaczej zostaje rzucone 60 stóp dalej. Rzucone w ten sposób stworzenie spada 20 stóp i ląduje powalone (obrażenia od upadku - standardowo 2k6)."
                     },
                     {
@@ -226,7 +319,6 @@
                 ],
                 "bonusActions": [],
                 "reactions": [
-                    { "id": "reactions-note-hut", "name": "Limit reakcji", "kind": "text", "text": "Chatka może wykonać do trzech reakcji na rundę, ale tylko jedną na turę. Jeśli efekt lub warunek uniemożliwiłby jej wykonanie reakcji, traci zamiast tego jedną reakcję." },
                     { "id": "indomitable-hut", "name": "Niezłomność", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: chatka powtarza rzut obronny przeciw jednemu efektowi lub warunkowi, który obecnie na nią działa." },
                     { "id": "root-reaction", "name": "Korzeń (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy turę w zasięgu 20 stóp od chatki. Efekt: chatka atakuje to stworzenie Korzeniem." },
                     {
@@ -235,6 +327,7 @@
                         "kind": "save",
                         "save": { "dc": 20, "ability": "Zwi" },
                         "damage": [{ "formula": "2d8", "type": "kłute" }],
+                        "shortEffect": "porażka: chwyt",
                         "text": "Wyzwalacz: stworzenie próbuje odzyskać klejnot z pnia chatki. Efekt: chatka gryzie ramię lub ciało tego stworzenia deskami podłogowymi. Porażka - schwytane (test ucieczki ST 20); dopóki jest schwytane w ten sposób, ma utrudnienie w testach odzyskania klejnotu."
                     }
                 ]
@@ -288,6 +381,7 @@
                         "attackBonus": 0,
                         "target": "średnie lub mniejsze stworzenie schwytane przez kopiec",
                         "damage": [{ "formula": "1d4", "type": "obuchowe" }],
+                        "shortEffect": "unieruchomienie, brak oddychania",
                         "text": "Pochłonięty cel jest unieruchomiony i nie może oddychać. Na początku każdej tury kopca musi zdać rzut obronny Kon ST 14, inaczej otrzymuje 1k4 obrażeń obuchowych. Jeśli kopiec się porusza, pochłonięty cel porusza się razem z nim. Kopiec może mieć pochłonięte tylko jedno stworzenie naraz."
                     }
                 ],
