@@ -87,12 +87,16 @@ function renderMonsterCard(root, { state, battle, participant }) {
         .map((f) => `<option value="${f.formId}" ${f.formId === participant.formId ? "selected" : ""}>${escapeHtml(f.label)}</option>`)
         .join("");
 
-    const spellActions = (form.actions || []).flatMap((a) => a.spells || []);
+    // "Rzucanie Zaklęć" (akcja z zagnieżdżonymi `spells`) jedzie na górę taba Czary jako karta z
+    // opisem ogólnym (zdolność zaklinania, ZB, pełna lista) - nie zostaje duplikatem w Akcjach.
+    const spellcastingActions = (form.actions || []).filter((a) => a.spells?.length);
+    const nonSpellActions = (form.actions || []).filter((a) => !a.spells?.length);
+    const spellActions = spellcastingActions.flatMap((a) => a.spells || []);
     const groupDefs = [
-        { key: "actions", label: "Akcje", actions: form.actions },
+        { key: "actions", label: "Akcje", actions: nonSpellActions },
         { key: "bonus", label: "Akcje Dodatkowe", actions: form.bonusActions },
         { key: "reactions", label: "Reakcje", actions: form.reactions, countText: form.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${form.reactionLimit}` : "" },
-        { key: "spells", label: "Czary", actions: spellActions }
+        { key: "spells", label: "Czary", actions: [...spellcastingActions, ...spellActions] }
     ].filter((g) => g.actions?.length);
     const storedGroupKey = selectedActionGroupByParticipant[participant.instanceId];
     const activeGroupKey = groupDefs.some((g) => g.key === storedGroupKey) ? storedGroupKey : groupDefs[0]?.key;
