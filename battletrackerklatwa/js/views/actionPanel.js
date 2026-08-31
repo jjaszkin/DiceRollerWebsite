@@ -1,6 +1,6 @@
-// Battle Tracker - Klątwa Strahda. Panel akcji (8 kolumn): przełącznik uczestników, statblok,
-// tor PW/KP, stany, dodatkowe liczniki (np. Latająca Czaszka) i akcje (jako taby Akcje/Akcje
-// Dodatkowe/Reakcje, z opcjonalnie zwijalną listą zaklęć) z pełnym auto-rzutem.
+// Battle Tracker - Klątwa Strahda. Panel akcji (8 kolumn) dla uczestnika wybranego w trackerze
+// inicjatywy (patrz initiativePanel.js): statblok, tor PW/KP, stany, dodatkowe liczniki (np.
+// Latająca Czaszka) i akcje (jako taby Akcje/Akcje Dodatkowe/Reakcje/Czary) z pełnym auto-rzutem.
 //
 // Rzuty obronne: auto dla potworów/NPC (bonus wyliczony ze statbloku), ręczne wpisanie wyniku dla
 // celów typu BG (gracz rzuca fizycznie przy stole) - patrz resolveActionOnce().
@@ -28,32 +28,21 @@ const DAMAGE_TYPES = [
 const ABILITY_KEY_BY_LABEL = { "Sił": "str", "Zwi": "dex", "Kon": "con", "Int": "int", "Mdr": "wis", "Cha": "cha" };
 
 // Czysto lokalny stan UI (nie zapisywany do Firebase) - który tab akcji jest otwarty per
-// uczestnik, i które sekcje zaklęć są rozwinięte, żeby przetrwały kolejne re-rendery w tej samej
-// sesji przeglądarki (ale nie przeładowanie strony - to celowo tylko wygoda, nie stan gry).
+// uczestnik, żeby przetrwał kolejne re-rendery w tej samej sesji przeglądarki (ale nie
+// przeładowanie strony - to celowo tylko wygoda, nie stan gry).
 const selectedActionGroupByParticipant = {};
-const expandedSpellGroups = new Set();
 
-export function renderActionPanel(root, { state, battle, selectedId, onSelect }) {
+// Wybór aktywnego uczestnika dzieje się WYŁĄCZNIE przez kliknięcie w tracker inicjatywy (patrz
+// initiativePanel.js) - nie ma tu już duplikującej to listy zakładek, żeby nie wybierać dwa razy
+// tego samego z dwóch różnych miejsc na ekranie.
+export function renderActionPanel(root, { state, battle, selectedId }) {
     const participant = battle.participants.find((p) => p.instanceId === selectedId);
 
-    root.innerHTML = `
-        <div class="card action-panel">
-            <div class="participant-tabs">
-                ${battle.participants.map((p) => `
-                    <button type="button" class="tab-btn participant-tab-btn ${p.instanceId === selectedId ? "active" : ""}" data-select-participant="${p.instanceId}">${escapeHtml(participantDisplayName(state, p))}</button>
-                `).join("") || '<p class="placeholder">Brak uczestników.</p>'}
-            </div>
-            <div class="action-panel-body" id="actionPanelBody"></div>
-        </div>
-    `;
-
-    root.querySelectorAll("[data-select-participant]").forEach((btn) => {
-        btn.addEventListener("click", () => onSelect(btn.dataset.selectParticipant));
-    });
-
+    root.innerHTML = `<div class="card action-panel" id="actionPanelBody"></div>`;
     const bodyRoot = root.querySelector("#actionPanelBody");
+
     if (!participant) {
-        bodyRoot.innerHTML = '<p class="placeholder">Wybierz uczestnika z listy powyżej.</p>';
+        bodyRoot.innerHTML = '<p class="placeholder">Wybierz uczestnika z listy inicjatywy.</p>';
         return;
     }
 
@@ -73,6 +62,7 @@ function renderPartyCard(root, { battle, participant }) {
                 <label>PW maks. <input type="number" class="pc-hp-max-input" value="${participant.hp?.max ?? ""}"></label>
                 <label>KP <input type="number" class="pc-ac-input" value="${participant.ac ?? ""}"></label>
             </div>
+            ${participant.acNote ? `<p class="ac-note">KP: ${escapeHtml(participant.acNote)}</p>` : ""}
             ${renderDamageForm()}
             ${renderConditionsBlock(participant)}
         </div>
@@ -97,10 +87,12 @@ function renderMonsterCard(root, { state, battle, participant }) {
         .map((f) => `<option value="${f.formId}" ${f.formId === participant.formId ? "selected" : ""}>${escapeHtml(f.label)}</option>`)
         .join("");
 
+    const spellActions = (form.actions || []).flatMap((a) => a.spells || []);
     const groupDefs = [
         { key: "actions", label: "Akcje", actions: form.actions },
         { key: "bonus", label: "Akcje Dodatkowe", actions: form.bonusActions },
-        { key: "reactions", label: "Reakcje", actions: form.reactions, countText: form.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${form.reactionLimit}` : "" }
+        { key: "reactions", label: "Reakcje", actions: form.reactions, countText: form.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${form.reactionLimit}` : "" },
+        { key: "spells", label: "Czary", actions: spellActions }
     ].filter((g) => g.actions?.length);
     const storedGroupKey = selectedActionGroupByParticipant[participant.instanceId];
     const activeGroupKey = groupDefs.some((g) => g.key === storedGroupKey) ? storedGroupKey : groupDefs[0]?.key;
@@ -161,13 +153,6 @@ function renderMonsterCard(root, { state, battle, participant }) {
         });
     });
 
-    root.querySelectorAll(".action-spells-details").forEach((el) => {
-        el.addEventListener("toggle", () => {
-            if (el.open) expandedSpellGroups.add(el.dataset.spellsFor);
-            else expandedSpellGroups.delete(el.dataset.spellsFor);
-        });
-    });
-
     root.querySelector(".form-switch-select")?.addEventListener("change", (e) => {
         const newForm = monster.forms.find((f) => f.formId === e.target.value);
         if (!newForm) return;
@@ -181,7 +166,8 @@ function renderMonsterCard(root, { state, battle, participant }) {
             p.reactionsUsedThisRound = 0;
             p.secondaryTrackers = (newForm.secondaryTrackers || []).map((t) => ({
                 id: t.id, label: t.label, ac: t.ac ?? null,
-                hp: { current: t.hp?.max ?? null, max: t.hp?.max ?? null }, active: false
+                hp: { current: t.hp?.max ?? null, max: t.hp?.max ?? null }, active: false,
+                acBonus: t.acBonus ?? 0
             }));
             logEntry(s, battle.id, "event", `${escapeHtml(p.name)} zmienia formę na: ${escapeHtml(newForm.label)}.`);
         });
@@ -302,7 +288,7 @@ function renderSecondaryTrackers(participant) {
             <h4>Dodatkowe liczniki</h4>
             ${participant.secondaryTrackers.map((t) => `
                 <div class="secondary-tracker-row" data-tracker-id="${t.id}">
-                    <label class="tracker-active"><input type="checkbox" class="tracker-active-check" ${t.active ? "checked" : ""}> ${escapeHtml(t.label)}</label>
+                    <label class="tracker-active"><input type="checkbox" class="tracker-active-check" ${t.active ? "checked" : ""}> ${escapeHtml(t.label)}${t.acBonus ? ` (${t.acBonus > 0 ? "+" : ""}${t.acBonus} KP gdy aktywna)` : ""}</label>
                     <label>PW <input type="number" class="tracker-hp-input" value="${t.hp?.current ?? ""}"> / ${t.hp?.max ?? "-"}</label>
                     <label>KP <input type="number" class="tracker-ac-input" value="${t.ac ?? ""}"></label>
                 </div>
@@ -317,7 +303,16 @@ function wireSecondaryTrackers(root, battleId, instanceId) {
         rowEl.querySelector(".tracker-active-check").addEventListener("change", (e) => {
             updateState((s) => {
                 const p = s.battles[battleId].participants.find((x) => x.instanceId === instanceId);
-                p.secondaryTrackers.find((x) => x.id === trackerId).active = e.target.checked;
+                const t = p.secondaryTrackers.find((x) => x.id === trackerId);
+                const wasActive = t.active;
+                t.active = e.target.checked;
+                // Jedyny licznik z realnym efektem mechanicznym na razie (acBonus) - np. Latająca
+                // Czaszka nalicza/odejmuje +5 KP uczestnika po (od)znaczeniu "aktywna", zamiast być
+                // czystym oznaczeniem bez wpływu na rozgrywkę.
+                if (t.acBonus && t.active !== wasActive) {
+                    p.ac = (p.ac ?? 0) + (t.active ? t.acBonus : -t.acBonus);
+                    logEntry(s, battleId, "event", `${escapeHtml(p.name)}: ${escapeHtml(t.label)} ${t.active ? "aktywna" : "nieaktywna"} (KP ${t.active ? "+" : "-"}${Math.abs(t.acBonus)} → ${p.ac}).`);
+                }
             });
         });
         rowEl.querySelector(".tracker-hp-input").addEventListener("change", (e) => {
@@ -388,14 +383,6 @@ function renderActionRow(action) {
         buttons = `<button type="button" class="btn btn-xs btn-secondary log-action-btn" data-action-id="${action.id}">Użyj</button>`;
     }
 
-    const isExpanded = expandedSpellGroups.has(action.id);
-    const spellsHtml = action.spells?.length ? `
-        <details class="action-spells-details" data-spells-for="${action.id}" ${isExpanded ? "open" : ""}>
-            <summary>Zaklęcia (${action.spells.length})</summary>
-            <div class="action-spells">${action.spells.map(renderActionRow).join("")}</div>
-        </details>
-    ` : "";
-
     return `
         <div class="action-card" data-action-card="${action.id}">
             <div class="action-card-head">
@@ -403,7 +390,6 @@ function renderActionRow(action) {
                 ${meta.length ? `<span class="action-meta">${meta.join(" - ")}</span>` : ""}
             </div>
             ${action.text ? `<p class="action-text">${escapeHtml(action.text)}</p>` : ""}
-            ${spellsHtml}
             <div class="action-buttons">${buttons}</div>
         </div>
     `;

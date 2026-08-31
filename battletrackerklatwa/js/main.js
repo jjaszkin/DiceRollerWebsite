@@ -1,6 +1,6 @@
 // Battle Tracker - Klątwa Strahda. Punkt wejścia: wczytuje statyczne dane (BG + bestiariusz),
 // łączy się ze wspólnym stanem w Firebase, i uruchamia mikro-router obsługujący dwa taby
-// (Walki/Uczestnicy) plus drill-down widok pojedynczej walki.
+// (Bitwy/Uczestnicy) plus drill-down widok pojedynczej walki.
 
 import { loadGameData } from "./data.js";
 import { initStore, connectCampaign, subscribe, onSaveStatusChange } from "./store.js";
@@ -14,6 +14,13 @@ const saveIndicator = document.getElementById("saveIndicator");
 const viewRoot = document.getElementById("view");
 const navTabs = document.getElementById("navTabs");
 
+// Nawigacja jest teraz ZAWSZE widoczna (wcześniej znikała całkiem na widoku pojedynczej walki,
+// co uniemożliwiało przeklik na Uczestnicy bez wcześniejszego "Powrót do listy"). Tab "Bitwy"
+// pamięta ostatni odwiedzony hash z sekcji bitew (listing albo konkretna walka) i po kliknięciu
+// wraca właśnie tam, zamiast zawsze skakać do listingu - "Powrót do listy" w widoku walki nadal
+// jawnie resetuje to zapamiętanie do samego listingu.
+let lastBattlesHash = "/battles";
+
 function setBootStatus(text) {
     if (bootStatus) bootStatus.textContent = text;
 }
@@ -21,16 +28,18 @@ function setBootStatus(text) {
 function updateNavActive() {
     if (!navTabs) return;
     const hash = currentHash();
-    const isBattleDetail = /^\/battles\/[^/]+$/.test(hash);
-    navTabs.classList.toggle("hidden", isBattleDetail);
+    const isBattlesSection = hash === "/battles" || hash.startsWith("/battles/");
     navTabs.querySelectorAll(".tab-btn").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.route === hash);
+        const isBattlesTab = btn.dataset.route === "/battles";
+        btn.classList.toggle("active", isBattlesTab ? isBattlesSection : btn.dataset.route === hash);
     });
 }
 
 function setupNav() {
     navTabs?.querySelectorAll(".tab-btn").forEach((btn) => {
-        btn.addEventListener("click", () => navigate(btn.dataset.route));
+        btn.addEventListener("click", () => {
+            navigate(btn.dataset.route === "/battles" ? lastBattlesHash : btn.dataset.route);
+        });
     });
 }
 
@@ -60,11 +69,20 @@ async function bootstrap() {
         setBootStatus("Łączenie z Firebase...");
         await connectCampaign();
 
-        onRoute(/^\/battles$/, () => renderBattleList(viewRoot));
-        onRoute(/^\/battles\/(?<id>[^/]+)$/, (params) => renderBattleView(viewRoot, params.id));
-        onRoute(/^\/participants$/, () => renderParticipantsLibrary(viewRoot));
+        // Każdy handler trasy woła updateNavActive() sam - to jedyne miejsce wywoływane zarówno
+        // przy zmianie hasha (klik w tab, przycisk "wstecz") jak i przy zmianie stanu z Firebase
+        // (subscribe niżej), więc podświetlenie aktywnego taba w nawigacji jest zawsze aktualne
+        // niezależnie od tego, co konkretnie wywołało render. Trasy z sekcji bitew dodatkowo
+        // zapamiętują swój hash w lastBattlesHash (patrz setupNav()).
+        onRoute(/^\/battles$/, () => { lastBattlesHash = "/battles"; renderBattleList(viewRoot); updateNavActive(); });
+        onRoute(/^\/battles\/(?<id>[^/]+)$/, (params) => {
+            lastBattlesHash = `/battles/${params.id}`;
+            renderBattleView(viewRoot, params.id);
+            updateNavActive();
+        });
+        onRoute(/^\/participants$/, () => { renderParticipantsLibrary(viewRoot); updateNavActive(); });
 
-        subscribe(() => { renderCurrentRoute(); updateNavActive(); });
+        subscribe(() => renderCurrentRoute());
         setupNav();
         setupSaveIndicator();
         startRouter();

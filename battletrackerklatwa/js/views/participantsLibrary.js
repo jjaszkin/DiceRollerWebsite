@@ -3,8 +3,16 @@
 
 import { getState, updateState } from "../store.js";
 import { escapeHtml, uid } from "../utils.js";
-import { buildStatblockHeaderHtml, buildTraitsHtml } from "../components/statblock.js";
+import { buildStatblockHeaderHtml, buildTraitsHtml, ABILITY_LABELS, abilityMod, fmtMod } from "../components/statblock.js";
 import { openConfirm } from "../components/confirmModal.js";
+
+const ABILITY_KEYS = ["str", "dex", "con", "int", "wis", "cha"];
+
+// Czysto lokalny stan UI (nie zapisywany do Firebase) - które wiersze mają rozwiniętą sekcję
+// "Statystyki". Bez tego edycja JAKIEGOKOLWIEK pola w środku (np. wynik cechy) wywołuje
+// updateState -> pełny re-render całego widoku -> sekcja wraca do domyślnie zwiniętej, więc
+// wpisanie kilku pól z rzędu wymagałoby ciągłego doklikiwania "Statystyki" na nowo.
+const expandedRows = new Set();
 
 export function renderParticipantsLibrary(root) {
     const state = getState();
@@ -50,9 +58,13 @@ export function renderParticipantsLibrary(root) {
                 name,
                 race: String(fd.get("race") || "").trim(),
                 class: String(fd.get("class") || "").trim(),
+                level: null,
+                proficiencyBonus: null,
                 ac: null,
+                acNote: "",
                 hp: { current: null, max: null },
-                saves: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
+                abilities: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
+                saves: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
                 initiativeBonus: 0,
                 notes: ""
             };
@@ -62,12 +74,35 @@ export function renderParticipantsLibrary(root) {
 
 function renderPartyRow(p) {
     return `
-        <div class="participant-row" data-party-id="${p.id}">
-            <div class="participant-row-name">${escapeHtml(p.name)}<span class="participant-row-sub">${escapeHtml(p.race)} ${escapeHtml(p.class)}</span></div>
-            <label class="participant-field">KP <input type="number" class="party-ac-input" value="${p.ac ?? ""}" min="0"></label>
-            <label class="participant-field">PW maks. <input type="number" class="party-hpmax-input" value="${p.hp?.max ?? ""}" min="0"></label>
-            <label class="participant-field">Bonus inicjatywy <input type="number" class="party-init-input" value="${p.initiativeBonus ?? 0}"></label>
-            <button type="button" class="btn btn-icon btn-sm party-delete-btn" title="Usuń">×</button>
+        <div class="participant-row party-row" data-party-id="${p.id}">
+            <div class="participant-row-head">
+                <div class="participant-row-name">${escapeHtml(p.name)}<span class="participant-row-sub">${escapeHtml(p.race)} ${escapeHtml(p.class)}</span></div>
+                <label class="participant-field">KP <input type="number" class="party-ac-input" value="${p.ac ?? ""}" min="0"></label>
+                <label class="participant-field">PW maks. <input type="number" class="party-hpmax-input" value="${p.hp?.max ?? ""}" min="0"></label>
+                <label class="participant-field">Bonus inicjatywy <input type="number" class="party-init-input" value="${p.initiativeBonus ?? 0}"></label>
+                <button type="button" class="btn btn-sm party-expand-btn">Statystyki</button>
+                <button type="button" class="btn btn-icon btn-sm party-delete-btn" title="Usuń">×</button>
+            </div>
+            <div class="party-row-detail${expandedRows.has(p.id) ? "" : " hidden"}">
+                <div class="party-detail-fields">
+                    <label>Poziom <input type="number" class="party-level-input" value="${p.level ?? ""}" min="1"></label>
+                    <label>Bonus biegłości <input type="number" class="party-prof-input" value="${p.proficiencyBonus ?? ""}"></label>
+                    <label class="party-acnote-field">Notatka do KP <input type="text" class="party-acnote-input" value="${escapeHtml(p.acNote || "")}" placeholder="np. 18+ w Dzikim Kształcie"></label>
+                </div>
+                <div class="party-ability-grid">
+                    ${ABILITY_KEYS.map((key) => {
+                        const score = p.abilities?.[key];
+                        return `
+                            <div class="party-ability-box">
+                                <div class="party-ability-label">${ABILITY_LABELS[key]}</div>
+                                <input type="number" class="party-ability-score-input" data-ability="${key}" value="${score ?? ""}" placeholder="wynik">
+                                <div class="party-ability-mod">${score != null ? fmtMod(abilityMod(score)) : "-"}</div>
+                                <input type="number" class="party-ability-save-input" data-ability="${key}" value="${p.saves?.[key] ?? ""}" placeholder="ST">
+                            </div>
+                        `;
+                    }).join("")}
+                </div>
+            </div>
         </div>
     `;
 }
@@ -86,7 +121,7 @@ function renderMonsterRow(m) {
                 <button type="button" class="btn btn-icon btn-sm monster-delete-btn" title="Usuń">×</button>
             </div>
             <div class="monster-row-summary">KP ${activeForm?.ac ?? "-"} - PW ${activeForm?.hp?.max ?? "-"} - ST ${escapeHtml(activeForm?.cr || "-")}</div>
-            <div class="monster-row-detail hidden">
+            <div class="monster-row-detail${expandedRows.has(m.id) ? "" : " hidden"}">
                 ${buildStatblockHeaderHtml(activeForm)}
                 ${buildTraitsHtml(activeForm.traits)}
             </div>
@@ -97,6 +132,11 @@ function renderMonsterRow(m) {
 function wirePartyRows(root, state) {
     root.querySelectorAll(".participant-row[data-party-id]").forEach((rowEl) => {
         const id = rowEl.dataset.partyId;
+
+        rowEl.querySelector(".party-expand-btn")?.addEventListener("click", () => {
+            if (expandedRows.has(id)) expandedRows.delete(id); else expandedRows.add(id);
+            rowEl.querySelector(".party-row-detail").classList.toggle("hidden");
+        });
 
         rowEl.querySelector(".party-ac-input").addEventListener("change", (e) => {
             const val = e.target.value === "" ? null : Number(e.target.value);
@@ -114,6 +154,39 @@ function wirePartyRows(root, state) {
         rowEl.querySelector(".party-init-input").addEventListener("change", (e) => {
             updateState((s) => { s.library.party[id].initiativeBonus = Number(e.target.value) || 0; });
         });
+        rowEl.querySelector(".party-level-input").addEventListener("change", (e) => {
+            const val = e.target.value === "" ? null : Number(e.target.value);
+            updateState((s) => { s.library.party[id].level = val; });
+        });
+        rowEl.querySelector(".party-prof-input").addEventListener("change", (e) => {
+            const val = e.target.value === "" ? null : Number(e.target.value);
+            updateState((s) => { s.library.party[id].proficiencyBonus = val; });
+        });
+        rowEl.querySelector(".party-acnote-input").addEventListener("change", (e) => {
+            updateState((s) => { s.library.party[id].acNote = e.target.value; });
+        });
+        rowEl.querySelectorAll(".party-ability-score-input").forEach((input) => {
+            input.addEventListener("change", (e) => {
+                const key = input.dataset.ability;
+                const val = e.target.value === "" ? null : Number(e.target.value);
+                updateState((s) => {
+                    const p = s.library.party[id];
+                    p.abilities ??= {};
+                    p.abilities[key] = val;
+                });
+            });
+        });
+        rowEl.querySelectorAll(".party-ability-save-input").forEach((input) => {
+            input.addEventListener("change", (e) => {
+                const key = input.dataset.ability;
+                const val = e.target.value === "" ? null : Number(e.target.value);
+                updateState((s) => {
+                    const p = s.library.party[id];
+                    p.saves ??= {};
+                    p.saves[key] = val;
+                });
+            });
+        });
         rowEl.querySelector(".party-delete-btn").addEventListener("click", () => {
             const name = state.library.party[id]?.name || "";
             openConfirm({
@@ -130,6 +203,7 @@ function wireMonsterRows(root, state) {
         const id = rowEl.dataset.monsterId;
 
         rowEl.querySelector(".monster-expand-btn")?.addEventListener("click", () => {
+            if (expandedRows.has(id)) expandedRows.delete(id); else expandedRows.add(id);
             rowEl.querySelector(".monster-row-detail").classList.toggle("hidden");
         });
         rowEl.querySelector(".monster-form-select")?.addEventListener("change", (e) => {
