@@ -1,14 +1,15 @@
-// Battle Tracker - Klątwa Strahda. Historia rzutów i akcji tej walki - usuwanie wpisu małym "×"
-// wymaga potwierdzenia na modalu (patrz components/confirmModal.js).
+// Battle Tracker - Klątwa Strahda. Historia rzutów i akcji tej walki (z płaskiego state.rollHistory,
+// patrz rollLog.js) - usuwanie wpisu małym "×" wymaga potwierdzenia na modalu.
 
 import { updateState } from "../store.js";
 import { formatTimestamp } from "../utils.js";
+import { entriesForBattle, removeEntry } from "../rollLog.js";
 import { openConfirm } from "../components/confirmModal.js";
 
 const KIND_LABELS = { roll: "Rzut", damage: "Obrażenia", condition: "Warunek", event: "Zdarzenie" };
 
-export function renderHistoryPanel(root, { battle }) {
-    const entries = [...(battle.history || [])].sort((a, b) => (b.at || 0) - (a.at || 0));
+export function renderHistoryPanel(root, { state, battle }) {
+    const entries = entriesForBattle(state, battle.id).sort((a, b) => (b.at || 0) - (a.at || 0));
 
     root.innerHTML = `
         <div class="card history-panel">
@@ -25,12 +26,7 @@ export function renderHistoryPanel(root, { battle }) {
             openConfirm({
                 title: "Usunąć wpis?",
                 message: "Ta czynność jest nieodwracalna.",
-                onConfirm: () => {
-                    updateState((s) => {
-                        const b = s.battles[battle.id];
-                        b.history = b.history.filter((e) => e.id !== entryId);
-                    });
-                }
+                onConfirm: () => updateState((s) => removeEntry(s, entryId))
             });
         });
     });

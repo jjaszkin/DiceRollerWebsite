@@ -342,7 +342,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
 .initiative-row:hover { border-color: var(--gold-dim); }
 .initiative-row-active { border-color: var(--gold); background: var(--bg-3); }
 .initiative-row-order { display: flex; flex-direction: column; gap: 2px; }
-.initiative-value-input { width: 3.2em; text-align: center; font-family: var(--mono); flex-shrink: 0; }
+.initiative-value-input { width: 6.4em; text-align: center; font-family: var(--mono); flex-shrink: 0; }
 .initiative-row-body { flex: 1; min-width: 0; }
 .initiative-row-name { font-weight: 700; color: var(--fg-0); font-size: 0.9rem; }
 .initiative-row-hp { color: var(--fg-2); font-size: 0.78rem; }
@@ -424,8 +424,17 @@ input[type="checkbox"] { accent-color: var(--gold); }
     cursor: pointer;
 }
 .condition-pick-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright); }
-.condition-pick-chip-immune { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
-.condition-pick-chip-immune:hover { border-color: var(--line-strong); color: var(--fg-1); }
+/* Celowo bez opacity: opacity na elemencie dociemnia też jego WŁASNY hover-tooltip (::after),
+   robiąc go nieczytelnym akurat wtedy, gdy GM chce sprawdzić dlaczego stan jest zablokowany -
+   dociemnienie robimy więc samym kolorem/obramowaniem. */
+.condition-pick-chip-immune {
+    cursor: not-allowed;
+    text-decoration: line-through;
+    color: var(--fg-dim);
+    background: var(--bg-1);
+    border-color: var(--line);
+}
+.condition-pick-chip-immune:hover { border-color: var(--line); color: var(--fg-dim); }
 .condition-custom-row { display: flex; gap: 8px; }
 .condition-custom-input { flex: 1; }
 
@@ -490,8 +499,10 @@ input[type="checkbox"] { accent-color: var(--gold); }
 
 /* -- Akcje ------------------------------------------------------------------------------------- */
 
-.action-group { margin-top: 14px; }
 .action-group-count { color: var(--fg-dim); font-size: 0.75rem; text-transform: none; letter-spacing: normal; font-weight: 400; }
+
+.action-group-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin-top: 16px; padding-bottom: 6px; }
+.action-group-panel { margin-top: 12px; }
 .action-list { display: flex; flex-direction: column; gap: 8px; }
 .action-card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; }
 .action-card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
@@ -500,6 +511,17 @@ input[type="checkbox"] { accent-color: var(--gold); }
 .action-text { font-size: 0.82rem; color: var(--fg-1); line-height: 1.5; margin: 6px 0; }
 .action-buttons { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .action-spells { margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+
+.action-spells-details { margin-top: 8px; }
+.action-spells-details summary {
+    cursor: pointer;
+    color: var(--gold-dim);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    user-select: none;
+}
+.action-spells-details summary:hover { color: var(--gold-bright); }
+.action-spells-details[open] summary { margin-bottom: 4px; }
 
 /* -- Footer / scrollbar --------------------------------------------------------------------------- */
 

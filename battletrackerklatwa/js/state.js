@@ -74,7 +74,8 @@ export function createDefaultState(gameData) {
             party: seedParty(gameData?.party),
             monsters: seedMonsters(gameData?.monsters)
         },
-        battles: {}
+        battles: {},
+        rollHistory: []
     };
 }
 

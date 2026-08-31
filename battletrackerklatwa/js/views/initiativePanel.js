@@ -1,10 +1,12 @@
 // Battle Tracker - Klątwa Strahda. Tracker inicjatywy: runda (edytowalna), kolejność uczestników
-// (przesuwanie góra/dół), skrócony podgląd PW i warunków, wybór uczestnika do panelu akcji.
+// (przesuwanie góra/dół albo sortowanie po wartości inicjatywy), skrócony podgląd PW i stanów,
+// wybór uczestnika do panelu akcji.
 
 import { updateState } from "../store.js";
 import { escapeHtml } from "../utils.js";
+import { participantDisplayName } from "../components/participantDisplay.js";
 
-export function renderInitiativePanel(root, { battle, selectedId, onSelect }) {
+export function renderInitiativePanel(root, { state, battle, selectedId, onSelect }) {
     root.innerHTML = `
         <div class="card initiative-panel">
             <div class="initiative-round-row">
@@ -13,8 +15,9 @@ export function renderInitiativePanel(root, { battle, selectedId, onSelect }) {
                 <input type="number" class="initiative-round-input" value="${battle.round ?? 1}" min="1">
                 <button type="button" class="btn btn-icon btn-sm" data-round-action="inc">+</button>
             </div>
+            <button type="button" class="btn btn-sm" id="sortByInitiativeBtn">Sortuj według inicjatywy</button>
             <div class="initiative-list">
-                ${battle.participants.map((p, i) => renderParticipantRow(p, i, battle.participants.length, selectedId)).join("") || '<p class="placeholder">Brak uczestników.</p>'}
+                ${battle.participants.map((p, i) => renderParticipantRow(state, p, i, battle.participants.length, selectedId)).join("") || '<p class="placeholder">Brak uczestników.</p>'}
             </div>
         </div>
     `;
@@ -27,6 +30,11 @@ export function renderInitiativePanel(root, { battle, selectedId, onSelect }) {
     });
     root.querySelector(".initiative-round-input").addEventListener("change", (e) => {
         setRound(battle.id, Math.max(1, Number(e.target.value) || 1));
+    });
+    root.querySelector("#sortByInitiativeBtn").addEventListener("click", () => {
+        updateState((s) => {
+            s.battles[battle.id].participants.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+        });
     });
 
     root.querySelectorAll("[data-select-instance]").forEach((el) => {
@@ -70,7 +78,7 @@ function moveParticipant(battleId, instanceId, dir) {
     });
 }
 
-function renderParticipantRow(p, index, total, selectedId) {
+function renderParticipantRow(state, p, index, total, selectedId) {
     const hpText = p.hp?.max != null ? `${p.hp.current ?? "-"} / ${p.hp.max}` : "-";
     const conditions = (p.conditions || []).map((c) => `<span class="condition-badge">${escapeHtml(c.label)}</span>`).join("");
     return `
@@ -81,7 +89,7 @@ function renderParticipantRow(p, index, total, selectedId) {
             </div>
             <input type="number" class="initiative-value-input" data-initiative-input="${p.instanceId}" value="${p.initiative ?? 0}" title="Wartość inicjatywy">
             <div class="initiative-row-body">
-                <div class="initiative-row-name">${escapeHtml(p.name)}</div>
+                <div class="initiative-row-name">${escapeHtml(participantDisplayName(state, p))}</div>
                 <div class="initiative-row-hp">PW: ${hpText}</div>
                 ${conditions ? `<div class="initiative-row-conditions">${conditions}</div>` : ""}
             </div>

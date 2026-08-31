@@ -133,8 +133,7 @@ export function openBattleCreator({ state, onCreate }) {
             },
             round: 1,
             turnIndex: 0,
-            participants,
-            history: []
+            participants
         };
 
         close();
