@@ -12,7 +12,7 @@ export function renderBattleList(root) {
 
     root.innerHTML = `
         <div class="view-head">
-            <h2>Walki</h2>
+            <h2>Bitwy</h2>
             <button type="button" class="btn btn-primary" id="newBattleBtn">+ Nowa walka</button>
         </div>
         ${battles.length

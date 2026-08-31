@@ -37,7 +37,8 @@
                         "ac": 15,
                         "hp": { "max": 50 },
                         "immunities": ["trujące", "psychiczne"],
-                        "notes": "Mieści Babę Lysagę i jedno średnie stworzenie (osłona 3/4: +5 KP i rzutów Zwi dla pasażera). Steruje wyłącznie Baba Lysaga. Po spadku do 0 PW ląduje w błocie Berezu i staje się nieożywiona - jeśli przetrwa nienaruszona, Baba Lysaga może ją ponownie zaczarować po długim odpoczynku. To skradziona czaszka srebrnego smoka Argynvosta - jej zniszczenie na stałe uniemożliwia zapalenie sygnału w Argynvostholt."
+                        "acBonus": 5,
+                        "notes": "Mieści Babę Lysagę i jedno średnie stworzenie (osłona 3/4: +5 KP i rzutów Zwi dla pasażera). Steruje wyłącznie Baba Lysaga. Po spadku do 0 PW ląduje w błocie Berezu i staje się nieożywiona - jeśli przetrwa nienaruszona, Baba Lysaga może ją ponownie zaczarować po długim odpoczynku. To skradziona czaszka srebrnego smoka Argynvosta - jej zniszczenie na stałe uniemożliwia zapalenie sygnału w Argynvostholt. Zaznaczenie checkboxa \"aktywna\" nalicza (i po odznaczeniu odejmuje) +5 KP w polu KP tego uczestnika - rzuty obronne Zwi trzeba nadal uwzględniać ręcznie, bo nie są automatyzowane w tym trackerze."
                     }
                 ],
                 "actions": [

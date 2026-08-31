@@ -381,8 +381,6 @@ input[type="checkbox"] { accent-color: var(--accent); }
 /* -- Panel akcji ------------------------------------------------------------------------------- */
 
 .action-panel { padding: 10px 12px; }
-.participant-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 10px; }
-.participant-tab-btn { border-radius: var(--radius); }
 
 .participant-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .participant-card h3 { border-bottom: none; padding-bottom: 0; }

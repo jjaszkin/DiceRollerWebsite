@@ -117,7 +117,8 @@ export function openBattleCreator({ state, onCreate }) {
                     label: t.label,
                     ac: t.ac ?? null,
                     hp: { current: t.hp?.max ?? null, max: t.hp?.max ?? null },
-                    active: false
+                    active: false,
+                    acBonus: t.acBonus ?? 0
                 }))
             });
         });

@@ -1,6 +1,6 @@
 // Battle Tracker - Klątwa Strahda. Punkt wejścia: wczytuje statyczne dane (BG + bestiariusz),
 // łączy się ze wspólnym stanem w Firebase, i uruchamia mikro-router obsługujący dwa taby
-// (Walki/Uczestnicy) plus drill-down widok pojedynczej walki.
+// (Bitwy/Uczestnicy) plus drill-down widok pojedynczej walki.
 
 import { loadGameData } from "./data.js";
 import { initStore, connectCampaign, subscribe, onSaveStatusChange } from "./store.js";
@@ -60,11 +60,15 @@ async function bootstrap() {
         setBootStatus("Łączenie z Firebase...");
         await connectCampaign();
 
-        onRoute(/^\/battles$/, () => renderBattleList(viewRoot));
-        onRoute(/^\/battles\/(?<id>[^/]+)$/, (params) => renderBattleView(viewRoot, params.id));
-        onRoute(/^\/participants$/, () => renderParticipantsLibrary(viewRoot));
+        // Każdy handler trasy woła updateNavActive() sam - to jedyne miejsce wywoływane zarówno
+        // przy zmianie hasha (klik w tab, przycisk "wstecz") jak i przy zmianie stanu z Firebase
+        // (subscribe niżej), więc podświetlenie aktywnego taba w nawigacji jest zawsze aktualne
+        // niezależnie od tego, co konkretnie wywołało render.
+        onRoute(/^\/battles$/, () => { renderBattleList(viewRoot); updateNavActive(); });
+        onRoute(/^\/battles\/(?<id>[^/]+)$/, (params) => { renderBattleView(viewRoot, params.id); updateNavActive(); });
+        onRoute(/^\/participants$/, () => { renderParticipantsLibrary(viewRoot); updateNavActive(); });
 
-        subscribe(() => { renderCurrentRoute(); updateNavActive(); });
+        subscribe(() => renderCurrentRoute());
         setupNav();
         setupSaveIndicator();
         startRouter();

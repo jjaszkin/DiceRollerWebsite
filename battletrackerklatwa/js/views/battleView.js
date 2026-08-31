@@ -54,5 +54,5 @@ export function renderBattleView(root, battleId) {
 
     renderInitiativePanel(root.querySelector("#initiativePanelRoot"), { state, battle, selectedId, onSelect });
     renderHistoryPanel(root.querySelector("#historyPanelRoot"), { state, battle });
-    renderActionPanel(root.querySelector("#actionPanelRoot"), { state, battle, selectedId, onSelect });
+    renderActionPanel(root.querySelector("#actionPanelRoot"), { state, battle, selectedId });
 }
