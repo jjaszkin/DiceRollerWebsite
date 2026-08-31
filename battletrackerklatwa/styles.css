@@ -348,6 +348,7 @@ input[type="checkbox"] { accent-color: var(--accent); }
 /* -- Tracker inicjatywy -------------------------------------------------------------------------- */
 
 .initiative-round-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.initiative-action-btn { display: block; width: 100%; margin-bottom: 8px; }
 .initiative-round-label { font-family: var(--sans); text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-dim); font-size: 0.85rem; }
 .initiative-round-input { width: 4em; text-align: center; font-family: var(--mono); font-size: 1.1rem; }
 
