@@ -139,7 +139,12 @@ async function getServiceDates() {
     const cached = sessionStorage.getItem(DATES_CACHE_KEY);
     if (cached) {
         try {
-            return JSON.parse(cached);
+            const parsed = JSON.parse(cached);
+            // Jeśli od czasu zapisania cache przybył nowy folder w FOLDERS (np. świeżo dodany
+            // mini-serwis), jego klucza tu nie będzie - w takim wypadku cache jest nieaktualny
+            // dla całej listy i trzeba pobrać na nowo, zamiast pokazywać "Brak danych" na stałe
+            // aż do końca sesji przeglądarki.
+            if (FOLDERS.every((folder) => folder in parsed)) return parsed;
         } catch {
             // ignore corrupt cache and refetch
         }
