@@ -77,7 +77,8 @@
                                 "name": "Iskra Kwasu",
                                 "kind": "save",
                                 "save": { "dc": 17, "ability": "Zwi", "halfOnSuccess": true },
-                                "damage": [{ "formula": "3d6", "type": "kwas" }]
+                                "damage": [{ "formula": "3d6", "type": "kwas" }],
+                                "text": "Rzuca kroplę kwasu w jeden lub dwa cele w zasięgu 60 stóp, oddalone od siebie o maksymalnie 5 stóp. Każdy cel wykonuje rzut obronny Zwi - przy porażce otrzymuje pełne obrażenia kwasem, przy sukcesie połowę."
                             },
                             {
                                 "id": "mage-hand-wm",
@@ -210,7 +211,8 @@
                                 "name": "Iskra Kwasu",
                                 "kind": "save",
                                 "save": { "dc": 18, "ability": "Zwi", "halfOnSuccess": true },
-                                "damage": [{ "formula": "3d6", "type": "kwas" }]
+                                "damage": [{ "formula": "3d6", "type": "kwas" }],
+                                "text": "Rzuca kroplę kwasu w jeden lub dwa cele w zasięgu 60 stóp, oddalone od siebie o maksymalnie 5 stóp. Każdy cel wykonuje rzut obronny Zwi - przy porażce otrzymuje pełne obrażenia kwasem, przy sukcesie połowę."
                             },
                             {
                                 "id": "control-water-swamp",
