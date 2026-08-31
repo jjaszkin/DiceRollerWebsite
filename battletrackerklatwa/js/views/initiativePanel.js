@@ -5,6 +5,9 @@
 import { updateState } from "../store.js";
 import { escapeHtml } from "../utils.js";
 import { participantDisplayName } from "../components/participantDisplay.js";
+import { rollD20 } from "../diceEngine.js";
+import { abilityMod, fmtMod } from "../components/statblock.js";
+import { logEntry } from "../rollLog.js";
 
 export function renderInitiativePanel(root, { state, battle, selectedId, onSelect }) {
     root.innerHTML = `
@@ -15,7 +18,8 @@ export function renderInitiativePanel(root, { state, battle, selectedId, onSelec
                 <input type="number" class="initiative-round-input" value="${battle.round ?? 1}" min="1">
                 <button type="button" class="btn btn-icon btn-sm" data-round-action="inc">+</button>
             </div>
-            <button type="button" class="btn btn-sm" id="sortByInitiativeBtn">Sortuj według inicjatywy</button>
+            <button type="button" class="btn btn-sm initiative-action-btn" id="sortByInitiativeBtn">Sortuj według inicjatywy</button>
+            <button type="button" class="btn btn-sm initiative-action-btn" id="rollEnemyInitiativeBtn">Rzuć za inicjatywę wrogów</button>
             <div class="initiative-list">
                 ${battle.participants.map((p, i) => renderParticipantRow(state, p, i, battle.participants.length, selectedId)).join("") || '<p class="placeholder">Brak uczestników.</p>'}
             </div>
@@ -34,6 +38,22 @@ export function renderInitiativePanel(root, { state, battle, selectedId, onSelec
     root.querySelector("#sortByInitiativeBtn").addEventListener("click", () => {
         updateState((s) => {
             s.battles[battle.id].participants.sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
+        });
+    });
+    root.querySelector("#rollEnemyInitiativeBtn").addEventListener("click", () => {
+        updateState((s) => {
+            const b = s.battles[battle.id];
+            const lines = [];
+            for (const p of b.participants) {
+                if (p.sourceType !== "monster") continue;
+                const monster = s.library.monsters[p.sourceId];
+                const form = monster?.forms.find((f) => f.formId === p.formId);
+                const mod = abilityMod(form?.abilities?.dex);
+                const roll = rollD20();
+                p.initiative = roll + mod;
+                lines.push(`${escapeHtml(p.name)} ${p.initiative} (${roll}${fmtMod(mod)})`);
+            }
+            if (lines.length) logEntry(s, battle.id, "event", `Rzut inicjatywy wrogów: ${lines.join(", ")}.`);
         });
     });
 
