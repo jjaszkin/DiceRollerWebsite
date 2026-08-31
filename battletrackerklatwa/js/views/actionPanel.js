@@ -62,6 +62,7 @@ function renderPartyCard(root, { battle, participant }) {
                 <label>PW maks. <input type="number" class="pc-hp-max-input" value="${participant.hp?.max ?? ""}"></label>
                 <label>KP <input type="number" class="pc-ac-input" value="${participant.ac ?? ""}"></label>
             </div>
+            ${participant.acNote ? `<p class="ac-note">KP: ${escapeHtml(participant.acNote)}</p>` : ""}
             ${renderDamageForm()}
             ${renderConditionsBlock(participant)}
         </div>

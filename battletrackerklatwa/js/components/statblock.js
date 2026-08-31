@@ -4,15 +4,15 @@
 
 import { escapeHtml } from "../utils.js";
 
-function abilityMod(score) {
+export function abilityMod(score) {
     return Math.floor((Number(score ?? 10) - 10) / 2);
 }
 
-function fmtMod(n) {
+export function fmtMod(n) {
     return n >= 0 ? `+${n}` : `${n}`;
 }
 
-const ABILITY_LABELS = { str: "SIŁ", dex: "ZWI", con: "KON", int: "INT", wis: "MDR", cha: "CHA" };
+export const ABILITY_LABELS = { str: "SIŁ", dex: "ZWI", con: "KON", int: "INT", wis: "MDR", cha: "CHA" };
 
 export function buildAbilityRowHtml(abilities) {
     const keys = ["str", "dex", "con", "int", "wis", "cha"];

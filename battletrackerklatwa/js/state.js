@@ -16,9 +16,15 @@ function seedParty(entries) {
             name: p.name,
             race: p.race || "",
             class: p.class || "",
+            level: null,
+            proficiencyBonus: null,
             ac: null,
+            acNote: "",
             hp: { current: null, max: null },
-            saves: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
+            abilities: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
+            // Bonus rzutu obronnego (nie modyfikator cechy - może się różnić przy biegłości/cechach),
+            // patrz components/statblock.js#abilityMod() dla wyliczenia modyfikatora z `abilities`.
+            saves: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
             initiativeBonus: 0,
             notes: ""
         };

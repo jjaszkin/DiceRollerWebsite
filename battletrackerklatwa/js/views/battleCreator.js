@@ -91,6 +91,7 @@ export function openBattleCreator({ state, onCreate }) {
                 formId: null,
                 name: p.name,
                 ac: p.ac ?? null,
+                acNote: p.acNote || "",
                 hp: { current: p.hp?.max ?? null, max: p.hp?.max ?? null },
                 initiative: 0,
                 conditions: []
