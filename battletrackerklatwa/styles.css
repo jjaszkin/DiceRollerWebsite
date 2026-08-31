@@ -1,22 +1,23 @@
 /* Battle Tracker - Klątwa Strahda
-   Motyw czarno-złoty, ta sama paleta i szkielet .card/.btn/.tabs/.modal co
-   darkgraal3dashboard/styles.css - pasuje tematycznie do gotyckiej grozy Barovii. */
+   Motyw czarno-czerwony (kolor D&D #EC1C24) - ten sam szkielet .card/.btn/.tabs/.modal co
+   darkgraal3dashboard/styles.css, tylko przemalowany z żółtego akcentu na czerwony i z
+   neutralami przetonowanymi w stronę czerwieni zamiast bursztynu, żeby nie gryzło się z akcentem. */
 
 :root {
-    --bg-0: #0a0806;
-    --bg-1: #14100b;
-    --bg-2: #1e1712;
-    --bg-3: #2a2019;
-    --line: #3d2f1f;
-    --line-strong: #6b5330;
-    --gold: #E8B83D;
-    --gold-bright: #F8D270;
-    --gold-dim: #BD952F;
-    --fg-0: #f2e9d8;
-    --fg-1: #d8c9a8;
-    --fg-2: #a89878;
-    --fg-dim: #6b5f4a;
-    --danger: #8a2f2f;
+    --bg-0: #0a0707;
+    --bg-1: #150e0e;
+    --bg-2: #201616;
+    --bg-3: #2c1c1c;
+    --line: #3d2424;
+    --line-strong: #6b3232;
+    --accent: #EC1C24;
+    --accent-bright: #FF4D54;
+    --accent-dim: #B01820;
+    --fg-0: #f5e9e8;
+    --fg-1: #dcc4c2;
+    --fg-2: #ab8a88;
+    --fg-dim: #6e5453;
+    --danger: #6b1f1f;
     --mono: "Pirata One", "SFMono-Regular", ui-monospace, "JetBrains Mono", "Consolas", "Courier New", monospace;
     --sans: "Domine", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --radius: 3px;
@@ -65,14 +66,14 @@ body {
     font-size: 1.1rem;
     letter-spacing: 0.1em;
     margin: 0;
-    color: var(--gold-bright);
+    color: var(--accent-bright);
     font-weight: 600;
 }
 
 .header-status { display: flex; align-items: center; gap: 12px; }
 
 .save-indicator { font-size: 0.8rem; color: var(--fg-dim); transition: color 0.2s; }
-.save-indicator.saving { color: var(--gold); }
+.save-indicator.saving { color: var(--accent); }
 .save-indicator.saved { color: var(--fg-dim); }
 .save-indicator.error { color: var(--danger); text-decoration: underline wavy; }
 
@@ -91,9 +92,9 @@ body {
     border-radius: var(--radius) var(--radius) 0 0;
     text-transform: uppercase;
 }
-.tab-btn:hover { color: var(--gold-bright); background: var(--bg-1); }
+.tab-btn:hover { color: var(--accent-bright); background: var(--bg-1); }
 .tab-btn.active {
-    color: var(--gold-bright);
+    color: var(--accent-bright);
     background: var(--bg-2);
     border-color: var(--line);
     border-bottom: 1px solid var(--bg-2);
@@ -117,7 +118,7 @@ h2, h3, h4 {
     font-family: var(--sans);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--accent);
     margin: 18px 0 10px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--line);
@@ -151,12 +152,12 @@ h4 { font-size: 0.9rem; color: var(--fg-2); }
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
-.btn:hover { background: var(--bg-3); border-color: var(--gold-dim); color: var(--gold-bright); }
+.btn:hover { background: var(--bg-3); border-color: var(--accent-dim); color: var(--accent-bright); }
 .btn:active { background: var(--bg-0); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.btn-primary { background: var(--gold); color: var(--bg-0); border-color: var(--gold); font-weight: 700; }
-.btn-primary:hover { background: var(--gold-bright); color: var(--bg-0); border-color: var(--gold-bright); }
+.btn-primary { background: var(--accent); color: var(--bg-0); border-color: var(--accent); font-weight: 700; }
+.btn-primary:hover { background: var(--accent-bright); color: var(--bg-0); border-color: var(--accent-bright); }
 .btn-secondary { background: var(--bg-2); }
 .btn-danger { border-color: var(--danger); }
 .btn-danger:hover { background: var(--danger); color: var(--fg-0); border-color: var(--danger); }
@@ -175,10 +176,10 @@ select, input[type="text"], input[type="number"], input[type="password"], textar
     padding: 7px 10px;
     font-size: 0.9rem;
 }
-select:focus, input:focus, textarea:focus { outline: none; border-color: var(--gold-dim); }
+select:focus, input:focus, textarea:focus { outline: none; border-color: var(--accent-dim); }
 textarea { width: 100%; resize: vertical; font-family: var(--sans); line-height: 1.5; display: block; margin: 6px 0; }
 label { font-size: 0.8rem; color: var(--fg-2); }
-input[type="checkbox"] { accent-color: var(--gold); }
+input[type="checkbox"] { accent-color: var(--accent); }
 
 /* -- Modal ------------------------------------------------------------------------------------ */
 
@@ -194,7 +195,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
 }
 .modal {
     background: var(--bg-1);
-    border: 1px solid var(--gold-dim);
+    border: 1px solid var(--accent-dim);
     border-radius: var(--radius);
     padding: 20px 24px;
     max-width: 640px;
@@ -203,8 +204,8 @@ input[type="checkbox"] { accent-color: var(--gold); }
     overflow-y: auto;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
 }
-.modal h2 { color: var(--gold-bright); margin-top: 0; }
-.modal h3 { color: var(--gold); font-size: 1.05rem; margin: 14px 0 4px; border-bottom: none; padding-bottom: 0; }
+.modal h2 { color: var(--accent-bright); margin-top: 0; }
+.modal h3 { color: var(--accent); font-size: 1.05rem; margin: 14px 0 4px; border-bottom: none; padding-bottom: 0; }
 .modal p { color: var(--fg-1); line-height: 1.55; font-size: 0.88rem; }
 .modal-actions {
     display: flex;
@@ -232,8 +233,8 @@ input[type="checkbox"] { accent-color: var(--gold); }
     font-family: var(--sans);
     color: var(--fg-0);
 }
-.service-card:hover { border-color: var(--gold-dim); background: var(--bg-2); }
-.card-name { font-weight: 700; color: var(--gold-bright); font-size: 1rem; }
+.service-card:hover { border-color: var(--accent-dim); background: var(--bg-2); }
+.card-name { font-weight: 700; color: var(--accent-bright); font-size: 1rem; }
 .card-date { color: var(--fg-2); font-size: 0.8rem; }
 
 .battle-card { display: flex; align-items: stretch; gap: 4px; padding: 0; }
@@ -251,7 +252,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
     flex-direction: column;
     gap: 4px;
 }
-.battle-card-open:hover .card-name { color: var(--gold-bright); }
+.battle-card-open:hover .card-name { color: var(--accent-bright); }
 .battle-card-delete { align-self: flex-start; margin: 8px 8px 0 0; flex-shrink: 0; }
 
 /* -- Kreator walki ----------------------------------------------------------------------------- */
@@ -286,7 +287,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
     align-items: center;
     gap: 10px;
 }
-.participant-row-name { font-weight: 700; color: var(--gold-bright); display: flex; flex-direction: column; gap: 2px; min-width: 140px; }
+.participant-row-name { font-weight: 700; color: var(--accent-bright); display: flex; flex-direction: column; gap: 2px; min-width: 140px; }
 .participant-row-sub { font-weight: 400; color: var(--fg-dim); font-size: 0.78rem; }
 .participant-field { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; }
 .participant-field input { width: 5em; }
@@ -325,7 +326,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
 /* -- Tracker inicjatywy -------------------------------------------------------------------------- */
 
 .initiative-round-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.initiative-round-label { font-family: var(--sans); text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold-dim); font-size: 0.85rem; }
+.initiative-round-label { font-family: var(--sans); text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-dim); font-size: 0.85rem; }
 .initiative-round-input { width: 4em; text-align: center; font-family: var(--mono); font-size: 1.1rem; }
 
 .initiative-list { display: flex; flex-direction: column; gap: 6px; }
@@ -339,8 +340,8 @@ input[type="checkbox"] { accent-color: var(--gold); }
     padding: 8px 10px;
     cursor: pointer;
 }
-.initiative-row:hover { border-color: var(--gold-dim); }
-.initiative-row-active { border-color: var(--gold); background: var(--bg-3); }
+.initiative-row:hover { border-color: var(--accent-dim); }
+.initiative-row-active { border-color: var(--accent); background: var(--bg-3); }
 .initiative-row-order { display: flex; flex-direction: column; gap: 2px; }
 .initiative-value-input { width: 6.4em; text-align: center; font-family: var(--mono); flex-shrink: 0; }
 .initiative-row-body { flex: 1; min-width: 0; }
@@ -361,9 +362,9 @@ input[type="checkbox"] { accent-color: var(--gold); }
 
 .entry-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .entry { border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; background: var(--bg-2); font-size: 0.86rem; }
-.entry-roll { border-left: 2px solid var(--gold); }
+.entry-roll { border-left: 2px solid var(--accent); }
 .entry-damage { border-left: 2px solid var(--danger); }
-.entry-event { border-left: 2px solid var(--gold-dim); }
+.entry-event { border-left: 2px solid var(--accent-dim); }
 .entry-meta {
     display: flex;
     justify-content: space-between;
@@ -375,7 +376,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
     text-transform: uppercase;
 }
 .entry-result { color: var(--fg-1); line-height: 1.5; }
-.entry-result strong { color: var(--gold-bright); }
+.entry-result strong { color: var(--accent-bright); }
 
 /* -- Panel akcji ------------------------------------------------------------------------------- */
 
@@ -423,7 +424,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
     color: var(--fg-1);
     cursor: pointer;
 }
-.condition-pick-chip:hover { border-color: var(--gold-dim); color: var(--gold-bright); }
+.condition-pick-chip:hover { border-color: var(--accent-dim); color: var(--accent-bright); }
 /* Celowo bez opacity: opacity na elemencie dociemnia też jego WŁASNY hover-tooltip (::after),
    robiąc go nieczytelnym akurat wtedy, gdy GM chce sprawdzić dlaczego stan jest zablokowany -
    dociemnienie robimy więc samym kolorem/obramowaniem. */
@@ -450,7 +451,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
     width: max-content;
     max-width: 260px;
     background: var(--bg-0);
-    border: 1px solid var(--gold-dim);
+    border: 1px solid var(--accent-dim);
     border-radius: var(--radius);
     padding: 8px 10px;
     font-size: 0.75rem;
@@ -475,7 +476,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
 }
 .secondary-tracker-row label { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; }
 .secondary-tracker-row input[type="number"] { width: 4.5em; }
-.tracker-active { color: var(--gold-bright); font-weight: 600; }
+.tracker-active { color: var(--accent-bright); font-weight: 600; }
 
 .target-select-row { display: flex; align-items: center; gap: 8px; margin: 10px 0 14px; font-size: 0.85rem; }
 .target-select-row select { flex: 1; max-width: 260px; }
@@ -483,7 +484,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
 /* -- Statblok ---------------------------------------------------------------------------------- */
 
 .statblock-header { margin: 12px 0; }
-.statblock-title { font-size: 1.15rem; font-weight: 700; color: var(--gold-bright); }
+.statblock-title { font-size: 1.15rem; font-weight: 700; color: var(--accent-bright); }
 .statblock-subtitle { font-style: italic; color: var(--fg-2); font-size: 0.85rem; margin-bottom: 6px; }
 .statblock-line { font-size: 0.85rem; color: var(--fg-1); margin: 2px 0; }
 .statblock-line strong { color: var(--fg-0); }
@@ -492,10 +493,10 @@ input[type="checkbox"] { accent-color: var(--gold); }
 .ability-box { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 4px; text-align: center; }
 .ability-label { font-size: 0.65rem; color: var(--fg-dim); letter-spacing: 0.06em; }
 .ability-score { font-family: var(--mono); font-size: 1rem; color: var(--fg-0); }
-.ability-mod { font-size: 0.72rem; color: var(--gold-dim); }
+.ability-mod { font-size: 0.72rem; color: var(--accent-dim); }
 
 .statblock-traits p { font-size: 0.85rem; color: var(--fg-1); line-height: 1.55; margin: 6px 0; }
-.statblock-traits strong { color: var(--gold-bright); }
+.statblock-traits strong { color: var(--accent-bright); }
 
 /* -- Akcje ------------------------------------------------------------------------------------- */
 
@@ -506,7 +507,7 @@ input[type="checkbox"] { accent-color: var(--gold); }
 .action-list { display: flex; flex-direction: column; gap: 8px; }
 .action-card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; }
 .action-card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
-.action-card-head strong { color: var(--gold-bright); }
+.action-card-head strong { color: var(--accent-bright); }
 .action-meta { color: var(--fg-dim); font-size: 0.75rem; }
 .action-text { font-size: 0.82rem; color: var(--fg-1); line-height: 1.5; margin: 6px 0; }
 .action-buttons { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
@@ -515,12 +516,12 @@ input[type="checkbox"] { accent-color: var(--gold); }
 .action-spells-details { margin-top: 8px; }
 .action-spells-details summary {
     cursor: pointer;
-    color: var(--gold-dim);
+    color: var(--accent-dim);
     font-size: 0.8rem;
     letter-spacing: 0.04em;
     user-select: none;
 }
-.action-spells-details summary:hover { color: var(--gold-bright); }
+.action-spells-details summary:hover { color: var(--accent-bright); }
 .action-spells-details[open] summary { margin-bottom: 4px; }
 
 /* -- Footer / scrollbar --------------------------------------------------------------------------- */
