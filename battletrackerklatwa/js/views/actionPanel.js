@@ -1,6 +1,6 @@
 // Battle Tracker - Klątwa Strahda. Panel akcji (8 kolumn): przełącznik uczestników, statblok,
 // tor PW/KP, stany, dodatkowe liczniki (np. Latająca Czaszka) i akcje (jako taby Akcje/Akcje
-// Dodatkowe/Reakcje, z opcjonalnie zwijalną listą zaklęć) z pełnym auto-rzutem.
+// Dodatkowe/Reakcje/Czary) z pełnym auto-rzutem.
 //
 // Rzuty obronne: auto dla potworów/NPC (bonus wyliczony ze statbloku), ręczne wpisanie wyniku dla
 // celów typu BG (gracz rzuca fizycznie przy stole) - patrz resolveActionOnce().
@@ -28,10 +28,9 @@ const DAMAGE_TYPES = [
 const ABILITY_KEY_BY_LABEL = { "Sił": "str", "Zwi": "dex", "Kon": "con", "Int": "int", "Mdr": "wis", "Cha": "cha" };
 
 // Czysto lokalny stan UI (nie zapisywany do Firebase) - który tab akcji jest otwarty per
-// uczestnik, i które sekcje zaklęć są rozwinięte, żeby przetrwały kolejne re-rendery w tej samej
-// sesji przeglądarki (ale nie przeładowanie strony - to celowo tylko wygoda, nie stan gry).
+// uczestnik, żeby przetrwał kolejne re-rendery w tej samej sesji przeglądarki (ale nie
+// przeładowanie strony - to celowo tylko wygoda, nie stan gry).
 const selectedActionGroupByParticipant = {};
-const expandedSpellGroups = new Set();
 
 export function renderActionPanel(root, { state, battle, selectedId, onSelect }) {
     const participant = battle.participants.find((p) => p.instanceId === selectedId);
@@ -97,10 +96,12 @@ function renderMonsterCard(root, { state, battle, participant }) {
         .map((f) => `<option value="${f.formId}" ${f.formId === participant.formId ? "selected" : ""}>${escapeHtml(f.label)}</option>`)
         .join("");
 
+    const spellActions = (form.actions || []).flatMap((a) => a.spells || []);
     const groupDefs = [
         { key: "actions", label: "Akcje", actions: form.actions },
         { key: "bonus", label: "Akcje Dodatkowe", actions: form.bonusActions },
-        { key: "reactions", label: "Reakcje", actions: form.reactions, countText: form.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${form.reactionLimit}` : "" }
+        { key: "reactions", label: "Reakcje", actions: form.reactions, countText: form.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${form.reactionLimit}` : "" },
+        { key: "spells", label: "Czary", actions: spellActions }
     ].filter((g) => g.actions?.length);
     const storedGroupKey = selectedActionGroupByParticipant[participant.instanceId];
     const activeGroupKey = groupDefs.some((g) => g.key === storedGroupKey) ? storedGroupKey : groupDefs[0]?.key;
@@ -158,13 +159,6 @@ function renderMonsterCard(root, { state, battle, participant }) {
             selectedActionGroupByParticipant[participant.instanceId] = key;
             root.querySelectorAll(".action-group-tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.groupTab === key));
             root.querySelectorAll(".action-group-panel").forEach((p) => p.classList.toggle("hidden", p.dataset.groupPanel !== key));
-        });
-    });
-
-    root.querySelectorAll(".action-spells-details").forEach((el) => {
-        el.addEventListener("toggle", () => {
-            if (el.open) expandedSpellGroups.add(el.dataset.spellsFor);
-            else expandedSpellGroups.delete(el.dataset.spellsFor);
         });
     });
 
@@ -388,14 +382,6 @@ function renderActionRow(action) {
         buttons = `<button type="button" class="btn btn-xs btn-secondary log-action-btn" data-action-id="${action.id}">Użyj</button>`;
     }
 
-    const isExpanded = expandedSpellGroups.has(action.id);
-    const spellsHtml = action.spells?.length ? `
-        <details class="action-spells-details" data-spells-for="${action.id}" ${isExpanded ? "open" : ""}>
-            <summary>Zaklęcia (${action.spells.length})</summary>
-            <div class="action-spells">${action.spells.map(renderActionRow).join("")}</div>
-        </details>
-    ` : "";
-
     return `
         <div class="action-card" data-action-card="${action.id}">
             <div class="action-card-head">
@@ -403,7 +389,6 @@ function renderActionRow(action) {
                 ${meta.length ? `<span class="action-meta">${meta.join(" - ")}</span>` : ""}
             </div>
             ${action.text ? `<p class="action-text">${escapeHtml(action.text)}</p>` : ""}
-            ${spellsHtml}
             <div class="action-buttons">${buttons}</div>
         </div>
     `;

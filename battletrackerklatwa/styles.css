@@ -511,18 +511,6 @@ input[type="checkbox"] { accent-color: var(--accent); }
 .action-meta { color: var(--fg-dim); font-size: 0.75rem; }
 .action-text { font-size: 0.82rem; color: var(--fg-1); line-height: 1.5; margin: 6px 0; }
 .action-buttons { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
-.action-spells { margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
-
-.action-spells-details { margin-top: 8px; }
-.action-spells-details summary {
-    cursor: pointer;
-    color: var(--accent-dim);
-    font-size: 0.8rem;
-    letter-spacing: 0.04em;
-    user-select: none;
-}
-.action-spells-details summary:hover { color: var(--accent-bright); }
-.action-spells-details[open] summary { margin-bottom: 4px; }
 
 /* -- Footer / scrollbar --------------------------------------------------------------------------- */
 
