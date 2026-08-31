@@ -105,8 +105,10 @@ function wirePartyRows(root, state) {
         rowEl.querySelector(".party-hpmax-input").addEventListener("change", (e) => {
             const val = e.target.value === "" ? null : Number(e.target.value);
             updateState((s) => {
-                s.library.party[id].hp.max = val;
-                if (s.library.party[id].hp.current == null) s.library.party[id].hp.current = val;
+                const p = s.library.party[id];
+                p.hp ??= { current: null, max: null };
+                p.hp.max = val;
+                if (p.hp.current == null) p.hp.current = val;
             });
         });
         rowEl.querySelector(".party-init-input").addEventListener("change", (e) => {

@@ -1,14 +1,24 @@
 // Battle Tracker - Klątwa Strahda. Panel akcji (8 kolumn): przełącznik uczestników, statblok,
-// tor PW/KP, warunki, dodatkowe liczniki (np. Latająca Czaszka) i akcje z pełnym auto-rzutem.
+// tor PW/KP, stany, dodatkowe liczniki (np. Latająca Czaszka) i akcje (jako taby Akcje/Akcje
+// Dodatkowe/Reakcje, z opcjonalnie zwijalną listą zaklęć) z pełnym auto-rzutem.
 //
 // Rzuty obronne: auto dla potworów/NPC (bonus wyliczony ze statbloku), ręczne wpisanie wyniku dla
 // celów typu BG (gracz rzuca fizycznie przy stole) - patrz resolveActionOnce().
+//
+// WAŻNE: `participant.hp`/`participant.conditions` bywają `undefined` po przeładowaniu, jeśli były
+// puste/null w chwili ostatniego zapisu - Firebase Realtime Database usuwa takie klucze przy
+// zapisie (patrz rollLog.js). Dlatego każda mutacja tych pól musi się zabezpieczyć przez `??=`
+// zamiast zakładać, że obiekt/tablica już istnieje - inaczej całe wywołanie updateState rzuca
+// wyjątkiem w środku i NIC się nie zapisuje ani nie odświeża (żaden inny fragment tej samej
+// mutacji też nie dojdzie do skutku).
 
 import { updateState } from "../store.js";
 import { escapeHtml, uid, clamp } from "../utils.js";
 import { resolveAttack, resolveDamage, resolveSave, applyDamageMitigation } from "../diceEngine.js";
 import { buildStatblockHeaderHtml, buildTraitsHtml } from "../components/statblock.js";
 import { buildConditionPickerHtml, CONDITION_INFO } from "../components/conditionPicker.js";
+import { participantDisplayName } from "../components/participantDisplay.js";
+import { logEntry } from "../rollLog.js";
 
 const DAMAGE_TYPES = [
     "obuchowe", "kłute", "sieczące", "kwas", "zimno", "ogień", "siłowe",
@@ -17,6 +27,12 @@ const DAMAGE_TYPES = [
 
 const ABILITY_KEY_BY_LABEL = { "Sił": "str", "Zwi": "dex", "Kon": "con", "Int": "int", "Mdr": "wis", "Cha": "cha" };
 
+// Czysto lokalny stan UI (nie zapisywany do Firebase) - który tab akcji jest otwarty per
+// uczestnik, i które sekcje zaklęć są rozwinięte, żeby przetrwały kolejne re-rendery w tej samej
+// sesji przeglądarki (ale nie przeładowanie strony - to celowo tylko wygoda, nie stan gry).
+const selectedActionGroupByParticipant = {};
+const expandedSpellGroups = new Set();
+
 export function renderActionPanel(root, { state, battle, selectedId, onSelect }) {
     const participant = battle.participants.find((p) => p.instanceId === selectedId);
 
@@ -24,7 +40,7 @@ export function renderActionPanel(root, { state, battle, selectedId, onSelect })
         <div class="card action-panel">
             <div class="participant-tabs">
                 ${battle.participants.map((p) => `
-                    <button type="button" class="tab-btn participant-tab-btn ${p.instanceId === selectedId ? "active" : ""}" data-select-participant="${p.instanceId}">${escapeHtml(p.name)}</button>
+                    <button type="button" class="tab-btn participant-tab-btn ${p.instanceId === selectedId ? "active" : ""}" data-select-participant="${p.instanceId}">${escapeHtml(participantDisplayName(state, p))}</button>
                 `).join("") || '<p class="placeholder">Brak uczestników.</p>'}
             </div>
             <div class="action-panel-body" id="actionPanelBody"></div>
@@ -81,10 +97,18 @@ function renderMonsterCard(root, { state, battle, participant }) {
         .map((f) => `<option value="${f.formId}" ${f.formId === participant.formId ? "selected" : ""}>${escapeHtml(f.label)}</option>`)
         .join("");
 
+    const groupDefs = [
+        { key: "actions", label: "Akcje", actions: form.actions },
+        { key: "bonus", label: "Akcje Dodatkowe", actions: form.bonusActions },
+        { key: "reactions", label: "Reakcje", actions: form.reactions, countText: form.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${form.reactionLimit}` : "" }
+    ].filter((g) => g.actions?.length);
+    const storedGroupKey = selectedActionGroupByParticipant[participant.instanceId];
+    const activeGroupKey = groupDefs.some((g) => g.key === storedGroupKey) ? storedGroupKey : groupDefs[0]?.key;
+
     root.innerHTML = `
         <div class="participant-card">
             <div class="participant-card-head">
-                <h3>${escapeHtml(participant.name)}</h3>
+                <h3>${escapeHtml(participantDisplayName(state, participant))}</h3>
                 ${monster.forms.length > 1 ? `<label class="form-switch">Forma <select class="form-switch-select">${formOptions}</select></label>` : ""}
             </div>
 
@@ -101,16 +125,25 @@ function renderMonsterCard(root, { state, battle, participant }) {
             <label class="target-select-row">Cel akcji
                 <select class="action-target-select">
                     <option value="">- wybierz cel -</option>
-                    ${otherParticipants.map((p) => `<option value="${p.instanceId}">${escapeHtml(p.name)}</option>`).join("")}
+                    ${otherParticipants.map((p) => `<option value="${p.instanceId}">${escapeHtml(participantDisplayName(state, p))}</option>`).join("")}
                 </select>
             </label>
 
             ${buildStatblockHeaderHtml(form)}
             ${buildTraitsHtml(form.traits)}
 
-            ${renderActionGroup("Akcje", form.actions)}
-            ${renderActionGroup("Akcje Dodatkowe", form.bonusActions)}
-            ${renderActionGroup("Reakcje", form.reactions, form.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${form.reactionLimit}` : "")}
+            ${groupDefs.length ? `
+                <div class="action-group-tabs">
+                    ${groupDefs.map((g) => `
+                        <button type="button" class="tab-btn action-group-tab-btn ${g.key === activeGroupKey ? "active" : ""}" data-group-tab="${g.key}">${escapeHtml(g.label)}${g.countText ? ` <span class="action-group-count">${escapeHtml(g.countText)}</span>` : ""}</button>
+                    `).join("")}
+                </div>
+                ${groupDefs.map((g) => `
+                    <div class="action-group-panel ${g.key === activeGroupKey ? "" : "hidden"}" data-group-panel="${g.key}">
+                        <div class="action-list">${g.actions.map(renderActionRow).join("")}</div>
+                    </div>
+                `).join("")}
+            ` : ""}
         </div>
     `;
 
@@ -118,6 +151,22 @@ function renderMonsterCard(root, { state, battle, participant }) {
     wireDamageForm(root, { battle, participant, mitigationTarget: form });
     wireConditionsBlock(root, battle.id, participant.instanceId);
     if (participant.secondaryTrackers?.length) wireSecondaryTrackers(root, battle.id, participant.instanceId);
+
+    root.querySelectorAll(".action-group-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const key = btn.dataset.groupTab;
+            selectedActionGroupByParticipant[participant.instanceId] = key;
+            root.querySelectorAll(".action-group-tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.groupTab === key));
+            root.querySelectorAll(".action-group-panel").forEach((p) => p.classList.toggle("hidden", p.dataset.groupPanel !== key));
+        });
+    });
+
+    root.querySelectorAll(".action-spells-details").forEach((el) => {
+        el.addEventListener("toggle", () => {
+            if (el.open) expandedSpellGroups.add(el.dataset.spellsFor);
+            else expandedSpellGroups.delete(el.dataset.spellsFor);
+        });
+    });
 
     root.querySelector(".form-switch-select")?.addEventListener("change", (e) => {
         const newForm = monster.forms.find((f) => f.formId === e.target.value);
@@ -134,7 +183,7 @@ function renderMonsterCard(root, { state, battle, participant }) {
                 id: t.id, label: t.label, ac: t.ac ?? null,
                 hp: { current: t.hp?.max ?? null, max: t.hp?.max ?? null }, active: false
             }));
-            addHistoryEntry(b, "event", `${escapeHtml(p.name)} zmienia formę na: ${escapeHtml(newForm.label)}.`);
+            logEntry(s, battle.id, "event", `${escapeHtml(p.name)} zmienia formę na: ${escapeHtml(newForm.label)}.`);
         });
     });
 
@@ -151,7 +200,7 @@ function renderMonsterCard(root, { state, battle, participant }) {
     wireActionButtons(root, { battle, actor: participant, actorForm: form, getTarget, getTargetForm });
 }
 
-// -- Bloki wspólne (PW/KP/obrażenia, warunki, dodatkowe liczniki) -----------------------------
+// -- Bloki wspólne (PW/KP/obrażenia, stany, dodatkowe liczniki) -------------------------------
 
 function renderDamageForm() {
     return `
@@ -174,11 +223,11 @@ function wireDamageForm(root, { battle, participant, mitigationTarget }) {
         if (amount <= 0) return;
         const { adjusted, note } = applyDamageMitigation(amount, type, mitigationTarget);
         updateState((s) => {
-            const b = s.battles[battle.id];
-            const p = b.participants.find((x) => x.instanceId === participant.instanceId);
+            const p = s.battles[battle.id].participants.find((x) => x.instanceId === participant.instanceId);
+            p.hp ??= { current: null, max: null };
             if (p.hp.current == null) p.hp.current = p.hp.max ?? 0;
             p.hp.current = clamp(p.hp.current - adjusted, 0, p.hp.max ?? p.hp.current);
-            addHistoryEntry(b, "damage", `${escapeHtml(p.name)} otrzymuje ${adjusted} obrażeń (${escapeHtml(type)})${note ? ` [${note}, surowo: ${amount}]` : ""}. PW: ${p.hp.current}/${p.hp.max ?? "-"}.`);
+            logEntry(s, battle.id, "damage", `${escapeHtml(p.name)} otrzymuje ${adjusted} obrażeń (${escapeHtml(type)})${note ? ` [${note}, surowo: ${amount}]` : ""}. PW: ${p.hp.current}/${p.hp.max ?? "-"}.`);
         });
         amountInput.value = "";
     });
@@ -188,11 +237,11 @@ function wireDamageForm(root, { battle, participant, mitigationTarget }) {
         const amount = Number(amountInput.value) || 0;
         if (amount <= 0) return;
         updateState((s) => {
-            const b = s.battles[battle.id];
-            const p = b.participants.find((x) => x.instanceId === participant.instanceId);
+            const p = s.battles[battle.id].participants.find((x) => x.instanceId === participant.instanceId);
+            p.hp ??= { current: null, max: null };
             if (p.hp.current == null) p.hp.current = 0;
             p.hp.current = clamp(p.hp.current + amount, 0, p.hp.max ?? (p.hp.current + amount));
-            addHistoryEntry(b, "damage", `${escapeHtml(p.name)} leczy ${amount} PW. PW: ${p.hp.current}/${p.hp.max ?? "-"}.`);
+            logEntry(s, battle.id, "damage", `${escapeHtml(p.name)} leczy ${amount} PW. PW: ${p.hp.current}/${p.hp.max ?? "-"}.`);
         });
         amountInput.value = "";
     });
@@ -219,7 +268,7 @@ function wireConditionsBlock(root, battleId, instanceId) {
         btn.addEventListener("click", () => {
             updateState((s) => {
                 const p = s.battles[battleId].participants.find((x) => x.instanceId === instanceId);
-                p.conditions = p.conditions.filter((c) => c.id !== btn.dataset.removeCondition);
+                p.conditions = (p.conditions || []).filter((c) => c.id !== btn.dataset.removeCondition);
             });
         });
     });
@@ -228,6 +277,7 @@ function wireConditionsBlock(root, battleId, instanceId) {
         btn.addEventListener("click", () => {
             updateState((s) => {
                 const p = s.battles[battleId].participants.find((x) => x.instanceId === instanceId);
+                p.conditions ??= [];
                 p.conditions.push({ id: uid(), label: btn.dataset.label, note: "" });
             });
         });
@@ -239,6 +289,7 @@ function wireConditionsBlock(root, battleId, instanceId) {
         if (!text) return;
         updateState((s) => {
             const p = s.battles[battleId].participants.find((x) => x.instanceId === instanceId);
+            p.conditions ??= [];
             p.conditions.push({ id: uid(), label: text, note: "" });
         });
         input.value = "";
@@ -273,6 +324,7 @@ function wireSecondaryTrackers(root, battleId, instanceId) {
             updateState((s) => {
                 const p = s.battles[battleId].participants.find((x) => x.instanceId === instanceId);
                 const t = p.secondaryTrackers.find((x) => x.id === trackerId);
+                t.hp ??= { current: null, max: null };
                 const val = Number(e.target.value) || 0;
                 t.hp.current = clamp(val, 0, t.hp.max ?? val);
             });
@@ -290,11 +342,19 @@ function wireHpFields(root, battleId, instanceId) {
     const prefix = root.querySelector(".pc-hp-current-input") ? "pc" : "mon";
     root.querySelector(`.${prefix}-hp-current-input`).addEventListener("change", (e) => {
         const val = e.target.value === "" ? null : Number(e.target.value);
-        updateState((s) => { s.battles[battleId].participants.find((x) => x.instanceId === instanceId).hp.current = val; });
+        updateState((s) => {
+            const p = s.battles[battleId].participants.find((x) => x.instanceId === instanceId);
+            p.hp ??= { current: null, max: null };
+            p.hp.current = val;
+        });
     });
     root.querySelector(`.${prefix}-hp-max-input`).addEventListener("change", (e) => {
         const val = e.target.value === "" ? null : Number(e.target.value);
-        updateState((s) => { s.battles[battleId].participants.find((x) => x.instanceId === instanceId).hp.max = val; });
+        updateState((s) => {
+            const p = s.battles[battleId].participants.find((x) => x.instanceId === instanceId);
+            p.hp ??= { current: null, max: null };
+            p.hp.max = val;
+        });
     });
     root.querySelector(`.${prefix}-ac-input`).addEventListener("change", (e) => {
         const val = e.target.value === "" ? null : Number(e.target.value);
@@ -303,16 +363,6 @@ function wireHpFields(root, battleId, instanceId) {
 }
 
 // -- Akcje --------------------------------------------------------------------------------------
-
-function renderActionGroup(title, actions, countText = "") {
-    if (!actions?.length) return "";
-    return `
-        <div class="action-group">
-            <h4>${escapeHtml(title)}${countText ? ` <span class="action-group-count">${escapeHtml(countText)}</span>` : ""}</h4>
-            <div class="action-list">${actions.map(renderActionRow).join("")}</div>
-        </div>
-    `;
-}
 
 function renderActionRow(action) {
     const damageText = action.damage?.length
@@ -338,7 +388,13 @@ function renderActionRow(action) {
         buttons = `<button type="button" class="btn btn-xs btn-secondary log-action-btn" data-action-id="${action.id}">Użyj</button>`;
     }
 
-    const spellsHtml = action.spells?.length ? `<div class="action-spells">${action.spells.map(renderActionRow).join("")}</div>` : "";
+    const isExpanded = expandedSpellGroups.has(action.id);
+    const spellsHtml = action.spells?.length ? `
+        <details class="action-spells-details" data-spells-for="${action.id}" ${isExpanded ? "open" : ""}>
+            <summary>Zaklęcia (${action.spells.length})</summary>
+            <div class="action-spells">${action.spells.map(renderActionRow).join("")}</div>
+        </details>
+    ` : "";
 
     return `
         <div class="action-card" data-action-card="${action.id}">
@@ -372,11 +428,10 @@ function wireActionButtons(root, { battle, actor, actorForm, getTarget, getTarge
      *  ustawiony limit. Zwraca `false` (i loguje wpis o zablokowaniu) gdy limit jest wyczerpany. */
     function tryConsumeReaction(s, action) {
         if (!reactionIds.has(action.id) || !actorForm.reactionLimit) return true;
-        const b = s.battles[battle.id];
-        const liveActor = b.participants.find((p) => p.instanceId === actor.instanceId);
+        const liveActor = s.battles[battle.id].participants.find((p) => p.instanceId === actor.instanceId);
         const used = liveActor.reactionsUsedThisRound || 0;
         if (used >= actorForm.reactionLimit) {
-            addHistoryEntry(b, "event", `${escapeHtml(actor.name)} nie może użyć reakcji <strong>${escapeHtml(action.name)}</strong> - limit ${actorForm.reactionLimit} reakcji na rundę wyczerpany.`);
+            logEntry(s, battle.id, "event", `${escapeHtml(actor.name)} nie może użyć reakcji <strong>${escapeHtml(action.name)}</strong> - limit ${actorForm.reactionLimit} reakcji na rundę wyczerpany.`);
             return false;
         }
         liveActor.reactionsUsedThisRound = used + 1;
@@ -390,10 +445,9 @@ function wireActionButtons(root, { battle, actor, actorForm, getTarget, getTarge
             const target = getTarget();
             const targetForm = getTargetForm(target);
             updateState((s) => {
-                const b = s.battles[battle.id];
                 if (!tryConsumeReaction(s, action)) return;
                 const line = resolveActionOnce({ s, battleId: battle.id, actorName: actor.name, action, targetInstanceId: target?.instanceId ?? null, targetForm });
-                addHistoryEntry(b, "roll", line);
+                logEntry(s, battle.id, "roll", line);
             });
         });
     });
@@ -404,7 +458,7 @@ function wireActionButtons(root, { battle, actor, actorForm, getTarget, getTarge
             if (!action) return;
             updateState((s) => {
                 if (!tryConsumeReaction(s, action)) return;
-                addHistoryEntry(s.battles[battle.id], "event", `${escapeHtml(actor.name)} używa: ${escapeHtml(action.name)}.`);
+                logEntry(s, battle.id, "event", `${escapeHtml(actor.name)} używa: ${escapeHtml(action.name)}.`);
             });
         });
     });
@@ -417,7 +471,6 @@ function wireActionButtons(root, { battle, actor, actorForm, getTarget, getTarge
             const target = getTarget();
             const targetForm = getTargetForm(target);
             updateState((s) => {
-                const b = s.battles[battle.id];
                 const lines = [];
                 for (const rep of option.repeat) {
                     const subAction = findAction(actorForm, rep.actionId);
@@ -426,7 +479,7 @@ function wireActionButtons(root, { battle, actor, actorForm, getTarget, getTarge
                         lines.push(resolveActionOnce({ s, battleId: battle.id, actorName: actor.name, action: subAction, targetInstanceId: target?.instanceId ?? null, targetForm }));
                     }
                 }
-                addHistoryEntry(b, "roll", `${escapeHtml(actor.name)} używa <strong>${escapeHtml(action.name)}</strong> (${escapeHtml(option.label)}):<br>${lines.join("<br>")}`);
+                logEntry(s, battle.id, "roll", `${escapeHtml(actor.name)} używa <strong>${escapeHtml(action.name)}</strong> (${escapeHtml(option.label)}):<br>${lines.join("<br>")}`);
             });
         });
     });
@@ -442,6 +495,7 @@ function parseMonsterSaveBonus(targetForm, abilityLabel) {
 }
 
 function applyDamageToParticipant(target, adjustedAmount) {
+    target.hp ??= { current: null, max: null };
     if (target.hp.current == null) target.hp.current = target.hp.max ?? 0;
     target.hp.current = clamp(target.hp.current - adjustedAmount, 0, target.hp.max ?? target.hp.current);
 }
@@ -519,8 +573,4 @@ function resolveActionOnce({ s, battleId, actorName, action, targetInstanceId, t
     }
 
     return `${escapeHtml(actorName)} używa: ${escapeHtml(action.name)}.`;
-}
-
-function addHistoryEntry(battle, kind, text) {
-    battle.history.push({ id: uid(), at: Date.now(), kind, text });
 }
