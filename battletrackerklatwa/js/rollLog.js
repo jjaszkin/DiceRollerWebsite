@@ -24,3 +24,9 @@ export function entriesForBattle(state, battleId) {
 export function removeEntry(state, entryId) {
     state.rollHistory = (state.rollHistory || []).filter((e) => e.id !== entryId);
 }
+
+/** Wołane przy usuwaniu całej walki - inaczej jej wpisy zostają w rollHistory na zawsze jako
+ *  osierocone (nic ich już nie wyświetla, ale zaśmiecają bazę bez końca). */
+export function removeAllForBattle(state, battleId) {
+    state.rollHistory = (state.rollHistory || []).filter((e) => e.battleId !== battleId);
+}

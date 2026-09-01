@@ -5,6 +5,7 @@ import { navigate } from "../router.js";
 import { escapeHtml } from "../utils.js";
 import { openBattleCreator } from "./battleCreator.js";
 import { openConfirm } from "../components/confirmModal.js";
+import { removeAllForBattle } from "../rollLog.js";
 
 export function renderBattleList(root) {
     const state = getState();
@@ -42,7 +43,10 @@ export function renderBattleList(root) {
             openConfirm({
                 title: "Usunąć walkę?",
                 message: `Usunąć "${name}" wraz z całą jej historią? Ta czynność jest nieodwracalna.`,
-                onConfirm: () => updateState((s) => { delete s.battles[id]; })
+                onConfirm: () => updateState((s) => {
+                    delete s.battles[id];
+                    removeAllForBattle(s, id);
+                })
             });
         });
     });

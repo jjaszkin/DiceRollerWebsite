@@ -1,6 +1,6 @@
-// Battle Tracker - Klątwa Strahda. Panel akcji (8 kolumn) dla uczestnika wybranego w trackerze
-// inicjatywy (patrz initiativePanel.js): statblok, tor PW/KP, stany, dodatkowe liczniki (np.
-// Latająca Czaszka) i akcje (jako taby Akcje/Akcje Dodatkowe/Reakcje/Czary) z pełnym auto-rzutem.
+// Battle Tracker - Klątwa Strahda. Panel akcji (8 kolumn): przełącznik uczestników (niezależny od
+// trackera inicjatywy, patrz initiativePanel.js), statblok, tor PW/KP, stany, dodatkowe liczniki
+// (np. Latająca Czaszka) i akcje (jako taby Akcje/Akcje Dodatkowe/Reakcje/Czary) z pełnym auto-rzutem.
 //
 // Rzuty obronne: auto dla potworów/NPC (bonus wyliczony ze statbloku), ręczne wpisanie wyniku dla
 // celów typu BG (gracz rzuca fizycznie przy stole) - patrz resolveActionOnce().
@@ -32,17 +32,30 @@ const ABILITY_KEY_BY_LABEL = { "Sił": "str", "Zwi": "dex", "Kon": "con", "Int":
 // przeładowanie strony - to celowo tylko wygoda, nie stan gry).
 const selectedActionGroupByParticipant = {};
 
-// Wybór aktywnego uczestnika dzieje się WYŁĄCZNIE przez kliknięcie w tracker inicjatywy (patrz
-// initiativePanel.js) - nie ma tu już duplikującej to listy zakładek, żeby nie wybierać dwa razy
-// tego samego z dwóch różnych miejsc na ekranie.
-export function renderActionPanel(root, { state, battle, selectedId }) {
+// Wybór, KTÓREGO uczestnika ogląda się tutaj, jest CELOWO niezależny od tego, kto jest oznaczony
+// jako "na ruchu" w trackerze inicjatywy (initiativePanel.js#currentTurnInstanceId) - można więc
+// przeglądać kartę jednego uczestnika, mając w inicjatywie zaznaczonego zupełnie innego.
+export function renderActionPanel(root, { state, battle, selectedId, onSelect }) {
     const participant = battle.participants.find((p) => p.instanceId === selectedId);
 
-    root.innerHTML = `<div class="card action-panel" id="actionPanelBody"></div>`;
-    const bodyRoot = root.querySelector("#actionPanelBody");
+    root.innerHTML = `
+        <div class="card action-panel">
+            <div class="participant-tabs">
+                ${battle.participants.map((p) => `
+                    <button type="button" class="tab-btn participant-tab-btn ${p.instanceId === selectedId ? "active" : ""}" data-select-participant="${p.instanceId}">${escapeHtml(participantDisplayName(state, p))}</button>
+                `).join("") || '<p class="placeholder">Brak uczestników.</p>'}
+            </div>
+            <div class="action-panel-body" id="actionPanelBody"></div>
+        </div>
+    `;
 
+    root.querySelectorAll("[data-select-participant]").forEach((btn) => {
+        btn.addEventListener("click", () => onSelect(btn.dataset.selectParticipant));
+    });
+
+    const bodyRoot = root.querySelector("#actionPanelBody");
     if (!participant) {
-        bodyRoot.innerHTML = '<p class="placeholder">Wybierz uczestnika z listy inicjatywy.</p>';
+        bodyRoot.innerHTML = '<p class="placeholder">Wybierz uczestnika z listy powyżej.</p>';
         return;
     }
 
@@ -125,7 +138,7 @@ function renderMonsterCard(root, { state, battle, participant }) {
                 </select>
             </label>
 
-            ${buildStatblockHeaderHtml(form)}
+            ${buildStatblockHeaderHtml(form, { skipHpAc: true })}
             ${buildTraitsHtml(form.traits)}
 
             ${groupDefs.length ? `
