@@ -168,9 +168,29 @@
                     { "id": "indomitable-wm", "name": "Niezłomność", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga powtarza rzut obronny przeciw jednemu efektowi lub warunkowi, który obecnie na nią działa." },
                     { "id": "parry-wm", "name": "Parowanie", "kind": "text", "text": "Wyzwalacz: Baba Lysaga zostaje trafiona atakiem w zwarciu. Efekt: jej ostrza z włosów próbują zablokować atak, zmuszając atakującego do ponownego rzutu na trafienie. Jeśli nowy rzut to krytyczne pudło, Baba Lysaga może od razu użyć Ostrzy Włosów przeciw atakującemu. Reakcja nie działa, jeśli pierwszy atak był krytycznym trafieniem." },
                     { "id": "swarm-reaction", "name": "Rój (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy turę, lub Baba Lysaga otrzymuje obrażenia od upadku. Efekt: Baba Lysaga używa Roju. Jeśli miała otrzymać obrażenia od upadku, nie otrzymuje ich." },
-                    { "id": "hair-blades-reaction", "name": "Ostrza Włosów (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy turę po zaatakowaniu Baby Lysagi atakiem w zwarciu. Efekt: Baba Lysaga używa Ostrzy Włosów przeciw temu stworzeniu." },
+                    {
+                        "id": "hair-blades-reaction",
+                        "name": "Ostrza Włosów (reakcja)",
+                        "kind": "attack",
+                        "attackBonus": 9,
+                        "reach": "5 stóp",
+                        "target": "jedno stworzenie",
+                        "damage": [
+                            { "formula": "1d8+5", "type": "sieczące" },
+                            { "formula": "1d8", "type": "trujące" }
+                        ],
+                        "shortEffect": "Kon ST 17: zatrucie → spowolnienie/paraliż",
+                        "text": "Wyzwalacz: wrogie stworzenie kończy turę po zaatakowaniu Baby Lysagi atakiem w zwarciu. Efekt: Baba Lysaga używa Ostrzy Włosów przeciw temu stworzeniu."
+                    },
                     { "id": "insect-shield", "name": "Tarcza Owadzia (1/rundę)", "kind": "text", "text": "Wyzwalacz: Baba Lysaga otrzymuje obrażenia od zaklęcia w kształcie stożka lub linii, albo od ataku zaklęciem na odległość. Efekt: zmusza rzucającego do rzutu obronnego ST 17 właściwą zdolnością zaklinania. Porażka - Baba Lysaga nie otrzymuje w tej turze obrażeń od tego zaklęcia." },
-                    { "id": "lightning-bolt-reaction", "name": "Błyskawica (1/rundę)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga używa Rzucania Zaklęć, by rzucić błyskawicę." }
+                    {
+                        "id": "lightning-bolt-reaction",
+                        "name": "Błyskawica (1/rundę)",
+                        "kind": "save",
+                        "save": { "dc": 17, "ability": "Zwi", "halfOnSuccess": true },
+                        "damage": [{ "formula": "8d6", "type": "piorunowe" }],
+                        "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: Baba Lysaga używa Rzucania Zaklęć, by rzucić błyskawicę (linia 100 stóp długości, 5 stóp szerokości)."
+                    }
                 ]
             },
             {
@@ -323,7 +343,17 @@
                 "bonusActions": [],
                 "reactions": [
                     { "id": "indomitable-hut", "name": "Niezłomność", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy swoją turę. Efekt: chatka powtarza rzut obronny przeciw jednemu efektowi lub warunkowi, który obecnie na nią działa." },
-                    { "id": "root-reaction", "name": "Korzeń (reakcja)", "kind": "text", "text": "Wyzwalacz: wrogie stworzenie kończy turę w zasięgu 20 stóp od chatki. Efekt: chatka atakuje to stworzenie Korzeniem." },
+                    {
+                        "id": "root-reaction",
+                        "name": "Korzeń (reakcja)",
+                        "kind": "attack",
+                        "attackBonus": 12,
+                        "reach": "20 stóp",
+                        "target": "jeden cel",
+                        "damage": [{ "formula": "3d10+8", "type": "obuchowe" }],
+                        "shortEffect": "Sił ST 20: powalenie/odepchnięcie lub chwyt",
+                        "text": "Wyzwalacz: wrogie stworzenie kończy turę w zasięgu 20 stóp od chatki. Efekt: chatka atakuje to stworzenie Korzeniem."
+                    },
                     {
                         "id": "bite",
                         "name": "Ugryzienie",

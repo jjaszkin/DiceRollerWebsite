@@ -1,6 +1,10 @@
 // Battle Tracker - Klątwa Strahda. Tracker inicjatywy: runda (edytowalna), kolejność uczestników
-// (przesuwanie góra/dół albo sortowanie po wartości inicjatywy), skrócony podgląd PW i stanów,
-// wybór uczestnika do panelu akcji.
+// (przesuwanie góra/dół albo sortowanie po wartości inicjatywy), skrócony podgląd PW i stanów.
+//
+// Klik w wiersz oznacza "kto jest na ruchu" (battle.currentTurnInstanceId, zapisywane do Firebase)
+// - CELOWO niezależnie od tego, kogo GM ogląda w panelu akcji (osobny wybór przez taby uczestników
+// na górze panelu akcji, patrz actionPanel.js). Dzięki temu można trackować inicjatywę jednego
+// uczestnika, patrząc jednocześnie na kartę innego.
 
 import { updateState } from "../store.js";
 import { escapeHtml } from "../utils.js";
@@ -9,7 +13,7 @@ import { rollD20 } from "../diceEngine.js";
 import { abilityMod, fmtMod } from "../components/statblock.js";
 import { logEntry } from "../rollLog.js";
 
-export function renderInitiativePanel(root, { state, battle, selectedId, onSelect }) {
+export function renderInitiativePanel(root, { state, battle }) {
     root.innerHTML = `
         <div class="card initiative-panel">
             <div class="initiative-round-row">
@@ -21,7 +25,7 @@ export function renderInitiativePanel(root, { state, battle, selectedId, onSelec
             <button type="button" class="btn btn-sm initiative-action-btn" id="sortByInitiativeBtn">Sortuj według inicjatywy</button>
             <button type="button" class="btn btn-sm initiative-action-btn" id="rollEnemyInitiativeBtn">Rzuć za inicjatywę wrogów</button>
             <div class="initiative-list">
-                ${battle.participants.map((p, i) => renderParticipantRow(state, p, i, battle.participants.length, selectedId)).join("") || '<p class="placeholder">Brak uczestników.</p>'}
+                ${battle.participants.map((p, i) => renderParticipantRow(state, p, i, battle.participants.length, battle.currentTurnInstanceId)).join("") || '<p class="placeholder">Brak uczestników.</p>'}
             </div>
         </div>
     `;
@@ -58,7 +62,9 @@ export function renderInitiativePanel(root, { state, battle, selectedId, onSelec
     });
 
     root.querySelectorAll("[data-select-instance]").forEach((el) => {
-        el.addEventListener("click", () => onSelect(el.dataset.selectInstance));
+        el.addEventListener("click", () => {
+            updateState((s) => { s.battles[battle.id].currentTurnInstanceId = el.dataset.selectInstance; });
+        });
     });
     root.querySelectorAll("[data-move-up]").forEach((el) => {
         el.addEventListener("click", (e) => { e.stopPropagation(); moveParticipant(battle.id, el.dataset.moveUp, -1); });
@@ -98,11 +104,11 @@ function moveParticipant(battleId, instanceId, dir) {
     });
 }
 
-function renderParticipantRow(state, p, index, total, selectedId) {
+function renderParticipantRow(state, p, index, total, currentTurnId) {
     const hpText = p.hp?.max != null ? `${p.hp.current ?? "-"} / ${p.hp.max}` : "-";
     const conditions = (p.conditions || []).map((c) => `<span class="condition-badge">${escapeHtml(c.label)}</span>`).join("");
     return `
-        <div class="initiative-row ${p.instanceId === selectedId ? "initiative-row-active" : ""}" data-select-instance="${p.instanceId}">
+        <div class="initiative-row ${p.instanceId === currentTurnId ? "initiative-row-active" : ""}" data-select-instance="${p.instanceId}" title="Kliknij, by oznaczyć jako uczestnika na ruchu">
             <div class="initiative-row-order">
                 <button type="button" class="btn btn-icon btn-xs" data-move-up="${p.instanceId}" ${index === 0 ? "disabled" : ""}>↑</button>
                 <button type="button" class="btn btn-icon btn-xs" data-move-down="${p.instanceId}" ${index === total - 1 ? "disabled" : ""}>↓</button>

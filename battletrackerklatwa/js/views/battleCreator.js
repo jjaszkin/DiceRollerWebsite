@@ -134,7 +134,10 @@ export function openBattleCreator({ state, onCreate }) {
                 specialFeatures: splitLines(backdrop.querySelector("#arenaFeaturesInput").value)
             },
             round: 1,
-            turnIndex: 0,
+            // Kogo tracker inicjatywy aktualnie oznacza jako "na ruchu" - NIEZALEŻNE od tego, kogo
+            // GM akurat ogląda w panelu akcji (patrz participant-tabs w actionPanel.js). Klik w
+            // wiersz w initiativePanel.js zmienia TO pole, nie wybór karty w panelu akcji.
+            currentTurnInstanceId: participants[0]?.instanceId ?? null,
             participants
         };
 

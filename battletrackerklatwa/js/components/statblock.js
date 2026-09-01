@@ -26,14 +26,18 @@ export function buildAbilityRowHtml(abilities) {
     `;
 }
 
-export function buildStatblockHeaderHtml(form) {
+/** `skipHpAc`: w panelu akcji podczas walki KP/PW pokazują się już jako edytowalne pola nad tym
+ *  statblokiem, ze WŁAŚCIWĄ (mogącą się różnić od bazy formy, np. o bonus Latającej Czaszki)
+ *  aktualną wartością - pokazywanie tu drugi raz STATYCZNEJ wartości z biblioteki wyglądałoby jak
+ *  sprzeczność/błąd. W bibliotece uczestników (bez edytowalnych pól obok) te linie zostają. */
+export function buildStatblockHeaderHtml(form, { skipHpAc = false } = {}) {
     const line = (label, value) => value ? `<div class="statblock-line"><strong>${label}</strong> ${value}</div>` : "";
     return `
         <div class="statblock-header">
             <div class="statblock-title">${escapeHtml(form.label || "")}</div>
             <div class="statblock-subtitle">${escapeHtml(form.sizeType || "")}</div>
-            ${line("Klasa Pancerza", `${form.ac ?? "-"}${form.acNote ? ` (${escapeHtml(form.acNote)})` : ""}`)}
-            ${line("Punkty Wytrzymałości", `${form.hp?.max ?? "-"}${form.hpNote ? ` (${escapeHtml(form.hpNote)})` : ""}`)}
+            ${skipHpAc ? "" : line("Klasa Pancerza", `${form.ac ?? "-"}${form.acNote ? ` (${escapeHtml(form.acNote)})` : ""}`)}
+            ${skipHpAc ? "" : line("Punkty Wytrzymałości", `${form.hp?.max ?? "-"}${form.hpNote ? ` (${escapeHtml(form.hpNote)})` : ""}`)}
             ${line("Szybkość", escapeHtml(form.speed || "-"))}
             ${buildAbilityRowHtml(form.abilities)}
             ${line("Rzuty Obronne", form.savingThrows ? escapeHtml(form.savingThrows) : "")}
