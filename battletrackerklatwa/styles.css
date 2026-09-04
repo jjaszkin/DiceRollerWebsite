@@ -216,6 +216,42 @@ input[type="checkbox"] { accent-color: var(--accent); }
     border-top: 1px solid var(--line);
 }
 
+/* -- Wybierak obrazków (images/) -------------------------------------------------------------- */
+
+.image-picker-modal { max-width: 760px; }
+.image-picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+.image-picker-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 6px;
+    cursor: pointer;
+    text-align: center;
+}
+.image-picker-item:hover { border-color: var(--accent-dim); }
+.image-picker-item.active { border-color: var(--accent); background: var(--bg-3); }
+.image-picker-item img { width: 100%; height: 90px; object-fit: cover; border-radius: var(--radius); display: block; }
+.image-picker-item span { font-size: 0.72rem; color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cover-image-picker { display: flex; align-items: center; gap: 10px; }
+.cover-image-preview {
+    width: 100px;
+    height: 56px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.cover-image-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover-image-preview.placeholder { display: flex; align-items: center; justify-content: center; font-size: 0.68rem; color: var(--fg-dim); border-style: dashed; text-align: center; padding: 0 4px; }
+
+.portrait-picker { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+.portrait-thumb { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line); display: block; }
+.portrait-thumb-empty { background: var(--bg-2); border-style: dashed; }
+
 /* -- Karty mini-serwisów (lista walk) --------------------------------------------------------- */
 
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
@@ -325,6 +361,20 @@ input[type="checkbox"] { accent-color: var(--accent); }
 
 /* -- Widok walki: siatka 12 kolumn --------------------------------------------------------------- */
 
+.battle-cover {
+    position: relative;
+    width: 100%;
+    max-height: 240px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+}
+.battle-cover img { width: 100%; max-height: 240px; object-fit: cover; display: block; }
+.battle-cover-empty { max-height: none; border-style: dashed; background: var(--bg-1); padding: 10px; display: flex; }
+.battle-cover-change-btn { position: absolute; top: 8px; right: 8px; }
+.battle-cover-empty .battle-cover-change-btn { position: static; }
+
 .battle-view-head { display: flex; align-items: center; gap: 14px; }
 .battle-view-head h2 { margin: 0; border-bottom: none; padding-bottom: 0; }
 
@@ -367,6 +417,8 @@ input[type="checkbox"] { accent-color: var(--accent); }
 .initiative-row-active { border-color: var(--accent); background: var(--bg-3); }
 .initiative-row-order { display: flex; flex-direction: column; gap: 2px; }
 .initiative-value-input { width: 6.4em; text-align: center; font-family: var(--mono); flex-shrink: 0; }
+.initiative-row-portrait { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line-strong); flex-shrink: 0; }
+.initiative-row-portrait-empty { background: var(--bg-1); border-style: dashed; }
 .initiative-row-body { flex: 1; min-width: 0; }
 .initiative-row-name { font-weight: 700; color: var(--fg-0); font-size: 0.9rem; }
 .initiative-row-hp { color: var(--fg-2); font-size: 0.78rem; }
@@ -407,6 +459,7 @@ input[type="checkbox"] { accent-color: var(--accent); }
 .participant-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 6px; margin-bottom: 10px; }
 .participant-tab-btn { border-radius: var(--radius); }
 
+.participant-card-portrait { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line-strong); display: block; margin-bottom: 8px; }
 .participant-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .participant-card h3 { border-bottom: none; padding-bottom: 0; }
 

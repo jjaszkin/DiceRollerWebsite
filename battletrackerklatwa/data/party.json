@@ -1,6 +1,6 @@
 [
-    { "name": "Niklas", "race": "Niziołek zjawomyślny", "class": "Druid" },
-    { "name": "Orryn", "race": "Gnom", "class": "Czarodziej" },
-    { "name": "Tasaar", "race": "Półork", "class": "Barbarzyńca" },
-    { "name": "Maral", "race": "Półelf", "class": "Łowca" }
+    { "name": "Niklas", "race": "Niziołek zjawomyślny", "class": "Druid", "portrait": "images/Niklas - portret.png" },
+    { "name": "Orryn", "race": "Gnom", "class": "Czarodziej", "portrait": "images/Orryn - portret.png" },
+    { "name": "Tasaar", "race": "Półork", "class": "Barbarzyńca", "portrait": "images/Tasaar - portret.png" },
+    { "name": "Maral", "race": "Półelf", "class": "Łowca", "portrait": "images/Maral - portret.png" }
 ]

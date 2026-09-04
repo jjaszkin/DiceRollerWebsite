@@ -17,7 +17,7 @@ import { escapeHtml, uid, clamp } from "../utils.js";
 import { resolveAttack, resolveDamage, resolveSave, applyDamageMitigation } from "../diceEngine.js";
 import { buildStatblockHeaderHtml, buildTraitsHtml } from "../components/statblock.js";
 import { buildConditionPickerHtml, CONDITION_INFO } from "../components/conditionPicker.js";
-import { participantDisplayName } from "../components/participantDisplay.js";
+import { participantDisplayName, participantPortrait } from "../components/participantDisplay.js";
 import { logEntry } from "../rollLog.js";
 
 const DAMAGE_TYPES = [
@@ -60,15 +60,17 @@ export function renderActionPanel(root, { state, battle, selectedId, onSelect })
     }
 
     if (participant.sourceType === "party") {
-        renderPartyCard(bodyRoot, { battle, participant });
+        renderPartyCard(bodyRoot, { state, battle, participant });
     } else {
         renderMonsterCard(bodyRoot, { state, battle, participant });
     }
 }
 
-function renderPartyCard(root, { battle, participant }) {
+function renderPartyCard(root, { state, battle, participant }) {
+    const portrait = participantPortrait(state, participant);
     root.innerHTML = `
         <div class="participant-card">
+            ${portrait ? `<img class="participant-card-portrait" src="${escapeHtml(portrait)}" alt="">` : ""}
             <h3>${escapeHtml(participant.name)}</h3>
             <div class="hp-row">
                 <label>PW aktualne <input type="number" class="pc-hp-current-input" value="${participant.hp?.current ?? ""}"></label>
@@ -113,9 +115,11 @@ function renderMonsterCard(root, { state, battle, participant }) {
     ].filter((g) => g.actions?.length);
     const storedGroupKey = selectedActionGroupByParticipant[participant.instanceId];
     const activeGroupKey = groupDefs.some((g) => g.key === storedGroupKey) ? storedGroupKey : groupDefs[0]?.key;
+    const portrait = participantPortrait(state, participant);
 
     root.innerHTML = `
         <div class="participant-card">
+            ${portrait ? `<img class="participant-card-portrait" src="${escapeHtml(portrait)}" alt="">` : ""}
             <div class="participant-card-head">
                 <h3>${escapeHtml(participantDisplayName(state, participant))}</h3>
                 ${monster.forms.length > 1 ? `<label class="form-switch">Forma <select class="form-switch-select">${formOptions}</select></label>` : ""}

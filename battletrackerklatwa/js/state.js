@@ -16,6 +16,7 @@ function seedParty(entries) {
             name: p.name,
             race: p.race || "",
             class: p.class || "",
+            portrait: p.portrait || null,
             level: null,
             proficiencyBonus: null,
             ac: null,
@@ -40,6 +41,7 @@ function seedMonsters(entries) {
             id,
             name: m.name,
             type: m.type || "",
+            portrait: m.portrait || null,
             activeFormId: m.forms?.[0]?.formId ?? null,
             forms: (m.forms || []).map((f) => ({
                 formId: f.formId,
@@ -85,8 +87,26 @@ export function createDefaultState(gameData) {
     };
 }
 
-/** Migracje starszych kształtów zapisu - obecnie brak, zastrzeżone na przyszłość. */
+/** Migracje starszych kształtów zapisu. Obecnie: naprawia uczestników-potworów, których
+ *  `sourceId` wskazuje na już nieistniejący wpis biblioteki - dopasowuje po nazwie do AKTUALNEGO
+ *  wpisu w library.monsters. Bez tego np. ręczne odtworzenie library.monsters nowym seedem (co
+ *  generuje świeże id dla każdego potwora) po cichu osiera WSZYSTKIE już utworzone walki, a ich
+ *  potwory tracą statblok/akcje (patrz actionPanel.js#renderMonsterCard - wymaga trafienia po
+ *  sourceId). BG (sourceType "party") nie wymagają tej naprawy: ich karta czerpie WYŁĄCZNIE z
+ *  danych zapisanych bezpośrednio na uczestniku (imię/KP/PW), bez odczytu z biblioteki na żywo -
+ *  patrz actionPanel.js#renderPartyCard. */
 export function migrateLoadedState(loaded) {
+    if (!loaded?.battles || !loaded?.library?.monsters) return loaded;
+    const monsterIdByName = {};
+    for (const m of Object.values(loaded.library.monsters)) monsterIdByName[m.name] = m.id;
+
+    for (const battle of Object.values(loaded.battles)) {
+        for (const p of battle.participants || []) {
+            if (p.sourceType !== "monster" || loaded.library.monsters[p.sourceId]) continue;
+            const fixedId = monsterIdByName[p.name];
+            if (fixedId) p.sourceId = fixedId;
+        }
+    }
     return loaded;
 }
 

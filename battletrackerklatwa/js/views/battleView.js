@@ -2,9 +2,10 @@
 // panel akcji (8) + tracker inicjatywy i historia (4). Wybór aktywnego uczestnika to lokalny stan
 // widoku (nie zapisywany do Firebase), pamiętany per walka na czas sesji przeglądarki.
 
-import { getState } from "../store.js";
+import { getState, updateState } from "../store.js";
 import { navigate } from "../router.js";
 import { escapeHtml } from "../utils.js";
+import { openImagePicker } from "../components/imagePicker.js";
 import { renderInitiativePanel } from "./initiativePanel.js";
 import { renderHistoryPanel } from "./historyPanel.js";
 import { renderActionPanel } from "./actionPanel.js";
@@ -26,6 +27,10 @@ export function renderBattleView(root, battleId) {
     const selectedId = selectedParticipantByBattle[battleId];
 
     root.innerHTML = `
+        <div class="battle-cover${battle.coverImage ? "" : " battle-cover-empty"}" id="battleCoverRoot">
+            ${battle.coverImage ? `<img src="${escapeHtml(battle.coverImage)}" alt="">` : ""}
+            <button type="button" class="btn btn-sm battle-cover-change-btn" id="changeCoverImageBtn">${battle.coverImage ? "Zmień obrazek" : "+ Dodaj obrazek okładki"}</button>
+        </div>
         <div class="battle-view-head">
             <button type="button" class="btn btn-sm" id="backToListBtn">← Powrót do listy</button>
             <h2>${escapeHtml(battle.name)}</h2>
@@ -46,6 +51,12 @@ export function renderBattleView(root, battleId) {
     `;
 
     root.querySelector("#backToListBtn").addEventListener("click", () => navigate("/battles"));
+    root.querySelector("#changeCoverImageBtn").addEventListener("click", () => {
+        openImagePicker({
+            current: battle.coverImage ?? null,
+            onSelect: (file) => updateState((s) => { s.battles[battleId].coverImage = file; })
+        });
+    });
 
     const onSelect = (instanceId) => {
         selectedParticipantByBattle[battleId] = instanceId;

@@ -3,6 +3,7 @@
 // (Bitwy/Uczestnicy) plus drill-down widok pojedynczej walki.
 
 import { loadGameData } from "./data.js";
+import { loadImageLibrary } from "./imageLibrary.js";
 import { initStore, connectCampaign, subscribe, onSaveStatusChange } from "./store.js";
 import { onRoute, navigate, renderCurrentRoute, startRouter, currentHash } from "./router.js";
 import { renderBattleList } from "./views/battleList.js";
@@ -63,7 +64,7 @@ function setupSaveIndicator() {
 async function bootstrap() {
     try {
         setBootStatus("Wczytywanie statystyk...");
-        const gameData = await loadGameData();
+        const [gameData] = await Promise.all([loadGameData(), loadImageLibrary()]);
         initStore(gameData);
 
         setBootStatus("Łączenie z Firebase...");
