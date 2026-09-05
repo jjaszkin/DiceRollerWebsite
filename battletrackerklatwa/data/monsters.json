@@ -2,7 +2,7 @@
     {
         "name": "Baba Lysaga",
         "type": "boss",
-        "portrait": "images/Baba Lysaga - portret.png",
+        "portrait": "images/uczestnicy/Baba Lysaga - portret.png",
         "forms": [
             {
                 "formId": "witch-mother",
@@ -280,7 +280,7 @@
     {
         "name": "Wędrująca Chatka",
         "type": "boss",
-        "portrait": "images/Wędrująca Chata - portret.png",
+        "portrait": "images/uczestnicy/Wędrująca Chata - portret.png",
         "forms": [
             {
                 "formId": "creeping-hut",
@@ -372,7 +372,7 @@
     {
         "name": "Walter Durst",
         "type": "boss",
-        "portrait": "images/Walter Durst - portret.png",
+        "portrait": "images/uczestnicy/Walter Durst - portret.png",
         "forms": [
             {
                 "formId": "flesh-mound",

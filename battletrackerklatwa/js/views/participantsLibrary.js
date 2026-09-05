@@ -153,6 +153,7 @@ function wirePartyRows(root, state) {
         rowEl.querySelector(".party-portrait-btn").addEventListener("click", () => {
             openImagePicker({
                 current: state.library.party[id]?.portrait ?? null,
+                category: "uczestnicy",
                 onSelect: (file) => updateState((s) => { s.library.party[id].portrait = file; })
             });
         });
@@ -228,6 +229,7 @@ function wireMonsterRows(root, state) {
         rowEl.querySelector(".monster-portrait-btn").addEventListener("click", () => {
             openImagePicker({
                 current: state.library.monsters[id]?.portrait ?? null,
+                category: "uczestnicy",
                 onSelect: (file) => updateState((s) => { s.library.monsters[id].portrait = file; })
             });
         });

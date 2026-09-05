@@ -1,13 +1,15 @@
 // Battle Tracker - Klątwa Strahda. Modal wyboru obrazka spośród plików już wdrożonych w images/
 // (patrz imageLibrary.js) - siatka miniaturek, klik wybiera. Używany zarówno dla okładki walki
-// (battleCreator.js/battleView.js), jak i portretów uczestników (participantsLibrary.js) - stąd
-// generyczny `onSelect(file | null)`, bez wiedzy o tym, gdzie wynik ląduje.
+// (battleCreator.js/battleView.js, category "bitwy"), jak i portretów uczestników
+// (participantsLibrary.js, category "uczestnicy") - stąd generyczny `onSelect(file | null)`,
+// bez wiedzy o tym, gdzie wynik ląduje, ale z wymaganą kategorią, żeby np. okładka walki nie
+// pokazywała portretów uczestników i odwrotnie.
 
 import { escapeHtml } from "../utils.js";
 import { getImageLibrary } from "../imageLibrary.js";
 
-export function openImagePicker({ current = null, onSelect }) {
-    const images = getImageLibrary();
+export function openImagePicker({ current = null, category, onSelect }) {
+    const images = getImageLibrary(category);
     const backdrop = document.createElement("div");
     backdrop.className = "modal-backdrop";
     backdrop.innerHTML = `
@@ -22,7 +24,7 @@ export function openImagePicker({ current = null, onSelect }) {
                         </button>
                     `).join("")}
                 </div>
-            ` : '<p class="placeholder">Brak obrazków w images/. Wgraj pliki i odpal shared/images/generate-manifest.js.</p>'}
+            ` : `<p class="placeholder">Brak obrazków w images/${escapeHtml(category)}/. Wgraj pliki i odpal shared/images/generate-manifest.js.</p>`}
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" data-action="clear">Usuń obrazek</button>
                 <button type="button" class="btn btn-secondary" data-action="cancel">Anuluj</button>

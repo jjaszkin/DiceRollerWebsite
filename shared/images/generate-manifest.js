@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// Obrazki - wspólny moduł (DiceRollerWebsite/shared/images/). Skanuje images/ danego projektu i
-// (re)generuje data/images.json - manifest, z którego korzystają wybieraki obrazków w danym
-// projekcie (np. battletrackerklatwa/js/components/imagePicker.js). Ta sama konwencja co
-// shared/handouts/generate-manifest.js, tylko skanuje images/ zamiast handouts/ i pomija plik
-// favicon.ico (wyklucza go po nazwie, nie tylko po rozszerzeniu, bo .ico i tak nie jest na liście
-// rozszerzeń poniżej).
+// Obrazki - wspólny moduł (DiceRollerWebsite/shared/images/). Skanuje jeden podfolder images/
+// danego projektu i (re)generuje data/images-<podfolder>.json - manifest, z którego korzystają
+// wybieraki obrazków w danym projekcie (np. battletrackerklatwa/js/components/imagePicker.js),
+// filtrowane po kategorii (patrz imageLibrary.js#getImageLibrary(category)). Ta sama konwencja co
+// shared/handouts/generate-manifest.js.
 //
-// Użycie:  node shared/images/generate-manifest.js <ścieżka-do-projektu>
-// Przykład: node shared/images/generate-manifest.js battletrackerklatwa
+// Użycie:  node shared/images/generate-manifest.js <ścieżka-do-projektu> <podfolder-w-images>
+// Przykład: node shared/images/generate-manifest.js battletrackerklatwa images/uczestnicy
+//           -> battletrackerklatwa/data/images-uczestnicy.json
 //
 // Idempotentne i nienaruszające ręcznych zmian: wpisy dla plików, które nadal są na dysku,
 // zostają BEZ ZMIAN (więc ręcznie poprawiona `name` przetrwa ponowne odpalenie po wgraniu nowych
@@ -29,8 +29,9 @@ function slugify(name) {
 
 function main() {
     const projectArg = process.argv[2];
-    if (!projectArg) {
-        console.error("Użycie: node shared/images/generate-manifest.js <ścieżka-do-projektu>");
+    const subfolderArg = process.argv[3];
+    if (!projectArg || !subfolderArg) {
+        console.error("Użycie: node shared/images/generate-manifest.js <ścieżka-do-projektu> <podfolder-w-images, np. images/uczestnicy>");
         process.exit(1);
     }
     if (!existsSync(projectArg)) {
@@ -38,8 +39,9 @@ function main() {
         process.exit(1);
     }
 
-    const imagesDir = join(projectArg, "images");
-    const manifestPath = join(projectArg, "data", "images.json");
+    const category = basename(subfolderArg);
+    const imagesDir = join(projectArg, subfolderArg);
+    const manifestPath = join(projectArg, "data", `images-${category}.json`);
     let existing = [];
     if (existsSync(manifestPath)) {
         try {
@@ -66,7 +68,7 @@ function main() {
         // for any filename with diacritics (e.g. "ą", "ę") even though it looks identical on screen.
         // Normalizing here is what actually fixed the broken thumbnails - not a defensive guess.
         const filename = rawFilename.normalize("NFC");
-        const file = `images/${filename}`;
+        const file = `${subfolderArg}/${filename}`;
         seenFiles.add(file);
         const prior = existingByFile.get(file);
         if (prior) {

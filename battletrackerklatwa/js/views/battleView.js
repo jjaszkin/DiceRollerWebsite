@@ -54,6 +54,7 @@ export function renderBattleView(root, battleId) {
     root.querySelector("#changeCoverImageBtn").addEventListener("click", () => {
         openImagePicker({
             current: battle.coverImage ?? null,
+            category: "bitwy",
             onSelect: (file) => updateState((s) => { s.battles[battleId].coverImage = file; })
         });
     });

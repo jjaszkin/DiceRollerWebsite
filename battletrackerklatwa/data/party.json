@@ -1,13 +1,13 @@
 [
-    { "name": "Niklas", "race": "Niziołek zjawomyślny", "class": "Druid", "portrait": "images/Niklas - portret.png" },
-    { "name": "Orryn", "race": "Gnom", "class": "Czarodziej", "portrait": "images/Orryn - portret.png" },
-    { "name": "Tasaar", "race": "Półork", "class": "Barbarzyńca", "portrait": "images/Tasaar - portret.png" },
-    { "name": "Maral", "race": "Półelf", "class": "Łowca", "portrait": "images/Maral - portret.png" },
+    { "name": "Niklas", "race": "Niziołek zjawomyślny", "class": "Druid", "portrait": "images/uczestnicy/Niklas - portret.png" },
+    { "name": "Orryn", "race": "Gnom", "class": "Czarodziej", "portrait": "images/uczestnicy/Orryn - portret.png" },
+    { "name": "Tasaar", "race": "Półork", "class": "Barbarzyńca", "portrait": "images/uczestnicy/Tasaar - portret.png" },
+    { "name": "Maral", "race": "Półelf", "class": "Łowca", "portrait": "images/uczestnicy/Maral - portret.png" },
     {
         "name": "Ireena Kolyana",
         "race": "Człowiek",
         "class": "Ekspert (sidekick), poziom 8 (SZACUNEK)",
-        "portrait": "images/Ireena - portret.png",
+        "portrait": "images/uczestnicy/Ireena - portret.png",
         "level": 8,
         "proficiencyBonus": 3,
         "ac": 16,

@@ -94,6 +94,7 @@ export function openBattleCreator({ state, onCreate }) {
     backdrop.querySelector("#pickCoverImageBtn").addEventListener("click", () => {
         openImagePicker({
             current: coverImage,
+            category: "bitwy",
             onSelect: (file) => { coverImage = file; renderCoverPreview(); }
         });
     });
