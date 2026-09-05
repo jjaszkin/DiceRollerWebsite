@@ -1,6 +1,65 @@
 [
-    { "name": "Niklas", "race": "Niziołek zjawomyślny", "class": "Druid" },
-    { "name": "Orryn", "race": "Gnom", "class": "Czarodziej" },
-    { "name": "Tasaar", "race": "Półork", "class": "Barbarzyńca" },
-    { "name": "Maral", "race": "Półelf", "class": "Łowca" }
+    { "name": "Niklas", "race": "Niziołek zjawomyślny", "class": "Druid", "portrait": "images/uczestnicy/Niklas - portret.png" },
+    { "name": "Orryn", "race": "Gnom", "class": "Czarodziej", "portrait": "images/uczestnicy/Orryn - portret.png" },
+    { "name": "Tasaar", "race": "Półork", "class": "Barbarzyńca", "portrait": "images/uczestnicy/Tasaar - portret.png" },
+    { "name": "Maral", "race": "Półelf", "class": "Łowca", "portrait": "images/uczestnicy/Maral - portret.png" },
+    {
+        "name": "Ireena Kolyana",
+        "race": "Człowiek",
+        "class": "Ekspert (sidekick), poziom 8 (SZACUNEK)",
+        "portrait": "images/uczestnicy/Ireena - portret.png",
+        "level": 8,
+        "proficiencyBonus": 3,
+        "ac": 16,
+        "acNote": "kirys - SZACUNEK na 8. poziomie eskort-sidekicka, zweryfikuj z arkuszem jeśli dostępny",
+        "hp": { "current": 50, "max": 50 },
+        "abilities": { "str": 11, "dex": 16, "con": 11, "int": 12, "wis": 14, "cha": 16 },
+        "saves": { "str": 0, "dex": 6, "con": 0, "int": 1, "wis": 2, "cha": 3 },
+        "initiativeBonus": 3,
+        "notes": "Dołączyła do drużyny - dawniej prowadzona jak NPC/wróg w bibliotece Stworzeń, teraz w Bohaterach Graczy z zachowanymi akcjami (jest pod kontrolą GM, nie gracza przy stole).",
+        "sizeType": "Średni humanoid (człowiek), praworządny dobry",
+        "speed": "30 stóp",
+        "savingThrows": "Zwi +6",
+        "skills": "Oszustwo +6, Wyczucie +8 (biegłość podwójna), Perswazja +6, Leczenie +8 (biegłość podwójna), Historia +4, Śledztwo +4, Percepcja +5, Skrytość +6",
+        "senses": "bierna Percepcja 15",
+        "languages": "dowolne dwa języki",
+        "cr": "eskort-sidekick, poziom 8 (SZACUNEK)",
+        "resistances": [],
+        "immunities": [],
+        "vulnerabilities": [],
+        "conditionImmunities": [],
+        "reactionLimit": null,
+        "traits": [
+            { "id": "estimate-note", "name": "Uwaga: statystyki szacunkowe", "text": "Ireena Kolyana ma statystyki eskort-sidekicka (Tasha's Cauldron of Everything, s. 142) na bazie szlachcica, aktualnie na 8. poziomie. GM podał tylko bazowy statblok (3. poziom, 25 PW) i listę wyborów przy awansach (Zwi 14 na 4. poziomie, Zwi 16 na 8.) - KP/PW/premie do ataku/umiejętności powyżej zostały DOLICZONE z tych danych (progresja kostki wytrzymałości k8, premia biegłości +3 na 8. poziomie, ograniczenie Zwi przez kirys do +2 KP). Warto zweryfikować z arkuszem postaci, jeśli jest dostępny." },
+            { "id": "no-thanks", "name": "\"Nie, dziękuję...\"", "text": "Ireena ma przewagę na rzutach obronnych przeciw oczarowaniu przez Strahda." },
+            { "id": "protected-by-strahd-rule", "name": "Nietykalna dla sług Strahda", "text": "Żaden sługa ani stworzenie Strahda - niezależnie od inteligencji, a już na pewno nie sam Strahd - nigdy nie zaatakuje Ireeny." },
+            { "id": "healer-feat", "name": "Cecha: Uzdrowiciel", "text": "Ireena nosi dwa zestawy uzdrowiciela. Akcją może zużyć jedno użycie zestawu, by opatrzyć stworzenie (raz na cel między odpoczynkami) i przywrócić mu 1k6+4+(liczba kostek wytrzymałości celu) PW. Nalicz ręcznie przyciskiem \"Ulecz\" na karcie celu." }
+        ],
+        "actions": [
+            {
+                "id": "rapier",
+                "name": "Rapier",
+                "kind": "attack",
+                "attackBonus": 6,
+                "reach": "5 stóp",
+                "target": "jeden cel",
+                "damage": [{ "formula": "1d8+3", "type": "kłute" }],
+                "text": "Atak bronią do walki wręcz (finezyjna - Zwi)."
+            },
+            {
+                "id": "light-crossbow",
+                "name": "Lekka kusza",
+                "kind": "attack",
+                "attackBonus": 6,
+                "reach": "zasięg 80/320 stóp",
+                "target": "jeden cel",
+                "damage": [{ "formula": "1d8+3", "type": "kłute" }],
+                "text": "Atak bronią do walki dystansowej."
+            }
+        ],
+        "bonusActions": [],
+        "reactions": [
+            { "id": "parry", "name": "Parowanie", "kind": "text", "text": "Ireena dodaje 2 do KP przeciw jednemu atakowi w zwarciu, który miałby w nią trafić. By to zrobić, musi widzieć atakującego i władać bronią do walki wręcz." }
+        ]
+    }
 ]

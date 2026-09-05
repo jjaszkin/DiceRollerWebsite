@@ -1,0 +1,42 @@
+[
+    {
+        "key": "baba-lysaga-portret",
+        "name": "Baba Lysaga - portret",
+        "file": "images/uczestnicy/Baba Lysaga - portret.png"
+    },
+    {
+        "key": "ireena-portret",
+        "name": "Ireena - portret",
+        "file": "images/uczestnicy/Ireena - portret.png"
+    },
+    {
+        "key": "maral-portret",
+        "name": "Maral - portret",
+        "file": "images/uczestnicy/Maral - portret.png"
+    },
+    {
+        "key": "niklas-portret",
+        "name": "Niklas - portret",
+        "file": "images/uczestnicy/Niklas - portret.png"
+    },
+    {
+        "key": "orryn-portret",
+        "name": "Orryn - portret",
+        "file": "images/uczestnicy/Orryn - portret.png"
+    },
+    {
+        "key": "tasaar-portret",
+        "name": "Tasaar - portret",
+        "file": "images/uczestnicy/Tasaar - portret.png"
+    },
+    {
+        "key": "walter-durst-portret",
+        "name": "Walter Durst - portret",
+        "file": "images/uczestnicy/Walter Durst - portret.png"
+    },
+    {
+        "key": "wedrujaca-chata-portret",
+        "name": "Wędrująca Chata - portret",
+        "file": "images/uczestnicy/Wędrująca Chata - portret.png"
+    }
+]

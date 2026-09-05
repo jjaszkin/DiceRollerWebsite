@@ -17,7 +17,7 @@ import { escapeHtml, uid, clamp } from "../utils.js";
 import { resolveAttack, resolveDamage, resolveSave, applyDamageMitigation } from "../diceEngine.js";
 import { buildStatblockHeaderHtml, buildTraitsHtml } from "../components/statblock.js";
 import { buildConditionPickerHtml, CONDITION_INFO } from "../components/conditionPicker.js";
-import { participantDisplayName } from "../components/participantDisplay.js";
+import { participantDisplayName, participantPortrait } from "../components/participantDisplay.js";
 import { logEntry } from "../rollLog.js";
 
 const DAMAGE_TYPES = [
@@ -60,15 +60,31 @@ export function renderActionPanel(root, { state, battle, selectedId, onSelect })
     }
 
     if (participant.sourceType === "party") {
-        renderPartyCard(bodyRoot, { battle, participant });
+        renderPartyCard(bodyRoot, { state, battle, participant });
     } else {
         renderMonsterCard(bodyRoot, { state, battle, participant });
     }
 }
 
-function renderPartyCard(root, { battle, participant }) {
+// BG zwykle nie mają akcji (gracze rzucają fizycznie przy stole) - ale sojusznik-NPC pod
+// kontrolą GM w bibliotece BG (np. Ireena Kolyana) może mieć actions/bonusActions/reactions
+// tak jak potwór. Karta rozszerza się o statblok/cel/taby akcji TYLKO gdy faktycznie coś tam jest.
+function renderPartyCard(root, { state, battle, participant }) {
+    const portrait = participantPortrait(state, participant);
+    const partyEntry = state.library.party[participant.sourceId];
+    const groupDefs = partyEntry ? [
+        { key: "actions", label: "Akcje", actions: partyEntry.actions },
+        { key: "bonus", label: "Akcje Dodatkowe", actions: partyEntry.bonusActions },
+        { key: "reactions", label: "Reakcje", actions: partyEntry.reactions, countText: partyEntry.reactionLimit ? `${participant.reactionsUsedThisRound || 0}/${partyEntry.reactionLimit}` : "" }
+    ].filter((g) => g.actions?.length) : [];
+    const hasActions = groupDefs.length > 0;
+    const otherParticipants = battle.participants.filter((p) => p.instanceId !== participant.instanceId);
+    const storedGroupKey = selectedActionGroupByParticipant[participant.instanceId];
+    const activeGroupKey = groupDefs.some((g) => g.key === storedGroupKey) ? storedGroupKey : groupDefs[0]?.key;
+
     root.innerHTML = `
         <div class="participant-card">
+            ${portrait ? `<img class="participant-card-portrait" src="${escapeHtml(portrait)}" alt="">` : ""}
             <h3>${escapeHtml(participant.name)}</h3>
             <div class="hp-row">
                 <label>PW aktualne <input type="number" class="pc-hp-current-input" value="${participant.hp?.current ?? ""}"></label>
@@ -77,13 +93,56 @@ function renderPartyCard(root, { battle, participant }) {
             </div>
             ${participant.acNote ? `<p class="ac-note">KP: ${escapeHtml(participant.acNote)}</p>` : ""}
             ${renderDamageForm()}
-            ${renderConditionsBlock(participant)}
+            ${renderConditionsBlock(participant, partyEntry?.conditionImmunities)}
+            ${hasActions ? `
+                <label class="target-select-row">Cel akcji
+                    <select class="action-target-select">
+                        <option value="">- wybierz cel -</option>
+                        ${otherParticipants.map((p) => `<option value="${p.instanceId}">${escapeHtml(participantDisplayName(state, p))}</option>`).join("")}
+                    </select>
+                </label>
+                ${buildStatblockHeaderHtml({ ...partyEntry, label: participant.name }, { skipHpAc: true })}
+                ${buildTraitsHtml(partyEntry.traits)}
+                <div class="action-group-tabs">
+                    ${groupDefs.map((g) => `
+                        <button type="button" class="tab-btn action-group-tab-btn ${g.key === activeGroupKey ? "active" : ""}" data-group-tab="${g.key}">${escapeHtml(g.label)}${g.countText ? ` <span class="action-group-count">${escapeHtml(g.countText)}</span>` : ""}</button>
+                    `).join("")}
+                </div>
+                ${groupDefs.map((g) => `
+                    <div class="action-group-panel ${g.key === activeGroupKey ? "" : "hidden"}" data-group-panel="${g.key}">
+                        <div class="action-list">${g.actions.map(renderActionRow).join("")}</div>
+                    </div>
+                `).join("")}
+            ` : ""}
         </div>
     `;
 
     wireHpFields(root, battle.id, participant.instanceId);
-    wireDamageForm(root, { battle, participant, mitigationTarget: null });
+    wireDamageForm(root, { battle, participant, mitigationTarget: partyEntry || null });
     wireConditionsBlock(root, battle.id, participant.instanceId);
+
+    if (!hasActions) return;
+
+    root.querySelectorAll(".action-group-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const key = btn.dataset.groupTab;
+            selectedActionGroupByParticipant[participant.instanceId] = key;
+            root.querySelectorAll(".action-group-tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.groupTab === key));
+            root.querySelectorAll(".action-group-panel").forEach((p) => p.classList.toggle("hidden", p.dataset.groupPanel !== key));
+        });
+    });
+
+    const getTarget = () => {
+        const id = root.querySelector(".action-target-select")?.value;
+        return id ? battle.participants.find((p) => p.instanceId === id) || null : null;
+    };
+    const getTargetForm = (target) => {
+        if (!target || target.sourceType !== "monster") return null;
+        const tm = state.library.monsters[target.sourceId];
+        return tm?.forms.find((f) => f.formId === target.formId) || null;
+    };
+
+    wireActionButtons(root, { battle, actor: participant, actorForm: partyEntry, getTarget, getTargetForm });
 }
 
 function renderMonsterCard(root, { state, battle, participant }) {
@@ -113,9 +172,11 @@ function renderMonsterCard(root, { state, battle, participant }) {
     ].filter((g) => g.actions?.length);
     const storedGroupKey = selectedActionGroupByParticipant[participant.instanceId];
     const activeGroupKey = groupDefs.some((g) => g.key === storedGroupKey) ? storedGroupKey : groupDefs[0]?.key;
+    const portrait = participantPortrait(state, participant);
 
     root.innerHTML = `
         <div class="participant-card">
+            ${portrait ? `<img class="participant-card-portrait" src="${escapeHtml(portrait)}" alt="">` : ""}
             <div class="participant-card-head">
                 <h3>${escapeHtml(participantDisplayName(state, participant))}</h3>
                 ${monster.forms.length > 1 ? `<label class="form-switch">Forma <select class="form-switch-select">${formOptions}</select></label>` : ""}

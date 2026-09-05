@@ -5,6 +5,7 @@ import { getState, updateState } from "../store.js";
 import { escapeHtml, uid } from "../utils.js";
 import { buildStatblockHeaderHtml, buildTraitsHtml, ABILITY_LABELS, abilityMod, fmtMod } from "../components/statblock.js";
 import { openConfirm } from "../components/confirmModal.js";
+import { openImagePicker } from "../components/imagePicker.js";
 
 const ABILITY_KEYS = ["str", "dex", "con", "int", "wis", "cha"];
 
@@ -76,6 +77,7 @@ function renderPartyRow(p) {
     return `
         <div class="participant-row party-row" data-party-id="${p.id}">
             <div class="participant-row-head">
+                ${renderPortraitPicker(p.portrait, "party-portrait-btn")}
                 <div class="participant-row-name">${escapeHtml(p.name)}<span class="participant-row-sub">${escapeHtml(p.race)} ${escapeHtml(p.class)}</span></div>
                 <label class="participant-field">KP <input type="number" class="party-ac-input" value="${p.ac ?? ""}" min="0"></label>
                 <label class="participant-field">PW maks. <input type="number" class="party-hpmax-input" value="${p.hp?.max ?? ""}" min="0"></label>
@@ -102,6 +104,7 @@ function renderPartyRow(p) {
                         `;
                     }).join("")}
                 </div>
+                ${buildTraitsHtml(p.traits)}
             </div>
         </div>
     `;
@@ -115,6 +118,7 @@ function renderMonsterRow(m) {
     return `
         <div class="participant-row monster-row" data-monster-id="${m.id}">
             <div class="participant-row-head">
+                ${renderPortraitPicker(m.portrait, "monster-portrait-btn")}
                 <div class="participant-row-name">${escapeHtml(m.name)}</div>
                 ${m.forms.length > 1 ? `<select class="monster-form-select">${formOptions}</select>` : ""}
                 <button type="button" class="btn btn-sm monster-expand-btn">Statystyki</button>
@@ -129,6 +133,15 @@ function renderMonsterRow(m) {
     `;
 }
 
+function renderPortraitPicker(portrait, btnClass) {
+    return `
+        <div class="portrait-picker">
+            ${portrait ? `<img class="portrait-thumb" src="${escapeHtml(portrait)}" alt="">` : '<div class="portrait-thumb portrait-thumb-empty"></div>'}
+            <button type="button" class="btn btn-xs ${btnClass}" title="Zmień portret">Portret</button>
+        </div>
+    `;
+}
+
 function wirePartyRows(root, state) {
     root.querySelectorAll(".participant-row[data-party-id]").forEach((rowEl) => {
         const id = rowEl.dataset.partyId;
@@ -136,6 +149,13 @@ function wirePartyRows(root, state) {
         rowEl.querySelector(".party-expand-btn")?.addEventListener("click", () => {
             if (expandedRows.has(id)) expandedRows.delete(id); else expandedRows.add(id);
             rowEl.querySelector(".party-row-detail").classList.toggle("hidden");
+        });
+        rowEl.querySelector(".party-portrait-btn").addEventListener("click", () => {
+            openImagePicker({
+                current: state.library.party[id]?.portrait ?? null,
+                category: "uczestnicy",
+                onSelect: (file) => updateState((s) => { s.library.party[id].portrait = file; })
+            });
         });
 
         rowEl.querySelector(".party-ac-input").addEventListener("change", (e) => {
@@ -205,6 +225,13 @@ function wireMonsterRows(root, state) {
         rowEl.querySelector(".monster-expand-btn")?.addEventListener("click", () => {
             if (expandedRows.has(id)) expandedRows.delete(id); else expandedRows.add(id);
             rowEl.querySelector(".monster-row-detail").classList.toggle("hidden");
+        });
+        rowEl.querySelector(".monster-portrait-btn").addEventListener("click", () => {
+            openImagePicker({
+                current: state.library.monsters[id]?.portrait ?? null,
+                category: "uczestnicy",
+                onSelect: (file) => updateState((s) => { s.library.monsters[id].portrait = file; })
+            });
         });
         rowEl.querySelector(".monster-form-select")?.addEventListener("change", (e) => {
             updateState((s) => { s.library.monsters[id].activeFormId = e.target.value; });

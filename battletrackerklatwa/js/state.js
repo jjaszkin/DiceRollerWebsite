@@ -16,17 +16,39 @@ function seedParty(entries) {
             name: p.name,
             race: p.race || "",
             class: p.class || "",
-            level: null,
-            proficiencyBonus: null,
-            ac: null,
-            acNote: "",
-            hp: { current: null, max: null },
-            abilities: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
+            portrait: p.portrait || null,
+            level: p.level ?? null,
+            proficiencyBonus: p.proficiencyBonus ?? null,
+            ac: p.ac ?? null,
+            acNote: p.acNote || "",
+            hp: { current: p.hp?.current ?? p.hp?.max ?? null, max: p.hp?.max ?? null },
+            abilities: { str: null, dex: null, con: null, int: null, wis: null, cha: null, ...(p.abilities || {}) },
             // Bonus rzutu obronnego (nie modyfikator cechy - może się różnić przy biegłości/cechach),
             // patrz components/statblock.js#abilityMod() dla wyliczenia modyfikatora z `abilities`.
-            saves: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
-            initiativeBonus: 0,
-            notes: ""
+            saves: { str: null, dex: null, con: null, int: null, wis: null, cha: null, ...(p.saves || {}) },
+            initiativeBonus: p.initiativeBonus ?? 0,
+            notes: p.notes || "",
+            // Opcjonalne pola statbloku/akcji - normalne BG ich nie mają (gracze rzucają fizycznie
+            // przy stole), ale sojusznik-NPC pod kontrolą GM (np. Ireena Kolyana) może potrzebować
+            // pełnej automatyzacji taka sama jak potwory. Puste domyślnie, patrz
+            // actionPanel.js#renderPartyCard - rozszerzona karta wjeżdża TYLKO gdy actions/
+            // bonusActions/reactions faktycznie coś zawierają.
+            sizeType: p.sizeType || "",
+            speed: p.speed || "",
+            savingThrows: p.savingThrows || "",
+            skills: p.skills || "",
+            senses: p.senses || "",
+            languages: p.languages || "",
+            cr: p.cr || "",
+            resistances: [...(p.resistances || [])],
+            immunities: [...(p.immunities || [])],
+            vulnerabilities: [...(p.vulnerabilities || [])],
+            conditionImmunities: [...(p.conditionImmunities || [])],
+            reactionLimit: p.reactionLimit ?? null,
+            traits: (p.traits || []).map((t) => ({ ...t })),
+            actions: (p.actions || []).map((a) => ({ ...a })),
+            bonusActions: (p.bonusActions || []).map((a) => ({ ...a })),
+            reactions: (p.reactions || []).map((a) => ({ ...a }))
         };
     }
     return out;
@@ -40,6 +62,7 @@ function seedMonsters(entries) {
             id,
             name: m.name,
             type: m.type || "",
+            portrait: m.portrait || null,
             activeFormId: m.forms?.[0]?.formId ?? null,
             forms: (m.forms || []).map((f) => ({
                 formId: f.formId,
@@ -85,8 +108,26 @@ export function createDefaultState(gameData) {
     };
 }
 
-/** Migracje starszych kształtów zapisu - obecnie brak, zastrzeżone na przyszłość. */
+/** Migracje starszych kształtów zapisu. Obecnie: naprawia uczestników-potworów, których
+ *  `sourceId` wskazuje na już nieistniejący wpis biblioteki - dopasowuje po nazwie do AKTUALNEGO
+ *  wpisu w library.monsters. Bez tego np. ręczne odtworzenie library.monsters nowym seedem (co
+ *  generuje świeże id dla każdego potwora) po cichu osiera WSZYSTKIE już utworzone walki, a ich
+ *  potwory tracą statblok/akcje (patrz actionPanel.js#renderMonsterCard - wymaga trafienia po
+ *  sourceId). BG (sourceType "party") nie wymagają tej naprawy: ich karta czerpie WYŁĄCZNIE z
+ *  danych zapisanych bezpośrednio na uczestniku (imię/KP/PW), bez odczytu z biblioteki na żywo -
+ *  patrz actionPanel.js#renderPartyCard. */
 export function migrateLoadedState(loaded) {
+    if (!loaded?.battles || !loaded?.library?.monsters) return loaded;
+    const monsterIdByName = {};
+    for (const m of Object.values(loaded.library.monsters)) monsterIdByName[m.name] = m.id;
+
+    for (const battle of Object.values(loaded.battles)) {
+        for (const p of battle.participants || []) {
+            if (p.sourceType !== "monster" || loaded.library.monsters[p.sourceId]) continue;
+            const fixedId = monsterIdByName[p.name];
+            if (fixedId) p.sourceId = fixedId;
+        }
+    }
     return loaded;
 }
 

@@ -2,6 +2,7 @@
 // (BG + bestiariusz), arena (miejsce, modyfikatory środowiskowe, specjalne cechy).
 
 import { uid, escapeHtml } from "../utils.js";
+import { openImagePicker } from "../components/imagePicker.js";
 
 export function openBattleCreator({ state, onCreate }) {
     const backdrop = document.createElement("div");
@@ -9,6 +10,7 @@ export function openBattleCreator({ state, onCreate }) {
 
     const partyEntries = Object.values(state.library.party || {});
     const monsterEntries = Object.values(state.library.monsters || {});
+    let coverImage = null;
 
     backdrop.innerHTML = `
         <div class="modal battle-creator-modal">
@@ -18,6 +20,14 @@ export function openBattleCreator({ state, onCreate }) {
                 <span>Nazwa walki</span>
                 <input type="text" id="battleNameInput" placeholder="np. Finał w Berezie">
             </label>
+
+            <div class="creator-field">
+                <span>Obrazek okładki (opcjonalnie, można dodać/zmienić później)</span>
+                <div class="cover-image-picker">
+                    <div class="cover-image-preview placeholder" id="coverImagePreview">Brak obrazka</div>
+                    <button type="button" class="btn btn-sm btn-secondary" id="pickCoverImageBtn">Wybierz obrazek</button>
+                </div>
+            </div>
 
             <h3>Uczestnicy</h3>
             <div class="creator-participants">
@@ -69,6 +79,25 @@ export function openBattleCreator({ state, onCreate }) {
     `;
 
     function close() { backdrop.remove(); }
+
+    function renderCoverPreview() {
+        const preview = backdrop.querySelector("#coverImagePreview");
+        if (coverImage) {
+            preview.classList.remove("placeholder");
+            preview.innerHTML = `<img src="${escapeHtml(coverImage)}" alt="">`;
+        } else {
+            preview.classList.add("placeholder");
+            preview.textContent = "Brak obrazka";
+        }
+    }
+
+    backdrop.querySelector("#pickCoverImageBtn").addEventListener("click", () => {
+        openImagePicker({
+            current: coverImage,
+            category: "bitwy",
+            onSelect: (file) => { coverImage = file; renderCoverPreview(); }
+        });
+    });
 
     backdrop.addEventListener("click", (e) => { if (e.target === backdrop) close(); });
     backdrop.querySelector('[data-action="cancel"]').addEventListener("click", close);
@@ -128,6 +157,7 @@ export function openBattleCreator({ state, onCreate }) {
             id: uid(),
             name,
             createdAt: Date.now(),
+            coverImage,
             arena: {
                 location: backdrop.querySelector("#arenaLocationInput").value.trim(),
                 environmentalModifiers: splitLines(backdrop.querySelector("#arenaModifiersInput").value),

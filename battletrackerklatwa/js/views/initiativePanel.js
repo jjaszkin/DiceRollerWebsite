@@ -8,7 +8,7 @@
 
 import { updateState } from "../store.js";
 import { escapeHtml } from "../utils.js";
-import { participantDisplayName } from "../components/participantDisplay.js";
+import { participantDisplayName, participantPortrait } from "../components/participantDisplay.js";
 import { rollD20 } from "../diceEngine.js";
 import { abilityMod, fmtMod } from "../components/statblock.js";
 import { logEntry } from "../rollLog.js";
@@ -107,6 +107,7 @@ function moveParticipant(battleId, instanceId, dir) {
 function renderParticipantRow(state, p, index, total, currentTurnId) {
     const hpText = p.hp?.max != null ? `${p.hp.current ?? "-"} / ${p.hp.max}` : "-";
     const conditions = (p.conditions || []).map((c) => `<span class="condition-badge">${escapeHtml(c.label)}</span>`).join("");
+    const portrait = participantPortrait(state, p);
     return `
         <div class="initiative-row ${p.instanceId === currentTurnId ? "initiative-row-active" : ""}" data-select-instance="${p.instanceId}" title="Kliknij, by oznaczyć jako uczestnika na ruchu">
             <div class="initiative-row-order">
@@ -114,6 +115,7 @@ function renderParticipantRow(state, p, index, total, currentTurnId) {
                 <button type="button" class="btn btn-icon btn-xs" data-move-down="${p.instanceId}" ${index === total - 1 ? "disabled" : ""}>↓</button>
             </div>
             <input type="number" class="initiative-value-input" data-initiative-input="${p.instanceId}" value="${p.initiative ?? 0}" title="Wartość inicjatywy">
+            ${portrait ? `<img class="initiative-row-portrait" src="${escapeHtml(portrait)}" alt="">` : '<div class="initiative-row-portrait initiative-row-portrait-empty"></div>'}
             <div class="initiative-row-body">
                 <div class="initiative-row-name">${escapeHtml(participantDisplayName(state, p))}</div>
                 <div class="initiative-row-hp">PW: ${hpText}</div>
