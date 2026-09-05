@@ -59,7 +59,13 @@ function main() {
     const seenFiles = new Set();
     let added = 0;
 
-    for (const filename of files) {
+    for (const rawFilename of files) {
+        // macOS (HFS+/APFS) can hand back accented filenames in NFD (decomposed) form from
+        // readdirSync, even when the file is stored/committed as NFC (composed) - Netlify's Linux
+        // servers do exact byte matching on the URL path, so an NFD manifest entry silently 404s
+        // for any filename with diacritics (e.g. "ą", "ę") even though it looks identical on screen.
+        // Normalizing here is what actually fixed the broken thumbnails - not a defensive guess.
+        const filename = rawFilename.normalize("NFC");
         const file = `images/${filename}`;
         seenFiles.add(file);
         const prior = existingByFile.get(file);
