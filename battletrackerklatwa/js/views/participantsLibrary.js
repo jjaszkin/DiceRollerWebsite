@@ -104,6 +104,7 @@ function renderPartyRow(p) {
                         `;
                     }).join("")}
                 </div>
+                ${buildTraitsHtml(p.traits)}
             </div>
         </div>
     `;

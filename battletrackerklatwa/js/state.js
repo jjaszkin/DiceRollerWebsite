@@ -17,17 +17,38 @@ function seedParty(entries) {
             race: p.race || "",
             class: p.class || "",
             portrait: p.portrait || null,
-            level: null,
-            proficiencyBonus: null,
-            ac: null,
-            acNote: "",
-            hp: { current: null, max: null },
-            abilities: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
+            level: p.level ?? null,
+            proficiencyBonus: p.proficiencyBonus ?? null,
+            ac: p.ac ?? null,
+            acNote: p.acNote || "",
+            hp: { current: p.hp?.current ?? p.hp?.max ?? null, max: p.hp?.max ?? null },
+            abilities: { str: null, dex: null, con: null, int: null, wis: null, cha: null, ...(p.abilities || {}) },
             // Bonus rzutu obronnego (nie modyfikator cechy - może się różnić przy biegłości/cechach),
             // patrz components/statblock.js#abilityMod() dla wyliczenia modyfikatora z `abilities`.
-            saves: { str: null, dex: null, con: null, int: null, wis: null, cha: null },
-            initiativeBonus: 0,
-            notes: ""
+            saves: { str: null, dex: null, con: null, int: null, wis: null, cha: null, ...(p.saves || {}) },
+            initiativeBonus: p.initiativeBonus ?? 0,
+            notes: p.notes || "",
+            // Opcjonalne pola statbloku/akcji - normalne BG ich nie mają (gracze rzucają fizycznie
+            // przy stole), ale sojusznik-NPC pod kontrolą GM (np. Ireena Kolyana) może potrzebować
+            // pełnej automatyzacji taka sama jak potwory. Puste domyślnie, patrz
+            // actionPanel.js#renderPartyCard - rozszerzona karta wjeżdża TYLKO gdy actions/
+            // bonusActions/reactions faktycznie coś zawierają.
+            sizeType: p.sizeType || "",
+            speed: p.speed || "",
+            savingThrows: p.savingThrows || "",
+            skills: p.skills || "",
+            senses: p.senses || "",
+            languages: p.languages || "",
+            cr: p.cr || "",
+            resistances: [...(p.resistances || [])],
+            immunities: [...(p.immunities || [])],
+            vulnerabilities: [...(p.vulnerabilities || [])],
+            conditionImmunities: [...(p.conditionImmunities || [])],
+            reactionLimit: p.reactionLimit ?? null,
+            traits: (p.traits || []).map((t) => ({ ...t })),
+            actions: (p.actions || []).map((a) => ({ ...a })),
+            bonusActions: (p.bonusActions || []).map((a) => ({ ...a })),
+            reactions: (p.reactions || []).map((a) => ({ ...a }))
         };
     }
     return out;
