@@ -21,7 +21,6 @@ const DATES_CACHE_KEY = "serviceDatesCache";
 
 const REPO = "jjaszkin/DiceRollerWebsite";
 const BRANCH = "master";
-const SITE_BASE = "https://dicerollerwebsite.netlify.app/";
 
 const FOLDERS = [
     "battletrackerklatwa",
@@ -166,7 +165,8 @@ function formatDate(iso) {
 function buildCard(folder, iso) {
     const card = document.createElement("a");
     card.className = "service-card";
-    card.href = `${SITE_BASE}${folder}/`;
+    card.href = `${folder}/`; // ścieżka względna - żeby karty zostawały na tym samym hoście (Deploy
+    // Preview Netlify albo produkcja), zamiast zawsze wyrzucać na zahardkodowaną domenę produkcyjną
     card.target = "_blank";
     card.rel = "noopener noreferrer";
 
