@@ -78,5 +78,18 @@
             { "title": "Lodowy Dotyk Śmierci", "text": "Dotknięcie ostrza zamraża wszystko w promieniu kilku kroków, skutecznie zatrzymując czas w wybranym obszarze na chwilę.",
                 "usable": { "id": "glacivere-lodowy-dotyk", "usage": "narrative", "costText": "Koszt: ofiara z własnej krwi. Serce zaczyna emanować zimnem - jeśli nie zostanie powstrzymane, przemieni władającego w lodowego upiora.", "buttonLabel": "Użyj mocy: Lodowy Dotyk Śmierci" } }
         ]
+    },
+    "aerondight": {
+        "name": "Aerondight",
+        "image": "images/items/Aerondight.png",
+        "shortTooltip": "Miecz wyrwany z gardła Sir Agravaina - wyrok Lancelota, nie trofeum.",
+        "richDescription": [
+            { "title": "Pochodzenie", "text": "Wyrwany z gardła Sir Agravaina w Kwartale Rycerskim. To nie był przypadek ani trofeum - to wyrok Lancelota na Agravainie, pokazanie, że sędzia Areny nie ma tu ostatniego słowa." },
+            { "title": "Niegasnące Światło", "text": "Klinga rzuca blask nawet we mgle Camelotu. Wrogim istotom trudniej atakować dzierżącego, dopóki stoi w jasnym świetle klingi (+1 kostka). Jednak blask zdradza jego pozycję każdemu wrogowi w zasięgu wzroku." },
+            { "title": "Przysięga Obrony", "text": "Gdy dzierżący broni inną postać (nie siebie) przed atakiem, dorzuca +1 kość Archetypu Rycerza do testu.",
+                "usable": { "id": "aerondight-przysiega-obrony", "usage": "narrative", "costText": "Jeśli test i tak skończy się \"1\" - ta \"1\" nie liczy się do Rozpaczy, jeśli miecz osądzi, że chęć obrony była szczera.", "buttonLabel": "Użyj mocy: Przysięga Obrony" } },
+            { "title": "Wyrok", "text": "Gdy w teście walki innego z bohaterów wypadnie \"6\", miecz wykonuje wyrok: wszyscy wrogowie w starciu tracą 1 kość, a na ich gardłach pojawia się szeroka szrama.",
+                "usable": { "id": "aerondight-wyrok", "usage": "narrative", "buttonLabel": "Użyj mocy: Wyrok" } }
+        ]
     }
 }
