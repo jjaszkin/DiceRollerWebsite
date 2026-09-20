@@ -18,6 +18,9 @@ const PIN_PATH = "settings/pin";
 const DEFAULT_PIN = "0000";
 const UNLOCK_KEY = "dashboardUnlocked";
 const DATES_CACHE_KEY = "serviceDatesCache";
+const DATES_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minut - dość świeżo, żeby nie trzeba było zamykać
+// kartę po każdym merge'u, ale rzadko na tyle, żeby normalne przeglądanie nie ostrzelało
+// niezalogowanego limitu GitHub API (60 zapytań/h dla 14 folderów = szybko ucięty limit).
 
 const REPO = "jjaszkin/DiceRollerWebsite";
 const BRANCH = "master";
@@ -138,12 +141,14 @@ async function getServiceDates() {
     const cached = sessionStorage.getItem(DATES_CACHE_KEY);
     if (cached) {
         try {
-            const parsed = JSON.parse(cached);
-            // Jeśli od czasu zapisania cache przybył nowy folder w FOLDERS (np. świeżo dodany
-            // mini-serwis), jego klucza tu nie będzie - w takim wypadku cache jest nieaktualny
-            // dla całej listy i trzeba pobrać na nowo, zamiast pokazywać "Brak danych" na stałe
-            // aż do końca sesji przeglądarki.
-            if (FOLDERS.every((folder) => folder in parsed)) return parsed;
+            const { fetchedAt, dates: cachedDates } = JSON.parse(cached);
+            // Cache ważny tylko przez DATES_CACHE_TTL_MS - inaczej daty zamrażały się na cały
+            // czas życia karty (sessionStorage), więc świeży merge nie było widać bez zamknięcia
+            // karty. Jeśli od czasu zapisania cache przybył nowy folder w FOLDERS (np. świeżo
+            // dodany mini-serwis), jego klucza tu nie będzie - w takim wypadku cache jest
+            // nieaktualny dla całej listy niezależnie od wieku.
+            const fresh = typeof fetchedAt === "number" && (Date.now() - fetchedAt) < DATES_CACHE_TTL_MS;
+            if (fresh && FOLDERS.every((folder) => folder in cachedDates)) return cachedDates;
         } catch {
             // ignore corrupt cache and refetch
         }
@@ -153,7 +158,7 @@ async function getServiceDates() {
         FOLDERS.map(async (folder) => [folder, await fetchLastPublishedDate(folder)])
     );
     const dates = Object.fromEntries(entries);
-    sessionStorage.setItem(DATES_CACHE_KEY, JSON.stringify(dates));
+    sessionStorage.setItem(DATES_CACHE_KEY, JSON.stringify({ fetchedAt: Date.now(), dates }));
     return dates;
 }
 
