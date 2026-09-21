@@ -60,7 +60,12 @@ function main() {
     const existingByFile = new Map(existing.map(entry => [entry.file, entry]));
 
     const files = existsSync(handoutsDir)
-        ? readdirSync(handoutsDir).filter(f => IMAGE_EXTENSIONS.has(extname(f).toLowerCase())).sort()
+        // macOS (HFS+/APFS) potrafi zwrócić z readdirSync akcentowane nazwy plików w formie NFD
+        // (rozłożonej), nawet gdy plik jest zapisany/zacommitowany jako NFC (złożona) - Netlify
+        // (Linux) robi dokładne dopasowanie bajtów w ścieżce URL, więc wpis w manifeście z NFD
+        // cicho zwraca 404 dla każdej nazwy z polskimi znakami, mimo że wygląda identycznie na
+        // ekranie. Patrz analogiczny fix w shared/images/generate-manifest.js (commit a12576e).
+        ? readdirSync(handoutsDir).map(f => f.normalize("NFC")).filter(f => IMAGE_EXTENSIONS.has(extname(f).toLowerCase())).sort()
         : [];
 
     const result = [];
