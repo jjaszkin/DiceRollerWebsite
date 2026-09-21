@@ -182,6 +182,55 @@
         "loop": true
     },
     {
+        "key": "merlin-s-tower-1",
+        "name": "Merlin's Tower 1",
+        "file": "music/Merlin's Tower 1.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "merlin-s-tower-2",
+        "name": "Merlin's Tower 2",
+        "file": "music/Merlin's Tower 2.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "merlin-s-tower-3",
+        "name": "Merlin's Tower 3",
+        "file": "music/Merlin's Tower 3.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "merlin-s-tower-4",
+        "name": "Merlin's Tower 4",
+        "file": "music/Merlin's Tower 4.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "merlin-s-tower-5",
+        "name": "Merlin's Tower 5",
+        "file": "music/Merlin's Tower 5.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "merlin-s-tower-6",
+        "name": "Merlin's Tower 6",
+        "file": "music/Merlin's Tower 6.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "merlin-s-tower-7",
+        "name": "Merlin's Tower 7",
+        "file": "music/Merlin's Tower 7.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
         "key": "moth-tower-void-receiver-2022-1",
         "name": "Moth Tower - Void Receiver (2022) 1",
         "file": "music/Moth Tower - Void Receiver (2022) 1.mp3",
