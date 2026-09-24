@@ -5,5 +5,103 @@
         "file": "music/INTRO Paolo Nutini - Iron Sky live piano cover Nico Casal INTRO.mp3",
         "category": "music",
         "loop": true
+    },
+    {
+        "key": "cacao-yoga-in-vancouver",
+        "name": "Cacao Yoga in Vancouver",
+        "file": "music/Cacao Yoga in Vancouver.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "dexter-walka",
+        "name": "Dexter walka",
+        "file": "music/Dexter walka.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "eurotrack-dark-noire-city-short",
+        "name": "Eurotrack Dark Noire City short",
+        "file": "music/Eurotrack Dark Noire City short.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "kubanskie-wesele-1",
+        "name": "Kubanskie wesele #1",
+        "file": "music/Kubanskie wesele #1.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "kubanskie-wesele-2",
+        "name": "Kubanskie wesele #2",
+        "file": "music/Kubanskie wesele #2.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "kubanskie-wesele-3",
+        "name": "Kubanskie wesele #3",
+        "file": "music/Kubanskie wesele #3.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "kubanskie-wesele-4",
+        "name": "Kubanskie wesele #4",
+        "file": "music/Kubanskie wesele #4.mp3",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "mrok-1",
+        "name": "Mrok #1",
+        "file": "music/Mrok #1.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "mrok-2",
+        "name": "Mrok #2",
+        "file": "music/Mrok #2.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "mrok-3",
+        "name": "Mrok #3",
+        "file": "music/Mrok #3.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "mrok-4",
+        "name": "Mrok #4",
+        "file": "music/Mrok #4.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "mrok-5",
+        "name": "Mrok #5",
+        "file": "music/Mrok #5.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "mrok-6",
+        "name": "Mrok #6",
+        "file": "music/Mrok #6.m4a",
+        "category": "music",
+        "loop": true
+    },
+    {
+        "key": "twin-peaks-dark-themes",
+        "name": "Twin Peaks Dark Themes",
+        "file": "music/Twin Peaks Dark Themes.mp3",
+        "category": "music",
+        "loop": true
     }
 ]
