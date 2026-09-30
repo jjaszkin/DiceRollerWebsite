@@ -118,6 +118,17 @@ export function createDefaultState(gameData) {
         handouts: {
             visible: {},   // { [handoutKey]: true } - pominięty klucz = ukryty
             order: []      // string[] - klucze katalogu, w kolejności od góry w dół
+        },
+
+        // Stan Terminów (shared/scheduler/, patrz control-panel.js i viewer.js) - dostępność każdego
+        // uczestnika na dni z kalendarza (data/scheduler.json#months). `availability` jest kluczowana
+        // kluczem uczestnika (klucz postaci z data/characters.json dla graczy, stały klucz "mg" dla
+        // Mistrza Gry - patrz panels/terminy.js i panels/mg.js), pod nim data ISO ("2026-10-05") ->
+        // "yes" (mogę) | "maybe" (być może). Dzień bez wpisu = stan domyślny/nieznany - CELOWO
+        // przechowujemy tylko "mogę"/"być może" (potwierdzone przez usera), nie zaznaczamy wprost
+        // "nie mogę", żeby nie trzeba było seedować wszystkich ~92 dni dla każdego uczestnika.
+        scheduler: {
+            availability: {}
         }
     };
 }
