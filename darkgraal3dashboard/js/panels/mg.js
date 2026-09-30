@@ -39,6 +39,9 @@ import {
     buildHandoutsControlHtml, handleHandoutsAction, reorderHandoutsOrder
 } from "../../../shared/handouts/control-panel.js";
 import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
+import {
+    buildSchedulerControlHtml, handleSchedulerControlAction, MG_PARTICIPANT_KEY
+} from "../../../shared/scheduler/control-panel.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -102,8 +105,17 @@ function renderTopTabs(activeTab) {
             <button type="button" class="tab-btn ${activeTab === "muzyka" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="muzyka">Muzyka</button>
             <button type="button" class="tab-btn ${activeTab === "handouty" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="handouty">Handouty</button>
             <button type="button" class="tab-btn ${activeTab === "backup" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="backup">Backup</button>
+            <button type="button" class="tab-btn ${activeTab === "terminy" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="terminy">Terminy</button>
         </nav>
     `;
+}
+
+/** Wszyscy głosujący w zakładce Terminy: 4 postacie (kluczowane jak w state.characters, tak samo
+ *  jak wybiera je gate.js dla Graczy - patrz panels/terminy.js) plus MG sam (MG_PARTICIPANT_KEY z
+ *  shared/scheduler/control-panel.js) - MG głosuje na równi z graczami, patrz komentarz tam. */
+function buildSchedulerParticipants(state) {
+    const characters = Object.values(state.characters || {}).map(c => ({ key: c.key, label: c.name }));
+    return [...characters, { key: MG_PARTICIPANT_KEY, label: "Mistrz Gry" }];
 }
 
 function findOwnerKey(state, itemKey) {
@@ -521,6 +533,7 @@ function buildHtml(ctx) {
                     ${activeTopTab === "muzyka" ? buildSoundboardControlHtml(ctx, nowPlaying) : ""}
                     ${activeTopTab === "handouty" ? buildHandoutsControlHtml(ctx) : ""}
                     ${activeTopTab === "backup" ? renderDataBackupModule() : ""}
+                    ${activeTopTab === "terminy" ? buildSchedulerControlHtml(ctx, { months: data.scheduler.months, participants: buildSchedulerParticipants(state) }) : ""}
                     ${activeTopTab === "kampania" ? `
                         ${renderModifierModule(ctx)}
                         ${renderLegendaryCatalog(ctx)}
@@ -916,6 +929,12 @@ function wireEvents(root) {
 
         // Akcje modułu Handouty (pokaż/ukryj, powiększenie) - patrz shared/handouts/.
         if (handleHandoutsAction(action, btn, { ...root._ctx, updateState })) {
+            rerender(root);
+            return;
+        }
+
+        // Akcje modułu Terminy (klik w kalendarz własnej dostępności MG) - patrz shared/scheduler/.
+        if (handleSchedulerControlAction(action, btn, { ...root._ctx, updateState })) {
             rerender(root);
             return;
         }

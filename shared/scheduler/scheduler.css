@@ -1,0 +1,150 @@
+/* Terminy - wspólny moduł (DiceRollerWebsite/shared/scheduler/). Style dla kalendarza klikalnego
+   (viewer.js po stronie gracza, dolna połowa control-panel.js po stronie MG - to DOKŁADNIE ten sam
+   komponent tabeli, patrz calendar.js#renderMonthTableHtml) i listy rankingowej dni
+   (control-panel.js, wyłącznie MG).
+
+   Celowo BEZ własnej przestrzeni nazw zmiennych (--sched-*) - patrz analogiczny komentarz na górze
+   shared/handouts/handouts.css: projekty w tym repo już współdzielą jeden zestaw nazw zmiennych
+   motywu, ten plik używa ich wprost, z fallbackami, żeby działać nawet w projekcie bez tej palety. */
+
+.sched-legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+    font-size: 0.85rem;
+    color: var(--fg-1, #d8c9a8);
+}
+
+.sched-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sched-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    border: 1px solid var(--line, #3d2f1f);
+}
+
+.sched-swatch.sched-yes { background: #2f7d4f; }
+.sched-swatch.sched-maybe { background: #b58a2c; }
+
+/* -- Siatka miesięcy: obok siebie na szerokich ekranach, jeden pod drugim na wąskich ------------ */
+
+.sched-months {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.sched-month {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 260px;
+    max-width: 100%;
+}
+
+.sched-month caption {
+    font-family: var(--sans, sans-serif);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold, #E8B83D);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.sched-month th {
+    color: var(--fg-2, #a89878);
+    font-weight: normal;
+    font-size: 0.75rem;
+    padding: 4px 0;
+    text-align: center;
+}
+
+.sched-cell {
+    text-align: center;
+    padding: 2px;
+    width: 14.28%;
+}
+
+.sched-cell-empty { background: transparent; }
+
+.sched-day {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    min-height: 32px;
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+    background: var(--bg-2, #1e1712);
+    color: var(--fg-1, #d8c9a8);
+    font-family: var(--sans, sans-serif);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.sched-day:hover { border-color: var(--line-strong, #6b5330); }
+
+.sched-cell.sched-today .sched-day { border-color: var(--gold, #E8B83D); border-width: 2px; }
+
+.sched-cell.sched-yes .sched-day {
+    background: #2f7d4f;
+    border-color: #2f7d4f;
+    color: #f2fbf5;
+}
+
+.sched-cell.sched-maybe .sched-day {
+    background: #b58a2c;
+    border-color: #b58a2c;
+    color: #2a2019;
+}
+
+/* Komórki nieklikalne (na wszelki wypadek, gdyby moduł był kiedyś użyty tylko do odczytu) renderują
+   się jako <div>, nie <button> - reset kursora/tła, żeby nie sugerowały interakcji. */
+div.sched-day { cursor: default; }
+
+/* -- Lista rankingowa dni (wyłącznie widok MG) --------------------------------------------------- */
+
+.sched-ranking {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sched-rank-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 10px;
+    background: var(--bg-2, #1e1712);
+    border: 1px solid var(--line, #3d2f1f);
+    border-radius: var(--radius, 3px);
+}
+
+.sched-rank-date {
+    font-weight: 600;
+    color: var(--fg-0, #f2e9d8);
+    white-space: nowrap;
+}
+
+.sched-rank-counts {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+}
+
+.sched-rank-count.sched-rank-yes { color: #4fbf82; }
+.sched-rank-count.sched-rank-maybe { color: #d8ab4f; }
+
+.sched-module + .sched-module { margin-top: 12px; }

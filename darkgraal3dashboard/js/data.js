@@ -2,12 +2,13 @@
 // (Nazwa "Solo" w duchu wzorca glide2solo - w praktyce to dashboard dla MG + graczy przy wspólnej
 // kampanii, patrz BRIEFING.md.)
 
-const FILES = ["archetypes", "characters", "transformations", "items", "soundboard", "handouts"];
+const FILES = ["archetypes", "characters", "transformations", "items", "soundboard", "handouts", "scheduler"];
 
-/** Zwraca obiekt { archetypes, characters, transformations, items, soundboard, handouts }.
+/** Zwraca obiekt { archetypes, characters, transformations, items, soundboard, handouts, scheduler }.
  *  `soundboard` to manifest Soundboardu (shared/soundboard/) wygenerowany z music/ i sounds/,
  *  `handouts` to katalog Handoutów (shared/handouts/) wygenerowany z handouts/ - patrz
- *  odpowiedni generate-manifest.js w każdym z tych folderów. */
+ *  odpowiedni generate-manifest.js w każdym z tych folderów. `scheduler` to konfiguracja
+ *  zakładki Terminy (shared/scheduler/) - lista miesięcy do pokazania w kalendarzu. */
 export async function loadGameData() {
     const entries = await Promise.all(
         FILES.map(async (name) => {
