@@ -1,10 +1,12 @@
-// Terminy - wspólny moduł (DiceRollerWebsite/shared/scheduler/). Panel sterowania dla MG: lista
-// rankingowa dni posortowana wg liczby głosów "mogę" (potem "być może"), z imionami uczestników
-// przy każdym dniu, pokazująca WYŁĄCZNIE dni z co najmniej jednym głosem (potwierdzone przez usera -
-// unika listy zdominowanej samymi zerami). Pod listą - własny, klikalny kalendarz MG (ten sam
-// komponent co viewer.js po stronie gracza, participantKey stały: "mg") - MG też głosuje, i jego
-// głos liczy się do rankingu na równi z graczami (patrz aggregateForDate w core.js, wywoływane z
-// pełną listą `participants` włącznie z MG).
+// Terminy - wspólny moduł (DiceRollerWebsite/shared/scheduler/). Panel sterowania dla MG: NAJPIERW
+// własny, klikalny kalendarz MG (ten sam komponent co viewer.js po stronie gracza, participantKey
+// stały: "mg") - MG też głosuje, i jego głos liczy się do rankingu na równi z graczami (patrz
+// aggregateForDate w core.js, wywoływane z pełną listą `participants` włącznie z MG). POD kalendarzem
+// - lista rankingowa dni posortowana wg liczby głosów "mogę" (potem "być może"), z imionami
+// uczestników przy każdym dniu, pokazująca WYŁĄCZNIE dni z co najmniej jednym głosem (potwierdzone
+// przez usera - unika listy zdominowanej samymi zerami). Kalendarz MG jest CELOWO nad rankingiem, nie
+// pod nim - inaczej zmiana długości listy rankingowej przy każdym kliknięciu przesuwałaby kalendarz
+// MG w pionie pod kursorem (potwierdzone przez usera po pierwszym wdrożeniu z odwrotną kolejnością).
 //
 // Czyste funkcje w konwencji shared/handouts/control-panel.js - projekt wpina je we WŁASNY render i
 // dispatch akcji, ten moduł nie zna Firebase ani konkretnego kształtu projektu poza tym, co dostaje
@@ -83,17 +85,17 @@ export function buildSchedulerControlHtml(ctx, { months, participants }) {
 
     return `
         <div class="card sched-module">
-            <h3>Terminy - głosy graczy</h3>
-            ${rankingHtml}
-        </div>
-        <div class="card sched-module">
             <h3>Terminy - Twoja dostępność (MG)</h3>
-            <p class="placeholder">Zaznacz swoje dni tak samo jak gracze - liczą się do rankingu wyżej.</p>
+            <p class="placeholder">Zaznacz swoje dni tak samo jak gracze - liczą się do rankingu niżej.</p>
             <div class="sched-legend">
                 <span class="sched-legend-item"><span class="sched-swatch sched-yes"></span> Mogę</span>
                 <span class="sched-legend-item"><span class="sched-swatch sched-maybe"></span> Być może</span>
             </div>
             <div class="sched-months">${ownMonthsHtml}</div>
+        </div>
+        <div class="card sched-module">
+            <h3>Terminy - głosy graczy</h3>
+            ${rankingHtml}
         </div>
     `;
 }
