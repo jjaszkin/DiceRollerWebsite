@@ -42,7 +42,7 @@ import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
 import {
     buildSchedulerControlHtml, handleSchedulerControlAction
 } from "../../../shared/scheduler/control-panel.js";
-import { buildSchedulerHeatmapHtml } from "../../../shared/scheduler/heatmap.js";
+import { buildSchedulerHeatmapHtml, wireHeatmapTooltip } from "../../../shared/scheduler/heatmap.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -1021,6 +1021,7 @@ function wireEvents(root) {
     });
 
     wireZoomPan(root);
+    wireHeatmapTooltip(root);
 }
 
 export function render(root, ctx) {

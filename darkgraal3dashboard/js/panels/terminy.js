@@ -11,7 +11,7 @@
 import { updateState } from "../store.js";
 import { schedulerParticipants } from "../state.js";
 import { buildSchedulerViewerHtml, handleSchedulerViewerAction } from "../../../shared/scheduler/viewer.js";
-import { buildSchedulerHeatmapHtml } from "../../../shared/scheduler/heatmap.js";
+import { buildSchedulerHeatmapHtml, wireHeatmapTooltip } from "../../../shared/scheduler/heatmap.js";
 
 function buildHtml(ctx) {
     const months = ctx.data.scheduler.months;
@@ -33,6 +33,7 @@ function wireEvents(root) {
             rerender(root);
         }
     });
+    wireHeatmapTooltip(root);
 }
 
 export function render(root, ctx) {
