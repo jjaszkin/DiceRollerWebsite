@@ -108,6 +108,16 @@
    się jako <div>, nie <button> - reset kursora/tła, żeby nie sugerowały interakcji. */
 div.sched-day { cursor: default; }
 
+/* -- Widget "mapa dostępności" (heatmap.js) - nieklikalny, natężenie zieleni = tło inline (style=),
+   tekst zawsze jasny (czytelny na każdym natężeniu, od pustego ciemnego tła po pełną zieleń) -------- */
+
+.sched-heat-day {
+    color: var(--fg-0, #f2e9d8);
+}
+
+/* Obrys przy najechaniu - jedyna wskazówka, że dzień ma tooltip (atrybut title), bez zmiany layoutu. */
+.sched-heat-day:hover { outline: 1px solid var(--gold, #E8B83D); outline-offset: -1px; }
+
 /* -- Lista rankingowa dni (wyłącznie widok MG) --------------------------------------------------- */
 
 .sched-ranking {

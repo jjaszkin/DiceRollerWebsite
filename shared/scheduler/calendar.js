@@ -5,7 +5,9 @@
 //
 // Tydzień zaczyna się od poniedziałku (potwierdzone przez usera - "pierwszy poniedziałek").
 
-const WEEKDAY_LABELS_PL = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Niedz"];
+// Eksportowane (nie tylko `const` lokalny) - używane też przez heatmap.js, żeby nie duplikować
+// polskich etykiet dni tygodnia w drugim renderze tabeli miesiąca (patrz heatmap.js#renderHeatmapMonthTableHtml).
+export const WEEKDAY_LABELS_PL = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Niedz"];
 
 const MONTH_LABELS_PL = [
     "Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",

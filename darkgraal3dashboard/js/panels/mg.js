@@ -22,7 +22,7 @@ import { logEvent } from "../eventLog.js";
 import { logRoll } from "../rollLog.js";
 import {
     archetypeCurrent, despairMax, addModifier, removeModifier, toggleModifier, resolveItemTooltip,
-    createDefaultState, mergeWithDefaults, migrateLoadedState
+    createDefaultState, mergeWithDefaults, migrateLoadedState, schedulerParticipants
 } from "../state.js";
 import {
     escapeHtml, clamp, preserveScroll, annotateDice, rollTestPool, TEST_TIER_LABELS
@@ -40,8 +40,9 @@ import {
 } from "../../../shared/handouts/control-panel.js";
 import { getZoomKey, wireZoomPan } from "../../../shared/handouts/zoom.js";
 import {
-    buildSchedulerControlHtml, handleSchedulerControlAction, MG_PARTICIPANT_KEY
+    buildSchedulerControlHtml, handleSchedulerControlAction
 } from "../../../shared/scheduler/control-panel.js";
+import { buildSchedulerHeatmapHtml } from "../../../shared/scheduler/heatmap.js";
 
 const ARCHETYPE_ORDER = ["rycerz", "lowczy", "lotr", "kaplan", "czarownik"];
 
@@ -108,14 +109,6 @@ function renderTopTabs(activeTab) {
             <button type="button" class="tab-btn ${activeTab === "terminy" ? "active" : ""}" data-action="mg-select-top-tab" data-tab="terminy">Terminy</button>
         </nav>
     `;
-}
-
-/** Wszyscy głosujący w zakładce Terminy: 4 postacie (kluczowane jak w state.characters, tak samo
- *  jak wybiera je gate.js dla Graczy - patrz panels/terminy.js) plus MG sam (MG_PARTICIPANT_KEY z
- *  shared/scheduler/control-panel.js) - MG głosuje na równi z graczami, patrz komentarz tam. */
-function buildSchedulerParticipants(state) {
-    const characters = Object.values(state.characters || {}).map(c => ({ key: c.key, label: c.name }));
-    return [...characters, { key: MG_PARTICIPANT_KEY, label: "Mistrz Gry" }];
 }
 
 function findOwnerKey(state, itemKey) {
@@ -533,7 +526,10 @@ function buildHtml(ctx) {
                     ${activeTopTab === "muzyka" ? buildSoundboardControlHtml(ctx, nowPlaying) : ""}
                     ${activeTopTab === "handouty" ? buildHandoutsControlHtml(ctx) : ""}
                     ${activeTopTab === "backup" ? renderDataBackupModule() : ""}
-                    ${activeTopTab === "terminy" ? buildSchedulerControlHtml(ctx, { months: data.scheduler.months, participants: buildSchedulerParticipants(state) }) : ""}
+                    ${activeTopTab === "terminy" ? `
+                        ${buildSchedulerControlHtml(ctx, { months: data.scheduler.months, participants: schedulerParticipants(state) })}
+                        ${buildSchedulerHeatmapHtml(ctx, { months: data.scheduler.months, participants: schedulerParticipants(state) })}
+                    ` : ""}
                     ${activeTopTab === "kampania" ? `
                         ${renderModifierModule(ctx)}
                         ${renderLegendaryCatalog(ctx)}
