@@ -157,4 +157,7 @@ div.sched-day { cursor: default; }
 .sched-rank-count.sched-rank-yes { color: #4fbf82; }
 .sched-rank-count.sched-rank-maybe { color: #d8ab4f; }
 
-.sched-module + .sched-module { margin-top: 12px; }
+/* Odstęp wyraźnie większy niż generyczne .card + .card (12px) - moduły Terminów (głosowanie / ranking
+   / mapa dostępności) są samodzielnymi, gęstymi blokami (kalendarze, listy), potrzebują więcej
+   oddechu między sobą niż zwykłe karty tekstowe gdzie indziej w aplikacji. */
+.sched-module + .sched-module { margin-top: 28px; }

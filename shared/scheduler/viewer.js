@@ -11,7 +11,9 @@
 import { renderMonthTableHtml, todayIso } from "./calendar.js";
 import { statusFor, cycleAvailability } from "./core.js";
 
-/** Buduje HTML całej zakładki Terminy widocznej dla gracza.
+/** Buduje HTML modułu głosowania (jedna karta `.card`, ta sama konwencja co heatmap.js i
+ *  control-panel.js - patrz darkgraal3dashboard/js/panels/terminy.js, który dokleja pod spodem
+ *  jeszcze moduł "mapa dostępności" z heatmap.js).
  *  @param {object} ctx - { state, ... } (patrz store.js#getState)
  *  @param {object} opts
  *  @param {{year:number, month:number}[]} opts.months - miesiące do pokazania (data/scheduler.json)
@@ -28,14 +30,16 @@ export function buildSchedulerViewerHtml(ctx, { months, participantKey }) {
     ).join("");
 
     return `
-        <h2>Terminy</h2>
-        <p class="placeholder">Zaznacz dni, w które możesz grać. Klik: 1x mogę (zielony), 2x być może
-            (żółty), 3x wyczyść.</p>
-        <div class="sched-legend">
-            <span class="sched-legend-item"><span class="sched-swatch sched-yes"></span> Mogę</span>
-            <span class="sched-legend-item"><span class="sched-swatch sched-maybe"></span> Być może</span>
+        <div class="card sched-module">
+            <h3>Terminy - Twoja dostępność</h3>
+            <p class="placeholder">Zaznacz dni, w które możesz grać. Klik: 1x mogę (zielony), 2x być może
+                (żółty), 3x wyczyść.</p>
+            <div class="sched-legend">
+                <span class="sched-legend-item"><span class="sched-swatch sched-yes"></span> Mogę</span>
+                <span class="sched-legend-item"><span class="sched-swatch sched-maybe"></span> Być może</span>
+            </div>
+            <div class="sched-months">${monthsHtml}</div>
         </div>
-        <div class="sched-months">${monthsHtml}</div>
     `;
 }
 
