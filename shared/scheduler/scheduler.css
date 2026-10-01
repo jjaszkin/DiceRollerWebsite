@@ -108,6 +108,41 @@
    się jako <div>, nie <button> - reset kursora/tła, żeby nie sugerowały interakcji. */
 div.sched-day { cursor: default; }
 
+/* -- Widget "mapa dostępności" (heatmap.js) - nieklikalny, natężenie zieleni = tło inline (style=),
+   tekst zawsze jasny (czytelny na każdym natężeniu, od pustego ciemnego tła po pełną zieleń) -------- */
+
+.sched-heat-day {
+    color: var(--fg-0, #f2e9d8);
+}
+
+/* Obrys przy najechaniu/dotknięciu - jedyna wskazówka, że dzień ma dymek (patrz heatmap.js#wireHeatmapTooltip),
+   bez zmiany layoutu. */
+.sched-heat-day:hover { outline: 1px solid var(--gold, #E8B83D); outline-offset: -1px; }
+
+/* Własny dymek (heatmap.js#wireHeatmapTooltip) zamiast natywnego atrybutu `title` - ten nie działa na
+   dotyku (telefon/tablet), a stąd najpewniej sprawdzana jest dostępność najczęściej. `position: fixed`
+   + dołączony do <body> (nie do karty), żeby nigdy nie był przycięty przez overflow karty/tabeli i żeby
+   liczyć pozycję wprost względem viewportu (patrz heatmap.js#positionTooltip). */
+.sched-heat-tooltip {
+    position: fixed;
+    z-index: 50;
+    max-width: 220px;
+    padding: 8px 10px;
+    background: var(--bg-0, #0a0806);
+    border: 1px solid var(--gold, #E8B83D);
+    border-radius: var(--radius, 3px);
+    color: var(--fg-0, #f2e9d8);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    white-space: pre-line;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.1s;
+}
+
+.sched-heat-tooltip.visible { opacity: 1; visibility: visible; }
+
 /* -- Lista rankingowa dni (wyłącznie widok MG) --------------------------------------------------- */
 
 .sched-ranking {
@@ -147,4 +182,7 @@ div.sched-day { cursor: default; }
 .sched-rank-count.sched-rank-yes { color: #4fbf82; }
 .sched-rank-count.sched-rank-maybe { color: #d8ab4f; }
 
-.sched-module + .sched-module { margin-top: 12px; }
+/* Odstęp wyraźnie większy niż generyczne .card + .card (12px) - moduły Terminów (głosowanie / ranking
+   / mapa dostępności) są samodzielnymi, gęstymi blokami (kalendarze, listy), potrzebują więcej
+   oddechu między sobą niż zwykłe karty tekstowe gdzie indziej w aplikacji. */
+.sched-module + .sched-module { margin-top: 28px; }

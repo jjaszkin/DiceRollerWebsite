@@ -7,6 +7,7 @@
 // nie część stanu zapisywanego do Firebase.
 
 import { uid } from "./utils.js";
+import { MG_PARTICIPANT_KEY } from "../../shared/scheduler/control-panel.js";
 
 /** Głęboka kopia jednego archetypu z katalogu postaci (data/characters.json). */
 function cloneArchetype(a) {
@@ -225,4 +226,14 @@ export function resolveItemTooltip(state, data, itemKey) {
     const override = state?.itemOverrides?.[itemKey];
     if (override && typeof override.tooltip === "string") return override.tooltip;
     return data?.items?.[itemKey]?.shortTooltip || "";
+}
+
+/** Wszyscy głosujący w zakładce Terminy (shared/scheduler/): 4 postacie (kluczowane jak w
+ *  state.characters, tak samo jak wybiera je gate.js dla Graczy - patrz panels/terminy.js) plus MG
+ *  sam (MG_PARTICIPANT_KEY z shared/scheduler/control-panel.js) - MG głosuje na równi z graczami.
+ *  Jedna wspólna definicja dla panels/terminy.js (widget "mapa dostępności") i panels/mg.js (ranking +
+ *  ten sam widget), żeby lista uczestników nie mogła się rozjechać między widokiem gracza i MG. */
+export function schedulerParticipants(state) {
+    const characters = Object.values(state.characters || {}).map(c => ({ key: c.key, label: c.name }));
+    return [...characters, { key: MG_PARTICIPANT_KEY, label: "Mistrz Gry" }];
 }
